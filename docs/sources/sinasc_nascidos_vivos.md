@@ -129,7 +129,7 @@ with odb.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, count(*) AS nascidos_vivos FROM lake.sinasc_nascidos_vivos GROUP BY ano").pl())
 ```
 
-Passo a passo com análise e proveniência:
+Passo a passo com análise e procedência:
 [notebooks/sinasc_nascidos_vivos.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/sinasc_nascidos_vivos.py)
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/sinasc_nascidos_vivos.py).
 

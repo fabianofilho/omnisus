@@ -175,7 +175,7 @@ with odb.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, mes, count(*) AS aih FROM lake.sih_aih_reduzida GROUP BY ALL").pl())
 ```
 
-Passo a passo com análise e proveniência:
+Passo a passo com análise e procedência:
 [notebooks/sih_aih_reduzida.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/sih_aih_reduzida.py)
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/sih_aih_reduzida.py).
 
@@ -219,7 +219,7 @@ Regras, divergências, inventário e limites de aplicabilidade estão na
 [auditoria reproduzível](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-09-14-contrato-analitico/regras.md).
 Ela registra o snapshot 5, os hashes das publicações, schemas e consultas agregadas.
 A aplicabilidade se restringe aos escopos confirmados; uma edição documental não
-valida automaticamente toda a série histórica. A proveniência de arquivo é
+valida automaticamente toda a série histórica. A procedência de arquivo é
 consultada por `LakeReader.publications()` no mesmo snapshot.
 
 ### Extensão de escopo (2026-09-14)

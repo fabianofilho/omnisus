@@ -3,16 +3,40 @@
 Obrigado por ajudar. O omnisus existe para que um número tirado do DATASUS possa ser
 conferido e citado; toda contribuição segue essa ideia.
 
-## Antes de começar
+## Princípios
 
-- **O repositório é público.** Nada de credenciais, caminhos do seu computador, dados
-  pessoais ou arquivos de trabalho (planos, logs, transcrições) em commits, issues ou
-  PRs. A lista completa está em [`AGENTS.md`](https://github.com/raphaelfh/omnisus/blob/main/AGENTS.md#this-repository-is-public).
-- **Nenhuma suposição.** Um diretório, um nome de arquivo, uma lista de códigos ou um
-  rótulo só entra no código ou na documentação depois de lido no servidor do DATASUS
-  ou num arquivo com SHA-256 registrado. As cinco regras estão em
-  [`AGENTS.md`](https://github.com/raphaelfh/omnisus/blob/main/AGENTS.md#zero-assumption-policy).
-- **Planos e discussões vão para as issues**, não para arquivos no repositório.
+O [`AGENTS.md`](https://github.com/raphaelfh/omnisus/blob/main/AGENTS.md) é o contrato
+de toda mudança, feita por uma pessoa ou por um agente; esta seção o resume. Se os dois
+divergirem, vale o `AGENTS.md`.
+
+**Os pilares**, o que o pesquisador pode esperar do omnisus:
+
+1. **Citável.** Cada linha importada leva ao arquivo do servidor de onde veio: a
+   publicação registra o recorte, o caminho e o SHA-256, e `odb.cite` gera a citação.
+2. **Nada adivinhado.** O código fica como o DATASUS publicou; o rótulo vem só do
+   dicionário, e um código desconhecido fica sem rótulo. Cada mapa de códigos diz se
+   foi conferido no documento oficial.
+3. **Conferível.** Quem duvida de um fato consegue checá-lo: documentos com URL e
+   SHA-256, auditorias em `evidence/`, `odb.check_columns` para os dados.
+4. **Simples.** Um mecanismo para cada coisa, nada de código morto, código e
+   documentação que se leem uma vez.
+5. **Público.** Nada sobre pessoas ou sobre o seu computador entra no repositório.
+
+**As cinco regras**, como uma mudança cumpre os pilares (detalhes em
+[`AGENTS.md`](https://github.com/raphaelfh/omnisus/blob/main/AGENTS.md#zero-assumption-policy)):
+
+1. Todo fato vem do servidor do DATASUS ou de um arquivo com SHA-256 registrado;
+   "não publicado" exige a mesma prova que "publicado".
+2. Os testes rodam sobre trechos de arquivos reais, registrados no `FIXTURES.md`.
+3. Teste vermelho primeiro; o PR mostra a execução vermelha.
+4. Nada entra sem consumidor ou teste; o PR lista o que apagou.
+5. Prefira o mais simples e legível.
+
+**O repositório é público.** Nada de credenciais, caminhos do seu computador, dados
+pessoais ou arquivos de trabalho (planos, logs, transcrições) em commits, issues ou
+PRs; a lista completa está em
+[`AGENTS.md`](https://github.com/raphaelfh/omnisus/blob/main/AGENTS.md#boundaries).
+Planos e discussões vão para as issues, não para arquivos no repositório.
 
 ## Relatar um problema
 

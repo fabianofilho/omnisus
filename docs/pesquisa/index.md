@@ -2,8 +2,9 @@
 
 ## O que é
 
-O omnisus importa bases abertas do DATASUS e do IBGE para um lake local, uma base de
-dados em arquivos no seu computador. Cada importação fica registrada num manifesto, com
+O omnisus importa bases abertas do DATASUS e do IBGE para um lake, uma base de
+dados em arquivos que pode ficar no seu computador, no Google Drive (útil no Colab) ou na
+nuvem, com o catálogo num PostgreSQL e os arquivos num S3. Cada importação fica registrada num manifesto, com
 o arquivo de origem, o SHA-256 dele e a execução que o publicou; é isso que permite
 dizer de onde veio cada linha.
 

@@ -89,7 +89,7 @@ Dispensação:
   diretório `/dissemin/publicos/SIASUS/200801_/Dados`, sem diretório preliminar; veja o
   [catálogo de datasets](../datasets.md).
 - Estoque BNAFAR/Hórus: uma página HTTP por chamada, até 1.000 registros, guardada com
-  bytes e proveniência e nunca publicada no lake; não há importador histórico nem
+  bytes e procedência e nunca publicada no lake; não há importador histórico nem
   nacional.
 - Farmácia Popular / MGDI: fonte identificada, sem importador.
 - Dispensação BNAFAR/RNDS: sem acesso público de leitura confirmado.
@@ -225,14 +225,14 @@ automaticamente, não repete tentativas e não grava no lake: falta contrato de 
 e completude para substituir um recorte sem risco. Repetir um `offset` pode observar uma
 base alterada. `StockPage.provenance()` guarda URL com parâmetros, horário UTC,
 SHA-256 dos bytes recebidos, página, limite e número de linhas; preserve `raw` com a
-proveniência:
+procedência:
 
 ```python
 from pathlib import Path
 import json
 
 Path("estoque-resposta.json").write_bytes(pagina.raw)
-Path("estoque-proveniencia.json").write_text(json.dumps(pagina.provenance(), indent=2))
+Path("estoque-procedencia.json").write_text(json.dumps(pagina.provenance(), indent=2))
 ```
 
 Não se presume que o servidor aplicou corretamente cada filtro sem validação posterior.
@@ -260,7 +260,7 @@ uv run --locked --extra notebooks marimo edit notebooks/medicamentos.py
 
 O notebook tem três partes: A, a APAC de Roraima, janeiro de 2024, nas seis etapas do
 guia (o que a APAC registra, descobrir, baixar e ler, conferir, analisar, citar e
-guardar); B, uma página de estoque BNAFAR/Hórus guardada com proveniência em
+guardar); B, uma página de estoque BNAFAR/Hórus guardada com procedência em
 `resultados/estoque/<sha256>/`, sem escrita no lake; e C, o que não existe
 publicamente. As APAC vão para o lake de pesquisa compartilhado por `odb.load`, cuja
 política padrão (`skip_same`) impede duplicar um arquivo já publicado.

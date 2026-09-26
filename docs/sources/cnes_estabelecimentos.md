@@ -175,7 +175,7 @@ with odb.LakeReader(alvo) as leitor:
 
 A importação também atualiza a visão `aux_cnes`.
 
-Passo a passo com análise e proveniência:
+Passo a passo com análise e procedência:
 [notebooks/cnes_estabelecimentos.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/cnes_estabelecimentos.py)
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/cnes_estabelecimentos.py).
 

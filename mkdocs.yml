@@ -1,5 +1,5 @@
 site_name: omnisus
-site_description: Dados públicos de saúde do Brasil (DATASUS, IBGE, CNES) num lake local, com proveniência para citar
+site_description: Dados públicos de saúde do Brasil (DATASUS, IBGE, CNES) num lake no computador, no Google Drive ou na nuvem, com procedência para citar
 site_url: https://raphaelfh.github.io/omnisus/
 repo_url: https://github.com/raphaelfh/omnisus
 repo_name: raphaelfh/omnisus

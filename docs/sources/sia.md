@@ -200,7 +200,7 @@ with odb.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, mes, count(*) AS registros FROM lake.sia_bpa_individualizado GROUP BY ALL").pl())
 ```
 
-Passo a passo com as sete tabelas, análise e proveniência:
+Passo a passo com as sete tabelas, análise e procedência:
 [notebooks/sia.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/sia.py)
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/sia.py).
 

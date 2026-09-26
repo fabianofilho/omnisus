@@ -125,7 +125,7 @@ datas válidas cada; `gestor_dt` está ausente em todas as linhas. Não interpre
 `00000000` como data nem tolerar comprimento inadequado. Os contadores do comando
 exigem oito dígitos e parse de calendário válido; valores brutos são preservados.
 
-## Inventário e proveniência
+## Inventário e procedência
 
 | Campo ausente | Classificação e evidência |
 |---|---|
@@ -150,7 +150,7 @@ inteiros (`USMALLINT`, `UTINYINT`), diferentes de coerção indevida de códigos
 `scope`, `release`, `active`, `managed` e versão do parser. Consulte pelo mesmo
 snapshot usado na análise, selecione dataset/escopos/ativos e confira cobertura.
 O manifesto registra hash do arquivo de origem por publicação; `_hash_arquivo`
-ausente na linha não significa perda de proveniência. Não há promessa de linhagem
+ausente na linha não significa perda de procedência. Não há promessa de linhagem
 unívoca por registro se houver publicações sobrepostas no mesmo escopo.
 
 ## Aplicabilidade e pendências

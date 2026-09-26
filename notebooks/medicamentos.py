@@ -45,7 +45,7 @@ def _(mo):
       [guia do pesquisador](https://raphaelfh.github.io/omnisus/pesquisa/) com
       **Roraima, janeiro de 2024**.
     - **B · Estoque BNAFAR/Hórus** — uma página da API pública de posição de estoque,
-      guardada com proveniência, sem publicar no lake.
+      guardada com procedência, sem publicar no lake.
     - **C · O que não existe publicamente** — eventos de dispensação.
 
     **Abrir este notebook não baixa nem grava nada.** Edite os parâmetros na célula
@@ -200,7 +200,7 @@ def _(mo):
 
     Uma página da API pública de **posição de estoque**. Não publica no lake. Uma
     página vazia não demonstra ausência de estoque, e uma página curta não demonstra
-    completude. Filtros: `CODIGO_UF` e `DATA_ESTOQUE`. A resposta e a proveniência
+    completude. Filtros: `CODIGO_UF` e `DATA_ESTOQUE`. A resposta e a procedência
     vão para `resultados/estoque/<sha256>/`.
     """)
     return
@@ -216,7 +216,7 @@ def _(CODIGO_UF, DATA_ESTOQUE, Path, executar, fetch_stock_page, json, mo, pl):
     pasta_estoque = Path("resultados") / "estoque" / pagina.sha256
     pasta_estoque.mkdir(parents=True, exist_ok=True)
     (pasta_estoque / "resposta.json").write_bytes(pagina.raw)
-    (pasta_estoque / "proveniencia.json").write_text(
+    (pasta_estoque / "procedencia.json").write_text(
         json.dumps(pagina.provenance(), indent=2, ensure_ascii=False), encoding="utf-8"
     )
     pl.DataFrame(pagina.records)

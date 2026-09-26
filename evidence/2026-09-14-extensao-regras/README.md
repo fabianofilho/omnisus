@@ -55,7 +55,7 @@ Das 13.104 idades com datas comparáveis, 13.101 coincidem com os anos completos
 entre nascimento da mãe e parto; **três divergem**. As divergências ficam nos
 agregados e não levam a recalcular/substituir a idade publicada.
 
-### Diretório legado e proveniência
+### Diretório legado e procedência
 
 DNRR2023 foi publicado em `SINASC/1996_/Dados/DNRES`. O portal oficial o identificou
 como final; a resposta original está em `sinasc-portal.json`, com hash no manifesto.

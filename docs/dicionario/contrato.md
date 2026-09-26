@@ -102,7 +102,7 @@ período observado. Não preencher um dia fictício quando a fonte só informa m
 
 Nos YAMLs atuais, conservar `description`, `type`, `x-decode`, `x-format` e
 demais propriedades usadas pela lib. Acrescentar `x-metadata` com identidade,
-tipo físico, domínio, proveniência e aplicabilidade. O resolvedor transforma essa autoria no contrato resolvido:
+tipo físico, domínio, procedência e aplicabilidade. O resolvedor transforma essa autoria no contrato resolvido:
 
 | Autoria | Exportação |
 | --- | --- |

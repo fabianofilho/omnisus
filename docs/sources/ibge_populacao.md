@@ -129,7 +129,7 @@ with odb.LakeReader(alvo) as leitor:
 Rodar a importação duas vezes para a mesma edição faz a visão `ibge_populacao` falhar,
 porque o município e ano passam a ter duas publicações.
 
-Passo a passo com análise e proveniência, que consulta o manifesto antes de importar:
+Passo a passo com análise e procedência, que consulta o manifesto antes de importar:
 [notebooks/ibge_populacao.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/ibge_populacao.py)
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/ibge_populacao.py).
 
@@ -207,7 +207,7 @@ descreve os endpoints de metadados, períodos, localidades e população. Os met
 [6579](https://servicodados.ibge.gov.br/api/v3/agregados/6579/metadados) estabelecem os
 contratos de variável e de categoria Total.
 
-### Validação e proveniência
+### Validação e procedência
 
 Antes de qualquer escrita, o importador valida exatamente uma variável e um resultado
 Total, a unidade Pessoas, o nível N6, códigos de sete dígitos, o ano exato, municípios

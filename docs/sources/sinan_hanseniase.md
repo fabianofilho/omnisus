@@ -194,7 +194,7 @@ with odb.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT _source_ano, _source_release, count(*) FROM lake.sinan_hanseniase GROUP BY ALL").pl())
 ```
 
-Passo a passo com Chagas e hanseníase, análise e proveniência:
+Passo a passo com Chagas e hanseníase, análise e procedência:
 [notebooks/sinan.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/sinan.py)
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/sinan.py).
 

@@ -1500,7 +1500,7 @@ schema:
       label: Sequencial longa permanência
 
     # ========================================================================
-    # Partições + proveniência (adicionados pelo ETL)
+    # Partições + procedência (adicionados pelo ETL)
     # ========================================================================
     - name: ano
       type: integer

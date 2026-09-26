@@ -1,6 +1,6 @@
 # omnisus
 
-Brings Brazilian public health data (DATASUS, IBGE, CNES) into a local lake, with the
+Brings Brazilian public health data (DATASUS, IBGE, CNES) into a lake on a computer, on Google Drive or in the cloud, with the
 provenance a researcher needs to cite it.
 
 ## Language
@@ -29,7 +29,8 @@ _Avoid_: import, load, run
 ### Where it is kept
 
 **Lake**:
-Where the imported scopes live, made of one catalog and one storage.
+Where the imported scopes live, made of one catalog and one storage. It can sit on a
+computer, on Google Drive, or in the cloud (a PostgreSQL catalog with S3 storage).
 _Avoid_: database, warehouse
 
 **Catalog**:

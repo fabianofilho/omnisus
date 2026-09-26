@@ -1827,7 +1827,7 @@ schema:
       label: Classificação materna
 
     # ========================================================================
-    # Partições + proveniência (adicionados pelo ETL)
+    # Partições + procedência (adicionados pelo ETL)
     # ========================================================================
       x-metadata:
         issues:

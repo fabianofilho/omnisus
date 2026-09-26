@@ -29,7 +29,7 @@ aqui). Um levantamento anterior, de 2026-09-10, é citado apenas como observaç�
 
   A validação estrita do Chagas rejeitaria esses arquivos publicados.
 - **Contrato recomendado (revisado, §3.2):** um produto por agravo, cobrindo
-  `FINAIS` e `PRELIM`. O diretório vira proveniência, já gravada em `source_uri`.
+  `FINAIS` e `PRELIM`. O diretório vira procedência, já gravada em `source_uri`.
   A versão inicial recomendava produtos separados `_final` e `_prelim`. A revisão
   mostrou que isso quebra o probe semanal todo ano e deixa o pesquisador contar o
   mesmo ano duas vezes.

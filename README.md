@@ -1,11 +1,11 @@
 # omnisus
 
 Importa bases públicas de saúde do Brasil (DATASUS, IBGE, CNES) para um lake
-[DuckLake](https://ducklake.select) local, com a proveniência necessária para citar
-cada resultado.
+[DuckLake](https://ducklake.select), no seu computador, no Google Drive ou na nuvem, com
+a procedência necessária para citar cada resultado.
 
-*Brazilian public health data (DATASUS, IBGE, CNES) in a local DuckLake lake, with the
-provenance needed to cite it. Documentation: <https://raphaelfh.github.io/omnisus/>.*
+*Brazilian public health data (DATASUS, IBGE, CNES) in a DuckLake lake (on your computer, on Google
+Drive or in the cloud), with the provenance needed to cite it. Documentation: <https://raphaelfh.github.io/omnisus/>.*
 
 > [!WARNING]
 > **Trabalho em construção (v0.1).** A API ainda pode mudar entre versões menores, e
