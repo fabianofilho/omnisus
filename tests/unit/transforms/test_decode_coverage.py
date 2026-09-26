@@ -292,6 +292,25 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
         # RD2008.DEF lines 407-433 bind TPDISEC1-9 to TP_DIAGSEC.CNV.
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", {"1": "Preexistente"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec2", {"1": "Preexistente"}),
+        # RD2008.DEF and RJ2008.DEF bind NACIONAL to NACION3D.CNV and CONTRACEP1-2 to
+        # CONTRAC.CNV; RJ2008.DEF binds ST_MOT_BLO to MOTBLOQUEIO.CNV. CONTRAC and
+        # MOTBLOQUEIO open with a fallback range (00-99).
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "nacional", {"010": "Brasil"}),
+        ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini", "nacional", {"092": "Venezuela"}),
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "contracep1", {"08": "Preservativo"}),
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "contracep2", {"10": "Hormônio oral"}),
+        (
+            "sih_aih_rejeitada",
+            "sih_rj_rr_2024_01_mini",
+            "contracep1",
+            {"00": "Ignorado/não se aplica"},
+        ),
+        (
+            "sih_aih_rejeitada",
+            "sih_rj_rr_2024_01_mini",
+            "st_mot_blo",
+            {"01": "DUPLICIDADE", "62": "PERMANÊNCIA A MENOR INJUSTIFICADA"},
+        ),
         # RJ2008.DEF binds SEXO to RD's SEXO.CNV.
         (
             "sih_aih_rejeitada",
