@@ -102,6 +102,9 @@ fica no issue `cnv-difere-do-mapa-anterior`. Uma claim de códigos já existente
 o gerador para e nomeia dataset, campo, método e evidência; se é `cnv-parse` e o CNV
 dá o mesmo mapa, nada muda; se o mapa difere, ele para e lista os códigos que mudaram.
 Nos dois casos de parada, a mudança é revista e escrita à mão.
+Um `conflicting` de `cnv-parse` cujo mapa anterior não tinha fonte também se resolve à
+mão: a claim passa a `verified_in_source` e o issue `cnv-difere-do-mapa-anterior` passa a
+`resolved`, guardando o texto do mapa anterior.
 
 Os campos de `sim_obitos_infantis`, `sim_obitos_maternos` e `sim_obitos_externos` são os
 de `sim_obitos` (os registros são do DO). Depois de mudar `sim_obitos.yaml`,

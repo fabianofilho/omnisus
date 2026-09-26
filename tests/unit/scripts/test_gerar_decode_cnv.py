@@ -137,6 +137,33 @@ def test_sih_fields_with_a_fallback_range_take_the_cnv_map(field, member, labels
     assert {code: decode[code] for code in labels} == labels
 
 
+def test_rd_cnv_maps_are_verified_and_the_hand_maps_they_replaced_resolved():
+    """RD's hand maps had no source, so the TAB_SIH CNV settles them: every RD cnv-parse
+    claim is verified, and each issue cnv-difere-do-mapa-anterior is resolved with the old
+    labels kept in its text. A field RJ2008.DEF binds to the same CNV has the same map in
+    RJ, where no hand map ever existed and the claim was verified from the start."""
+    from omnisus.transforms.dictionaries import load_dicionario
+
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    rd = vinculos["datasets"]["sih_aih_reduzida"]["campos"]
+    rj = vinculos["datasets"]["sih_aih_rejeitada"]["campos"]
+    shared = {f for f in rd if rj.get(f) == rd[f]}
+    assert set(rd) - shared == {"marca_uci"}
+    for name in rd:
+        field = load_dicionario("sih_aih_reduzida").field_def(name)
+        (claim,) = [c for c in field["x-metadata"]["claims"] if c["target"] == "/field/codes"]
+        assert (claim["method"], claim["status"]) == ("cnv-parse", "verified_in_source"), name
+        for issue in field["x-metadata"].get("issues", []):
+            if issue["id"] == "cnv-difere-do-mapa-anterior":
+                assert issue["status"] == "resolved", name
+                assert " era " in issue["description"], name
+        if name in shared:
+            assert (
+                field["x-decode"]
+                == (load_dicionario("sih_aih_rejeitada").field_def(name)["x-decode"])
+            ), name
+
+
 def _marca_uti(gerar: ModuleType) -> tuple[dict[str, Any], dict[str, str]]:
     """The committed sih marca_uti field and the map its packaged MARCAUTI.CNV yields."""
     from omnisus.transforms.cnv import cnv_map, parse_cnv

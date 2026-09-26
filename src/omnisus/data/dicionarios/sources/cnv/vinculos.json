@@ -846,6 +846,7 @@
         "morte": "sih/CNV/MORTES.CNV",
         "natureza": "sih/CNV/NATUREZA.CNV",
         "raca_cor": "sih/CNV/RACACOR.CNV",
+        "regct": "sih/CNV/REGCT.cnv",
         "sexo": "sih/CNV/SEXO.CNV",
         "vincprev": "sih/CNV/VINCPREV.CNV"
       },

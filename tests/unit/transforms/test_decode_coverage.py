@@ -281,6 +281,8 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
             {"2": "Dias", "4": "Anos"},
         ),
         ("sia_apac_fistula_arteriovenosa", "sia_acf_rr_2024_01_mini", "ap_coidade", {"4": "Anos"}),
+        # RD2008.DEF lines 275-277 bind REGCT to REGCT.CNV, as RJ2008.DEF lines 277-279 do.
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "regct", {"0000": "SEM CONTRATO"}),
         # RJ2008.DEF binds SEXO to RD's SEXO.CNV.
         (
             "sih_aih_rejeitada",

@@ -40,7 +40,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 09f3215720dc054cd57289cab5d47ecb7ef2e2d78b9fec9fbe9d112a5c891fc5
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -48,13 +48,14 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XTipo de AIH, IDENT, 1, CNV\IDENT.CNV; CNV/IDENT.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''1'' era ''AIH Principal (tipo 1)'',
             CNV ''Normal''; ''3'' era ''AIH de Continuação (tipo 3)'', CNV ''Outras/ignorado''; ''5'' era
-            ''AIH Longa permanência (tipo 5)'', CNV ''Longa permanência'''
+            ''AIH Longa permanência (tipo 5)'', CNV ''Longa permanência''. Resolvido em 2026-09-26: o mapa
+            anterior não tinha fonte; vale o CNV.'
     - name: sequencia
       type: integer
       label: Sequencial na remessa
@@ -206,7 +207,7 @@ schema:
           note: Descrição do layout; os arquivos de RR de 2022 e 2024 trazem só '00'.
         - target: /field/codes
           value_sha256: d9e116a3616391f2860d66ffa88f4cff04022c7583923d95c131a75c3247ef71
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -214,10 +215,10 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: LNatureza, NATUREZA, 1, CNV\NATUREZA.CNV; CNV/NATUREZA.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''10'' era ''Administração direta da
             saúde (MS/SES/SMS)'', CNV ''Próprio''; ''20'' era ''Administração direta de outros órgãos'', CNV
             ''Contratado''; ''30'' era ''Administração indireta — Autarquias'', CNV ''Federal''; ''40'' era
@@ -225,7 +226,8 @@ schema:
             indireta — Empresa pública'', CNV ''Municipal''; ''60'' era ''Administração indireta — Org. social
             pública'', CNV ''Filantrópico''; ''61'' era ''Entidade beneficente sem fins lucrativos'', CNV
             ''Filantrópico isento tributos e contr.sociais''; ''70'' era ''Entidade empresarial'', CNV ''Universitário
-            Ensino''; ''80'' era ''Entidade sem fins lucrativos'', CNV ''Sindicato'''
+            Ensino''; ''80'' era ''Entidade sem fins lucrativos'', CNV ''Sindicato''. Resolvido em 2026-09-26:
+            o mapa anterior não tinha fonte; vale o CNV.'
     - name: nat_jur
       type: string
       label: Natureza jurídica (CONCLA)
@@ -249,7 +251,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 1f7afbd8ec687eb01947ff6759a9a6d7af201a75af70f9a19f7a41d576aca7d7
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -257,13 +259,14 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XGestão, GESTAO, 1, CNV\GESTAO.CNV; CNV/GESTAO.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''1'' era ''Municipal'', CNV ''Municipal
             plena assist''; ''3'' era ''Municipal plena (NOAS)'', CNV ''Não definida''; ''4'' era ''Municipal
-            plena (NOB)'', CNV ''Não definida'''
+            plena (NOB)'', CNV ''Não definida''. Resolvido em 2026-09-26: o mapa anterior não tinha fonte;
+            vale o CNV.'
     - name: espec
       type: string
       label: Especialidade do leito
@@ -313,7 +316,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: e1b507f238c6949b3f843a2135f0f7a4dfe4a3799dbe86d0b1e3bbc0cd0bab5e
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -321,10 +324,10 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XLeito\Especialidade, ESPEC, 1, CNV\LEITOS.CNV; CNV/LEITOS.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''01'' era ''Cirúrgico'', CNV ''01-Cirúrgico'';
             ''02'' era ''Obstétrico'', CNV ''02-Obstétricos''; ''03'' era ''Clínico'', CNV ''03-Clínico'';
             ''04'' era ''Crônico (longa permanência)'', CNV ''04-Crônicos''; ''05'' era ''Psiquiatria'', CNV
@@ -332,7 +335,8 @@ schema:
             ''07'' era ''Reabilitação'', CNV ''07-Pediátricos''; ''08'' era ''Clínico/Cirúrgico'', CNV ''08-Reabilitação'';
             ''09'' era ''Pediatria clínica'', CNV ''09-Leito Dia / Cirúrgicos''; ''10'' era ''Pediatria cirúrgica'',
             CNV ''10-Leito Dia / Aids''; ''11'' era ''Hospital-dia'', CNV ''11-Leito Dia / Fibrose Cística'';
-            ''12'' era ''Psiquiatria hospital-dia'', CNV ''12-Leito Dia / Intercorrência Pós-Transplante'''
+            ''12'' era ''Psiquiatria hospital-dia'', CNV ''12-Leito Dia / Intercorrência Pós-Transplante''.
+            Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o CNV.'
         - id: espec-17-sem-fonte
           status: open
           description: '''17'' fica sem rótulo: LEITOS.CNV (TAB_SIH), ligado a ESPEC no RD2008.DEF e no RJ2008.DEF,
@@ -446,7 +450,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 05fbb346cbf08e3a75b6a1d1f4a470c42b08e01620734d7d26d1158ce2c650f2
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -454,12 +458,12 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: LComplexidade do Procedimento, COMPLEX, 1, CNV\COMPLEX2.CNV; CNV/COMPLEX2.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''01'' era ''Atenção básica'', CNV ''Atenção
-            Básica'''
+            Básica''. Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o CNV.'
 
     # ========================================================================
     # Paciente
@@ -737,7 +741,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: b100d29201424a2b8a0c000bc5e062f9106eabdccce5416e2620d1f8164a86ec
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -745,13 +749,14 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XCor/raça, RACA_COR, 1, CNV\RACACOR.CNV; CNV/RACACOR.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''1'' era ''Branca'', CNV não lista;
             ''2'' era ''Preta'', CNV não lista; ''3'' era ''Parda'', CNV não lista; ''4'' era ''Amarela'',
-            CNV não lista; ''5'' era ''Indígena'', CNV não lista'
+            CNV não lista; ''5'' era ''Indígena'', CNV não lista. Resolvido em 2026-09-26: o mapa anterior
+            não tinha fonte; vale o CNV.'
     - name: etnia
       type: string
       label: Etnia (se indígena)
@@ -898,7 +903,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: b57ffa55dcb62d0e624514e530e6fed1e0a44f9f809efd5781e25e227d08a11d
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -906,17 +911,18 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: LCaráter atendimento, CAR_INT, 1, CNV\CARATEND.CNV; CNV/CARATEND.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''01'' era ''Eletiva'', CNV ''01 Eletivo'';
             ''02'' era ''Urgência'', CNV ''02 Urgência''; ''03'' era ''Acidente no local de trabalho'', CNV
             ''03 Acidente no local trabalho ou a serv da empresa''; ''04'' era ''Acidente no trajeto p/ trabalho'',
             CNV ''04 Acidente no trajeto para o trabalho''; ''05'' era ''Outros acidentes de trânsito'', CNV
             ''05 Outros tipo de acidente de trânsito''; ''06'' era ''Outras causas externas'', CNV ''06 Out
             tp lesões e envenen por agent quím físicos''; ''1'' era ''Eletiva'', CNV não lista; ''2'' era
-            ''Urgência'', CNV não lista'
+            ''Urgência'', CNV não lista. Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o
+            CNV.'
     - name: cobranca
       type: string
       label: Motivo de saída/cobrança
@@ -956,7 +962,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 08cdd9aaf92b1ff40a62cf03086db6c6875bc4e6256ac5336d6788fd364d07c9
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -964,10 +970,10 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: LMotivo Saída/Permanência, COBRANCA, 1, CNV\SAIDAPERM.CNV; CNV/SAIDAPERM.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''15'' era ''Alta com previsão de retorno'',
             CNV ''Alta com previsão de retorno p/acomp do paciente''; ''21'' era ''Permanência por característica
             da doença'', CNV ''Permanência por características próprias da doença''; ''23'' era ''Permanência
@@ -987,7 +993,8 @@ schema:
             era ''Alta mãe/puérpera com óbito neonatal'', CNV ''Alta da mãe/puérpera com óbito fetal''; ''65''
             era ''Óbito mãe/puérpera e alta RN'', CNV ''Óbito da gestante e do concepto''; ''66'' era ''Óbito
             mãe/puérpera e permanência RN'', CNV ''Óbito da mãe/puérpera e alta do recém-nascido''; ''67''
-            era ''Óbito mãe/puérpera e óbito RN'', CNV ''Óbito da mãe/puérpera e permanência recém-nascido'''
+            era ''Óbito mãe/puérpera e óbito RN'', CNV ''Óbito da mãe/puérpera e permanência recém-nascido''.
+            Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o CNV.'
     - name: morte
       type: integer
       label: Óbito
@@ -998,7 +1005,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: b9f5ab9277a51625f5753fd63190d7c055200c29dba492081f1b15c143d11bc1
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -1006,12 +1013,13 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XÓbitos, MORTE, 1, CNV\MORTES.CNV; CNV/MORTES.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''0'' era ''Não'', CNV ''Sem óbito'';
-            ''1'' era ''Sim'', CNV ''Com óbito'''
+            ''1'' era ''Sim'', CNV ''Com óbito''. Resolvido em 2026-09-26: o mapa anterior não tinha fonte;
+            vale o CNV.'
 
     # ========================================================================
     # Procedimentos
@@ -1111,7 +1119,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 4343b6a34196e50049905b4ff1ab2cbd43a1a662772e16c05b5d36d629cd1e25
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -1119,10 +1127,10 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XTipo de UTI, MARCA_UTI, 1, CNV\MARCAUTI.CNV; CNV/MARCAUTI.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''01'' era ''UTI Adulto tipo I'', CNV
             ''Utilizou mais de um tipo de UTI''; ''02'' era ''UTI Adulto tipo II'', CNV não lista; ''03''
             era ''UTI Adulto tipo III'', CNV não lista; ''04'' era ''UTI Infantil tipo I'', CNV não lista;
@@ -1132,7 +1140,8 @@ schema:
             CNV não lista; ''11'' era ''UTI Coronariana tipo II (UCO II)'', CNV não lista; ''12'' era ''UTI
             Coronariana tipo III (UCO III)'', CNV não lista; ''74'' era ''UTI Adulto (antes da tipificação)'',
             CNV ''UTI adulto - tipo I''; ''75'' era ''UTI Infantil (antes da tipificação)'', CNV ''UTI adulto
-            - tipo II''; ''76'' era ''UTI Neonatal (antes da tipificação)'', CNV ''UTI adulto - tipo III'''
+            - tipo II''; ''76'' era ''UTI Neonatal (antes da tipificação)'', CNV ''UTI adulto - tipo III''.
+            Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o CNV.'
     - name: val_uti
       type: number
       label: Valor UTI
@@ -1160,7 +1169,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 54278ce7f2601738cc118761108d23734257ccb60a94714cb69339bc3e74d07e
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -1168,13 +1177,13 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XTipo de UCI, MARCA_UCI, 1, CNV\MARCAUCI.CNV; CNV/MARCAUCI.cnv'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''51'' era ''UCI Adulto'', CNV não lista;
             ''52'' era ''UCI Pediátrica/Neonatal convencional'', CNV não lista; ''53'' era ''UCI Neonatal
-            canguru'', CNV não lista'
+            canguru'', CNV não lista. Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o CNV.'
     - name: val_uci
       type: number
       label: Valor UCI
@@ -1255,7 +1264,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: b502a7a998f58f54bb87882d47423fe45e2abb8414a5183bba213b61687fce51
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -1263,22 +1272,56 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XFinanciamento, FINANC, 1, CNV\FINANC.CNV; CNV/FINANC.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''01'' era ''PAB — Piso da Atenção Básica'',
             CNV ''01 Atenção Básica (PAB)''; ''02'' era ''MAC (antigo)'', CNV ''02 Assistência Farmacêutica'';
             ''04'' era ''FAEC — Fundo de Ações Estratégicas'', CNV ''04 Fundo de Ações Estratégicas e Compensações
             FAEC''; ''05'' era ''Incentivo MAC'', CNV ''05 Incentivo - MAC''; ''06'' era ''MAC — Média e Alta
             Complexidade'', CNV ''06 Média e Alta Complexidade (MAC)''; ''07'' era ''Incentivo FAEC'', CNV
-            ''07 Vigilância em Saúde'''
+            ''07 Vigilância em Saúde''. Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o CNV.'
     - name: faec_tp
       type: string
       label: Subtipo FAEC
     - name: regct
       type: string
       label: Regra contratual
+      x-decode:
+        '0000': SEM CONTRATO
+        '7010': ESTABELECIMENTO SEM GERAÇÃO DE CREDITO no  grupo 1
+        '7100': TABELA DE NAO GERACAO DE CREDITO POR PRODUCAO NA I
+        '7101': ESTABELECIMENTO DE SAUDE SEM GERACAO DE CREDITO NA
+        '7102': ESTABELECIMENTO DE SAUDE SEM GERACAO DE CREDITO NA
+        '7103': ESTABELECIMENTO DE SAUDE SEM GERACAO DE CREDITO NA
+        '7104': ESTABELECIMENTO DE SAUDE SEM GERACAO DE CREDITO NA
+        '7105': ESTABELECIMENTO DE SAUDE SEM GERACAO DE CREDITO PA
+        '7106': ESTABELECIMENTO SEM GERAÇÃO DE CREDITO TOTAL - INC
+        '7107': ESTABELECIMENTO SEM GERACAO DE CREDITO NAS ACOES E
+        '7108': ESTABELECIMENTO SEM GERACAO DE CREDITO(INCENTIVO A
+        '7109': ESTABELECIMENTO SEM GERACAO DE CREDITO TOTAL-MEC
+        '7110': ESTABELECIMENTO DE SAUDE DA ESTRUTURA DO MINISTERI
+        '7111': ESTABELECIMENTO DE SAUDE SEM GERACAO DE CREDITO -
+        '7112': ESTABELECIMENTO SEM GERAÇÃO DE CREDITO TOTAL - INC
+        '7113': ESTABELECIMENTO SEM GERAÇÃO DE CREDITO TOTAL - INC
+        '7114': ESTABELECIMENTO DE SAÚDE SEM GERAÇÃO DE CRÉDITO TO
+        '7115': ESTABELECIMENTO DE SAÚDE SEM GERAÇÃO DE CRÉDITO NA
+        '7116': ESTABELECIMENTO DE SAÚDE SEM GERAÇÃO DE CRÉDITO NA
+        '7117': ESTABELECIMENTO DE SAÚDE SEM GERAÇÃO DE CRÉDITO NA
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: db5d6d2946bb6dbdb9fbb509768bbee7f30206b93eb25fa16287f4873b6d7018
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LRegra Contratual, REGCT, 1, CNV\REGCT.CNV; CNV/REGCT.cnv'
+          note: Mapa do CNV.
     - name: rubrica
       type: string
       label: Rubrica orçamentária
@@ -1307,7 +1350,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 595254be2c676a5195ea0ca54a893ffbd5afeac487ded164340700af37e75d95
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -1315,14 +1358,14 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XGrau de instrução, INSTRU, 1, CNV\INSTRU.CNV; CNV/INSTRU.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''0'' era ''Ignorado'', CNV ''Ignorado/não
             se aplica''; ''2'' era ''Ensino Fundamental'', CNV ''1º grau''; ''3'' era ''Ensino Médio'', CNV
             ''2º grau''; ''4'' era ''Ensino Superior'', CNV ''3º grau''; ''9'' era ''Ignorado'', CNV ''Ignorado/não
-            se aplica'''
+            se aplica''. Resolvido em 2026-09-26: o mapa anterior não tinha fonte; vale o CNV.'
     - name: contracep1
       type: string
       label: 1º método contraceptivo
@@ -1374,7 +1417,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 52f021de88a24ff76075cbea8171064f8430de036ac18981ef4980504033719c
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -1382,12 +1425,13 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XVínculo previdenciário, VINCPREV, 1, CNV\VINCPREV.CNV; CNV/VINCPREV.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''1'' era ''Previdência social'', CNV
-            ''Autônomo''; ''2'' era ''Não'', CNV ''Desempregado'''
+            ''Autônomo''; ''2'' era ''Não'', CNV ''Desempregado''. Resolvido em 2026-09-26: o mapa anterior
+            não tinha fonte; vale o CNV.'
     - name: ind_vdrl
       type: string
       label: Exame VDRL (sífilis)
@@ -1400,7 +1444,7 @@ schema:
         claims:
         - target: /field/codes
           value_sha256: 36112cfe5d4d0c9bf13a3fa3d30b015b2579fdd97f064214ea37bcc42a49bf68
-          status: conflicting
+          status: verified_in_source
           checked_at: '2026-09-21'
           method: cnv-parse
           reviewer: scripts/metadados/gerar_decode_cnv.py
@@ -1408,13 +1452,14 @@ schema:
           - source_id: sih-tab-f05b32f32908
             pages: []
             locator: 'RD2008.DEF: XFez VDRL, IND_VDRL, 1, CNV\SIMNAO.CNV; CNV/SIMNAO.CNV'
-          note: Mapa do CNV; o mapa anterior está no issue cnv-difere-do-mapa-anterior.
+          note: Mapa do CNV. O mapa anterior, sem fonte, foi descartado em 2026-09-26; texto no issue cnv-difere-do-mapa-anterior.
         issues:
         - id: cnv-difere-do-mapa-anterior
-          status: open
+          status: resolved
           description: 'Mapa anterior sem fonte substituído pelo CNV: ''0'' era ''Não realizado'', CNV ''Não'';
             ''1'' era ''Reagente (positivo)'', CNV ''Sim''; ''2'' era ''Não reagente (negativo)'', CNV não
-            lista; ''9'' era ''Ignorado'', CNV não lista'
+            lista; ''9'' era ''Ignorado'', CNV não lista. Resolvido em 2026-09-26: o mapa anterior não tinha
+            fonte; vale o CNV.'
 
     # ========================================================================
     # Autorização e Auditoria
@@ -1598,7 +1643,7 @@ x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
 x-partitions: [ano, uf, mes]
-x-version: "2.6.0"
+x-version: "2.7.0"
 
 x-analytics:
   version: 1.2.0
