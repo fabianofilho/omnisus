@@ -11,8 +11,8 @@ o que registrar e onde cada informação fica.
   aquele `run_id`, porque dados e manifesto são gravados na mesma transação; com um
   `run_id` repetido essa conclusão não vale
   ([reprocessing and maintenance](../guides/reprocessing-and-maintenance.md#inspect-an-interrupted-run)).
-  Os notebooks geram um `run_id` novo e o gravam em `plano.json` antes do download
-  (`omnisus._notebooks.save_plan`).
+  `odb.load`, que os notebooks usam, gera um `run_id` novo a cada chamada; a citação
+  de `odb.cite` o nomeia.
 - **Use `policy="skip_same"`.** A política padrão é `append`, que acrescenta de novo um
   escopo já importado. `skip_same` compara primeiro a listagem do FTP (caminho,
   tamanho e horário do servidor de cada arquivo) e a versão do parser com a publicação
@@ -168,7 +168,7 @@ notebook da população consulta esse manifesto e não importa uma edição que 
 ## Como citar
 
 Use `odb.cite` no lake que você leu. O texto segue o modelo abaixo; os notebooks
-gravam o mesmo parágrafo em `procedencia.json` (`citacao`).
+gravam o mesmo parágrafo em `resultados/<base>/citacao.txt`, ao lado das tabelas.
 
 ```python
 with odb.LakeReader(alvo) as leitor:
@@ -192,8 +192,9 @@ Onde encontrar cada valor:
 - `<versão>`: `odb.__version__`.
 - `<snapshot_id>`: o snapshot em que você leu os dados.
 
-Nos notebooks, `procedencia.json` junta o plano (com o `run_id` e a versão), as
-publicações, o `snapshot_id` e as consultas (`omnisus._notebooks.record_provenance`).
+Nos notebooks, a citação e o próprio notebook bastam para refazer o resultado: o
+código diz o recorte e cada tabela, e a citação diz os arquivos, a versão e o
+`snapshot_id`.
 
 Para a população do IBGE, sugestão deste guia: troque o arquivo pelo `url`, o
 `source_sha256` pelo `sha256`, a data pela de `collected_at` e a execução pelo

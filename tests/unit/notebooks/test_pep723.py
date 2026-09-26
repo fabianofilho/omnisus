@@ -61,19 +61,6 @@ def test_every_notebook_pins_the_same_commit():
     assert len(set(revs.values())) == 1, revs
 
 
-def test_bases_notebooks_import_private_helpers_and_declare_the_download_cap():
-    for caminho in sorted(NOTEBOOKS.glob("*.py")):
-        if caminho.name.startswith("_") or caminho.stem == "linkage":
-            continue
-        texto = caminho.read_text(encoding="utf-8")
-        assert "from _comum import" not in texto, caminho.name
-        assert "from omnisus.notebooks import" not in texto, caminho.name
-        assert "from omnisus._notebooks import" in texto, caminho.name
-        if caminho.stem != "ibge_populacao":
-            assert "MAX_DOWNLOAD_BYTES = 25 * 1024 * 1024" in texto, caminho.name
-            assert "LIMITE_BYTES" not in texto, caminho.name
-
-
 def test_every_notebook_pins_marimo_like_the_notebooks_extra():
     """A sandbox install must get the marimo that CI checks the notebooks with."""
     pyproject = tomllib.loads((NOTEBOOKS.parent / "pyproject.toml").read_text(encoding="utf-8"))

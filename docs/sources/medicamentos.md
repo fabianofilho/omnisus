@@ -259,11 +259,8 @@ uv run --locked --extra notebooks marimo edit notebooks/medicamentos.py
 ```
 
 O notebook tem três partes: A, a APAC de Roraima, janeiro de 2024, nas seis etapas do
-guia (o que a APAC registra, descobrir, planejar e importar, conferir, analisar e
-guardar); B, uma página de estoque BNAFAR/Hórus guardada com procedência, sem escrita
-no lake; e C, o que não existe publicamente. As APAC vão para o lake de pesquisa
-compartilhado; cada execução guarda plano, resultado e procedência em
-`data/raw/execucoes/<run_id>/`, e `policy="skip_same"` impede duplicar um
-arquivo já publicado. O notebook usa uma thread para chamadas síncronas; interromper a
-célula não cancela a importação. Consulte o `run_id` antes de repetir trabalho
-interrompido.
+guia (o que a APAC registra, descobrir, baixar e ler, conferir, analisar, citar e
+guardar); B, uma página de estoque BNAFAR/Hórus guardada com procedência em
+`resultados/estoque/<sha256>/`, sem escrita no lake; e C, o que não existe
+publicamente. As APAC vão para o lake de pesquisa compartilhado por `odb.load`, cuja
+política padrão (`skip_same`) impede duplicar um arquivo já publicado.

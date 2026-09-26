@@ -87,54 +87,48 @@ e os municípios e o que ainda está em aberto.
 
 ## As seis etapas
 
-Todo notebook de `notebooks/` segue as mesmas etapas. Rede e escrita só
-correm com `EXECUTAR = True` na célula de parâmetros, ou com `-- --executar true`
-na exportação.
+Todo notebook de `notebooks/` segue as mesmas etapas, com as mesmas funções da
+biblioteca, `import omnisus as odb` e nada mais. Troque `BASE`, `UF`, `ANO` (e `MES`)
+na célula de parâmetros para outra base ou outro recorte. Rede e escrita só correm com
+`EXECUTAR = True`, ou com `-- --executar true` na exportação.
 
-**1 · O que a base registra.** Mostra os campos da base a partir do dicionário da
-biblioteca, sem rede.
+**1 · O que a base registra.** `odb.describe_dataset(base)` mostra os campos do
+dicionário da biblioteca, sem rede.
 
 **2 · Descobrir.** Pergunta ao FTP do DATASUS o que existe agora:
-`odb.available_releases(dataset, ufs=[...], refresh=True)` diz se cada ano está no
+`odb.available_releases(base, ufs=[...], refresh=True)` diz se cada ano está no
 diretório final ou no preliminar, e `odb.available(...)` devolve os escopos que podem
 ser importados. A população do IBGE não tem inventário: o notebook mostra as edições que
 a biblioteca aceita.
 
-**3 · Planejar e importar.** Gravar o plano cria `plano.json` com um `run_id` antes de
-qualquer download. A importação usa esse `run_id` e
-`odb.import_research`, que usa `policy="skip_same"`, para que repetir a etapa não
-duplique linhas. A população usa
-`odb.import_ibge_populacao`. Nos notebooks com download por FTP, esta etapa limita o
-arquivo comprimido a 25 MiB (`MAX_DOWNLOAD_BYTES` no próprio notebook); um arquivo
-maior (por exemplo outra UF) termina como `failed`, e pode ser importado subindo esse
-limite ou com a chamada direta `odb.import_dataset` no perfil da base ("Como usar"). A
-população do IBGE não baixa pelo FTP, então esse limite não se aplica a ela.
+**3 · Baixar e ler.** `dados = odb.load(base, years=[...], ufs=[...])` importa o
+recorte para o lake e devolve as linhas num DataFrame polars, com os códigos como o
+DATASUS publicou. A política padrão (`skip_same`) faz com que rodar de novo não baixe nem
+duplique nada. A população usa `odb.import_ibge_populacao`.
 
-**4 · Conferir.** Lê o manifesto com `LakeReader.publications(run_id=...)`, compara as
-linhas no lake com as linhas publicadas e anota o `snapshot_id` mais recente.
-`odb.outdated(dataset, lake=...)` é usado quando a base tem diretório preliminar (SIM,
-SINASC, SINAN); as demais bases do DATASUS são publicadas num único diretório, e o
-notebook não chama `outdated` para elas.
+**4 · Conferir.** `odb.check_columns(base, dados)` mostra, por coluna, vazios, códigos
+sem rótulo e datas fora do esperado. `odb.outdated(base, lake=...)` é usado quando a
+base tem diretório preliminar (SIM, SINASC, SINAN); as demais bases do DATASUS são
+publicadas num único diretório, e o notebook não chama `outdated` para elas.
 
-**5 · Analisar.** Roda as consultas SQL num leitor preso a esse snapshot,
-`LakeReader(alvo, snapshot_id=odb.latest_snapshot_id(...))`, para que o resultado
-não mude se outra importação acontecer depois.
+**5 · Analisar.** `odb.label(base, dados, columns=[...])` põe o rótulo do dicionário
+ao lado de cada código (`sexo` → `sexo_rotulo`), e a análise é polars sobre esse
+DataFrame (`group_by`, `agg`, `join`).
 
-**6 · Guardar.** Grava os resultados em CSV e um `procedencia.json` com o plano, as
-publicações, o `snapshot_id`, o parágrafo de `odb.cite`, as consultas e a versão da
-biblioteca. Veja [Reprodutibilidade](reprodutibilidade.md).
+**6 · Citar e guardar.** `odb.cite(lake, dataset=base)` nomeia o arquivo do servidor, o
+SHA-256, a versão da biblioteca e o snapshot do lake. O notebook grava as tabelas em CSV
+e a citação em `resultados/<base>/citacao.txt`. Veja
+[Reprodutibilidade](reprodutibilidade.md).
 
 ## O lake de pesquisa
 
-Os notebooks gravam no mesmo lake, `data/raw/omnisus.ducklake`, e cada execução
-ganha uma pasta própria em `data/raw/execucoes/<run_id>/`, com `plano.json`,
-`resultado.json`, os CSVs e `procedencia.json`
-(`omnisus.lake.catalog.data_dir` e `save_plan`). A variável de ambiente
-`OMNISUS_DATA_DIR` troca essa pasta.
+Os notebooks gravam no mesmo lake, `data/raw/omnisus.ducklake` (a variável de ambiente
+`OMNISUS_DATA_DIR` troca a pasta), e os resultados em `resultados/`, a partir da pasta
+onde o notebook roda.
 
 O lake é um só porque uma taxa precisa de duas bases: óbitos por 100 mil habitantes
-lê `sim_obitos` e `ibge_populacao` na mesma consulta
-(`notebooks/ibge_populacao.py`, consulta `obitos_por_100_mil`). Veja
+lê `sim_obitos` e `ibge_populacao`
+(`notebooks/ibge_populacao.py`, tabela `obitos_por_100_mil`). Veja
 [Indicadores](indicadores.md).
 
 ## Cuidados gerais

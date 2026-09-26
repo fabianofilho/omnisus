@@ -214,7 +214,6 @@ src/omnisus/
 | transforms/   - Polars helpers and Frictionless dictionary loader
 | data/         - YAML schemas and auxiliares-bootstrap.zip
 | cli/          - Typer entry point
-| _notebooks/   - private helpers for notebooks/
 | metadata.py   - offline metadata from the packaged dictionaries
 | products.py   - what the package can import
 | research.py   - citation and research imports

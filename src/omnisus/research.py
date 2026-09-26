@@ -234,7 +234,7 @@ def citation_from_publications(
     run_id: str | None = None,
     accessed: date | None = None,
 ) -> Citation:
-    """Format publication rows you already have (notebooks keep them in JSON).
+    """Format publication rows you already have, e.g. kept in a JSON file.
 
     Args:
         publications: Rows of ``Lake.publications()``, or IBGE manifest rows.

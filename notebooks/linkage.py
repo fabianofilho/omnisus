@@ -20,25 +20,12 @@ app = marimo.App(width="medium", app_title="Linkage entre as bases")
 
 @app.cell
 def _():
-    import duckdb
     import marimo as mo
     import polars as pl
 
     import omnisus as odb
-    from omnisus._notebooks import run_without_buttons
-    from omnisus.lake.catalog import resolve_target
-    from omnisus.transforms.dictionaries import decode_coverage, load_dicionario
 
-    return (
-        decode_coverage,
-        resolve_target,
-        duckdb,
-        load_dicionario,
-        mo,
-        odb,
-        pl,
-        run_without_buttons,
-    )
+    return mo, odb, pl
 
 
 @app.cell(hide_code=True)
@@ -77,8 +64,9 @@ def _(mo):
 
 
 @app.cell
-def _(resolve_target, mo, run_without_buttons):
-    # Parâmetros: edite e reexecute.
+def _(mo):
+    # Parâmetros: edite e reexecute. O lake é o dos outros notebooks: data/raw/
+    # (ou $OMNISUS_DATA_DIR).
     UF = "RR"
     ANO = 2022
     EXECUTAR = False
@@ -86,12 +74,8 @@ def _(resolve_target, mo, run_without_buttons):
     # de SP do relatório: {"sia_bpa_individualizado", "sih_servicos_profissionais",
     # "sia_apac_medicamentos"}.
     PULAR = set()
-
-    LAGO = resolve_target(
-        None
-    )  # data/raw/ (ou $OMNISUS_DATA_DIR), o mesmo lake dos outros notebooks
-    executar = EXECUTAR or run_without_buttons(mo.cli_args())
-    return ANO, LAGO, PULAR, UF, executar
+    executar = EXECUTAR or bool(mo.cli_args().get("executar"))
+    return ANO, PULAR, UF, executar
 
 
 @app.cell(hide_code=True)
@@ -114,7 +98,7 @@ def _(mo):
 
 
 @app.cell
-def _(ANO, LAGO, PULAR, UF, executar, mo, odb):
+def _(ANO, PULAR, UF, executar, mo, odb):
     mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
     SUBCONJUNTOS_SIM = [
         "sim_obitos_fetais",
@@ -163,7 +147,6 @@ def _(ANO, LAGO, PULAR, UF, executar, mo, odb):
             years=sorted({escopo.ano for escopo in escopos}),
             ufs=None if base in NACIONAIS else [UF],
             months=meses or None,
-            target=LAGO,
         )
 
     RD_SEGUINTE = "sih_aih_reduzida (ano seguinte)"
@@ -214,91 +197,24 @@ def _(mo):
     mo.md(r"""
     ## 2 · Coluna por coluna, com o decoder
 
-    O dicionário de cada base (`load_dicionario`) diz, para cada coluna, o rótulo
-    e a regra de decodificação:
-
-    - `x-decode`: tabela de códigos (`1` → `Masculino`);
-    - `data ddMMyyyy` / `data yyyyMMdd`: a data vem como texto nesse formato.
-
-    `verificar_colunas` monta uma linha por coluna com:
+    `odb.check_columns` confere cada coluna com o dicionário da base e devolve uma
+    linha por coluna:
 
     | campo | o que é |
     | --- | --- |
-    | `decoder` | a regra do dicionário, ou `fora do dicionário` |
-    | `% vazio` | nulo ou só espaços |
-    | `exemplo bruto` → `exemplo decodificado` | o primeiro valor preenchido, antes e depois de `odb.display_row` |
-    | `códigos sem rótulo` | valores que o `x-decode` não conhece (até cinco) e em quantas linhas aparecem |
-    | `% datas inválidas` | entre as preenchidas, as que não são uma data no formato declarado |
-    | `datas (mín. a máx.)` | a menor e a maior data: um ano impossível aparece aqui |
+    | `rule` | a regra do dicionário: mapa de códigos, data no formato declarado, `not in dictionary` ou nenhuma |
+    | `pct_empty` | nulo ou vazio |
+    | `example_code` → `example_label` | o primeiro valor preenchido e o seu rótulo |
+    | `unlabelled_codes` | valores que o mapa de códigos não conhece, e em quantas linhas aparecem (`unlabelled_rows`) |
+    | `pct_invalid_dates` | entre as preenchidas, as que não são uma data no formato declarado |
+    | `date_min`, `date_max` | a menor e a maior data: um ano impossível aparece aqui |
     """)
     return
 
 
 @app.cell
-def _(decode_coverage, duckdb, load_dicionario, odb, pl):
-    FORMATOS_DE_DATA = {"ddMMyyyy": "%d%m%Y", "yyyyMMdd": "%Y%m%d"}
-
-    def regra_do_decoder(campo):
-        if campo is None:
-            return "fora do dicionário"
-        if campo.get("type") == "date" and campo.get("x-format"):
-            return f"data {campo['x-format']}"
-        if campo.get("x-decode"):
-            return f"x-decode ({len(campo['x-decode'])} códigos)"
-        return "—"
-
-    def verificar_colunas(base, dados):
-        """Uma linha por coluna: o que o dicionário diz e o que os dados mostram."""
-        dicionario = load_dicionario(base)
-        # decode_coverage lista os valores sem chave exata no x-decode; o decoder
-        # ainda tenta sem espaços e como inteiro, então só conta o que ele não rotula.
-        sem_chave = decode_coverage(base, duckdb.from_arrow(dados.to_arrow()))
-        linhas = []
-        for coluna in dados.columns:
-            campo = dicionario.field_def(coluna)
-            valor = pl.col(coluna).cast(pl.String).str.strip_chars()
-            preenchidos = dados.filter(valor.is_not_null() & (valor != ""))
-            exemplo = preenchidos.row(0, named=True) if preenchidos.height else {}
-            sem_rotulo = [
-                u
-                for u in sem_chave
-                if u.field == coluna
-                and u.value.strip() != ""  # vazio já conta em "% vazio"
-                and dicionario.decode(coluna, u.value) is None
-            ]
-            datas_invalidas = faixa_de_datas = None
-            if campo and campo.get("type") == "date" and campo.get("x-format") in FORMATOS_DE_DATA:
-                datas = preenchidos.select(
-                    valor.str.strptime(pl.Date, FORMATOS_DE_DATA[campo["x-format"]], strict=False)
-                ).to_series()
-                datas_invalidas = round(100 * datas.null_count() / max(preenchidos.height, 1), 1)
-                if datas.drop_nulls().len():
-                    faixa_de_datas = f"{datas.min()} a {datas.max()}"
-            linhas.append(
-                {
-                    "coluna": coluna,
-                    "rótulo no dicionário": campo.get("label", "") if campo else "",
-                    "decoder": regra_do_decoder(campo),
-                    "% vazio": round(100 * (1 - preenchidos.height / dados.height), 1),
-                    "valores distintos": preenchidos[coluna].n_unique(),
-                    "exemplo bruto": str(exemplo.get(coluna, "")),
-                    "exemplo decodificado": (
-                        str(odb.display_row(base, exemplo)[coluna]) if exemplo else ""
-                    ),
-                    "códigos sem rótulo": ", ".join(u.value for u in sem_rotulo[:5]),
-                    "linhas sem rótulo": sum(u.rows for u in sem_rotulo),
-                    "% datas inválidas": datas_invalidas,
-                    "datas (mín. a máx.)": faixa_de_datas,
-                }
-            )
-        return pl.DataFrame(linhas)
-
-    return (verificar_colunas,)
-
-
-@app.cell
-def _(bases, verificar_colunas):
-    verificacoes = {base: verificar_colunas(base, dados) for base, dados in bases.items()}
+def _(bases, odb):
+    verificacoes = {base: odb.check_columns(base, dados) for base, dados in bases.items()}
     return (verificacoes,)
 
 
@@ -317,15 +233,13 @@ def _(pl, verificacoes):
             {
                 "base": base,
                 "colunas": tabela.height,
-                "com decoder": tabela.filter(
-                    ~pl.col("decoder").is_in(["—", "fora do dicionário"])
+                "com regra": tabela.filter(
+                    pl.col("rule").is_not_null() & (pl.col("rule") != "not in dictionary")
                 ).height,
-                "fora do dicionário": tabela.filter(
-                    pl.col("decoder") == "fora do dicionário"
-                ).height,
-                "sempre vazias": tabela.filter(pl.col("% vazio") == 100).height,
-                "com códigos sem rótulo": tabela.filter(pl.col("linhas sem rótulo") > 0).height,
-                "com datas inválidas": tabela.filter(pl.col("% datas inválidas") > 0).height,
+                "fora do dicionário": tabela.filter(pl.col("rule") == "not in dictionary").height,
+                "sempre vazias": tabela.filter(pl.col("pct_empty") == 100).height,
+                "com códigos sem rótulo": tabela.filter(pl.col("unlabelled_rows") > 0).height,
+                "com datas inválidas": tabela.filter(pl.col("pct_invalid_dates") > 0).height,
             }
             for base, tabela in verificacoes.items()
         ]
@@ -342,14 +256,14 @@ def _(mo):
 
 
 @app.cell
-def _(bases, load_dicionario, pl):
+def _(bases, odb, pl):
     pl.DataFrame(
         {
             "base": list(bases),
             "declaradas e ausentes no arquivo": [
                 ", ".join(
                     campo["name"]
-                    for campo in load_dicionario(base).fields
+                    for campo in odb.describe_dataset(base)["schema"]["fields"]
                     if campo["name"] not in dados.columns
                 )
                 for base, dados in bases.items()
@@ -503,12 +417,12 @@ def _(APAC, SINAN, SUBCONJUNTOS_SIM, pl, verificacoes):
             {
                 "variável": variavel,
                 "base": base,
-                "% preenchido": 100 - linha["% vazio"].item(),
+                "% preenchido": 100 - linha["pct_empty"].item(),
             }
             for variavel, colunas in CANDIDATAS.items()
             for base, coluna in colunas.items()
             if base in verificacoes
-            for linha in [verificacoes[base].filter(pl.col("coluna") == coluna)]
+            for linha in [verificacoes[base].filter(pl.col("column") == coluna)]
             if linha.height
         ]
     )
@@ -586,22 +500,20 @@ def _(mo):
 
 
 @app.cell
-def _(load_dicionario, pl):
+def _(bases, odb, pl):
     def rotulo(base, coluna):
-        """Troca o código pelo rótulo do x-decode do dicionário (o mesmo mapa do decoder)."""
-        mapa = load_dicionario(base).field_def(coluna)["x-decode"]
-        mapa = {str(codigo): str(texto) for codigo, texto in mapa.items()}
-        valor = pl.col(coluna).cast(pl.String).str.strip_chars()
-        return valor.replace_strict(mapa, default=None).alias(coluna)
+        """Troca o código pelo rótulo que `odb.label` dá a ele."""
+        codigos = bases[base].select(pl.col(coluna).unique())
+        mapa = dict(odb.label(base, codigos).iter_rows())
+        return pl.col(coluna).replace_strict(mapa, default=None, return_dtype=pl.String)
 
     def sexo(base, coluna):
         letra = rotulo(base, coluna).str.slice(0, 1)
         return pl.when(letra.is_in(["M", "F"])).then(letra).alias("sexo")
 
     def tem_rotulos(base, coluna):
-        """O dicionário da base tem `x-decode` para a coluna?"""
-        campo = load_dicionario(base).field_def(coluna)
-        return bool(campo and campo.get("x-decode"))
+        """O dicionário da base tem rótulos para a coluna?"""
+        return f"{coluna}_rotulo" in odb.label(base, bases[base].head(0)).columns
 
     return rotulo, sexo, tem_rotulos
 
@@ -811,7 +723,6 @@ def _(
     SINAN,
     bases,
     codigo_uf,
-    load_dicionario,
     numero,
     pl,
     rotulo,
@@ -859,8 +770,6 @@ def _(
     }
 
     def casos_do_sinan(base):
-        mapa = load_dicionario(base).field_def(ENCERRAMENTO[base])["x-decode"]
-        codigos_de_obito = [c for c, t in mapa.items() if str(t).lower().startswith("óbito")]
         dados = bases[base]
         return (
             dados.filter(texto("id_mn_resi").str.starts_with(codigo_uf))
@@ -872,7 +781,11 @@ def _(
                 texto("id_mn_resi").alias("mun"),
                 pl.col("dt_notific").alias("notificacao"),
                 rotulo(base, ENCERRAMENTO[base]).alias("encerramento"),
-                texto(ENCERRAMENTO[base]).is_in(codigos_de_obito).alias("obito"),
+                rotulo(base, ENCERRAMENTO[base])
+                .str.to_lowercase()
+                .str.starts_with("óbito")
+                .fill_null(False)
+                .alias("obito"),
                 (
                     pl.col("dt_obito") if "dt_obito" in dados.columns else pl.lit(None, pl.Date)
                 ).alias("data_evento"),
@@ -1187,11 +1100,11 @@ def _(mo):
 
 
 @app.cell
-def _(LAGO, executar, mo, odb, pl):
+def _(executar, mo, odb, pl):
     mo.stop(not executar)
-    with odb.Lake.local(LAGO) as lake:
+    with odb.Lake.local() as lake:
         lake.bootstrap_auxiliares()
-    with odb.LakeReader(LAGO) as leitor:
+    with odb.LakeReader() as leitor:
         cid10 = (
             leitor.connect()
             .sql(f"SELECT codigo, descricao, capitulo FROM {leitor.alias}.aux_cid10")

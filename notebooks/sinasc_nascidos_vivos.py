@@ -20,41 +20,14 @@ app = marimo.App(width="medium", app_title="SINASC · nascidos vivos")
 
 @app.cell
 def _():
-    import asyncio
-    from dataclasses import asdict
+    from pathlib import Path
 
     import marimo as mo
     import polars as pl
 
     import omnisus as odb
-    from omnisus._notebooks import (
-        reconcile,
-        record_import,
-        record_provenance,
-        run_without_buttons,
-        save_plan,
-    )
-    from omnisus.lake.catalog import resolve_target
-    from omnisus.transforms.dictionaries import load_dicionario
 
-    dataset = "sinasc_nascidos_vivos"
-    MAX_DOWNLOAD_BYTES = 25 * 1024 * 1024
-    return (
-        MAX_DOWNLOAD_BYTES,
-        asdict,
-        asyncio,
-        dataset,
-        resolve_target,
-        load_dicionario,
-        mo,
-        odb,
-        pl,
-        reconcile,
-        record_import,
-        record_provenance,
-        run_without_buttons,
-        save_plan,
-    )
+    return Path, mo, odb, pl
 
 
 @app.cell(hide_code=True)
@@ -70,9 +43,8 @@ def _(mo):
     recorte pequeno: **Roraima, 2022**.
 
     **Abrir este notebook não baixa nem grava nada.** Edite os parâmetros na célula
-    seguinte e ponha `EXECUTAR = True` (ou `-- --executar true`) para rede e escrita.
-
-    Os dados vão para o lake de pesquisa compartilhado (`data/raw/`, ou `$OMNISUS_DATA_DIR`).
+    seguinte e ponha `EXECUTAR = True` (ou exporte com `-- --executar true`) para
+    consultar a rede e gravar no lake (`data/raw/`, ou `$OMNISUS_DATA_DIR`).
 
     Antes de interpretar números, leia o
     [perfil do SINASC](https://raphaelfh.github.io/omnisus/sources/sinasc_nascidos_vivos/).
@@ -81,14 +53,14 @@ def _(mo):
 
 
 @app.cell
-def _(resolve_target, mo, run_without_buttons):
+def _(mo):
+    # Parâmetros: edite e reexecute.
+    BASE = "sinasc_nascidos_vivos"
     UF = "RR"
     ANO = 2022
     EXECUTAR = False
-    target = resolve_target(None)
-    executar = EXECUTAR or run_without_buttons(mo.cli_args())
-    (UF, ANO, target, executar)
-    return ANO, UF, executar, target
+    executar = EXECUTAR or bool(mo.cli_args().get("executar"))
+    return ANO, BASE, UF, executar
 
 
 @app.cell(hide_code=True)
@@ -96,21 +68,19 @@ def _(mo):
     mo.md(r"""
     ## 1 · O que a base registra
 
-    Campos do dicionário que a biblioteca aplica na importação. O significado dos
-    códigos está no perfil e no documento oficial citado nele.
+    Campos do dicionário da biblioteca (`odb.describe_dataset`), sem rede.
     """)
     return
 
 
 @app.cell
-def _(dataset, load_dicionario, pl):
-    campos = pl.DataFrame(
+def _(BASE, odb, pl):
+    pl.DataFrame(
         [
             {"campo": f["name"], "tipo": f["type"], "rótulo": f.get("label", "")}
-            for f in load_dicionario(dataset).fields
+            for f in odb.describe_dataset(BASE)["schema"]["fields"]
         ]
     )
-    campos
     return
 
 
@@ -119,153 +89,64 @@ def _(mo):
     mo.md(r"""
     ## 2 · Descobrir
 
-    Lista agora o FTP do DATASUS (`refresh=True`). A coluna `diretorio` diz se cada
-    ano está no diretório final ou no preliminar.
+    `odb.available_releases` lista agora o FTP do DATASUS. A coluna `diretorio` diz
+    se cada ano está no diretório final ou no preliminar.
     """)
     return
 
 
 @app.cell
-async def _(asyncio, dataset, executar, mo, odb, pl):
-    mo.stop(
-        not executar,
-        mo.md(
-            "Para consultar o DATASUS, defina `EXECUTAR = True` na célula de parâmetros "
-            "ou rode com `-- --executar true`."
-        ),
+def _(BASE, UF, executar, mo, odb, pl):
+    mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
+    publicados = odb.available_releases(BASE, ufs=[UF], refresh=True)
+    pl.DataFrame([{"uf": e.uf, "ano": e.ano, "diretorio": d} for e, d in publicados.items()]).sort(
+        "ano", descending=True
     )
-    _publicados = await asyncio.to_thread(
-        odb.available_releases, dataset, ufs=["RR"], refresh=True
-    )
-    publicados = pl.DataFrame(
-        [
-            {"uf": e.uf, "ano": e.ano, "diretorio": r}
-            for e, r in sorted(_publicados.items(), key=lambda item: -item[0].ano)
-        ]
-    )
-    publicados
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## 3 · Planejar e importar
+    ## 3 · Baixar e ler
 
-    Confira o ano na etapa 2. Gravar o plano cria `plano.json` com um `run_id` antes
-    de qualquer download. O notebook limita cada download comprimido a 25 MiB
-    (`MAX_DOWNLOAD_BYTES` no próprio notebook).
+    `odb.load` importa o recorte para o lake e devolve as linhas, com os códigos como
+    o DATASUS publicou. Rodar de novo não baixa nem duplica nada.
     """)
     return
 
 
 @app.cell
-def _(
-    ANO,
-    MAX_DOWNLOAD_BYTES,
-    UF,
-    asdict,
-    dataset,
-    executar,
-    mo,
-    odb,
-    save_plan,
-    target,
-):
-    mo.stop(
-        not executar,
-        mo.md("Defina `EXECUTAR = True` para gravar o plano e importar."),
-    )
-    escopos = odb.scopes_for(dataset, years=[int(ANO)], ufs=[UF])
-    plano, pasta = save_plan(
-        target,
-        dataset=dataset,
-        scopes=[asdict(e) for e in escopos],
-        policy="skip_same",
-        max_download_bytes=MAX_DOWNLOAD_BYTES,
-    )
-    plano
-    return escopos, pasta, plano
-
-
-@app.cell
-async def _(
-    MAX_DOWNLOAD_BYTES,
-    asyncio,
-    escopos,
-    executar,
-    mo,
-    odb,
-    pasta,
-    pl,
-    plano,
-    record_import,
-):
-    mo.stop(not executar, mo.md("A importação segue `EXECUTAR` na célula de parâmetros."))
-    try:
-        relatorio = await asyncio.to_thread(
-            odb.import_research,
-            plano["dataset"],
-            scopes=escopos,
-            target=plano["target"],
-            run_id=plano["run_id"],
-            concurrency=1,
-            max_payload_bytes=MAX_DOWNLOAD_BYTES,
-            max_inflight_bytes=MAX_DOWNLOAD_BYTES,
-        )
-        _nao_resolvidos = ()
-    except odb.ImportAbortedError as _erro:
-        relatorio, _nao_resolvidos = _erro.report, _erro.unresolved
-    desfechos = pl.DataFrame(record_import(pasta, relatorio, _nao_resolvidos))
-    if executar and (relatorio.failed or _nao_resolvidos):
-        raise RuntimeError(f"Importação incompleta; veja {pasta / 'resultado.json'}")
-    desfechos
-    return (relatorio,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    `skipped` com *same source and parser version already published* quer dizer que
-    o mesmo arquivo já estava no lake: nada foi duplicado. Um arquivo que o DATASUS
-    não publica também aparece como `skipped`.
-    """)
-    return
+def _(ANO, BASE, UF, executar, mo, odb):
+    mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
+    dados = odb.load(BASE, years=[ANO], ufs=[UF])
+    dados
+    return (dados,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ## 4 · Conferir
+
+    `odb.check_columns` mostra, por coluna, vazios, códigos sem rótulo e datas fora
+    do esperado. `odb.outdated` lista os escopos que o DATASUS republicou ou moveu do
+    preliminar para o final desde a importação.
     """)
     return
 
 
 @app.cell
-def _(dataset, escopos, mo, odb, plano, reconcile, relatorio):
-    with odb.LakeReader(plano["target"]) as _leitor:
-        mo.stop(
-            dataset not in _leitor.tables(),
-            mo.md("Nenhuma tabela publicada; veja os desfechos acima."),
-        )
-        desta_execucao = _leitor.publications(run_id=plano["run_id"])
-        conferencia, publicacoes = reconcile(_leitor, dataset, escopos)
-        mo.stop(
-            not publicacoes,
-            mo.md(
-                "Nenhuma publicação ativa para os escopos deste plano; veja os desfechos acima."
-            ),
-        )
-        snapshot_id = odb.latest_snapshot_id(_leitor)
-        desatualizados = odb.outdated(dataset, lake=_leitor)
-    {
-        "linhas_novas": relatorio.rows,
-        "publications": desta_execucao,
-        "lake_vs_publicado": conferencia,
-        "desatualizados": [str(e) for e in desatualizados],
-        "snapshot_id": snapshot_id,
-    }
-    return publicacoes, snapshot_id
+def _(BASE, dados, mo, odb):
+    with odb.LakeReader() as _lake:
+        _republicados = odb.outdated(BASE, lake=_lake)
+    mo.vstack(
+        [
+            mo.md(f"Republicados desde a importação: {_republicados or 'nenhum'}"),
+            odb.check_columns(BASE, dados),
+        ]
+    )
+    return
 
 
 @app.cell(hide_code=True)
@@ -273,81 +154,59 @@ def _(mo):
     mo.md(r"""
     ## 5 · Analisar
 
-    `com_peso_numerico` mostra quantos registros têm peso utilizável antes de
-    qualquer proporção. Os códigos aparecem como publicados; o perfil explica cada um.
+    `odb.label` põe o rótulo do dicionário ao lado de cada código. `com_peso_numerico`
+    mostra quantos registros têm peso utilizável antes de qualquer proporção.
     """)
     return
 
 
 @app.cell
-def _(escopos, odb, plano, snapshot_id):
-    _parametros = [escopos[0].uf, escopos[0].ano]
-    consultas = {
-        "nascidos_por_municipio_de_residencia": {
-            "sql": """
-                SELECT trim(CAST(codmunres AS VARCHAR)) AS municipio_residencia,
-                       count(*) AS nascidos_vivos
-                FROM lake.sinasc_nascidos_vivos WHERE uf = ? AND ano = ?
-                GROUP BY ALL ORDER BY nascidos_vivos DESC
-            """,
-            "parameters": _parametros,
-        },
-        "peso_ao_nascer": {
-            "sql": """
-                SELECT count(*) AS nascidos_vivos,
-                       count(TRY_CAST(peso AS INTEGER)) AS com_peso_numerico,
-                       count(*) FILTER (WHERE TRY_CAST(peso AS INTEGER) < 2500)
-                           AS peso_abaixo_de_2500_g
-                FROM lake.sinasc_nascidos_vivos WHERE uf = ? AND ano = ?
-            """,
-            "parameters": _parametros,
-        },
-        "consultas_pre_natal": {
-            "sql": """
-                SELECT trim(CAST(consultas AS VARCHAR)) AS consultas_codigo,
-                       count(*) AS nascidos_vivos
-                FROM lake.sinasc_nascidos_vivos WHERE uf = ? AND ano = ?
-                GROUP BY ALL ORDER BY consultas_codigo
-            """,
-            "parameters": _parametros,
-        },
-        "tipo_de_parto": {
-            "sql": """
-                SELECT trim(CAST(parto AS VARCHAR)) AS parto_codigo, count(*) AS nascidos_vivos
-                FROM lake.sinasc_nascidos_vivos WHERE uf = ? AND ano = ?
-                GROUP BY ALL ORDER BY parto_codigo
-            """,
-            "parameters": _parametros,
-        },
+def _(BASE, dados, odb, pl):
+    nascidos = odb.label(BASE, dados, columns=["consultas", "parto"])
+    _peso = pl.col("peso").cast(pl.Int32, strict=False)
+    tabelas = {
+        "nascidos_por_municipio_de_residencia": nascidos.group_by(municipio_residencia="codmunres")
+        .len("nascidos_vivos")
+        .sort("nascidos_vivos", descending=True),
+        "peso_ao_nascer": nascidos.select(
+            nascidos_vivos=pl.len(),
+            com_peso_numerico=_peso.count(),
+            peso_abaixo_de_2500_g=(_peso < 2500).sum(),
+        ),
+        "consultas_pre_natal": nascidos.group_by("consultas", "consultas_rotulo")
+        .len("nascidos_vivos")
+        .sort("consultas"),
+        "tipo_de_parto": nascidos.group_by("parto", "parto_rotulo")
+        .len("nascidos_vivos")
+        .sort("parto"),
     }
-    with odb.LakeReader(plano["target"], snapshot_id=snapshot_id) as _leitor:
-        resultados = {
-            nome: _leitor.connect().execute(consulta["sql"], consulta["parameters"]).pl()
-            for nome, consulta in consultas.items()
-        }
-    resultados
-    return consultas, resultados
+    tabelas
+    return (tabelas,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## 6 · Guardar
+    ## 6 · Citar e guardar
 
-    Resultados e `procedencia.json` na pasta da execução. Veja
+    `odb.cite` nomeia o arquivo do servidor, o SHA-256 e o snapshot do lake de cada
+    publicação da base. As tabelas e a citação vão para
+    `resultados/sinasc_nascidos_vivos/`. Veja
     [Reprodutibilidade](https://raphaelfh.github.io/omnisus/pesquisa/reprodutibilidade/).
     """)
     return
 
 
 @app.cell
-def _(consultas, pasta, plano, publicacoes, record_provenance, resultados, snapshot_id):
-    record_provenance(
-        pasta, plan=plano, publications=publicacoes, snapshot_id=snapshot_id, queries=consultas
-    )
-    for _nome, _tabela in resultados.items():
+def _(BASE, Path, odb, tabelas):
+    with odb.LakeReader() as _lake:
+        citacao = odb.cite(_lake, dataset=BASE)
+    pasta = Path("resultados") / BASE
+    pasta.mkdir(parents=True, exist_ok=True)
+    for _nome, _tabela in tabelas.items():
         _tabela.write_csv(pasta / f"{_nome}.csv")
-    str(pasta)
+    (pasta / "citacao.txt").write_text(citacao.text, encoding="utf-8")
+    print(citacao.text)
     return
 
 

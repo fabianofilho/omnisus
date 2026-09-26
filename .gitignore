@@ -27,6 +27,9 @@ native/**/fuzz/corpus/
 *.duckdb
 /data/
 
+# Notebook results (tables and citations)
+/resultados/
+
 # Fixtures cached
 tests/.cache/
 
