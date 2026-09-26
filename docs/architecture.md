@@ -105,8 +105,11 @@ Parquet replacement remain in Python. Rust owns its input buffer and each Arrow
 batch owns its exported data; the initial DBF copy is included in resource
 measurements. This does not make DBC decompression incremental.
 
-`dbc-staging-v1:<dictionary hash>` identifies output semantics rather than the
-execution language. Backend and native package version are logged separately.
+`dbc-staging-v2:<hash>` identifies output semantics rather than the execution
+language. The hash covers only what the import reads from the dictionary, its
+`encoding` and `x-identity`; labels, code maps and claims are read at query time, so
+editing them keeps `skip_same` skipping. Backend and native package version are
+logged separately.
 Changing between equivalent backends therefore preserves `skip_same`; a change
 in decoding semantics requires a new parser contract version.
 

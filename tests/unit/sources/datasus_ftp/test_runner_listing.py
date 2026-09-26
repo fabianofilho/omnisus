@@ -133,6 +133,72 @@ def test_a_new_dictionary_downloads_even_when_the_listing_is_unchanged(
     assert len(fetched) == 1
 
 
+def _edited_dictionary(tmp_path: Path, dataset: str, edit) -> Path:
+    """``dataset``'s packaged YAML, parsed, changed by ``edit`` and written to ``tmp_path``."""
+    from importlib.resources import files
+
+    import yaml
+
+    raw = yaml.safe_load(
+        (files("omnisus.data.dicionarios") / f"{dataset}.yaml").read_text("utf-8")
+    )
+    edit(raw)
+    path = tmp_path / f"{dataset}.yaml"
+    path.write_text(yaml.safe_dump(raw, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    return path
+
+
+def _relabel(raw: dict) -> None:
+    """An editorial change: a label, a code map and a claim note, none read by the import."""
+    field = raw["schema"]["fields"][0]
+    field["label"] = field.get("label", "") + " (revisto)"
+    field["x-decode"] = {"1": "Um"}
+    field["x-metadata"] = {"claims": [{"target": "/field/codes", "note": "Conferido de novo."}]}
+
+
+def test_an_editorial_dictionary_change_keeps_the_scope_unchanged(monkeypatch, tmp_path) -> None:
+    """Labels, code maps and claims are read when rows are queried, never when they are
+    imported, so a lake imported under the old dictionary needs no replace (issue #13)."""
+    from dataclasses import replace
+
+    from omnisus.sources.datasus_ftp.datasets import REGISTRY
+
+    scopes = [ScopeKey("RR", 2023)]
+    fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: SIM_RR})
+    odb.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    edited = replace(
+        REGISTRY["sim_obitos"], dictionary=_edited_dictionary(tmp_path, "sim_obitos", _relabel)
+    )
+    fetched = fake_datasus.serve(monkeypatch, edited, {scopes[0]: SIM_RR})
+    again = odb.import_dataset(edited, scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    assert (again.outcomes[0].status, again.outcomes[0].code) == ("skipped", "unchanged")
+    assert fetched == []
+
+
+@pytest.mark.parametrize(
+    ("dataset", "edit", "same"),
+    [
+        ("sinan_hanseniase", _relabel, True),
+        ("sinan_hanseniase", lambda raw: raw.update(encoding="cp1252"), False),
+        ("sinan_hanseniase", lambda raw: raw["x-identity"].update(code="A30"), False),
+    ],
+    ids=["editorial", "encoding", "x-identity"],
+)
+def test_the_parser_version_follows_only_what_the_import_reads(
+    tmp_path, dataset, edit, same
+) -> None:
+    """The import reads the dictionary's ``encoding`` (to decode text) and ``x-identity``
+    (to accept or reject the file); nothing else in the YAML changes the stored rows."""
+    from dataclasses import replace
+
+    from omnisus.sources.datasus_ftp._runner import parser_version
+    from omnisus.sources.datasus_ftp.datasets import REGISTRY
+
+    packaged = REGISTRY[dataset]
+    edited = replace(packaged, dictionary=_edited_dictionary(tmp_path, dataset, edit))
+    assert (parser_version(edited) == parser_version(packaged)) is same
+
+
 def test_a_split_month_imports_through_the_runner(monkeypatch, tmp_path) -> None:
     scope = ScopeKey("MG", 2024, 12)
     fetched = fake_datasus.serve(monkeypatch, "sia_bpa_individualizado", {scope: BI_PARTS})
