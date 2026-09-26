@@ -4,6 +4,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # The action's tag is the Rust version, which must match
+      # native/omnisus-dbf/rust-toolchain.toml, Cargo.toml rust-version and the
+      # maturin rust-toolchain in native.yml. Bump all four together, by hand.
+      - dependency-name: dtolnay/rust-toolchain
   - package-ecosystem: uv
     directory: /
     schedule:
