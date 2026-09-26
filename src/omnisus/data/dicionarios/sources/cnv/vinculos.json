@@ -470,6 +470,11 @@
       "membro": "CNV/SIMNAO.CNV",
       "sha256": "5342ebacf07638a3098cf4155448fd1d7b0408e65eb1854caa7f5653e7d9cd39"
     },
+    "sih/CNV/TP_DIAGSEC.CNV": {
+      "fonte": "sih-tab-f05b32f32908",
+      "membro": "CNV/TP_DIAGSEC.CNV",
+      "sha256": "67754125d45406b3d90e57700c5abb299b0a5009962cd4d4a9ce5f5135198278"
+    },
     "sih/CNV/TP_VAL.CNV": {
       "fonte": "sih-tab-f05b32f32908",
       "membro": "CNV/TP_VAL.CNV",
@@ -848,6 +853,15 @@
         "raca_cor": "sih/CNV/RACACOR.CNV",
         "regct": "sih/CNV/REGCT.cnv",
         "sexo": "sih/CNV/SEXO.CNV",
+        "tpdisec1": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec2": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec3": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec4": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec5": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec6": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec7": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec8": "sih/CNV/TP_DIAGSEC.CNV",
+        "tpdisec9": "sih/CNV/TP_DIAGSEC.CNV",
         "vincprev": "sih/CNV/VINCPREV.CNV"
       },
       "sem_cnv": {

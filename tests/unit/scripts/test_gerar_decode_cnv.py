@@ -148,7 +148,8 @@ def test_rd_cnv_maps_are_verified_and_the_hand_maps_they_replaced_resolved():
     rd = vinculos["datasets"]["sih_aih_reduzida"]["campos"]
     rj = vinculos["datasets"]["sih_aih_rejeitada"]["campos"]
     shared = {f for f in rd if rj.get(f) == rd[f]}
-    assert set(rd) - shared == {"marca_uci"}
+    # RJ has no tpdisec fields (RJ2008.DEF binds none to TP_DIAGSEC.CNV).
+    assert set(rd) - shared == {"marca_uci", *(f"tpdisec{n}" for n in range(1, 10))}
     for name in rd:
         field = load_dicionario("sih_aih_reduzida").field_def(name)
         (claim,) = [c for c in field["x-metadata"]["claims"] if c["target"] == "/field/codes"]

@@ -1590,60 +1590,258 @@ schema:
     - name: tpdisec1
       type: string
       label: Tipo de diagnóstico secundário 1
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 1, TPDISEC1, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC1 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC1 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.092 linhas com ''0'', todas com diagsec1 vazio; a coincidência não é fonte.'
     - name: diagsec2
       type: string
       label: Diagnóstico secundário 2
     - name: tpdisec2
       type: string
       label: Tipo de diagnóstico secundário 2
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 2, TPDISEC2, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC2 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC2 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.699 linhas com ''0'', todas com diagsec2 vazio; a coincidência não é fonte.'
     - name: diagsec3
       type: string
       label: Diagnóstico secundário 3
     - name: tpdisec3
       type: string
       label: Tipo de diagnóstico secundário 3
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 3, TPDISEC3, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC3 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC3 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.714 linhas com ''0'', todas com diagsec3 vazio; a coincidência não é fonte.'
     - name: diagsec4
       type: string
       label: Diagnóstico secundário 4
     - name: tpdisec4
       type: string
       label: Tipo de diagnóstico secundário 4
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 4, TPDISEC4, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC4 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC4 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.714 linhas com ''0'', todas com diagsec4 vazio; a coincidência não é fonte.'
     - name: diagsec5
       type: string
       label: Diagnóstico secundário 5
     - name: tpdisec5
       type: string
       label: Tipo de diagnóstico secundário 5
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 5, TPDISEC5, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC5 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC5 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.714 linhas com ''0'', todas com diagsec5 vazio; a coincidência não é fonte.'
     - name: diagsec6
       type: string
       label: Diagnóstico secundário 6
     - name: tpdisec6
       type: string
       label: Tipo de diagnóstico secundário 6
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 6, TPDISEC6, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC6 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC6 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.714 linhas com ''0'', todas com diagsec6 vazio; a coincidência não é fonte.'
     - name: diagsec7
       type: string
       label: Diagnóstico secundário 7
     - name: tpdisec7
       type: string
       label: Tipo de diagnóstico secundário 7
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 7, TPDISEC7, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC7 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC7 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.714 linhas com ''0'', todas com diagsec7 vazio; a coincidência não é fonte.'
     - name: diagsec8
       type: string
       label: Diagnóstico secundário 8
     - name: tpdisec8
       type: string
       label: Tipo de diagnóstico secundário 8
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 8, TPDISEC8, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC8 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC8 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.714 linhas com ''0'', todas com diagsec8 vazio; a coincidência não é fonte.'
     - name: diagsec9
       type: string
       label: Diagnóstico secundário 9
     - name: tpdisec9
       type: string
       label: Tipo de diagnóstico secundário 9
+      x-decode:
+        '1': Preexistente
+        '2': Adquirido
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 4f9ca63d8bb033130322dd2c252d0ca1dd73ae6f740becbfa1370ebc2edd2594
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: LClassificação.CID Sec 9, TPDISEC9, 1, CNV\TP_DIAGSEC.CNV; CNV/TP_DIAGSEC.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: tpdisec-0-sem-fonte
+          status: open
+          description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC9 no RD2008.DEF,
+            lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC9 sem códigos (p. 4). RR 2024-01 (RDRR2401):
+            3.714 linhas com ''0'', todas com diagsec9 vazio; a coincidência não é fonte.'
 
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
 x-partitions: [ano, uf, mes]
-x-version: "2.7.0"
+x-version: "2.8.0"
 
 x-analytics:
   version: 1.2.0

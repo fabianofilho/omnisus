@@ -33,8 +33,14 @@ REMAINING = {
         ("tp_droga", "AO", 907),
         ("tp_droga", "CO", 2),
     ],
-    # homonimo 2 is on no source page (issue homonimo-sem-fonte).
-    ("sih_aih_reduzida", "sih_rr_2024_01_mini"): [("homonimo", "2", 39)],
+    # homonimo 2 is on no source page (issue homonimo-sem-fonte); tpdisec 0 is not in
+    # TP_DIAGSEC.CNV, which lists only 1 and 2 (issue tpdisec-0-sem-fonte).
+    ("sih_aih_reduzida", "sih_rr_2024_01_mini"): [
+        ("homonimo", "2", 39),
+        ("tpdisec1", "0", 3092),
+        ("tpdisec2", "0", 3699),
+        *[(f"tpdisec{n}", "0", 3714) for n in range(3, 10)],
+    ],
     ("sim_obitos", "sim_rr_2023_mini"): [
         ("esc2010", "", 438),
         ("escmae2010", "", 3027),
@@ -283,6 +289,9 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
         ("sia_apac_fistula_arteriovenosa", "sia_acf_rr_2024_01_mini", "ap_coidade", {"4": "Anos"}),
         # RD2008.DEF lines 275-277 bind REGCT to REGCT.CNV, as RJ2008.DEF lines 277-279 do.
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "regct", {"0000": "SEM CONTRATO"}),
+        # RD2008.DEF lines 407-433 bind TPDISEC1-9 to TP_DIAGSEC.CNV.
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", {"1": "Preexistente"}),
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec2", {"1": "Preexistente"}),
         # RJ2008.DEF binds SEXO to RD's SEXO.CNV.
         (
             "sih_aih_rejeitada",
@@ -314,6 +323,8 @@ def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field
     ("dataset", "fixture", "field", "issue", "codes"),
     [
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "homonimo", "homonimo-sem-fonte", {"2"}),
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", "tpdisec-0-sem-fonte", {"0"}),
+        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec9", "tpdisec-0-sem-fonte", {"0"}),
         (
             "sinasc_nascidos_vivos",
             "sinasc_rr_2022_mini",
