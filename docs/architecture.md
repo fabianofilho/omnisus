@@ -206,7 +206,7 @@ are declared in `pyproject.toml`.
 
 ```text
 src/omnisus/
-| __init__.py   - the public API (odb.*)
+| __init__.py   - the public API (sus.*)
 | lake/         - catalog targets, connections, managed transactions, writes
 | sources/      - per-family fetch and parse
 | | datasus_ftp/ - registry, inventory, bounded import runner

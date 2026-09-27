@@ -107,7 +107,7 @@ Na validação de 2026-09-13, com o censo 2022 e o SIM de Roraima 2022
 
 O documento do SIM declara `codmunres` com 7 caracteres (Estrutura do SIM 2025, p. 3),
 mas os 3246 registros tinham 6. Por isso a junção compara os 6 primeiros dígitos, com
-`odb.municipality_join_key` / `odb.municipality_join_key_sql` — a importação não
+`sus.municipality_join_key` / `sus.municipality_join_key_sql` — a importação não
 ajusta o comprimento dos códigos
 ([perfil do SIM](../sources/sim_obitos.md#datas-e-geografia)); confira os seus dados,
 ano a ano, antes de supor o mesmo formato.
@@ -119,10 +119,10 @@ A consulta `obitos_por_100_mil` do notebook da população
 o ano da população e o código IBGE da UF (`'14'` para Roraima):
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-mun_obito = odb.municipality_join_key_sql("codmunres")
-mun_pop = odb.municipality_join_key_sql("codigo_ibge")
+mun_obito = sus.municipality_join_key_sql("codmunres")
+mun_pop = sus.municipality_join_key_sql("codigo_ibge")
 sql = f"""
 WITH obitos AS (
     SELECT {mun_obito} AS municipio,
@@ -141,18 +141,18 @@ ORDER BY municipio
 
 `municipality_join_key_sql("codmunres")` gera
 `left(trim(CAST("codmunres" AS VARCHAR)), 6)`. Em Python,
-`odb.municipality_join_key("1400100")` devolve `"140010"`. Não complete 6
+`sus.municipality_join_key("1400100")` devolve `"140010"`. Não complete 6
 dígitos para 7: isso inventaria o dígito verificador.
 
 Para ler o resultado com um snapshot fixo, com `sql` guardando a consulta acima:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     snapshot_id = leitor.snapshots()[-1]["snapshot_id"]
-with odb.LakeReader(alvo, snapshot_id=snapshot_id) as leitor:
+with sus.LakeReader(alvo, snapshot_id=snapshot_id) as leitor:
     taxa = leitor.connect().execute(sql, [2022, 2022, "14"]).pl()
 ```
 

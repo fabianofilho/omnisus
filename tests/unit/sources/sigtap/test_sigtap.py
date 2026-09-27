@@ -114,13 +114,13 @@ def test_other_names_are_not_competencias(name):
 
 def test_public_import_sigtap_takes_years_and_months(tmp_path, monkeypatch):
     """Same names as `load` and `scopes_for`: the competências are years x months."""
-    import omnisus as odb
+    import omnisus as sus
 
     monkeypatch.setattr(sigtap, "list_names", server_names)
     monkeypatch.setattr(
         sigtap, "download", lambda name: (ZIP_200801.read_bytes(), "2009-01-08T00:00")
     )
 
-    report = odb.import_sigtap(years=[2008], months=[1], target=f"ducklake:{tmp_path}/x.ducklake")
+    report = sus.import_sigtap(years=[2008], months=[1], target=f"ducklake:{tmp_path}/x.ducklake")
 
     assert [(o.scope, o.status) for o in report.outcomes] == [(ScopeKey(None, 2008, 1), "ok")]

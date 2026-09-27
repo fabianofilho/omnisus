@@ -1,4 +1,4 @@
-"""The notebooks teach the public API: `import omnisus as odb` and `odb.<name>` only.
+"""The notebooks teach the public API: `import omnisus as sus` and `sus.<name>` only.
 
 A notebook is what a researcher copies. Private helpers (`omnisus._notebooks`,
 `load_dicionario`, `resolve_target`) would teach code that is not documented and
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 
 NOTEBOOKS = Path(__file__).resolve().parents[3] / "notebooks"
 TODOS = sorted(p for p in NOTEBOOKS.glob("*.py") if not p.name.startswith("_"))
@@ -42,7 +42,7 @@ def test_imports_only_omnisus_as_odb_and_plain_libraries(caminho):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name == "omnisus":
-                    assert alias.asname == "odb", caminho.name
+                    assert alias.asname == "sus", caminho.name
                 else:
                     assert alias.name in BIBLIOTECAS, (caminho.name, alias.name)
         elif isinstance(node, ast.ImportFrom):
@@ -56,15 +56,15 @@ def test_imports_only_omnisus_as_odb_and_plain_libraries(caminho):
 @pytest.mark.parametrize("caminho", TODOS, ids=lambda p: p.name)
 def test_every_odb_name_is_public(caminho):
     for node in ast.walk(_arvore(caminho)):
-        if isinstance(node, ast.Attribute) and getattr(node.value, "id", None) == "odb":
-            assert node.attr in odb.__all__, (caminho.name, node.attr)
+        if isinstance(node, ast.Attribute) and getattr(node.value, "id", None) == "sus":
+            assert node.attr in sus.__all__, (caminho.name, node.attr)
 
 
 @pytest.mark.parametrize("caminho", TODOS, ids=lambda p: p.name)
 def test_rows_come_from_load_and_the_citation_from_cite(caminho):
-    """One mechanism per step: `odb.load` reads, `odb.cite` cites."""
+    """One mechanism per step: `sus.load` reads, `sus.cite` cites."""
     texto = caminho.read_text(encoding="utf-8")
     if caminho.stem != "ibge_populacao":  # IBGE is not an FTP dataset; see its notebook
-        assert "odb.load(" in texto, caminho.name
+        assert "sus.load(" in texto, caminho.name
     if caminho.stem != "linkage":  # linkage cites nothing: it measures, it does not publish
-        assert "odb.cite(" in texto, caminho.name
+        assert "sus.cite(" in texto, caminho.name

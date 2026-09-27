@@ -9,7 +9,7 @@ from importlib.resources import files
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 import omnisus.cli.main as cli_main
 from omnisus.cli.main import dataset_choices
 from omnisus.sources.datasus_ftp.datasets import REGISTRY
@@ -36,7 +36,7 @@ def test_b_cli_accepts_every_row_and_non_ftp_entry() -> None:
 def test_b_python_api_accepts_every_row() -> None:
     for name in REGISTRY:
         filters = {} if REGISTRY[name].geography == "national" else {"ufs": ["RR"], "months": [1]}
-        scopes = odb.scopes_for(name, years=[2024], **filters)
+        scopes = sus.scopes_for(name, years=[2024], **filters)
         assert scopes, name
 
 

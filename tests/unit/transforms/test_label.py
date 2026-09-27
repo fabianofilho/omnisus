@@ -1,7 +1,7 @@
-"""`odb.label` and `odb.display_row`: one lookup from code to the dictionary's label.
+"""`sus.label` and `sus.display_row`: one lookup from code to the dictionary's label.
 
 Real data: SIM RR 2023 (`sim_rr_2023_mini`, DORR2023.dbc) and SIA BPA-I RR 2022-01
-(`sia_bi_rr_2022_01_mini`, BIRR2201.dbc), read back through `odb.load`.
+(`sia_bi_rr_2022_01_mini`, BIRR2201.dbc), read back through `sus.load`.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import duckdb
 import polars as pl
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources._base import ScopeKey
 from omnisus.transforms.dictionaries import decode_coverage, load_dicionario
 from tests.support.lake_rows import load_fixture
@@ -45,7 +45,7 @@ def test_label_adds_a_rotulo_column_after_each_coded_column(sim: pl.DataFrame) -
     dicionario = load_dicionario("sim_obitos")
     coded = [c for c in sim.columns if (dicionario.field_def(c) or {}).get("x-decode")]
 
-    rotulado = odb.label("sim_obitos", sim)
+    rotulado = sus.label("sim_obitos", sim)
 
     assert coded, "SIM has coded columns"
     for column in coded:
@@ -58,7 +58,7 @@ def test_label_adds_a_rotulo_column_after_each_coded_column(sim: pl.DataFrame) -
 
 
 def test_label_keeps_the_code_and_labels_sexo(sim: pl.DataFrame) -> None:
-    rotulado = odb.label("sim_obitos", sim, columns=["sexo"])
+    rotulado = sus.label("sim_obitos", sim, columns=["sexo"])
 
     assert rotulado.columns == [
         *sim.columns[: sim.columns.index("sexo") + 1],
@@ -73,7 +73,7 @@ def test_label_keeps_the_code_and_labels_sexo(sim: pl.DataFrame) -> None:
 @pytest.mark.parametrize("column", ["dtobito", "nao_existe"])
 def test_label_refuses_a_column_without_a_code_map(sim: pl.DataFrame, column: str) -> None:
     with pytest.raises(ValueError, match=column):
-        odb.label("sim_obitos", sim, columns=[column])
+        sus.label("sim_obitos", sim, columns=[column])
 
 
 def test_a_code_the_dictionary_does_not_know_has_a_null_label(sia: pl.DataFrame) -> None:
@@ -87,16 +87,16 @@ def test_a_code_the_dictionary_does_not_know_has_a_null_label(sia: pl.DataFrame)
     ]
     assert unknown, "BIRR2201 publishes tpidadepac codes the dictionary does not label"
 
-    rotulado = odb.label(dataset, sia, columns=sorted({u.field for u in unknown}))
+    rotulado = sus.label(dataset, sia, columns=sorted({u.field for u in unknown}))
 
     for u in unknown:
         rows = rotulado.filter(pl.col(u.field).cast(pl.String) == u.value)
         assert rows.height == u.rows
         assert rows[f"{u.field}_rotulo"].null_count() == u.rows
-        assert odb.display_row(dataset, {u.field: u.value})[u.field] is None
+        assert sus.display_row(dataset, {u.field: u.value})[u.field] is None
 
 
 def test_display_row_labels_codes_and_leaves_other_fields_as_published() -> None:
     row = {"dtobito": "01012023", "horaobito": "1040", "idade": "435", "sexo": "2"}
 
-    assert odb.display_row("sim_obitos", row) == {**row, "sexo": "Feminino"}
+    assert sus.display_row("sim_obitos", row) == {**row, "sexo": "Feminino"}

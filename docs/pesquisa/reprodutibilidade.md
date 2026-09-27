@@ -11,8 +11,8 @@ o que registrar e onde cada informação fica.
   aquele `run_id`, porque dados e manifesto são gravados na mesma transação; com um
   `run_id` repetido essa conclusão não vale
   ([reprocessing and maintenance](../guides/reprocessing-and-maintenance.md#inspect-an-interrupted-run)).
-  `odb.load`, que os notebooks usam, gera um `run_id` novo a cada chamada; a citação
-  de `odb.cite` o nomeia.
+  `sus.load`, que os notebooks usam, gera um `run_id` novo a cada chamada; a citação
+  de `sus.cite` o nomeia.
 - **Use `policy="skip_same"`.** A política padrão é `append`, que acrescenta de novo um
   escopo já importado. `skip_same` compara primeiro a listagem do FTP (caminho,
   tamanho e horário do servidor de cada arquivo) e a versão do parser com a publicação
@@ -22,11 +22,11 @@ o que registrar e onde cada informação fica.
   ([reprocessing and maintenance](../guides/reprocessing-and-maintenance.md#choose-a-replay-policy)).
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("sim_obitos", years=[2022], ufs=["RR"], refresh=True)
-relatorio = odb.import_research(
+escopos = sus.available("sim_obitos", years=[2022], ufs=["RR"], refresh=True)
+relatorio = sus.import_research(
     "sim_obitos", scopes=escopos, target=alvo, run_id="sim-rr-2022-01"
 )
 for desfecho in relatorio.outcomes:
@@ -86,7 +86,7 @@ Confira `relatorio.failed`, não o valor verdadeiro ou falso do relatório
 O manifesto também guarda `batch_id` e `managed` (`src/omnisus/lake/publication.py`).
 
 ```python
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     for p in leitor.publications(run_id="sim-rr-2022-01"):
         print(p["dataset"], p["scope"], p["release"], p["source_uri"], p["source_sha256"], p["rows"])
 ```
@@ -100,10 +100,10 @@ cada consulta lê o snapshot mais recente (`src/omnisus/lake/session.py`,
 `Session.snapshots` e `LakeReader`).
 
 ```python
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     snapshot_id = leitor.snapshots()[-1]["snapshot_id"]
 
-with odb.LakeReader(alvo, snapshot_id=snapshot_id) as leitor:
+with sus.LakeReader(alvo, snapshot_id=snapshot_id) as leitor:
     print(leitor.connect().sql("SELECT count(*) FROM lake.sim_obitos").pl())
 ```
 
@@ -119,15 +119,15 @@ não expire um snapshot que um trabalho seu cita.
 ## Quando o DATASUS revisa
 
 Quando o DATASUS move um ano do diretório preliminar para o final, nada muda no lake
-sozinho. `odb.outdated(dataset, lake=leitor)` compara os arquivos de cada publicação
+sozinho. `sus.outdated(dataset, lake=leitor)` compara os arquivos de cada publicação
 ativa (caminho, e tamanho/mtime quando registrados) com o que o servidor lista hoje e
 devolve só os escopos que mudaram; não escreve nada, e um escopo que o servidor deixou
 de listar não é devolvido (`src/omnisus/__init__.py`, `outdated`).
 
 ```python
-with odb.LakeReader(alvo) as leitor:
-    movidos = odb.outdated("sim_obitos", lake=leitor)
-odb.import_dataset(
+with sus.LakeReader(alvo) as leitor:
+    movidos = sus.outdated("sim_obitos", lake=leitor)
+sus.import_dataset(
     "sim_obitos", scopes=movidos, target=alvo, policy="replace", run_id="sim-final-2026-01"
 )
 ```
@@ -144,14 +144,14 @@ substituir: um leitor preso a ele continua lendo o lake como estava.
 
 ## IBGE
 
-A população do IBGE tem outro modelo de publicação. `odb.import_ibge_populacao` não
+A população do IBGE tem outro modelo de publicação. `sus.import_ibge_populacao` não
 aceita `run_id` nem `policy` e não aparece em `publications()`: cada edição é uma
 publicação identificada pelo `publication_id` em `ibge_population_manifest`, que guarda
 produto, agregado, variável, URL, SHA-256 do corpo da resposta e instante da coleta
 ([perfil da população](../sources/ibge_populacao.md#detalhes-tecnicos)).
 
 ```python
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(
         leitor.connect().sql(
             "SELECT publication_id, product, ano, sha256, url, collected_at "
@@ -167,13 +167,13 @@ notebook da população consulta esse manifesto e não importa uma edição que 
 
 ## Como citar
 
-Use `odb.cite` no lake que você leu. O texto segue o modelo abaixo; os notebooks
+Use `sus.cite` no lake que você leu. O texto segue o modelo abaixo; os notebooks
 gravam o mesmo parágrafo em `resultados/<base>/citacao.txt`, ao lado das tabelas.
 
 ```python
-with odb.LakeReader(alvo) as leitor:
-    snapshot_id = odb.latest_snapshot_id(leitor)
-    print(odb.cite(leitor, dataset="sim_obitos", snapshot_id=snapshot_id).text)
+with sus.LakeReader(alvo) as leitor:
+    snapshot_id = sus.latest_snapshot_id(leitor)
+    print(sus.cite(leitor, dataset="sim_obitos", snapshot_id=snapshot_id).text)
 ```
 
 Modelo para uma base do DATASUS:
@@ -189,7 +189,7 @@ Onde encontrar cada valor:
 - `<dataset>`, `<source_uri>`, `<source_sha256>` e `<run_id>`: na publicação, em
   `publications()`; o nome do arquivo é o fim de `source_uri`.
 - `<AAAA-MM-DD>`: sugestão deste guia, a data de `published_at`.
-- `<versão>`: `odb.__version__`.
+- `<versão>`: `sus.__version__`.
 - `<snapshot_id>`: o snapshot em que você leu os dados.
 
 Nos notebooks, a citação e o próprio notebook bastam para refazer o resultado: o

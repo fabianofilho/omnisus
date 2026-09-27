@@ -2,17 +2,17 @@
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 
 pytestmark = [pytest.mark.integration, pytest.mark.e2e]
 
 
 def test_live_chagas_publication_and_replay(tmp_path):
-    scopes = odb.available("sinan_chagas", refresh=True)
+    scopes = sus.available("sinan_chagas", refresh=True)
     assert scopes, "Source disappeared or no filenames match the contract"
     scope = scopes[-1]
     target = f"ducklake:{tmp_path}/chagas.ducklake"
-    initial = odb.import_dataset(
+    initial = sus.import_dataset(
         "sinan_chagas",
         scopes=[scope],
         target=target,
@@ -22,7 +22,7 @@ def test_live_chagas_publication_and_replay(tmp_path):
         concurrency=1,
     )
     assert initial.ok and not initial.failed and initial.rows > 0
-    replay = odb.import_dataset(
+    replay = sus.import_dataset(
         "sinan_chagas",
         scopes=[scope],
         target=target,
@@ -32,7 +32,7 @@ def test_live_chagas_publication_and_replay(tmp_path):
         concurrency=1,
     )
     assert not replay.failed and replay.rows == 0 and len(replay.skipped) == 1
-    with odb.Lake.local(target) as lake:
+    with sus.Lake.local(target) as lake:
         publications = lake.publications()
         assert len(publications) == 1
         assert publications[0]["source_uri"].endswith(f"CHAGBR{scope.ano % 100:02d}.dbc")

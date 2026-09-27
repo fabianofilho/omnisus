@@ -25,9 +25,9 @@ def _():
     import marimo as mo
     import polars as pl
 
-    import omnisus as odb
+    import omnisus as sus
 
-    return Path, mo, odb, pl
+    return Path, mo, sus, pl
 
 
 @app.cell(hide_code=True)
@@ -69,17 +69,17 @@ def _(BASE, mo):
     mo.md(f"""
     ## 1 · O que `{BASE}` registra
 
-    Campos do dicionário da biblioteca (`odb.describe_dataset`), sem rede.
+    Campos do dicionário da biblioteca (`sus.describe_dataset`), sem rede.
     """)
     return
 
 
 @app.cell
-def _(BASE, odb, pl):
+def _(BASE, sus, pl):
     pl.DataFrame(
         [
             {"campo": f["name"], "tipo": f["type"], "rótulo": f.get("label", "")}
-            for f in odb.describe_dataset(BASE)["schema"]["fields"]
+            for f in sus.describe_dataset(BASE)["schema"]["fields"]
         ]
     )
     return
@@ -90,16 +90,16 @@ def _(mo):
     mo.md(r"""
     ## 2 · Descobrir
 
-    `odb.available_releases` lista agora os diretórios final e preliminar. Um ano
+    `sus.available_releases` lista agora os diretórios final e preliminar. Um ano
     preliminar pode ser revisado e depois movido para o final com o mesmo nome.
     """)
     return
 
 
 @app.cell
-def _(BASE, executar, mo, odb, pl):
+def _(BASE, executar, mo, sus, pl):
     mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
-    publicados = odb.available_releases(BASE, refresh=True)
+    publicados = sus.available_releases(BASE, refresh=True)
     pl.DataFrame(
         [{"ano": e.ano, "abrangencia": "nacional", "diretorio": d} for e, d in publicados.items()]
     ).sort("ano", descending=True)
@@ -111,7 +111,7 @@ def _(mo):
     mo.md(r"""
     ## 3 · Baixar e ler
 
-    `odb.load` importa o ano para o lake e devolve as linhas, com os códigos como o
+    `sus.load` importa o ano para o lake e devolve as linhas, com os códigos como o
     DATASUS publicou. O arquivo é nacional: não há filtro de UF na importação; filtre
     a geografia dos registros depois, na análise.
     """)
@@ -119,9 +119,9 @@ def _(mo):
 
 
 @app.cell
-def _(ANO, BASE, executar, mo, odb):
+def _(ANO, BASE, executar, mo, sus):
     mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
-    dados = odb.load(BASE, years=[ANO])
+    dados = sus.load(BASE, years=[ANO])
     dados
     return (dados,)
 
@@ -131,22 +131,22 @@ def _(mo):
     mo.md(r"""
     ## 4 · Conferir
 
-    `odb.check_columns` mostra, por coluna, vazios, códigos sem rótulo e datas fora
-    do esperado. `odb.outdated` lista os anos que o DATASUS republicou ou moveu entre
+    `sus.check_columns` mostra, por coluna, vazios, códigos sem rótulo e datas fora
+    do esperado. `sus.outdated` lista os anos que o DATASUS republicou ou moveu entre
     preliminar e final desde a importação; atualize-os com
-    `odb.load(..., policy="replace")`.
+    `sus.load(..., policy="replace")`.
     """)
     return
 
 
 @app.cell
-def _(BASE, dados, mo, odb):
-    with odb.LakeReader() as _lake:
-        _republicados = odb.outdated(BASE, lake=_lake)
+def _(BASE, dados, mo, sus):
+    with sus.LakeReader() as _lake:
+        _republicados = sus.outdated(BASE, lake=_lake)
     mo.vstack(
         [
             mo.md(f"Republicados desde a importação: {_republicados or 'nenhum'}"),
-            odb.check_columns(BASE, dados),
+            sus.check_columns(BASE, dados),
         ]
     )
     return
@@ -157,14 +157,14 @@ def _(mo):
     mo.md(r"""
     ## 5 · Analisar
 
-    `odb.label` põe o rótulo do dicionário ao lado de cada código. Confira o
+    `sus.label` põe o rótulo do dicionário ao lado de cada código. Confira o
     dicionário oficial antes de selecionar casos confirmados ou calcular incidência.
     """)
     return
 
 
 @app.cell
-def _(BASE, dados, odb, pl):
+def _(BASE, dados, sus, pl):
     tabelas = {
         "diretorio_de_origem": dados.group_by(diretorio="_source_release").len("notificacoes"),
         "notificacoes_por_uf_de_notificacao": dados.group_by(uf_notificacao_ibge="sg_uf_not")
@@ -178,14 +178,14 @@ def _(BASE, dados, odb, pl):
     }
     if BASE == "sinan_chagas":
         tabelas["classificacao_e_evolucao"] = (
-            odb.label(BASE, dados, columns=["classi_fin", "evolucao"])
+            sus.label(BASE, dados, columns=["classi_fin", "evolucao"])
             .group_by("classi_fin", "classi_fin_rotulo", "evolucao", "evolucao_rotulo")
             .len("notificacoes")
             .sort("classi_fin", "evolucao")
         )
     else:
         tabelas["modo_de_entrada_e_alta"] = (
-            odb.label(BASE, dados, columns=["tpalta_n"])
+            sus.label(BASE, dados, columns=["tpalta_n"])
             .group_by("modoentr", "tpalta_n", "tpalta_n_rotulo")
             .len("notificacoes")
             .sort("modoentr", "tpalta_n")
@@ -199,7 +199,7 @@ def _(mo):
     mo.md(r"""
     ## 6 · Citar e guardar
 
-    `odb.cite` nomeia o arquivo do servidor, o SHA-256 e o snapshot do lake de cada
+    `sus.cite` nomeia o arquivo do servidor, o SHA-256 e o snapshot do lake de cada
     publicação do agravo. As tabelas e a citação vão para `resultados/<BASE>/`. Veja
     [Reprodutibilidade](https://raphaelfh.github.io/omnisus/pesquisa/reprodutibilidade/).
     """)
@@ -207,9 +207,9 @@ def _(mo):
 
 
 @app.cell
-def _(BASE, Path, odb, tabelas):
-    with odb.LakeReader() as _lake:
-        citacao = odb.cite(_lake, dataset=BASE)
+def _(BASE, Path, sus, tabelas):
+    with sus.LakeReader() as _lake:
+        citacao = sus.cite(_lake, dataset=BASE)
     pasta = Path("resultados") / BASE
     pasta.mkdir(parents=True, exist_ok=True)
     for _nome, _tabela in tabelas.items():

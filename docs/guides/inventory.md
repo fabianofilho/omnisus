@@ -12,12 +12,12 @@ Closed-world. Reads one directory listing and decodes each filename through the
 registry, so you get back exactly the scopes this package can import.
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-odb.available("sim_obitos")                      # matching scopes in the cached/fresh listing
-odb.available("sim_obitos", years=range(2020, 2025))
-odb.available("sim_obitos", years=[2024], ufs=["SP"])  # same selectors as scopes_for()
-odb.available("sih_aih_reduzida", years=[2024], ufs=["SP"], months=[1, 2])
+sus.available("sim_obitos")                      # matching scopes in the cached/fresh listing
+sus.available("sim_obitos", years=range(2020, 2025))
+sus.available("sim_obitos", years=[2024], ufs=["SP"])  # same selectors as scopes_for()
+sus.available("sih_aih_reduzida", years=[2024], ufs=["SP"], months=[1, 2])
 ```
 
 `ufs` and `months` select among what the listing has; a national row such as
@@ -32,7 +32,7 @@ Open-world. No decoding, so it reaches data this package does not model (other
 SINAN agravos, CIHA, PCE), and any path you like.
 
 ```python
-odb.browse("/dissemin/publicos/SINAN", depth=2)
+sus.browse("/dissemin/publicos/SINAN", depth=2)
 ```
 
 Recursion is bounded by `depth`, and the walk is sequential. A subdirectory that
@@ -74,14 +74,14 @@ In Python the same thing is composition — no flag, just a different function
 filling `scopes`:
 
 ```python
-odb.import_dataset("sim_obitos", scopes=odb.available("sim_obitos", years=range(1996, 2025)))
+sus.import_dataset("sim_obitos", scopes=sus.available("sim_obitos", years=range(1996, 2025)))
 ```
 
 The alternative is to plan blindly and let tolerance absorb the gaps:
 
 ```python
-odb.import_dataset(
-    "sim_obitos", scopes=odb.scopes_for("sim_obitos", years=range(2020, 2025), ufs=["RR"])
+sus.import_dataset(
+    "sim_obitos", scopes=sus.scopes_for("sim_obitos", years=range(2020, 2025), ufs=["RR"])
 )
 ```
 
@@ -107,7 +107,7 @@ A normally completed DATASUS-FTP import returns an `ImportReport`.
 returns an integer count:
 
 ```python
-report = odb.import_dataset("sim_obitos", scopes=odb.available("sim_obitos"))
+report = sus.import_dataset("sim_obitos", scopes=sus.available("sim_obitos"))
 
 report.rows          # rows ingested
 report.ok            # scopes imported

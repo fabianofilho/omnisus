@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 import duckdb
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake.sql import quote_identifier as qi
 from omnisus.sources.datasus_ftp.datasets import release_from_uri, resolve
 from omnisus.sources.datasus_ftp.filenames import parse_name
@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def audit(item: dict, *, candidate: bool) -> dict:
     dataset = item["dataset"]
-    context = odb.SourceContext(odb.ScopeKey(**item["scope"]), item["release"], item["sha256"])
+    context = sus.SourceContext(sus.ScopeKey(**item["scope"]), item["release"], item["sha256"])
     path = ROOT / item["path"]
     name = parse_name(resolve(dataset), path.name)
     if name is None or name.scope != context.scope or name.part is not None:
@@ -55,7 +55,7 @@ def audit(item: dict, *, candidate: bool) -> dict:
             for row in portal["resposta"]
         ):
             raise ValueError("Release not confirmed by original portal evidence")
-    metadata = odb.describe_dataset(dataset)
+    metadata = sus.describe_dataset(dataset)
     rules = metadata["analytics"]
     age_rule = rules["age"]
     queries = []
@@ -83,7 +83,7 @@ def audit(item: dict, *, candidate: bool) -> dict:
                 ]
 
             schema = {row[0]: row[1] for row in con.execute("DESCRIBE source").fetchall()}
-            projection = odb.analytical_projection(
+            projection = sus.analytical_projection(
                 dataset, observed_schema=schema, scopes=[context]
             )
             age_field = qi(age_rule["field"])
@@ -91,16 +91,16 @@ def audit(item: dict, *, candidate: bool) -> dict:
             if candidate:
                 age_sql = age_expressions(age_rule, age_field, unit)
                 columns = [
-                    odb.DerivedColumn("idade_anos_completos", "INTEGER", age_sql.years),
-                    odb.DerivedColumn("idade_status", "VARCHAR", age_sql.status),
-                    odb.DerivedColumn("idade_quantidade", "INTEGER", age_sql.quantity),
-                    odb.DerivedColumn("idade_unidade", "VARCHAR", age_sql.unit),
+                    sus.DerivedColumn("idade_anos_completos", "INTEGER", age_sql.years),
+                    sus.DerivedColumn("idade_status", "VARCHAR", age_sql.status),
+                    sus.DerivedColumn("idade_quantidade", "INTEGER", age_sql.quantity),
+                    sus.DerivedColumn("idade_unidade", "VARCHAR", age_sql.unit),
                 ]
                 if rules.get("sex"):
                     value, status = _sex_expressions(rules["sex"], qi(rules["sex"]["field"]))
                     columns += [
-                        odb.DerivedColumn("sexo_categoria", "VARCHAR", value),
-                        odb.DerivedColumn("sexo_status", "VARCHAR", status),
+                        sus.DerivedColumn("sexo_categoria", "VARCHAR", value),
+                        sus.DerivedColumn("sexo_status", "VARCHAR", status),
                     ]
                 defs = {f["name"]: f for f in metadata["schema"]["fields"]}
                 for field in rules.get("dates", []):
@@ -110,8 +110,8 @@ def audit(item: dict, *, candidate: bool) -> dict:
                         qi(field), schema[field], defs[field]["x-format"]
                     )
                     columns += [
-                        odb.DerivedColumn(field + "_data", "DATE", value),
-                        odb.DerivedColumn(field + "_data_status", "VARCHAR", status),
+                        sus.DerivedColumn(field + "_data", "DATE", value),
+                        sus.DerivedColumn(field + "_data_status", "VARCHAR", status),
                     ]
             else:
                 columns = list(projection.columns)
@@ -200,7 +200,7 @@ def main() -> None:
     manifest_bytes = args.manifest.read_bytes()
     report = {
         "audited_at": datetime.now(UTC).isoformat(),
-        "library_version": odb.__version__,
+        "library_version": sus.__version__,
         "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
         "backends": {

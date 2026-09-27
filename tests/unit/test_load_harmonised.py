@@ -1,6 +1,6 @@
-"""`odb.load` adds harmonised categories only for validated sources (ADR 0003).
+"""`sus.load` adds harmonised categories only for validated sources (ADR 0003).
 
-Real data, read back through `odb.load`:
+Real data, read back through `sus.load`:
 - SIM RR 2023 (`sim_rr_2023_mini`, DORR2023.dbc): in SIM `validated_sources`;
 - SIA BPA-I RR 2022-01 (`sia_bi_rr_2022_01_mini`, BIRR2201.dbc): in SIA `validated_sources`;
 - SIH RR 2024-01 (`sih_rr_2024_01_mini`, RDRR2401.dbc): **not** validated.

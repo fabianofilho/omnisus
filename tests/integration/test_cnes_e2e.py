@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
 from tests.support import fake_datasus
@@ -35,7 +35,7 @@ def _counts(target: str) -> tuple[int, int]:
 
 @pytest.mark.integration
 def test_import_dataset_refreshes_aux_cnes(target: str) -> None:
-    odb.import_dataset("cnes_estabelecimentos", scopes=[RR_2024_01], target=target)
+    sus.import_dataset("cnes_estabelecimentos", scopes=[RR_2024_01], target=target)
 
     rows, establishments = _counts(target)
     assert rows > 0 and establishments > 0
@@ -43,7 +43,7 @@ def test_import_dataset_refreshes_aux_cnes(target: str) -> None:
 
 @pytest.mark.integration
 def test_load_refreshes_aux_cnes(target: str) -> None:
-    dados = odb.load("cnes_estabelecimentos", years=[2024], months=[1], ufs=["RR"], target=target)
+    dados = sus.load("cnes_estabelecimentos", years=[2024], months=[1], ufs=["RR"], target=target)
 
     rows, establishments = _counts(target)
     assert rows == dados.height and establishments > 0

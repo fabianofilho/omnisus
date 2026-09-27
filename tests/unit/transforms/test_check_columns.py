@@ -1,7 +1,7 @@
-"""`odb.check_columns`: what the dictionary says and what the rows show, per column.
+"""`sus.check_columns`: what the dictionary says and what the rows show, per column.
 
 Real data: SIM RR 2023 (`sim_rr_2023_mini`, DORR2023.dbc) and SIA BPA-I RR 2022-01
-(`sia_bi_rr_2022_01_mini`, BIRR2201.dbc), read back through `odb.load`.
+(`sia_bi_rr_2022_01_mini`, BIRR2201.dbc), read back through `sus.load`.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import duckdb
 import polars as pl
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources._base import ScopeKey
 from omnisus.transforms.dictionaries import decode_coverage, load_dicionario
 from tests.support.lake_rows import load_fixture
@@ -51,7 +51,7 @@ def _filled(df: pl.DataFrame, column: str) -> pl.Series:
 
 
 def test_one_row_per_column_in_input_order(sim: pl.DataFrame) -> None:
-    report = odb.check_columns("sim_obitos", sim)
+    report = sus.check_columns("sim_obitos", sim)
 
     assert report.columns == COLUMNS
     assert report["column"].to_list() == sim.columns
@@ -60,7 +60,7 @@ def test_one_row_per_column_in_input_order(sim: pl.DataFrame) -> None:
 
 
 def test_empty_counts_null_and_blank(sim: pl.DataFrame) -> None:
-    report = odb.check_columns("sim_obitos", sim).rows_by_key("column", named=True, unique=True)
+    report = sus.check_columns("sim_obitos", sim).rows_by_key("column", named=True, unique=True)
 
     for column in sim.columns:
         expected = round(100 * (1 - _filled(sim, column).len() / sim.height), 1)
@@ -70,7 +70,7 @@ def test_empty_counts_null_and_blank(sim: pl.DataFrame) -> None:
 
 def test_dictionary_facts_and_example(sim: pl.DataFrame) -> None:
     dicionario = load_dicionario("sim_obitos")
-    report = odb.check_columns("sim_obitos", sim).rows_by_key("column", named=True, unique=True)
+    report = sus.check_columns("sim_obitos", sim).rows_by_key("column", named=True, unique=True)
 
     sexo = report["sexo"]
     assert sexo["label"] == dicionario.field_def("sexo")["label"]
@@ -83,7 +83,7 @@ def test_dictionary_facts_and_example(sim: pl.DataFrame) -> None:
 def test_unlabelled_codes_are_the_coverage_gaps_the_lookup_cannot_label(sia: pl.DataFrame) -> None:
     dataset = "sia_bpa_individualizado"
     dicionario = load_dicionario(dataset)
-    report = odb.check_columns(dataset, sia).rows_by_key("column", named=True, unique=True)
+    report = sus.check_columns(dataset, sia).rows_by_key("column", named=True, unique=True)
 
     gaps = [
         u
@@ -104,7 +104,7 @@ def test_unlabelled_codes_are_the_coverage_gaps_the_lookup_cannot_label(sia: pl.
 
 def test_dates_are_typed_and_invalid_ones_are_counted(sia: pl.DataFrame) -> None:
     dicionario = load_dicionario("sia_bpa_individualizado")
-    report = odb.check_columns("sia_bpa_individualizado", sia).rows_by_key(
+    report = sus.check_columns("sia_bpa_individualizado", sia).rows_by_key(
         "column", named=True, unique=True
     )
     dates = [
@@ -134,7 +134,7 @@ def test_a_column_with_nothing_filled_reports_none_instead_of_failing(sim: pl.Da
     series is None, which tutorial 06 learned to guard."""
     assert _filled(sim, "exame").len() == 0
 
-    exame = odb.check_columns("sim_obitos", sim).rows_by_key("column", named=True, unique=True)[
+    exame = sus.check_columns("sim_obitos", sim).rows_by_key("column", named=True, unique=True)[
         "exame"
     ]
 
@@ -147,7 +147,7 @@ def test_a_column_with_nothing_filled_reports_none_instead_of_failing(sim: pl.Da
 def test_a_column_outside_the_dictionary_is_reported_not_skipped(sim: pl.DataFrame) -> None:
     renamed = sim.select(pl.col("sexo").alias("minha_coluna"))
 
-    (row,) = odb.check_columns("sim_obitos", renamed).rows(named=True)
+    (row,) = sus.check_columns("sim_obitos", renamed).rows(named=True)
 
     assert row["rule"] == "not in dictionary"
     assert row["label"] is None and row["example_label"] is None

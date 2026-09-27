@@ -87,8 +87,8 @@ class Lake(Session):
             CatalogAttachError: DuckDB could not attach the catalog.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.bootstrap_auxiliares()
         """
         return cls(target=parse_target(resolve_target(target)))
@@ -109,8 +109,8 @@ class Lake(Session):
             CatalogAttachError: DuckDB could not attach the catalog.
 
         Examples:
-            >>> import omnisus as odb
-            >>> lake = odb.Lake.cloud(  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> lake = sus.Lake.cloud(  # doctest: +SKIP
             ...     catalog="postgresql://u:p@db/lake", storage="s3://bucket/lake"
             ... )
         """
@@ -141,8 +141,8 @@ class Lake(Session):
                 the handle becomes unusable, so close it and inspect the catalog.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake, lake.transaction() as receipt:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake, lake.transaction() as receipt:  # doctest: +SKIP
             ...     lake.ensure_aux_cnes_view()
         """
         self.connect()  # Reject closed or invalidated handles.
@@ -222,8 +222,8 @@ class Lake(Session):
             One dict per maintenance step DuckLake reports.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.optimize("sim_obitos")
         """
         from omnisus.lake.maintenance import run_maintenance
@@ -247,8 +247,8 @@ class Lake(Session):
 
         Examples:
             >>> from datetime import UTC, datetime
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.expire_snapshots(older_than=datetime(2026, 1, 1, tzinfo=UTC))
         """
         from omnisus.lake.maintenance import run_maintenance
@@ -276,8 +276,8 @@ class Lake(Session):
 
         Examples:
             >>> from datetime import UTC, datetime
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.cleanup_files(older_than=datetime(2026, 1, 1, tzinfo=UTC))
         """
         from omnisus.lake.maintenance import run_maintenance
@@ -297,8 +297,8 @@ class Lake(Session):
         registry. Re-running replaces the tables' contents.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.bootstrap_auxiliares()
         """
         self.connect()
@@ -342,8 +342,8 @@ class Lake(Session):
             RuntimeError: the handle is closed or unusable.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.ensure_aux_cnes_view()
             True
         """
@@ -504,8 +504,8 @@ class Lake(Session):
 
         Examples:
             >>> import polars as pl
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.ingest("minha_tabela", pl.LazyFrame({"x": [1, 2]}))
         """
         import tempfile
@@ -541,8 +541,8 @@ class Lake(Session):
             RuntimeError: the handle is closed or unusable.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.ingest_parquet("minha_tabela", "staging.parquet")
         """
         import time
@@ -587,8 +587,8 @@ class Lake(Session):
             ValueError: the staging file does not match the scope or the table.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
             ...     lake.publish_scope("sim_obitos", "staging.parquet", scope=scope, ...)
         """
         from omnisus.lake.publication import publish_scope
@@ -600,7 +600,7 @@ class Lake(Session):
 
         Args:
             table: Dataset table, e.g. ``"sim_obitos"``.
-            scope: The scope to delete, e.g. ``odb.ScopeKey("RR", 2023)``.
+            scope: The scope to delete, e.g. ``sus.ScopeKey("RR", 2023)``.
 
         Returns:
             Rows deleted and publications retired.
@@ -609,9 +609,9 @@ class Lake(Session):
             ValueError: the table's national/state shape does not match ``scope``.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.Lake.local() as lake:  # doctest: +SKIP
-            ...     lake.delete_scope("sim_obitos", odb.ScopeKey("RR", 2023))
+            >>> import omnisus as sus
+            >>> with sus.Lake.local() as lake:  # doctest: +SKIP
+            ...     lake.delete_scope("sim_obitos", sus.ScopeKey("RR", 2023))
         """
         from omnisus.lake.publication import delete_scope
 
@@ -621,8 +621,8 @@ class Lake(Session):
         """Close the connection and release the writer lock.
 
         Examples:
-            >>> import omnisus as odb
-            >>> lake = odb.Lake.local()  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> lake = sus.Lake.local()  # doctest: +SKIP
             >>> lake.close()  # doctest: +SKIP
         """
         try:

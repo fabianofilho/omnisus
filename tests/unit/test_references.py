@@ -15,7 +15,7 @@ import duckdb
 import polars as pl
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.dictionaries import load_dicionario
 
@@ -69,7 +69,7 @@ def test_declared_references_resolve_on_real_fixtures(con, dbc_fixture, dataset,
     for field in referenced_fields(dataset):
         if field not in frame.columns:  # declared for other years of the layout
             continue
-        join = odb.reference_join_sql(dataset, field, alias="d")
+        join = sus.reference_join_sql(dataset, field, alias="d")
         joined = con.execute(f"SELECT count(*) FROM d {join}").fetchone()
         assert joined == (frame.height,), f"{dataset}.{field} multiplies rows"
         ref = f"ref_{field}"
@@ -92,7 +92,7 @@ def test_occupation_joins_cbo2002_from_2006_only(con, dbc_fixture):
         dbc_fixture("sim_rr_2023_mini").read_bytes(), dataset="sim_obitos", ano=2023, uf="RR"
     ).collect()
     con.register("d", frame.to_arrow())
-    join = odb.reference_join_sql("sim_obitos", "ocup", alias="d")
+    join = sus.reference_join_sql("sim_obitos", "ocup", alias="d")
     rows = con.execute(
         f"SELECT ref_ocup.esquema, count(*) FROM d {join} WHERE d.ocup = '622020' GROUP BY 1"
     ).fetchall()
@@ -106,10 +106,10 @@ def test_occupation_joins_cbo2002_from_2006_only(con, dbc_fixture):
 
 
 def test_reference_join_sql_names_the_resource_and_rule():
-    assert odb.reference_join_sql("sim_obitos", "ocup", alias="d") == (
+    assert sus.reference_join_sql("sim_obitos", "ocup", alias="d") == (
         'LEFT JOIN "lake"."aux_ocupacoes" AS "ref_ocup" '
         'ON d."ocup" = "ref_ocup"."codigo" '
         "AND (\"ref_ocup\".esquema = 'cbo2002' AND d.ano >= 2006)"
     )
     with pytest.raises(ValueError, match="no reference"):
-        odb.reference_join_sql("sim_obitos", "dtobito")
+        sus.reference_join_sql("sim_obitos", "dtobito")

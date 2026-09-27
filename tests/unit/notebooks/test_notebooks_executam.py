@@ -2,7 +2,7 @@
 
 The fake server in `tests/support/fake_datasus.py` lists and serves one committed
 file (`tests/fixtures/FIXTURES.md`) for the notebook's own cut, so discovery,
-`odb.load`, `odb.check_columns`, the analysis and `odb.cite` all see real rows.
+`sus.load`, `sus.check_columns`, the analysis and `sus.cite` all see real rows.
 
 Left out: `ibge_populacao.py` reads the IBGE API and `medicamentos.py` the Hórus
 stock API, which have no committed response; `linkage.py` needs about thirty

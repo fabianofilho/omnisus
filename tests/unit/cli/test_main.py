@@ -312,14 +312,14 @@ def test_import_abort_prints_partial_progress(monkeypatch, tmp_path: Path, width
 
     if width is not None:
         monkeypatch.setattr("omnisus.cli.main.console", Console(width=width))
-    import omnisus as odb
+    import omnisus as sus
 
     def abort(*args: object, **kwargs: object) -> None:
-        report = odb.ImportReport(outcomes=())
-        unresolved = ((0, odb.ScopeKey(uf="RR", ano=2023)),)
-        raise odb.ImportAbortedError(report, unresolved)
+        report = sus.ImportReport(outcomes=())
+        unresolved = ((0, sus.ScopeKey(uf="RR", ano=2023)),)
+        raise sus.ImportAbortedError(report, unresolved)
 
-    monkeypatch.setattr(odb, "import_dataset", abort)
+    monkeypatch.setattr(sus, "import_dataset", abort)
     result = runner.invoke(
         app,
         [
