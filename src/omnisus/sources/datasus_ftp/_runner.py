@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import json
 import tempfile
 from collections.abc import Sequence
 from dataclasses import dataclass
-from importlib.resources import files
 from pathlib import Path
 from uuid import uuid4
 
@@ -136,15 +136,19 @@ class StagedScope:
 
 
 def parser_version(d: Dataset) -> str:
-    """The publication parser version for ``d``: its dictionary's SHA-256, known before any download."""
+    """The publication parser version for ``d``, known before any download.
+
+    It hashes only what the import reads from the dictionary: the ``encoding`` that
+    decodes text and the ``x-identity`` that accepts or rejects a file. Labels, code
+    maps and claims are read when rows are queried, so editing them leaves published
+    scopes unchanged.
+    """
     from omnisus.sources.datasus_ftp.dbf_contract import publication_parser_version
 
-    dictionary = (
-        d.dictionary.read_bytes()
-        if d.dictionary is not None
-        else files("omnisus.data.dicionarios").joinpath(d.name + ".yaml").read_bytes()
-    )
-    return publication_parser_version(hashlib.sha256(dictionary).hexdigest())
+    dic = load_dicionario(d.dictionary if d.dictionary is not None else d.name)
+    read = {"encoding": dic.encoding, "x-identity": dic.raw.get("x-identity")}
+    canonical = json.dumps(read, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return publication_parser_version(hashlib.sha256(canonical.encode("utf-8")).hexdigest())
 
 
 def _listed(entry: FtpEntry) -> tuple[str, int, str]:

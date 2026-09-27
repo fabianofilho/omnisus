@@ -141,5 +141,9 @@ def _ensure_dbf_terminator(dbf_bytes: bytes) -> bytes:
 
 
 def publication_parser_version(dictionary_hash: str) -> str:
-    """Execution backend changes do not change the meaning of published rows."""
-    return "dbc-staging-v1:" + dictionary_hash
+    """Execution backend changes do not change the meaning of published rows.
+
+    v2 hashes only the dictionary keys the import reads (``_runner.parser_version``);
+    v1 hashed the whole YAML file.
+    """
+    return "dbc-staging-v2:" + dictionary_hash
