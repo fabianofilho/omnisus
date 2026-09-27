@@ -86,6 +86,14 @@ def test_declared_references_resolve_on_real_fixtures(con, dbc_fixture, dataset,
     assert found == UNRESOLVED[(dataset, fixture, ano)]
 
 
+def test_secondary_diagnoses_declare_the_cid10_reference():
+    """RD2008.DEF, lines 389-406, relates DIAGSEC1-9 to DBF/CID10.DBF (IT_SIHSUS_1603, p. 4:
+    "Diagnóstico secundário N"). Each declares aux_cid10, so the join above runs on them
+    over RDRR2401 too."""
+    declared = set(referenced_fields("sih_aih_reduzida"))
+    assert {f"diagsec{n}" for n in range(1, 10)} <= declared
+
+
 def test_occupation_joins_cbo2002_from_2006_only(con, dbc_fixture):
     """SIM ``ocup`` resolves against CBO 2002 in 2023; TABOCUP titles never join."""
     frame = dbc_bytes_to_lazyframe(

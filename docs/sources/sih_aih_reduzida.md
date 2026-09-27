@@ -108,7 +108,9 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
   no mês está em `uti_mes_to` (p. 1).
 - `diag_secun` vem preenchido com zeros a partir de 201501
   (Informe SIH 2016-03, p. 2); os diagnósticos secundários estão em `diagsec1` a
-  `diagsec9` (p. 4). O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
+  `diagsec9` (p. 4), e o dicionário os liga à tabela `aux_cid10`, como o `diag_princ`
+  (`RD2008.DEF`, linhas 389-406, relaciona `DIAGSEC1` a `DIAGSEC9` a
+  `DBF/CID10.DBF`). O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
   `RD2008.DEF` → `TP_DIAGSEC.CNV`: 1 = preexistente, 2 = adquirido. O `0` que os
   arquivos publicam não está na tabela e fica sem rótulo.
 - `natureza` tem conteúdo só até maio de 2012; a natureza jurídica pela CONCLA está em
