@@ -93,8 +93,8 @@ def set_lake_dir(path: str | os.PathLike[str]) -> Path:
         The absolute folder.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.set_lake_dir("/content/drive/MyDrive/omnisus")  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> sus.set_lake_dir("/content/drive/MyDrive/omnisus")  # doctest: +SKIP
         PosixPath('/content/drive/MyDrive/omnisus')
     """
     folder = Path(path).expanduser().resolve()

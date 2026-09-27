@@ -13,11 +13,11 @@ when a scope has already been published through the managed importer:
 | `replace` | Validate staging, delete the exact source scope, insert and replace its active manifest in one transaction | Publish |
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-report = odb.import_dataset(
+report = sus.import_dataset(
     "sim_obitos",
-    scopes=[odb.ScopeKey(uf="RR", ano=2023)],
+    scopes=[sus.ScopeKey(uf="RR", ano=2023)],
     policy="skip_same",
     run_id="sim-rr-2023-review-01",
 )
@@ -57,11 +57,11 @@ compares the files recorded on each active publication with what the server
 lists today and returns only the scopes that differ.
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-with odb.Lake.local() as lake:
-    moved = odb.outdated("sim_obitos", lake=lake)
-    odb.import_dataset(
+with sus.Lake.local() as lake:
+    moved = sus.outdated("sim_obitos", lake=lake)
+    sus.import_dataset(
         "sim_obitos", scopes=moved,
         policy="replace", run_id="sim-final-2026",
     )
@@ -80,11 +80,11 @@ size or server mtime at the same path). Compare with `refresh=True` so the
 listing isn't served from cache:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-with odb.Lake.local() as lake:
-    stale = odb.outdated("sinasc_nascidos_vivos", lake=lake, refresh=True)
-odb.import_dataset("sinasc_nascidos_vivos", scopes=stale, policy="replace", run_id="sinasc-1996-move")
+with sus.Lake.local() as lake:
+    stale = sus.outdated("sinasc_nascidos_vivos", lake=lake, refresh=True)
+sus.import_dataset("sinasc_nascidos_vivos", scopes=stale, policy="replace", run_id="sinasc-1996-move")
 ```
 
 A scope whose recorded source URI differs from where the server lists the file
@@ -95,13 +95,13 @@ since nothing shows they match the server.
 ## Inspect an interrupted run
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 try:
-    report = odb.import_dataset(
-        "sim_obitos", scopes=[odb.ScopeKey(uf="RR", ano=2023)], run_id="sim-rr-2023-review-01"
+    report = sus.import_dataset(
+        "sim_obitos", scopes=[sus.ScopeKey(uf="RR", ano=2023)], run_id="sim-rr-2023-review-01"
     )
-except odb.ImportAbortedError as exc:
+except sus.ImportAbortedError as exc:
     print(exc.report.rows, exc.unresolved)  # determined outcomes; positions to inspect
     raise
 ```
@@ -111,7 +111,7 @@ succeeded in the catalog despite the missing acknowledgement. After closing the
 unusable handle, reopen the lake and inspect the durable manifest:
 
 ```python
-with odb.LakeReader() as reader:
+with sus.LakeReader() as reader:
     published = {p["scope"] for p in reader.publications(run_id="sim-rr-2023-review-01")}
     failed_attempts = reader.attempts(run_id="sim-rr-2023-review-01")
 ```
@@ -141,8 +141,8 @@ never had a publication are removed as well; when `rows_deleted` exceeds the
 retired publications' row sum, unmanaged rows were present.
 
 ```python
-with odb.Lake.local() as lake:
-    result = lake.delete_scope("sih_aih_reduzida", odb.ScopeKey(uf="RR", ano=2023))
+with sus.Lake.local() as lake:
+    result = lake.delete_scope("sih_aih_reduzida", sus.ScopeKey(uf="RR", ano=2023))
     print(result.rows_deleted, result.publications_retired)
 ```
 
@@ -218,7 +218,7 @@ These are separate operations:
 from datetime import UTC, datetime
 
 cutoff = datetime(2026, 8, 1, tzinfo=UTC)
-with odb.Lake.local() as lake:
+with sus.Lake.local() as lake:
     compacted = lake.optimize("sim_obitos")
     history_preview = lake.expire_snapshots(older_than=cutoff)
     files_preview = lake.cleanup_files(older_than=cutoff)

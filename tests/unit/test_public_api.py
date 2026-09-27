@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp.datasets import REGISTRY
@@ -16,24 +16,24 @@ from tests.support import fake_datasus
 
 
 def test_scopes_for_yearly_ignores_months() -> None:
-    assert odb.scopes_for("sim_obitos", years=[2023], ufs=["RR"], months=[1, 2]) == [
+    assert sus.scopes_for("sim_obitos", years=[2023], ufs=["RR"], months=[1, 2]) == [
         ScopeKey(uf="RR", ano=2023)
     ]
 
 
 def test_scopes_for_monthly_defaults_to_twelve_months() -> None:
-    scopes = odb.scopes_for("sih_aih_reduzida", years=[2024], ufs=["RR"])
+    scopes = sus.scopes_for("sih_aih_reduzida", years=[2024], ufs=["RR"])
     assert len(scopes) == 12
     assert scopes[0] == ScopeKey(uf="RR", ano=2024, mes=1)
     assert scopes[-1] == ScopeKey(uf="RR", ano=2024, mes=12)
 
 
 def test_scopes_for_all_ufs_when_none() -> None:
-    assert len(odb.scopes_for("sim_obitos", years=[2023])) == len(odb.ALL_UFS) == 27
+    assert len(sus.scopes_for("sim_obitos", years=[2023])) == len(sus.ALL_UFS) == 27
 
 
 def test_scopes_for_order_is_year_then_uf_then_month() -> None:
-    scopes = odb.scopes_for(
+    scopes = sus.scopes_for(
         "sih_aih_reduzida", years=[2023, 2024], ufs=["AC", "RR"], months=[1, 2]
     )
     assert [(s.ano, s.uf, s.mes) for s in scopes] == [
@@ -49,8 +49,8 @@ def test_scopes_for_order_is_year_then_uf_then_month() -> None:
 
 
 def test_scopes_for_accepts_a_dataset_value() -> None:
-    by_key = odb.scopes_for("sim_obitos", years=[2023], ufs=["RR"])
-    by_value = odb.scopes_for(REGISTRY["sim_obitos"], years=[2023], ufs=["RR"])
+    by_key = sus.scopes_for("sim_obitos", years=[2023], ufs=["RR"])
+    by_value = sus.scopes_for(REGISTRY["sim_obitos"], years=[2023], ufs=["RR"])
     assert by_key == by_value == [ScopeKey(uf="RR", ano=2023)]
 
 
@@ -63,9 +63,9 @@ def test_import_dataset_reaches_the_sia_family(monkeypatch, tmp_path: Path, dbc_
     )
     target = f"ducklake:{tmp_path}/api.ducklake"
 
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sia_apac_tratamento_dialitico",
-        scopes=odb.scopes_for(
+        scopes=sus.scopes_for(
             "sia_apac_tratamento_dialitico", years=[2024], ufs=["RR"], months=[1]
         ),
         target=target,
@@ -89,7 +89,7 @@ def test_import_dataset_accepts_hand_built_scopes(
     )
     target = f"ducklake:{tmp_path}/handbuilt.ducklake"
 
-    report = odb.import_dataset("sim_obitos", scopes=[ScopeKey(uf="RR", ano=2023)], target=target)
+    report = sus.import_dataset("sim_obitos", scopes=[ScopeKey(uf="RR", ano=2023)], target=target)
 
     assert report.rows > 0
     with Lake.local(target) as lake:
@@ -99,7 +99,7 @@ def test_import_dataset_accepts_hand_built_scopes(
 def test_public_import_functions_are_the_readable_ones() -> None:
     """One generic FTP entry point plus the importers that carry behaviour of
     their own. Short-name aliases (``import_sim`` …) were removed in 0.2.0."""
-    importers = sorted(name for name in odb.__all__ if name.startswith("import_"))
+    importers = sorted(name for name in sus.__all__ if name.startswith("import_"))
     assert importers == [
         "import_cnes_master",
         "import_dataset",
@@ -110,10 +110,10 @@ def test_public_import_functions_are_the_readable_ones() -> None:
 
 
 def test_import_aborted_error_is_public_and_retains_progress_payload() -> None:
-    report = odb.ImportReport(outcomes=())
+    report = sus.ImportReport(outcomes=())
     unresolved = ((0, ScopeKey(uf="RR", ano=2023)),)
 
-    error = odb.ImportAbortedError(report, unresolved)
+    error = sus.ImportAbortedError(report, unresolved)
 
     assert isinstance(error, RuntimeError)
     assert error.report is report
@@ -229,7 +229,7 @@ def test_import_dataset_reaches_every_registry_row(
     fake_datasus.serve(monkeypatch, dataset_name, {scope: dbc_fixture(fixture_name).read_bytes()})
     target = f"ducklake:{tmp_path}/{dataset_name}.ducklake"
 
-    report = odb.import_dataset(dataset_name, scopes=[scope], target=target)
+    report = sus.import_dataset(dataset_name, scopes=[scope], target=target)
 
     assert not report.failed, report.failed
     assert report.rows > 0
@@ -238,7 +238,7 @@ def test_import_dataset_reaches_every_registry_row(
 
 
 def test_available_and_browse_are_exported() -> None:
-    import omnisus as odb
+    import omnisus as sus
 
     for name in (
         "available",
@@ -248,31 +248,31 @@ def test_available_and_browse_are_exported() -> None:
         "FtpPathNotFound",
         "FtpUnavailable",
     ):
-        assert name in odb.__all__, name
-        assert hasattr(odb, name), name
+        assert name in sus.__all__, name
+        assert hasattr(sus, name), name
 
 
 def test_policy_type_and_dataset_resolver_are_exported() -> None:
     from typing import get_args
 
-    assert {"ImportPolicy", "resolve"} <= set(odb.__all__)
-    assert get_args(odb.ImportPolicy) == ("append", "skip_same", "error_if_exists", "replace")
-    assert odb.resolve("sim_obitos").name == "sim_obitos"
+    assert {"ImportPolicy", "resolve"} <= set(sus.__all__)
+    assert get_args(sus.ImportPolicy) == ("append", "skip_same", "error_if_exists", "replace")
+    assert sus.resolve("sim_obitos").name == "sim_obitos"
 
 
 def test_catalog_attach_error_is_exported() -> None:
     from omnisus.lake import CatalogAttachError
 
-    assert "CatalogAttachError" in odb.__all__
-    assert odb.CatalogAttachError is CatalogAttachError
+    assert "CatalogAttachError" in sus.__all__
+    assert sus.CatalogAttachError is CatalogAttachError
     assert issubclass(CatalogAttachError, RuntimeError)
 
 
 def test_lake_reader_is_exported() -> None:
     from omnisus.lake import LakeReader
 
-    assert "LakeReader" in odb.__all__
-    assert odb.LakeReader is LakeReader
+    assert "LakeReader" in sus.__all__
+    assert sus.LakeReader is LakeReader
 
 
 def test_products_state_what_each_importer_family_supports() -> None:
@@ -281,10 +281,10 @@ def test_products_state_what_each_importer_family_supports() -> None:
     from dataclasses import FrozenInstanceError
     from typing import get_args
 
-    products = {p.name: p for p in odb.products()}
+    products = {p.name: p for p in sus.products()}
     assert set(products) == set(REGISTRY) | {"ibge_populacao", "cnes_master"}
-    assert [d.name for d in odb.datasets()] == list(REGISTRY)
-    for dataset in odb.datasets():
+    assert [d.name for d in sus.datasets()] == list(REGISTRY)
+    for dataset in sus.datasets():
         product = products[dataset.name]
         assert product.dataset is dataset
         if dataset.geography == "national":
@@ -293,29 +293,29 @@ def test_products_state_what_each_importer_family_supports() -> None:
             assert product.scope_fields == (
                 ("uf", "ano", "mes") if dataset.monthly else ("uf", "ano")
             )
-        assert product.policies == get_args(odb.ImportPolicy)
+        assert product.policies == get_args(sus.ImportPolicy)
         assert (product.reconcile_by, product.inventory) == ("run_id", True)
-    assert products["ibge_populacao"] == odb.Product(
+    assert products["ibge_populacao"] == sus.Product(
         "ibge_populacao", None, ("product", "ano"), ("append",), "publication_id", False
     )
-    assert products["cnes_master"] == odb.Product(
+    assert products["cnes_master"] == sus.Product(
         "cnes_master", None, (), ("append",), "rerun", False
     )
     with pytest.raises(FrozenInstanceError):
         products["ibge_populacao"].inventory = True  # type: ignore[misc]
-    assert {"Product", "datasets", "products"} <= set(odb.__all__)
+    assert {"Product", "datasets", "products"} <= set(sus.__all__)
 
 
 def test_deletion_result_is_exported() -> None:
     from omnisus.lake.publication import DeletionResult
 
-    assert "DeletionResult" in odb.__all__
-    assert odb.DeletionResult is DeletionResult
+    assert "DeletionResult" in sus.__all__
+    assert sus.DeletionResult is DeletionResult
 
 
 def test_available_needs_no_lake(monkeypatch, tmp_path: Path) -> None:
     """Discovery is decoupled from the lake — it works before `init`."""
-    import omnisus as odb
+    import omnisus as sus
     from omnisus.sources.datasus_ftp.datasets import REGISTRY
 
     monkeypatch.setenv("OMNISUS_CACHE_DIR", str(tmp_path / "cache"))
@@ -327,7 +327,7 @@ def test_available_needs_no_lake(monkeypatch, tmp_path: Path) -> None:
         return []
 
     monkeypatch.setattr("omnisus.sources.datasus_ftp.inventory._blocking_list", fake)
-    assert odb.available("sim_obitos") == [ScopeKey(uf="AC", ano=1996)]
+    assert sus.available("sim_obitos") == [ScopeKey(uf="AC", ano=1996)]
     assert not list(tmp_path.glob("*.ducklake"))
 
 
@@ -375,7 +375,7 @@ def test_outdated_lists_scopes_whose_directory_moved(tmp_path, monkeypatch) -> N
     monkeypatch.setattr("omnisus.list_sources", lambda *a, **k: server)
     with Lake.local(target) as lake:
         # 2026 is in the lake but no longer on the server: a withdrawal, not an outdated file
-        assert odb.outdated("sinan_chagas", lake=lake) == [ScopeKey(uf=None, ano=2025)]
+        assert sus.outdated("sinan_chagas", lake=lake) == [ScopeKey(uf=None, ano=2025)]
 
 
 def test_outdated_lists_the_single_directory_row_too(tmp_path, monkeypatch) -> None:
@@ -393,4 +393,4 @@ def test_outdated_lists_the_single_directory_row_too(tmp_path, monkeypatch) -> N
 
     monkeypatch.setattr("omnisus.sources.datasus_ftp.inventory._blocking_list", fake)
     with Lake.local(f"ducklake:{tmp_path}/l.ducklake") as lake:
-        assert odb.outdated("sia_bpa_individualizado", lake=lake) == []
+        assert sus.outdated("sia_bpa_individualizado", lake=lake) == []

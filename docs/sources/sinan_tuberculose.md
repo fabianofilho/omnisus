@@ -59,12 +59,12 @@ nacional por ano: 2001 a 2019 no diretório final e 2020 a 2025 no preliminar
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-print(odb.available_releases("sinan_tuberculose", refresh=True))  # ano -> final ou prelim
-escopos = odb.available("sinan_tuberculose", years=[2020])
-relatorio = odb.import_dataset(
+print(sus.available_releases("sinan_tuberculose", refresh=True))  # ano -> final ou prelim
+escopos = sus.available("sinan_tuberculose", years=[2020])
+relatorio = sus.import_dataset(
     "sinan_tuberculose", scopes=escopos, target=alvo, policy="skip_same", run_id="tb-2020"
 )
 ```

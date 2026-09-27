@@ -189,14 +189,14 @@ DEF no `TAB_SIA.zip`, por isso não tem rótulos. Todas declaram identidade de a
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("sia_bpa_individualizado", years=[2024], ufs=["RR"], months=[1], refresh=True)
-relatorio = odb.import_dataset(
+escopos = sus.available("sia_bpa_individualizado", years=[2024], ufs=["RR"], months=[1], refresh=True)
+relatorio = sus.import_dataset(
     "sia_bpa_individualizado", scopes=escopos, target=alvo, policy="skip_same", run_id="sia-bpai-rr-2024-01"
 )
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, mes, count(*) AS registros FROM lake.sia_bpa_individualizado GROUP BY ALL").pl())
 ```
 

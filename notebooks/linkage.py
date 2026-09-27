@@ -23,9 +23,9 @@ def _():
     import marimo as mo
     import polars as pl
 
-    import omnisus as odb
+    import omnisus as sus
 
-    return mo, odb, pl
+    return mo, sus, pl
 
 
 @app.cell(hide_code=True)
@@ -83,7 +83,7 @@ def _(mo):
     mo.md(r"""
     ## 1 · O que o DATASUS publica, e baixar
 
-    Antes de baixar, a lista do servidor (`odb.available`): quais meses de cada
+    Antes de baixar, a lista do servidor (`sus.available`): quais meses de cada
     base existem para a UF e o ano dos parâmetros. Uma base que não aparece na
     lista não é baixada, e a tabela diz isso. SIH e SIA são mensais; o CNES é
     uma foto mensal do cadastro, e basta dezembro.
@@ -98,7 +98,7 @@ def _(mo):
 
 
 @app.cell
-def _(ANO, PULAR, UF, executar, mo, odb):
+def _(ANO, PULAR, UF, executar, mo, sus):
     mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
     SUBCONJUNTOS_SIM = [
         "sim_obitos_fetais",
@@ -136,13 +136,13 @@ def _(ANO, PULAR, UF, executar, mo, odb):
 
     def publicado(base, ano):
         """Escopos que o servidor lista agora para a UF (ou o Brasil) e o ano."""
-        return odb.available(base, years=[ano], ufs=None if base in NACIONAIS else [UF])
+        return sus.available(base, years=[ano], ufs=None if base in NACIONAIS else [UF])
 
     def carregar(base, escopos):
         meses = sorted({escopo.mes for escopo in escopos if escopo.mes is not None})
         if base == "cnes_estabelecimentos":
             meses = [12]  # uma foto do cadastro basta
-        return odb.load(
+        return sus.load(
             base,
             years=sorted({escopo.ano for escopo in escopos}),
             ufs=None if base in NACIONAIS else [UF],
@@ -197,7 +197,7 @@ def _(mo):
     mo.md(r"""
     ## 2 · Coluna por coluna, com o decoder
 
-    `odb.check_columns` confere cada coluna com o dicionário da base e devolve uma
+    `sus.check_columns` confere cada coluna com o dicionário da base e devolve uma
     linha por coluna:
 
     | campo | o que é |
@@ -213,8 +213,8 @@ def _(mo):
 
 
 @app.cell
-def _(bases, odb):
-    verificacoes = {base: odb.check_columns(base, dados) for base, dados in bases.items()}
+def _(bases, sus):
+    verificacoes = {base: sus.check_columns(base, dados) for base, dados in bases.items()}
     return (verificacoes,)
 
 
@@ -256,14 +256,14 @@ def _(mo):
 
 
 @app.cell
-def _(bases, odb, pl):
+def _(bases, sus, pl):
     pl.DataFrame(
         {
             "base": list(bases),
             "declaradas e ausentes no arquivo": [
                 ", ".join(
                     campo["name"]
-                    for campo in odb.describe_dataset(base)["schema"]["fields"]
+                    for campo in sus.describe_dataset(base)["schema"]["fields"]
                     if campo["name"] not in dados.columns
                 )
                 for base, dados in bases.items()
@@ -500,11 +500,11 @@ def _(mo):
 
 
 @app.cell
-def _(bases, odb, pl):
+def _(bases, sus, pl):
     def rotulo(base, coluna):
-        """Troca o código pelo rótulo que `odb.label` dá a ele."""
+        """Troca o código pelo rótulo que `sus.label` dá a ele."""
         codigos = bases[base].select(pl.col(coluna).unique())
-        mapa = dict(odb.label(base, codigos).iter_rows())
+        mapa = dict(sus.label(base, codigos).iter_rows())
         return pl.col(coluna).replace_strict(mapa, default=None, return_dtype=pl.String)
 
     def sexo(base, coluna):
@@ -513,7 +513,7 @@ def _(bases, odb, pl):
 
     def tem_rotulos(base, coluna):
         """O dicionário da base tem rótulos para a coluna?"""
-        return f"{coluna}_rotulo" in odb.label(base, bases[base].head(0)).columns
+        return f"{coluna}_rotulo" in sus.label(base, bases[base].head(0)).columns
 
     return rotulo, sexo, tem_rotulos
 
@@ -1100,11 +1100,11 @@ def _(mo):
 
 
 @app.cell
-def _(executar, mo, odb, pl):
+def _(executar, mo, sus, pl):
     mo.stop(not executar)
-    with odb.Lake.local() as lake:
+    with sus.Lake.local() as lake:
         lake.bootstrap_auxiliares()
-    with odb.LakeReader() as leitor:
+    with sus.LakeReader() as leitor:
         cid10 = (
             leitor.connect()
             .sql(f"SELECT codigo, descricao, capitulo FROM {leitor.alias}.aux_cid10")
@@ -1739,7 +1739,7 @@ def _(
     comparar,
     mo,
     nao_executado,
-    odb,
+    sus,
     pares_por_chave,
     pct,
     pl,
@@ -1793,7 +1793,7 @@ def _(
             _erros = bases["sih_aih_rejeitada_erro"]
             _partes += [
                 mo.md(
-                    "O ER, erro por erro. `odb.label` põe o motivo ao lado do código"
+                    "O ER, erro por erro. `sus.label` põe o motivo ao lado do código"
                     " (tabela MOTERRO do TabWin do SIH)."
                 ),
                 pl.DataFrame(
@@ -1810,7 +1810,7 @@ def _(
                         }
                     ]
                 ),
-                odb.label(
+                sus.label(
                     "sih_aih_rejeitada_erro",
                     _erros.group_by("co_erro")
                     .agg(

@@ -47,9 +47,9 @@ storage with the Parquet files (`omnisus.ducklake/`). By default the folder is
 of the notebook; every call without `target` then uses it:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-odb.set_lake_dir("~/omnisus")
+sus.set_lake_dir("~/omnisus")
 ```
 
 Scripts can set `OMNISUS_DATA_DIR` instead, and CLI commands take `--target`.
@@ -64,10 +64,10 @@ Deleting a Colab runtime erases `/content`. Put the lake on Drive and it stays:
 from google.colab import drive
 drive.mount("/content/drive")
 
-import omnisus as odb
-odb.set_lake_dir("/content/drive/MyDrive/omnisus")
+import omnisus as sus
+sus.set_lake_dir("/content/drive/MyDrive/omnisus")
 
-dados = odb.load("sim_obitos", years=[2023], ufs=["RR"])
+dados = sus.load("sim_obitos", years=[2023], ufs=["RR"])
 ```
 
 Before closing the notebook, run `drive.flush_and_unmount()` so every file reaches
@@ -99,16 +99,16 @@ omnisus query "SELECT count(*) FROM lake.sim_obitos WHERE ano=2023 AND uf='RR'"
 Or in Python:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-report = odb.import_research(
+report = sus.import_research(
     "sim_obitos",
-    scopes=odb.available("sim_obitos", years=[2023], ufs=["RR"]),
+    scopes=sus.available("sim_obitos", years=[2023], ufs=["RR"]),
     run_id="sim-rr-2023-01",
 )
-with odb.LakeReader() as reader:
-    snapshot_id = odb.latest_snapshot_id(reader)
-    citacao = odb.cite(reader, dataset="sim_obitos", snapshot_id=snapshot_id, run_id="sim-rr-2023-01")
+with sus.LakeReader() as reader:
+    snapshot_id = sus.latest_snapshot_id(reader)
+    citacao = sus.cite(reader, dataset="sim_obitos", snapshot_id=snapshot_id, run_id="sim-rr-2023-01")
     df = reader.connect().sql(
         "SELECT count(*) AS obitos FROM lake.sim_obitos WHERE ano=2023 AND uf='RR'"
     ).pl()

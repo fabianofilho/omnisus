@@ -150,7 +150,7 @@ def test_sia_bytes_of_another_uf_or_month_are_rejected(
 ) -> None:
     """Served as another UF (MG) or another month of its coverage, a real SIA file fails
     instead of publishing."""
-    import omnisus as odb
+    import omnisus as sus
     from tests.support import fake_datasus
 
     scope = (
@@ -160,7 +160,7 @@ def test_sia_bytes_of_another_uf_or_month_are_rejected(
     )
     raw = dbc_fixture(fixture).read_bytes()
     fake_datasus.serve(monkeypatch, dataset, {scope: raw})
-    report = odb.import_dataset(dataset, scopes=[scope], target=f"ducklake:{tmp_path}/x.ducklake")
+    report = sus.import_dataset(dataset, scopes=[scope], target=f"ducklake:{tmp_path}/x.ducklake")
     assert [o.code for o in report.outcomes] == ["ingest_failed"]
     assert (ufmun if wrong == "uf" else month) in (report.outcomes[0].reason or "")
 

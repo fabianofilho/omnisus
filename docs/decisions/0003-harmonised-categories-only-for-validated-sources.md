@@ -3,7 +3,7 @@
 **Date:** 2026-09-23
 **Status:** Decided
 
-`odb.load` adds harmonised categories (`sexo_categoria`, `idade_anos_completos`, `*_data`)
+`sus.load` adds harmonised categories (`sexo_categoria`, `idade_anos_completos`, `*_data`)
 only when every scope it returns comes from a validated source: a file whose SHA-256 is
 listed in the rule's `validated_sources`. For any other scope the columns are absent, and a
 warning names the reason. Labels still work for every scope.

@@ -1,6 +1,6 @@
 """Every public callable says what it accepts, what it returns, and shows an example.
 
-"Public" is `odb.__all__`: its functions and the public methods of its classes. The
+"Public" is `sus.__all__`: its functions and the public methods of its classes. The
 docstrings are Google style, so the docs site renders a parameter table.
 
 - `Args:` names every parameter; a `Literal` parameter lists every accepted value.
@@ -20,15 +20,15 @@ from collections.abc import Callable, Iterator
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 
 SECTION = re.compile(r"^(Args|Returns|Yields|Raises|Warns|Examples|Attributes):$")
 
 
 def _public() -> Iterator[tuple[str, Callable]]:
     seen: set[int] = set()
-    for name in odb.__all__:
-        obj = getattr(odb, name)
+    for name in sus.__all__:
+        obj = getattr(sus, name)
         if inspect.isclass(obj):
             members = [
                 (f"{name}.{member}", getattr(value, "__func__", value))

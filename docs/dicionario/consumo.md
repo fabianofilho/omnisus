@@ -8,14 +8,14 @@ dicionário e a versão da regra analítica são informações separadas.
 ## Definições e apresentação
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-metadata = odb.describe_dataset("sim_obitos")
+metadata = sus.describe_dataset("sim_obitos")
 sexo = next(item for item in metadata["fields"] if item["field"]["name"] == "sexo")
 print(sexo["field"]["logical_type"])
 print(sexo["claims"])
 print(metadata["metadata_hash"])
-print(odb.display_row("sim_obitos", {"idade": "469", "sexo": "2"}))  # sexo: "Feminino"
+print(sus.display_row("sim_obitos", {"idade": "469", "sexo": "2"}))  # sexo: "Feminino"
 ```
 
 Cada chamada devolve dados independentes. `fields` contém documentos por coluna,
@@ -40,16 +40,16 @@ consulta o lake: o chamador deve fornecer schema e identidades do mesmo snapshot
 verificando que as publicações representam todas as linhas dos escopos selecionados.
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 target = "ducklake:./data/omnisus-v2.ducklake"
-with odb.LakeReader(target, snapshot_id=5) as reader:
+with sus.LakeReader(target, snapshot_id=5) as reader:
     con = reader.connect()
     schema = {row[0]: row[1] for row in con.sql("DESCRIBE lake.sim_obitos").fetchall()}
     publications = [row for row in reader.publications()
                     if row["dataset"] == "sim_obitos" and row["active"] and row["managed"]]
-    contexts = [odb.SourceContext.from_publication(row) for row in publications]
-    projection = odb.analytical_projection("sim_obitos", observed_schema=schema, scopes=contexts)
+    contexts = [sus.SourceContext.from_publication(row) for row in publications]
+    projection = sus.analytical_projection("sim_obitos", observed_schema=schema, scopes=contexts)
     print(projection.rule_version, projection.metadata_hash)
     print(projection.unavailable)
 ```
@@ -69,7 +69,7 @@ dia do calendário no formato do dicionário: a projeção não julga se a data 
 2029-12-29; `BIRR2201` tem nascimento em 1892-11-05; o SIH tem nascimento em 1899-12-30.
 A biblioteca não aplica limite de plausibilidade; a regra fica com a análise: compare com
 a data do evento ou com o mês de processamento, e veja `date_min`/`date_max` em
-`odb.check_columns`. `SIM 400` significa zero anos completos com
+`sus.check_columns`. `SIM 400` significa zero anos completos com
 precisão menor de um ano, não zero dias. Faixas etárias pertencem ao relatório.
 
 `idade_quantidade` e `idade_unidade` (`minute`, `hour`, `day`, `month` ou `year`)

@@ -50,9 +50,9 @@ Arquivos anuais por UF, de 1996 em diante, no diretório final
 Um ano pode estar em só um dos dois diretórios. Para saber qual:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-publicados = odb.available_releases("sinasc_nascidos_vivos", ufs=["RR"], refresh=True)
+publicados = sus.available_releases("sinasc_nascidos_vivos", ufs=["RR"], refresh=True)
 ```
 
 ### 1994 e 1995
@@ -118,14 +118,14 @@ o Brasil. A documentação dessa era no servidor é `Doc/NASC98.HLP`. Os dicion�
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("sinasc_nascidos_vivos", years=[2022], ufs=["RR"], refresh=True)
-relatorio = odb.import_dataset(
+escopos = sus.available("sinasc_nascidos_vivos", years=[2022], ufs=["RR"], refresh=True)
+relatorio = sus.import_dataset(
     "sinasc_nascidos_vivos", scopes=escopos, target=alvo, policy="skip_same", run_id="sinasc-rr-2022"
 )
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, count(*) AS nascidos_vivos FROM lake.sinasc_nascidos_vivos GROUP BY ano").pl())
 ```
 
@@ -177,9 +177,9 @@ convive na mesma tabela com anos finais sem se confundir com eles. Quando o DATA
 republica um ano preliminar como final:
 
 ```python
-with odb.LakeReader() as leitor:
-    movidos = odb.outdated("sinasc_nascidos_vivos", lake=leitor)
-odb.import_dataset("sinasc_nascidos_vivos", scopes=movidos,
+with sus.LakeReader() as leitor:
+    movidos = sus.outdated("sinasc_nascidos_vivos", lake=leitor)
+sus.import_dataset("sinasc_nascidos_vivos", scopes=movidos,
                    policy="replace", run_id="sinasc-final-2026")
 ```
 

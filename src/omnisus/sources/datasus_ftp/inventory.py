@@ -379,8 +379,8 @@ def available_releases(
         FtpUnavailable: the server did not answer after retries.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.available_releases("sim_obitos", years=[2024], ufs=["RR"])  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> sus.available_releases("sim_obitos", years=[2024], ufs=["RR"])  # doctest: +SKIP
         {ScopeKey(uf='RR', ano=2024, mes=None): 'prelim'}
     """
     d = resolve(dataset)
@@ -431,8 +431,8 @@ def available(
         FtpUnavailable: the server did not answer after retries.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.available("sim_obitos", years=[2023], ufs=["RR"])  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> sus.available("sim_obitos", years=[2023], ufs=["RR"])  # doctest: +SKIP
         [ScopeKey(uf='RR', ano=2023, mes=None)]
     """
     return list(available_releases(dataset, years=years, ufs=ufs, months=months, refresh=refresh))

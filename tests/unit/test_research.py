@@ -8,7 +8,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
 from tests.support import fake_datasus
@@ -28,8 +28,8 @@ def test_research_helpers_are_exported() -> None:
         "municipality_join_key",
         "municipality_join_key_sql",
     ):
-        assert name in odb.__all__
-        assert hasattr(odb, name)
+        assert name in sus.__all__
+        assert hasattr(sus, name)
 
 
 def test_import_research_requires_run_id_and_refuses_append(
@@ -40,10 +40,10 @@ def test_import_research_requires_run_id_and_refuses_append(
     scopes = [ScopeKey(uf="RR", ano=2023)]
 
     with pytest.raises(TypeError):
-        odb.import_research("sim_obitos", scopes=scopes, target=target)  # type: ignore[call-arg]
+        sus.import_research("sim_obitos", scopes=scopes, target=target)  # type: ignore[call-arg]
 
     with pytest.raises(ValueError, match="append"):
-        odb.import_research(
+        sus.import_research(
             "sim_obitos",
             scopes=scopes,
             target=target,
@@ -52,7 +52,7 @@ def test_import_research_requires_run_id_and_refuses_append(
         )
 
     with pytest.raises(ValueError, match="run_id"):
-        odb.import_research("sim_obitos", scopes=scopes, target=target, run_id="  ")
+        sus.import_research("sim_obitos", scopes=scopes, target=target, run_id="  ")
 
 
 def test_import_research_skip_same_does_not_duplicate(
@@ -62,8 +62,8 @@ def test_import_research_skip_same_does_not_duplicate(
     target = f"ducklake:{tmp_path}/research.ducklake"
     scopes = [ScopeKey(uf="RR", ano=2023)]
 
-    first = odb.import_research("sim_obitos", scopes=scopes, target=target, run_id="r1")
-    second = odb.import_research("sim_obitos", scopes=scopes, target=target, run_id="r2")
+    first = sus.import_research("sim_obitos", scopes=scopes, target=target, run_id="r1")
+    second = sus.import_research("sim_obitos", scopes=scopes, target=target, run_id="r2")
 
     assert first.rows > 0
     assert second.rows == 0
@@ -78,16 +78,16 @@ def test_latest_snapshot_id_and_cite_name_the_file(
 ) -> None:
     _serve_sim_rr_2023(monkeypatch, dbc_fixture("sim_rr_2023_mini").read_bytes())
     target = f"ducklake:{tmp_path}/cite.ducklake"
-    odb.import_research(
+    sus.import_research(
         "sim_obitos",
         scopes=[ScopeKey(uf="RR", ano=2023)],
         target=target,
         run_id="sim-rr-2023-01",
     )
 
-    with odb.LakeReader(target) as leitor:
-        snapshot_id = odb.latest_snapshot_id(leitor)
-        citacao = odb.cite(
+    with sus.LakeReader(target) as leitor:
+        snapshot_id = sus.latest_snapshot_id(leitor)
+        citacao = sus.cite(
             leitor,
             dataset="sim_obitos",
             snapshot_id=snapshot_id,
@@ -98,7 +98,7 @@ def test_latest_snapshot_id_and_cite_name_the_file(
     assert snapshot_id == citacao.snapshot_id
     assert citacao.dataset == "sim_obitos"
     assert citacao.run_id == "sim-rr-2023-01"
-    assert citacao.omnisus == odb.__version__
+    assert citacao.omnisus == sus.__version__
     assert len(citacao.publications) == 1
     pub = citacao.publications[0]
     assert pub["source_sha256"]
@@ -107,21 +107,21 @@ def test_latest_snapshot_id_and_cite_name_the_file(
     assert "sim-rr-2023-01" in citacao.text
     assert str(snapshot_id) in citacao.text
     assert "2026-09-18" in citacao.text
-    assert odb.__version__ in citacao.text
+    assert sus.__version__ in citacao.text
 
 
 def test_cite_without_snapshot_pins_the_latest(monkeypatch, tmp_path: Path, dbc_fixture) -> None:
     _serve_sim_rr_2023(monkeypatch, dbc_fixture("sim_rr_2023_mini").read_bytes())
     target = f"ducklake:{tmp_path}/pin.ducklake"
-    odb.import_research(
+    sus.import_research(
         "sim_obitos",
         scopes=[ScopeKey(uf="RR", ano=2023)],
         target=target,
         run_id="r1",
     )
-    with odb.LakeReader(target) as leitor:
-        expected = odb.latest_snapshot_id(leitor)
-        citacao = odb.cite(leitor, dataset="sim_obitos")
+    with sus.LakeReader(target) as leitor:
+        expected = sus.latest_snapshot_id(leitor)
+        citacao = sus.cite(leitor, dataset="sim_obitos")
     assert citacao.snapshot_id == expected
 
 
@@ -131,7 +131,7 @@ def test_latest_snapshot_id_without_history() -> None:
             return []
 
     with pytest.raises(LookupError, match="snapshot"):
-        odb.latest_snapshot_id(_Vazio())  # type: ignore[arg-type]
+        sus.latest_snapshot_id(_Vazio())  # type: ignore[arg-type]
 
 
 def test_cite_ibge_uses_population_manifest(tmp_path: Path) -> None:
@@ -152,8 +152,8 @@ def test_cite_ibge_uses_population_manifest(tmp_path: Path) -> None:
             )
             .lazy(),
         )
-        snapshot_id = odb.latest_snapshot_id(lake)
-        citacao = odb.cite(
+        snapshot_id = sus.latest_snapshot_id(lake)
+        citacao = sus.cite(
             lake,
             dataset="ibge_populacao",
             snapshot_id=snapshot_id,
@@ -188,26 +188,26 @@ def test_the_citation_names_every_part_of_a_split_month() -> None:
             },
         ],
     }
-    text = odb.citation_from_publications([row], snapshot_id=3).text
+    text = sus.citation_from_publications([row], snapshot_id=3).text
     assert "BIMG2412_1.dbc" in text and "BIMG2412_2.dbc" in text
     assert "1" * 64 in text and "2" * 64 in text
 
 
 def test_municipality_join_key_takes_the_left_digits() -> None:
-    assert odb.municipality_join_key("1400100") == "140010"
-    assert odb.municipality_join_key("140010", digits=6) == "140010"
-    assert odb.municipality_join_key(1400100) == "140010"
-    assert odb.municipality_join_key(" 1400100 ", digits=7) == "1400100"
-    assert odb.municipality_join_key(None) is None
-    assert odb.municipality_join_key("  ") is None
+    assert sus.municipality_join_key("1400100") == "140010"
+    assert sus.municipality_join_key("140010", digits=6) == "140010"
+    assert sus.municipality_join_key(1400100) == "140010"
+    assert sus.municipality_join_key(" 1400100 ", digits=7) == "1400100"
+    assert sus.municipality_join_key(None) is None
+    assert sus.municipality_join_key("  ") is None
     with pytest.raises(ValueError, match="digits"):
-        odb.municipality_join_key("1400100", digits=5)
+        sus.municipality_join_key("1400100", digits=5)
 
 
 def test_municipality_join_key_sql_matches_the_guide() -> None:
-    sql = odb.municipality_join_key_sql("codmunres")
+    sql = sus.municipality_join_key_sql("codmunres")
     assert sql == 'left(trim(CAST("codmunres" AS VARCHAR)), 6)'
-    ibge = odb.municipality_join_key_sql("codigo_ibge", digits=6)
+    ibge = sus.municipality_join_key_sql("codigo_ibge", digits=6)
     con = duckdb.connect()
     assert con.execute(f"SELECT {sql} FROM (SELECT '1400100' AS codmunres)").fetchone() == (
         "140010",
@@ -216,4 +216,4 @@ def test_municipality_join_key_sql_matches_the_guide() -> None:
         "140010",
     )
     with pytest.raises(ValueError):
-        odb.municipality_join_key_sql("codmunres", digits=8)
+        sus.municipality_join_key_sql("codmunres", digits=8)
