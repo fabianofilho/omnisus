@@ -1,0 +1,547 @@
+;Movimento de AIH - Arquivos Reduzidos - Brasil
+;
+A..\DADOS\RD_AIH_Reduzida\RD*.DBC
+?\TAB\RD.HLP
+;
+; Variáveis de incremento
+;
+IValor Total       ,VAL_TOT
+IValor Serv.Hosp.  ,VAL_SH
+IValor Serv.Prof.  ,VAL_SP
+IValor SADT        ,VAL_SADT
+IValor Recém-nato  ,VAL_RN
+IValor Acompanhante,VAL_ACOMP
+IValor Órt/Prótese ,VAL_ORTP
+IValor Sangue      ,VAL_SANGUE
+IValor SADT s/rat  ,VAL_SADTSR
+IValor Transplantes,VAL_TRANSP
+IValor Analg Obst  ,VAL_OBSANG
+IValor Ped 1ª cons.,VAL_PED1AC
+IValor UTI         ,VAL_UTI
+IValor Total US$   ,US_TOT
+IÓbitos            ,MORTE
+IPermanência       ,DIAS_PERM
+IPontos SP         ,TOT_PT_SP
+IDiárias de UTI    ,UTI_MES_TO
+IDiárias UTI interm,UTI_INT_TO
+IDiárias Acompanhan,DIAR_ACOM 
+;
+; Variáveis referentes ao hospital
+;
+LRegião int        ,MUNIC_MOV ,1         ,REGIAO.CNV
+CRegião int        ,MUNIC_MOV ,1         ,REGIAOC.CNV
+SRegião int        ,MUNIC_MOV ,1         ,REGIAO.CNV
+LRegião e UF int   ,MUNIC_MOV ,1         ,REGUF.CNV
+LUF int            ,MUNIC_MOV ,1         ,UF.CNV
+CUF int            ,MUNIC_MOV ,1         ,UFC.CNV
+SUF int            ,MUNIC_MOV ,1         ,UFALFA.CNV
+XMunicípio int     ,MUNIC_MOV ,1         ,MUNICBR.CNV
+XCapital int       ,MUNIC_MOV ,1         ,CAPITAL.CNV
+XRegião metrop int ,MUNIC_MOV ,1         ,RMETRBR.CNV
+XAglomerado urb int,MUNIC_MOV ,1         ,AGLBR.CNV
+XMesorregião int   ,MUNIC_MOV ,1         ,MESOBR.CNV
+XMicrorregião int  ,MUNIC_MOV ,1         ,MICROBR.CNV
+XRegional saúde int,MUNIC_MOV ,1         ,RSAUDBR.CNV
+XMacrorreg saúd int,MUNIC_MOV ,1         ,MSAUDBR.CNV
+XMicrorreg saúd int,MUNIC_MOV ,1         ,CSAUDBR.CNV
+XRegião adm DF int ,MUNIC_MOV ,1         ,DistrFederal.CNV
+LLocal int IDB     ,MUNIC_MOV ,1         ,MUNIDB.CNV
+; -------------------------------------------------
+LHospital BR (CNES),CNES      ,RAZAO     ,TCNESBR.DBF
+LHospital AC (CNES),CNES      ,RAZAO     ,TCNESAC.DBF
+LHospital AL (CNES),CNES      ,RAZAO     ,TCNESAL.DBF
+LHospital AM (CNES),CNES      ,RAZAO     ,TCNESAM.DBF
+LHospital AP (CNES),CNES      ,RAZAO     ,TCNESAP.DBF
+LHospital BA (CNES),CNES      ,RAZAO     ,TCNESBA.DBF
+LHospital CE (CNES),CNES      ,RAZAO     ,TCNESCE.DBF
+LHospital DF (CNES),CNES      ,RAZAO     ,TCNESDF.DBF
+LHospital ES (CNES),CNES      ,RAZAO     ,TCNESES.DBF
+LHospital GO (CNES),CNES      ,RAZAO     ,TCNESGO.DBF
+LHospital MA (CNES),CNES      ,RAZAO     ,TCNESMA.DBF
+LHospital MG (CNES),CNES      ,RAZAO     ,TCNESMG.DBF
+LHospital MS (CNES),CNES      ,RAZAO     ,TCNESMS.DBF
+LHospital MT (CNES),CNES      ,RAZAO     ,TCNESMT.DBF
+LHospital PA (CNES),CNES      ,RAZAO     ,TCNESPA.DBF
+LHospital PB (CNES),CNES      ,RAZAO     ,TCNESPB.DBF
+LHospital PE (CNES),CNES      ,RAZAO     ,TCNESPE.DBF
+LHospital PI (CNES),CNES      ,RAZAO     ,TCNESPI.DBF
+LHospital PR (CNES),CNES      ,RAZAO     ,TCNESPR.DBF
+LHospital RJ (CNES),CNES      ,RAZAO     ,TCNESRJ.DBF
+LHospital RN (CNES),CNES      ,RAZAO     ,TCNESRN.DBF
+LHospital RO (CNES),CNES      ,RAZAO     ,TCNESRO.DBF
+LHospital RR (CNES),CNES      ,RAZAO     ,TCNESRR.DBF
+LHospital RS (CNES),CNES      ,RAZAO     ,TCNESRS.DBF
+LHospital SC (CNES),CNES      ,RAZAO     ,TCNESSC.DBF
+LHospital SE (CNES),CNES      ,RAZAO     ,TCNESSE.DBF
+LHospital SP (CNES),CNES      ,RAZAO     ,TCNESSP.DBF
+LHospital TO (CNES),CNES      ,RAZAO     ,TCNESTO.DBF
+SHospital BR (CNES),CNES      ,RAZAO     ,TCNESBR.DBF
+SHospital AC (CNES),CNES      ,RAZAO     ,TCNESAC.DBF
+SHospital AL (CNES),CNES      ,RAZAO     ,TCNESAL.DBF
+SHospital AM (CNES),CNES      ,RAZAO     ,TCNESAM.DBF
+SHospital AP (CNES),CNES      ,RAZAO     ,TCNESAP.DBF
+SHospital BA (CNES),CNES      ,RAZAO     ,TCNESBA.DBF
+SHospital CE (CNES),CNES      ,RAZAO     ,TCNESCE.DBF
+SHospital DF (CNES),CNES      ,RAZAO     ,TCNESDF.DBF
+SHospital ES (CNES),CNES      ,RAZAO     ,TCNESES.DBF
+SHospital GO (CNES),CNES      ,RAZAO     ,TCNESGO.DBF
+SHospital MA (CNES),CNES      ,RAZAO     ,TCNESMA.DBF
+SHospital MG (CNES),CNES      ,RAZAO     ,TCNESMG.DBF
+SHospital MS (CNES),CNES      ,RAZAO     ,TCNESMS.DBF
+SHospital MT (CNES),CNES      ,RAZAO     ,TCNESMT.DBF
+SHospital PA (CNES),CNES      ,RAZAO     ,TCNESPA.DBF
+SHospital PB (CNES),CNES      ,RAZAO     ,TCNESPB.DBF
+SHospital PE (CNES),CNES      ,RAZAO     ,TCNESPE.DBF
+SHospital PI (CNES),CNES      ,RAZAO     ,TCNESPI.DBF
+SHospital PR (CNES),CNES      ,RAZAO     ,TCNESPR.DBF
+SHospital RJ (CNES),CNES      ,RAZAO     ,TCNESRJ.DBF
+SHospital RN (CNES),CNES      ,RAZAO     ,TCNESRN.DBF
+SHospital RO (CNES),CNES      ,RAZAO     ,TCNESRO.DBF
+SHospital RR (CNES),CNES      ,RAZAO     ,TCNESRR.DBF
+SHospital RS (CNES),CNES      ,RAZAO     ,TCNESRS.DBF
+SHospital SC (CNES),CNES      ,RAZAO     ,TCNESSC.DBF
+SHospital SE (CNES),CNES      ,RAZAO     ,TCNESSE.DBF
+SHospital SP (CNES),CNES      ,RAZAO     ,TCNESSP.DBF
+SHospital TO (CNES),CNES      ,RAZAO     ,TCNESTO.DBF
+; -------------------------------------------------
+LHospital BR (CNPJ),CGC_HOSP  ,RAZAO     ,TCHBR.DBF
+LHospital AC (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAC.DBF
+LHospital AL (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAL.DBF
+LHospital AM (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAM.DBF
+LHospital AP (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAP.DBF
+LHospital BA (CNPJ),CGC_HOSP  ,RAZAO     ,TCHBA.DBF
+LHospital CE (CNPJ),CGC_HOSP  ,RAZAO     ,TCHCE.DBF
+LHospital DF (CNPJ),CGC_HOSP  ,RAZAO     ,TCHDF.DBF
+LHospital ES (CNPJ),CGC_HOSP  ,RAZAO     ,TCHES.DBF
+LHospital GO (CNPJ),CGC_HOSP  ,RAZAO     ,TCHGO.DBF
+LHospital MA (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMA.DBF
+LHospital MG (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMG.DBF
+LHospital MS (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMS.DBF
+LHospital MT (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMT.DBF
+LHospital PA (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPA.DBF
+LHospital PB (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPB.DBF
+LHospital PE (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPE.DBF
+LHospital PI (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPI.DBF
+LHospital PR (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPR.DBF
+LHospital RJ (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRJ.DBF
+LHospital RN (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRN.DBF
+LHospital RO (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRO.DBF
+LHospital RR (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRR.DBF
+LHospital RS (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRS.DBF
+LHospital SC (CNPJ),CGC_HOSP  ,RAZAO     ,TCHSC.DBF
+LHospital SE (CNPJ),CGC_HOSP  ,RAZAO     ,TCHSE.DBF
+LHospital SP (CNPJ),CGC_HOSP  ,RAZAO     ,TCHSP.DBF
+LHospital TO (CNPJ),CGC_HOSP  ,RAZAO     ,TCHTO.DBF
+SHospital BR (CNPJ),CGC_HOSP  ,RAZAO     ,TCHBR.DBF
+SHospital AC (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAC.DBF
+SHospital AL (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAL.DBF
+SHospital AM (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAM.DBF
+SHospital AP (CNPJ),CGC_HOSP  ,RAZAO     ,TCHAP.DBF
+SHospital BA (CNPJ),CGC_HOSP  ,RAZAO     ,TCHBA.DBF
+SHospital CE (CNPJ),CGC_HOSP  ,RAZAO     ,TCHCE.DBF
+SHospital DF (CNPJ),CGC_HOSP  ,RAZAO     ,TCHDF.DBF
+SHospital ES (CNPJ),CGC_HOSP  ,RAZAO     ,TCHES.DBF
+SHospital GO (CNPJ),CGC_HOSP  ,RAZAO     ,TCHGO.DBF
+SHospital MA (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMA.DBF
+SHospital MG (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMG.DBF
+SHospital MS (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMS.DBF
+SHospital MT (CNPJ),CGC_HOSP  ,RAZAO     ,TCHMT.DBF
+SHospital PA (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPA.DBF
+SHospital PB (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPB.DBF
+SHospital PE (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPE.DBF
+SHospital PI (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPI.DBF
+SHospital PR (CNPJ),CGC_HOSP  ,RAZAO     ,TCHPR.DBF
+SHospital RJ (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRJ.DBF
+SHospital RN (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRN.DBF
+SHospital RO (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRO.DBF
+SHospital RR (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRR.DBF
+SHospital RS (CNPJ),CGC_HOSP  ,RAZAO     ,TCHRS.DBF
+SHospital SC (CNPJ),CGC_HOSP  ,RAZAO     ,TCHSC.DBF
+SHospital SE (CNPJ),CGC_HOSP  ,RAZAO     ,TCHSE.DBF
+SHospital SP (CNPJ),CGC_HOSP  ,RAZAO     ,TCHSP.DBF
+SHospital TO (CNPJ),CGC_HOSP  ,RAZAO     ,TCHTO.DBF
+; -------------------------------------------------
+LNatureza          ,NATUREZA  ,1         ,NATUREZA.CNV
+CNatureza          ,NATUREZA  ,1         ,NATUREZC.CNV
+SNatureza          ,NATUREZA  ,1         ,NATUREZA.CNV
+XRegime            ,NATUREZA  ,1         ,REGIME.CNV
+XGestão            ,GESTAO    ,1         ,GESTAO.CNV
+XGestão (95-97)    ,SEMIPLEN  ,1         ,GESTAO.CNV
+LUF - ZI           ,UF_ZI     ,1         ,UF.CNV
+CUF - ZI           ,UF_ZI     ,1         ,UFC.CNV
+SUF - ZI           ,UF_ZI     ,1         ,UFALFA.CNV
+;
+;   Variáveis referentes ao processamento
+;
+LNúm processamento ,NUM_PROC  ,1         ,NUMPROC.CNV
+SNúm processamento ,NUM_PROC  ,1         ,NUMPROC.CNV
+XTipo processamento,NUM_PROC  ,1         ,TIPOPROC.CNV
+XAno processamento ,ANO_CMPT  ,3         ,ANO.CNV
+XAno proces (92-97),ANO_CMPT  ,1         ,ANO.CNV
+XMês processamento ,MES_CMPT  ,1         ,MESES.CNV
+LAno/mês processam ,ANO_CMPT  ,3         ,ANOMES.CNV
+CAno/mês processam ,ANO_CMPT  ,3         ,ANOMESC.CNV
+SAno/mês processam ,ANO_CMPT  ,3         ,ANOMESC.CNV
+LAno/mês proc(<98) ,ANO_CMPT  ,1         ,ANOMES.CNV
+CAno/mês proc(<98) ,ANO_CMPT  ,1         ,ANOMESC.CNV
+SAno/mês proc(<98) ,ANO_CMPT  ,1         ,ANOMESC.CNV
+XRubrica           ,RUBRICA   ,1         ,RUBRICA.CNV
+;
+;   Variáveis referentes ao paciente
+;
+XSexo              ,SEXO      ,1         ,SEXO.CNV
+XFaixa etária (5)  ,COD_IDADE ,1         ,IDADEBAS.CNV
+XFaixa etária (9)  ,COD_IDADE ,1         ,IDADEPUB.CNV
+XFaixa etária (18) ,COD_IDADE ,1         ,IDADE18.CNV
+XIdade detalhada   ,COD_IDADE ,1         ,IDADEDET.CNV
+LRegião res        ,MUNIC_RES ,1         ,REGIAO.CNV
+CRegião res        ,MUNIC_RES ,1         ,REGIAOC.CNV
+SRegião res        ,MUNIC_RES ,1         ,REGIAO.CNV
+LRegião e UF res   ,MUNIC_RES ,1         ,REGUF.CNV
+LUF res            ,MUNIC_RES ,1         ,UF.CNV
+CUF res            ,MUNIC_RES ,1         ,UFC.CNV
+SUF res            ,MUNIC_RES ,1         ,UFALFA.CNV
+XMunicípio res     ,MUNIC_RES ,1         ,MUNICBR.CNV
+XCapital res       ,MUNIC_RES ,1         ,CAPITAL.CNV
+XRegião metrop res ,MUNIC_RES ,1         ,RMETRBR.CNV
+XAglomerado urb res,MUNIC_RES ,1         ,AGLBR.CNV
+XMesorregião res   ,MUNIC_RES ,1         ,MESOBR.CNV
+XMicrorregião res  ,MUNIC_RES ,1         ,MICROBR.CNV
+XRegional saúde res,MUNIC_RES ,1         ,RSAUDBR.CNV
+XMacrorreg saúd res,MUNIC_RES ,1         ,MSAUDBR.CNV
+XMicrorreg saúd res,MUNIC_RES ,1         ,CSAUDBR.CNV
+XRegião adm DF res ,MUNIC_RES ,1         ,DistrFederal.CNV
+LLocal res IDB     ,MUNIC_RES ,1         ,MUNIDB.CNV
+XNacionalidade     ,NACIONAL  ,1         ,NACIONAL.CNV
+XGrupo de ocupação ,CBOR      ,1         ,CBOG.CNV
+LOcupação          ,CBOR      ,1         ,CBO.CNV
+SOcupação          ,CBOR      ,1         ,CBO.CNV
+XGrupo ativ.econôm ,CNAER     ,1         ,CNAEG.CNV
+LAtividade econômic,CNAER     ,1         ,CNAE.CNV
+SAtividade econômic,CNAER     ,1         ,CNAE.CNV
+XVínculo previdenc ,VINCPREV  ,1         ,VINCPREV.CNV
+;
+;   Variáveis referentes à internação
+;
+XEspecialidade     ,ESPEC     ,1         ,ESPECIAL.CNV
+XEspecialidad(<=99),ESPEC     ,1         ,ESPECIAL1D.CNV
+XIdentificação     ,N_AIH     ,5         ,IDENTIFIC.CNV
+XTipo de AIH       ,IDENT     ,1         ,IDENT.CNV
+XSeqüencial        ,SEQ_AIH5  ,1         ,SEQAIH.CNV
+XCaráter internação,CAR_INT   ,1         ,CARINT.CNV
+XCarát inter(98-99),CAR_INT   ,1         ,CARINT1D.CNV
+XTeve diárias UTI  ,UTI_MES_TO,1         ,DIARIASUTI.CNV
+XTipo de UTI       ,MARCA_UTI ,1         ,MARCAUTI.CNV
+XAno de internação ,DT_INTER  ,3         ,ANO.CNV
+XMês de internação ,DT_INTER  ,5         ,MESES.CNV
+XAno intern (92-97),DT_INTER  ,1         ,ANO.CNV
+XMês intern (92-97),DT_INTER  ,3         ,MESES.CNV
+XAno de saída      ,DT_SAIDA  ,3         ,ANO.CNV
+XMês de saída      ,DT_SAIDA  ,5         ,MESES.CNV
+XAno saída (92-97) ,DT_SAIDA  ,1         ,ANO.CNV
+XMês saída (92-97) ,DT_SAIDA  ,3         ,MESES.CNV
+XDias permanência  ,DIAS_PERM ,2         ,PERM.CNV
+XCobrança          ,COBRANCA  ,1         ,COBRANCA.CNV
+LCobrança detalhada,COBRANCA  ,1         ,COBRDET.CNV
+CCobrança detalhada,COBRANCA  ,1         ,COBRDETS.CNV
+SCobrança detalhada,COBRANCA  ,1         ,COBRDETS.CNV
+XÓbitos            ,MORTE     ,1         ,MORTES.CNV
+;
+;  Variáveis referentes ao procedimento
+;
+LProcediment realiz,PROC_REA  ,IP_DSCR   ,TPROC.DBF
+SProcediment realiz,PROC_REA  ,IP_DSCR   ,TPROC.DBF
+LProcediment em uso,PROC_REA  ,IP_DSCR   ,EMUSO.DBF
+SProcediment em uso,PROC_REA  ,IP_DSCR   ,EMUSO.DBF
+LGrupo procedimento,PROC_REA  ,1         ,TGRUPO.CNV
+SGrupo procedimento,PROC_REA  ,1         ,TGRUPO.CNV
+LProcedimento FAEC ,PROC_REA  ,1         ,FAECAIH.CNV
+CProcedimento FAEC ,PROC_REA  ,1         ,FAECAIHS.CNV
+SProcedimento FAEC ,PROC_REA  ,1         ,FAECAIHS.CNV
+LComplex do proced ,PROC_REA  ,1         ,COMPLEX.CNV
+CComplex do proced ,PROC_REA  ,1         ,COMPLEX.CNV
+SComplex do proced ,PROC_REA  ,1         ,COMPLEX.CNV
+LProced obstétrico ,PROC_REA  ,1         ,PROCOBST.CNV
+CProced obstétrico ,PROC_REA  ,1         ,PROCOBST.CNV
+SProced obstétrico ,PROC_REA  ,1         ,PROCOBST.CNV
+LCirurgia cardíaca ,PROC_REA  ,1         ,GCARDIO.CNV
+CCirurgia cardíaca ,PROC_REA  ,1         ,GCARDIOS.CNV
+SCirurgia cardíaca ,PROC_REA  ,1         ,GCARDIOS.CNV
+XProced Pacto AtBás,PROC_REA  ,1         ,PROCPACTO.CNV
+XFez VDRL          ,IND_VDRL  ,1         ,SIMNAO.CNV
+XInfecção Hospit   ,INFEHOSP  ,1         ,SIMNAO.CNV
+LProcediment solic, PROC_SOLIC,IP_DSCR   ,TPROC.DBF
+SProcediment solic, PROC_SOLIC,IP_DSCR   ,TPROC.DBF
+;
+;  Variáveis referentes ao diagnóstico principal
+;
+;  CID-10
+;
+LDiag CID10 (capit),DIAG_PRINC,1         ,CID10CAP.CNV
+CDiag CID10 (capit),DIAG_PRINC,1         ,CID10CAC.CNV
+SDiag CID10 (capit),DIAG_PRINC,1         ,CID10CAP.CNV
+LDiag CID10 (grupo),DIAG_PRINC,1         ,CID10GRUPO.CNV
+CDiag CID10 (grupo),DIAG_PRINC,1         ,CID10GRUPOC.CNV
+SDiag CID10 (grupo),DIAG_PRINC,1         ,CID10GRUPOS.CNV
+LDiag CID10 (categ),DIAG_PRINC,1         ,CID10_3D.CNV
+SDiag CID10 (categ),DIAG_PRINC,1         ,CID10_3D.CNV
+LAgrav Notif Compul,DIAG_PRINC,1         ,AGRAVONOT.CNV
+CAgrav Notif Compul,DIAG_PRINC,1         ,AGRAVONOTS.CNV
+SAgrav Notif Compul,DIAG_PRINC,1         ,AGRAVONOTS.CNV
+LAgrav Notif Bloq  ,DIAG_PRINC,1         ,AGRAVOBLOQ.CNV
+CAgrav Notif Bloq  ,DIAG_PRINC,1         ,AGRAVOBLOQS.CNV
+SAgrav Notif Bloq  ,DIAG_PRINC,1         ,AGRAVOBLOQS.CNV
+LDiag CID10 cap 01 ,DIAG_PRINC,1         ,CIDX01.CNV
+SDiag CID10 cap 01 ,DIAG_PRINC,1         ,CID10_01.CNV
+LDiag CID10 cap 02 ,DIAG_PRINC,1         ,CIDX02.CNV
+SDiag CID10 cap 02 ,DIAG_PRINC,1         ,CID10_02.CNV
+LDiag CID10 cap 03 ,DIAG_PRINC,1         ,CIDX03.CNV
+SDiag CID10 cap 03 ,DIAG_PRINC,1         ,CID10_03.CNV
+LDiag CID10 cap 04 ,DIAG_PRINC,1         ,CIDX04.CNV
+SDiag CID10 cap 04 ,DIAG_PRINC,1         ,CID10_04.CNV
+LDiag CID10 cap 05 ,DIAG_PRINC,1         ,CIDX05.CNV
+SDiag CID10 cap 05 ,DIAG_PRINC,1         ,CID10_05.CNV
+LDiag CID10 cap 06 ,DIAG_PRINC,1         ,CIDX06.CNV
+SDiag CID10 cap 06 ,DIAG_PRINC,1         ,CID10_06.CNV
+LDiag CID10 cap 07 ,DIAG_PRINC,1         ,CIDX07.CNV
+SDiag CID10 cap 07 ,DIAG_PRINC,1         ,CID10_07.CNV
+LDiag CID10 cap 08 ,DIAG_PRINC,1         ,CIDX08.CNV
+SDiag CID10 cap 08 ,DIAG_PRINC,1         ,CID10_08.CNV
+LDiag CID10 cap 09 ,DIAG_PRINC,1         ,CIDX09.CNV
+SDiag CID10 cap 09 ,DIAG_PRINC,1         ,CID10_09.CNV
+LDiag CID10 cap 10 ,DIAG_PRINC,1         ,CIDX10.CNV
+SDiag CID10 cap 10 ,DIAG_PRINC,1         ,CID10_10.CNV
+LDiag CID10 cap 11 ,DIAG_PRINC,1         ,CIDX11.CNV
+SDiag CID10 cap 11 ,DIAG_PRINC,1         ,CID10_11.CNV
+LDiag CID10 cap 12 ,DIAG_PRINC,1         ,CIDX12.CNV
+SDiag CID10 cap 12 ,DIAG_PRINC,1         ,CID10_12.CNV
+LDiag CID10 cap 13 ,DIAG_PRINC,1         ,CIDX13.CNV
+SDiag CID10 cap 13 ,DIAG_PRINC,1         ,CID10_13.CNV
+LDiag CID10 cap 14 ,DIAG_PRINC,1         ,CIDX14.CNV
+SDiag CID10 cap 14 ,DIAG_PRINC,1         ,CID10_14.CNV
+LDiag CID10 cap 15 ,DIAG_PRINC,1         ,CIDX15.CNV
+SDiag CID10 cap 15 ,DIAG_PRINC,1         ,CID10_15.CNV
+LDiag CID10 cap 16 ,DIAG_PRINC,1         ,CIDX16.CNV
+SDiag CID10 cap 16 ,DIAG_PRINC,1         ,CID10_16.CNV
+LDiag CID10 cap 17 ,DIAG_PRINC,1         ,CIDX17.CNV
+SDiag CID10 cap 17 ,DIAG_PRINC,1         ,CID10_17.CNV
+LDiag CID10 cap 18 ,DIAG_PRINC,1         ,CIDX18.CNV
+SDiag CID10 cap 18 ,DIAG_PRINC,1         ,CID10_18.CNV
+LDiag CID10 cap 19S,DIAG_PRINC,1         ,CIDX19S.CNV
+LDiag CID10 cap 19T,DIAG_PRINC,1         ,CIDX19T.CNV
+SDiag CID10 cap 19 ,DIAG_PRINC,1         ,CID10_19.CNV
+LDiag CID10 cap 20A,DIAG_PRINC,1         ,CIDX20A.CNV
+LDiag CID10 cap 20B,DIAG_PRINC,1         ,CIDX20B.CNV
+LDiag CID10 cap 20C,DIAG_PRINC,1         ,CIDX20C.CNV
+LDiag CID10 cap 20D,DIAG_PRINC,1         ,CIDX20D.CNV
+LDiag CID10 cap 20E,DIAG_PRINC,1         ,CIDX20E.CNV
+LDiag CID10 cap 20F,DIAG_PRINC,1         ,CIDX20F.CNV
+SDiag CID10 cap 20 ,DIAG_PRINC,1         ,CID10_20.CNV
+LDiag CID10 cap 21 ,DIAG_PRINC,1         ,CIDX21.CNV
+SDiag CID10 cap 21 ,DIAG_PRINC,1         ,CID10_21.CNV
+XDiag CID10 PactoAB,DIAG_PRINC,1         ,DIAGPACTO.CNV
+XDiag CID10 IDB D13,DIAG_PRINC,1         ,IDB_D14_CID10.CNV
+XDiag CID10 IDB D14,DIAG_PRINC,1         ,IDB_D15_CID10.CNV
+;
+;  CID-9
+;
+LDiag CID9 (capit) ,DIAG_PRINC,1         ,CID9_CAP.CNV
+CDiag CID9 (capit) ,DIAG_PRINC,1         ,CID9_CAC.CNV
+SDiag CID9 (capit) ,DIAG_PRINC,1         ,CID9_CAP.CNV
+LDiag CID9 (categ) ,DIAG_PRINC,1         ,CID9_3D.CNV
+SDiag CID9 (categ) ,DIAG_PRINC,1         ,CID9_3D.CNV 
+LDiag CID9 cap 01  ,DIAG_PRINC,1         ,CID9X01.CNV
+SDiag CID9 cap 01  ,DIAG_PRINC,1         ,CID9_01.CNV
+LDiag CID9 cap 02  ,DIAG_PRINC,1         ,CID9X02.CNV
+SDiag CID9 cap 02  ,DIAG_PRINC,1         ,CID9_02.CNV
+LDiag CID9 cap 03  ,DIAG_PRINC,1         ,CID9X03.CNV
+SDiag CID9 cap 03  ,DIAG_PRINC,1         ,CID9_03.CNV
+LDiag CID9 cap 04  ,DIAG_PRINC,1         ,CID9X04.CNV
+SDiag CID9 cap 04  ,DIAG_PRINC,1         ,CID9_04.CNV
+LDiag CID9 cap 05  ,DIAG_PRINC,1         ,CID9X05.CNV
+SDiag CID9 cap 05  ,DIAG_PRINC,1         ,CID9_05.CNV
+LDiag CID9 cap 06  ,DIAG_PRINC,1         ,CID9X06.CNV
+SDiag CID9 cap 06  ,DIAG_PRINC,1         ,CID9_06.CNV
+LDiag CID9 cap 07  ,DIAG_PRINC,1         ,CID9X07.CNV
+SDiag CID9 cap 07  ,DIAG_PRINC,1         ,CID9_07.CNV
+LDiag CID9 cap 08  ,DIAG_PRINC,1         ,CID9X08.CNV
+SDiag CID9 cap 08  ,DIAG_PRINC,1         ,CID9_08.CNV
+LDiag CID9 cap 09  ,DIAG_PRINC,1         ,CID9X09.CNV
+SDiag CID9 cap 09  ,DIAG_PRINC,1         ,CID9_09.CNV
+LDiag CID9 cap 10  ,DIAG_PRINC,1         ,CID9X10.CNV
+SDiag CID9 cap 10  ,DIAG_PRINC,1         ,CID9_10.CNV
+LDiag CID9 cap 11  ,DIAG_PRINC,1         ,CID9X11.CNV
+SDiag CID9 cap 11  ,DIAG_PRINC,1         ,CID9_11.CNV
+LDiag CID9 cap 12  ,DIAG_PRINC,1         ,CID9X12.CNV
+SDiag CID9 cap 12  ,DIAG_PRINC,1         ,CID9_12.CNV
+LDiag CID9 cap 13  ,DIAG_PRINC,1         ,CID9X13.CNV
+SDiag CID9 cap 13  ,DIAG_PRINC,1         ,CID9_13.CNV
+LDiag CID9 cap 14  ,DIAG_PRINC,1         ,CID9X14.CNV
+SDiag CID9 cap 14  ,DIAG_PRINC,1         ,CID9_14.CNV
+LDiag CID9 cap 15  ,DIAG_PRINC,1         ,CID9X15.CNV
+SDiag CID9 cap 15  ,DIAG_PRINC,1         ,CID9_15.CNV
+LDiag CID9 cap 16  ,DIAG_PRINC,1         ,CID9X16.CNV
+SDiag CID9 cap 16  ,DIAG_PRINC,1         ,CID9_16.CNV
+LDiag CID9 cap 17A ,DIAG_PRINC,1         ,CID9X17A.CNV
+LDiag CID9 cap 17B ,DIAG_PRINC,1         ,CID9X17B.CNV
+LDiag CID9 cap 17C ,DIAG_PRINC,1         ,CID9XEX1.CNV
+LDiag CID9 cap 17D ,DIAG_PRINC,1         ,CID9XEX2.CNV
+SDiag CID9 cap 17  ,DIAG_PRINC,1         ,CID9_17.CNV
+SDiag CID9 cap supl,DIAG_PRINC,1         ,CID9XSUP.CNV
+LDiag CID9 cap supl,DIAG_PRINC,1         ,CID9_SUP.CNV
+LDiag CID9 inválido,DIAG_PRINC,1         ,CID9XINV.CNV
+SDiag CID9 inválido,DIAG_PRINC,1         ,CID9XINV.CNV
+XDiag CID9 PactoAB ,DIAG_PRINC,1         ,DIAGPACTO9.CNV
+XDiag CID9 IDB D13 ,DIAG_PRINC,1         ,IDB_D14_CID9.CNV
+;
+;  Variáveis referentes ao diagnóstico secundário
+;
+;  CID-10
+;
+LDSec CID10 (capit),DIAG_SECUN,1         ,CID10CAP.CNV
+CDSec CID10 (capit),DIAG_SECUN,1         ,CID10CAC.CNV
+SDSec CID10 (capit),DIAG_SECUN,1         ,CID10CAP.CNV
+LDSec CID10 (grupo),DIAG_SECUN,1         ,CID10GRUPO.CNV
+CDSec CID10 (grupo),DIAG_SECUN,1         ,CID10GRUPOC.CNV
+SDSec CID10 (grupo),DIAG_SECUN,1         ,CID10GRUPOS.CNV
+LDSec CID10 (categ),DIAG_SECUN,1         ,CID10_3D.CNV
+SDSec CID10 (categ),DIAG_SECUN,1         ,CID10_3D.CNV
+LDSec CID10 cap 01 ,DIAG_SECUN,1         ,CIDX01.CNV
+SDSec CID10 cap 01 ,DIAG_SECUN,1         ,CID10_01.CNV
+LDSec CID10 cap 02 ,DIAG_SECUN,1         ,CIDX02.CNV
+SDSec CID10 cap 02 ,DIAG_SECUN,1         ,CID10_02.CNV
+LDSec CID10 cap 03 ,DIAG_SECUN,1         ,CIDX03.CNV
+SDSec CID10 cap 03 ,DIAG_SECUN,1         ,CID10_03.CNV
+LDSec CID10 cap 04 ,DIAG_SECUN,1         ,CIDX04.CNV
+SDSec CID10 cap 04 ,DIAG_SECUN,1         ,CID10_04.CNV
+LDSec CID10 cap 05 ,DIAG_SECUN,1         ,CIDX05.CNV
+SDSec CID10 cap 05 ,DIAG_SECUN,1         ,CID10_05.CNV
+LDSec CID10 cap 06 ,DIAG_SECUN,1         ,CIDX06.CNV
+SDSec CID10 cap 06 ,DIAG_SECUN,1         ,CID10_06.CNV
+LDSec CID10 cap 07 ,DIAG_SECUN,1         ,CIDX07.CNV
+SDSec CID10 cap 07 ,DIAG_SECUN,1         ,CID10_07.CNV
+LDSec CID10 cap 08 ,DIAG_SECUN,1         ,CIDX08.CNV
+SDSec CID10 cap 08 ,DIAG_SECUN,1         ,CID10_08.CNV
+LDSec CID10 cap 09 ,DIAG_SECUN,1         ,CIDX09.CNV
+SDSec CID10 cap 09 ,DIAG_SECUN,1         ,CID10_09.CNV
+LDSec CID10 cap 10 ,DIAG_SECUN,1         ,CIDX10.CNV
+SDSec CID10 cap 10 ,DIAG_SECUN,1         ,CID10_10.CNV
+LDSec CID10 cap 11 ,DIAG_SECUN,1         ,CIDX11.CNV
+SDSec CID10 cap 11 ,DIAG_SECUN,1         ,CID10_11.CNV
+LDSec CID10 cap 12 ,DIAG_SECUN,1         ,CIDX12.CNV
+SDSec CID10 cap 12 ,DIAG_SECUN,1         ,CID10_12.CNV
+LDSec CID10 cap 13 ,DIAG_SECUN,1         ,CIDX13.CNV
+SDSec CID10 cap 13 ,DIAG_SECUN,1         ,CID10_13.CNV
+LDSec CID10 cap 14 ,DIAG_SECUN,1         ,CIDX14.CNV
+SDSec CID10 cap 14 ,DIAG_SECUN,1         ,CID10_14.CNV
+LDSec CID10 cap 15 ,DIAG_SECUN,1         ,CIDX15.CNV
+SDSec CID10 cap 15 ,DIAG_SECUN,1         ,CID10_15.CNV
+LDSec CID10 cap 16 ,DIAG_SECUN,1         ,CIDX16.CNV
+SDSec CID10 cap 16 ,DIAG_SECUN,1         ,CID10_16.CNV
+LDSec CID10 cap 17 ,DIAG_SECUN,1         ,CIDX17.CNV
+SDSec CID10 cap 17 ,DIAG_SECUN,1         ,CID10_17.CNV
+LDSec CID10 cap 18 ,DIAG_SECUN,1         ,CIDX18.CNV
+SDSec CID10 cap 18 ,DIAG_SECUN,1         ,CID10_18.CNV
+LDSec CID10 cap 19S,DIAG_SECUN,1         ,CIDX19S.CNV
+LDSec CID10 cap 19T,DIAG_SECUN,1         ,CIDX19T.CNV
+SDSec CID10 cap 19 ,DIAG_SECUN,1         ,CID10_19.CNV
+LDSec CID10 cap 20A,DIAG_SECUN,1         ,CIDX20A.CNV
+LDSec CID10 cap 20B,DIAG_SECUN,1         ,CIDX20B.CNV
+LDSec CID10 cap 20C,DIAG_SECUN,1         ,CIDX20C.CNV
+LDSec CID10 cap 20D,DIAG_SECUN,1         ,CIDX20D.CNV
+LDSec CID10 cap 20E,DIAG_SECUN,1         ,CIDX20E.CNV
+LDSec CID10 cap 20F,DIAG_SECUN,1         ,CIDX20F.CNV
+SDSec CID10 cap 20 ,DIAG_SECUN,1         ,CID10_20.CNV
+LDSec CID10 cap 21 ,DIAG_SECUN,1         ,CIDX21.CNV
+SDSec CID10 cap 21 ,DIAG_SECUN,1         ,CID10_21.CNV
+XDSec CID10 IDB D14,DIAG_SECUN,1         ,IDB_D15_CID10.CNV
+;
+;  CID-9
+;
+LDSec CID9 (capit) ,DIAG_SEC  ,1         ,CID9_CAP.CNV
+CDSec CID9 (capit) ,DIAG_SEC  ,1         ,CID9_CAC.CNV
+SDSec CID9 (capit) ,DIAG_SEC  ,1         ,CID9_CAP.CNV
+LDSec CID9 (categ) ,DIAG_SEC  ,1         ,CID9_3D.CNV
+SDSec CID9 (categ) ,DIAG_SEC  ,1         ,CID9_3D.CNV 
+LDSec CID9 cap 01  ,DIAG_SEC  ,1         ,CID9X01.CNV
+SDSec CID9 cap 01  ,DIAG_SEC  ,1         ,CID9_01.CNV
+LDSec CID9 cap 02  ,DIAG_SEC  ,1         ,CID9X02.CNV
+SDSec CID9 cap 02  ,DIAG_SEC  ,1         ,CID9_02.CNV
+LDSec CID9 cap 03  ,DIAG_SEC  ,1         ,CID9X03.CNV
+SDSec CID9 cap 03  ,DIAG_SEC  ,1         ,CID9_03.CNV
+LDSec CID9 cap 04  ,DIAG_SEC  ,1         ,CID9X04.CNV
+SDSec CID9 cap 04  ,DIAG_SEC  ,1         ,CID9_04.CNV
+LDSec CID9 cap 05  ,DIAG_SEC  ,1         ,CID9X05.CNV
+SDSec CID9 cap 05  ,DIAG_SEC  ,1         ,CID9_05.CNV
+LDSec CID9 cap 06  ,DIAG_SEC  ,1         ,CID9X06.CNV
+SDSec CID9 cap 06  ,DIAG_SEC  ,1         ,CID9_06.CNV
+LDSec CID9 cap 07  ,DIAG_SEC  ,1         ,CID9X07.CNV
+SDSec CID9 cap 07  ,DIAG_SEC  ,1         ,CID9_07.CNV
+LDSec CID9 cap 08  ,DIAG_SEC  ,1         ,CID9X08.CNV
+SDSec CID9 cap 08  ,DIAG_SEC  ,1         ,CID9_08.CNV
+LDSec CID9 cap 09  ,DIAG_SEC  ,1         ,CID9X09.CNV
+SDSec CID9 cap 09  ,DIAG_SEC  ,1         ,CID9_09.CNV
+LDSec CID9 cap 10  ,DIAG_SEC  ,1         ,CID9X10.CNV
+SDSec CID9 cap 10  ,DIAG_SEC  ,1         ,CID9_10.CNV
+LDSec CID9 cap 11  ,DIAG_SEC  ,1         ,CID9X11.CNV
+SDSec CID9 cap 11  ,DIAG_SEC  ,1         ,CID9_11.CNV
+LDSec CID9 cap 12  ,DIAG_SEC  ,1         ,CID9X12.CNV
+SDSec CID9 cap 12  ,DIAG_SEC  ,1         ,CID9_12.CNV
+LDSec CID9 cap 13  ,DIAG_SEC  ,1         ,CID9X13.CNV
+SDSec CID9 cap 13  ,DIAG_SEC  ,1         ,CID9_13.CNV
+LDSec CID9 cap 14  ,DIAG_SEC  ,1         ,CID9X14.CNV
+SDSec CID9 cap 14  ,DIAG_SEC  ,1         ,CID9_14.CNV
+LDSec CID9 cap 15  ,DIAG_SEC  ,1         ,CID9X15.CNV
+SDSec CID9 cap 15  ,DIAG_SEC  ,1         ,CID9_15.CNV
+LDSec CID9 cap 16  ,DIAG_SEC  ,1         ,CID9X16.CNV
+SDSec CID9 cap 16  ,DIAG_SEC  ,1         ,CID9_16.CNV
+LDSec CID9 cap 17A ,DIAG_SEC  ,1         ,CID9X17A.CNV
+LDSec CID9 cap 17B ,DIAG_SEC  ,1         ,CID9X17B.CNV
+LDSec CID9 cap 17C ,DIAG_SEC  ,1         ,CID9XEX1.CNV
+LDSec CID9 cap 17D ,DIAG_SEC  ,1         ,CID9XEX2.CNV
+SDSec CID9 cap 17  ,DIAG_SEC  ,1         ,CID9_17.CNV
+SDSec CID9 cap supl,DIAG_SEC  ,1         ,CID9XSUP.CNV
+LDSec CID9 cap supl,DIAG_SEC  ,1         ,CID9_SUP.CNV
+LDSec CID9 inválido,DIAG_SEC  ,1         ,CID9XINV.CNV
+SDSec CID9 inválido,DIAG_SEC  ,1         ,CID9XINV.CNV
+;
+;  Variáveis referentes ao diagnóstico associado
+;
+;  CID-10
+;
+LCausa Assoc(capit),CID_ASSO   ,1         ,CID10CAP.CNV
+CCausa Assoc(capit),CID_ASSO   ,1         ,CID10CAC.CNV
+SCausa Assoc(capit),CID_ASSO   ,1         ,CID10CAP.CNV
+LCausa Assoc(grupo),CID_ASSO   ,1         ,CID10GRUPO.CNV
+CCausa Assoc(grupo),CID_ASSO   ,1         ,CID10GRUPOC.CNV
+SCausa Assoc(grupo),CID_ASSO   ,1         ,CID10GRUPOS.CNV
+LCausa Assoc(categ),CID_ASSO   ,1         ,CID10_3D.CNV
+SCausa Assoc(categ),CID_ASSO   ,1         ,CID10_3D.CNV
+;
+;  Variáveis referentes à causa de óbito
+;
+;  CID-10
+;
+LCausa Óbito(capit),CID_MORTE  ,1         ,CID10CAP.CNV
+CCausa Óbito(capit),CID_MORTE  ,1         ,CID10CAC.CNV
+SCausa Óbito(capit),CID_MORTE  ,1         ,CID10CAP.CNV
+LCausa Óbito(grupo),CID_MORTE  ,1         ,CID10GRUPO.CNV
+CCausa Óbito(grupo),CID_MORTE  ,1         ,CID10GRUPOC.CNV
+SCausa Óbito(grupo),CID_MORTE  ,1         ,CID10GRUPOS.CNV
+LCausa Óbito(categ),CID_MORTE  ,1         ,CID10_3D.CNV
+SCausa Óbito(categ),CID_MORTE  ,1         ,CID10_3D.CNV
+;
+;   Outras variáveis
+;
+XNúmero de filhos  ,NUM_FILHOS,1         ,NUMFILH.CNV
+XGrau de instrução ,INSTRU    ,1         ,INSTRU.CNV
+LCID laq (3 car)   ,CID_NOTIF ,1         ,CID10_3D.CNV
+LCID laq (Cap15)   ,CID_NOTIF ,1         ,CIDX15.CNV
+SCID laq (Cap15)   ,CID_NOTIF ,1         ,CID10_15.CNV
+LCID laq (Cap09)   ,CID_NOTIF ,1         ,CIDX09.CNV
+SCID laq (Cap09)   ,CID_NOTIF ,1         ,CID10_09.CNV
+XContraceptivo 1   ,CONTRACEP1,1         ,CONTRAC.CNV
+XContraceptivo 2   ,CONTRACEP2,1         ,CONTRAC.CNV
+XGestante de risco ,GESTRISCO ,1         ,SIMNAO.CNV
+XInscr pré-natal   ,INSC_PN   ,1         ,INSCPN.CNV
+XAutorização gestor,GESTOR_COD,1         ,AUTORIZ.CNV

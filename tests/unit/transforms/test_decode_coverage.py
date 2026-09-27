@@ -166,6 +166,10 @@ REMAINING = {
         ("tpresginfo", "", 115),
     ],
     ("sim_obitos_cid9", "sim_cid9_rr_1995_mini"): [],
+    # RD 1992-2007: RD.DEF of TAB_SIH_199201-199712.zip binds only the fields whose
+    # CNV map equals the 2008 one; RDRR9709 lacks gestao, instru and vincprev.
+    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini"): [],
+    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2007_12_mini"): [],
     # SIA families of Informe Técnico SIASUS 2019-07, same rule; AMP has no DEF.
     ("sia_apac_acompanhamento_bariatrica", "sia_ab_se_2025_07_mini"): [],
     ("sia_apac_fistula_arteriovenosa", "sia_acf_rr_2024_01_mini"): [],
@@ -292,6 +296,34 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
         # RD2008.DEF lines 407-433 bind TPDISEC1-9 to TP_DIAGSEC.CNV.
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", {"1": "Preexistente"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec2", {"1": "Preexistente"}),
+        # RD.DEF (TAB_SIH_199201-199712.zip) binds these fields to the same CNV maps as
+        # RD2008.DEF; RDRR9709 and RDRR0712 are the two ends of what we checked.
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_1997_09_mini",
+            "sexo",
+            {"1": "Masculino", "3": "Feminino"},
+        ),
+        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "natureza", {"40": "Estadual"}),
+        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "ident", {"1": "Normal"}),
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_2007_12_mini",
+            "gestao",
+            {"1": "Municipal plena assist", "2": "Estadual plena"},
+        ),
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_2007_12_mini",
+            "instru",
+            {"0": "Ignorado/não se aplica", "3": "2º grau"},
+        ),
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_2007_12_mini",
+            "vincprev",
+            {"0": "Não classificado"},
+        ),
         # RJ2008.DEF binds SEXO to RD's SEXO.CNV.
         (
             "sih_aih_rejeitada",
