@@ -109,7 +109,7 @@ def test_secondary_diagnoses_declare_the_cid10_reference(con, dbc_fixture):
             f"FROM d {join}"
         ).fetchone()
     con.unregister("d")
-    # (filled, resolved); diagsec3-9 are blank in every row of the excerpt.
+    # (filled, resolved); diagsec3-9 are blank in every row of the file.
     assert counted == {"diagsec1": (622, 622), "diagsec2": (15, 15)} | {
         f"diagsec{n}": (0, 0) for n in range(3, 10)
     }
