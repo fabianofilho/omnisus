@@ -86,6 +86,35 @@ def test_declared_references_resolve_on_real_fixtures(con, dbc_fixture, dataset,
     assert found == UNRESOLVED[(dataset, fixture, ano)]
 
 
+def test_secondary_diagnoses_declare_the_cid10_reference(con, dbc_fixture):
+    """RD2008.DEF, lines 389-406, relates DIAGSEC1-9 to DBF/CID10.DBF (IT_SIHSUS_1603, p. 4:
+    "Diagnóstico secundário N"). Each declares aux_cid10 and every filled code of RDRR2401
+    finds its row. The UNRESOLVED list above cannot see a lost reference: a field without
+    foreignKeys is skipped there, so this test counts the joins itself."""
+    fields = [f"diagsec{n}" for n in range(1, 10)]
+    assert set(fields) <= set(referenced_fields("sih_aih_reduzida"))
+    frame = dbc_bytes_to_lazyframe(
+        dbc_fixture("sih_rr_2024_01_mini").read_bytes(),
+        dataset="sih_aih_reduzida",
+        ano=2024,
+        uf="RR",
+    ).collect()
+    con.register("d", frame.to_arrow())
+    counted = {}
+    for field in fields:
+        assert field in frame.columns, f"{field} missing from RDRR2401"
+        join = sus.reference_join_sql("sih_aih_reduzida", field, alias="d")
+        counted[field] = con.execute(
+            f"SELECT count(*) FILTER (WHERE d.\"{field}\" <> ''), count(ref_{field}.codigo) "
+            f"FROM d {join}"
+        ).fetchone()
+    con.unregister("d")
+    # (filled, resolved); diagsec3-9 are blank in every row of the file.
+    assert counted == {"diagsec1": (622, 622), "diagsec2": (15, 15)} | {
+        f"diagsec{n}": (0, 0) for n in range(3, 10)
+    }
+
+
 def test_occupation_joins_cbo2002_from_2006_only(con, dbc_fixture):
     """SIM ``ocup`` resolves against CBO 2002 in 2023; TABOCUP titles never join."""
     frame = dbc_bytes_to_lazyframe(
