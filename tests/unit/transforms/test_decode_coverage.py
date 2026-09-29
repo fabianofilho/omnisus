@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from functools import cache
 from importlib.resources import files
+from pathlib import Path
 
 import duckdb
+import polars as pl
 import pytest
 
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
@@ -177,8 +180,14 @@ REMAINING = {
 }
 
 
+@cache
+def _read(dataset: str, path: Path) -> pl.DataFrame:
+    """Each (dataset, fixture) is read once per process: many cases share a fixture."""
+    return dbc_bytes_to_lazyframe(path.read_bytes(), dataset=dataset).collect()
+
+
 def _uncovered(dbc_fixture, dataset: str, fixture: str) -> list[Uncovered]:
-    frame = dbc_bytes_to_lazyframe(dbc_fixture(fixture).read_bytes(), dataset=dataset).collect()
+    frame = _read(dataset, dbc_fixture(fixture))
     with duckdb.connect() as con:
         return decode_coverage(dataset, con.from_arrow(frame.to_arrow()))
 
@@ -368,7 +377,7 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
 )
 def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field, labels):
     """Column check of 2026-09-23 (RR 2022): codes published with no label."""
-    frame = dbc_bytes_to_lazyframe(dbc_fixture(fixture).read_bytes(), dataset=dataset).collect()
+    frame = _read(dataset, dbc_fixture(fixture))
     assert set(labels) <= set(frame[field].to_list())
     decode = load_dicionario(dataset).field_def(field)["x-decode"]
     assert {code: decode.get(code) for code in labels} == labels
@@ -456,9 +465,8 @@ def test_codes_left_unlabeled_have_an_open_issue(
 def test_amp_age_unit_and_sex_stay_undecoded_without_a_def(dbc_fixture):
     """TAB_SIA has no AMP DEF and the Informe Técnico no AMP layout: AMPDF2401 holds
     AP_COIDADE 4 and AP_SEXO F/M, and neither field gets a map."""
-    raw = dbc_fixture("sia_amp_df_2024_01_mini").read_bytes()
     dataset = "sia_apac_acompanhamento_multiprofissional"
-    frame = dbc_bytes_to_lazyframe(raw, dataset=dataset).collect()
+    frame = _read(dataset, dbc_fixture("sia_amp_df_2024_01_mini"))
     assert set(frame["ap_coidade"]) == {"4"} and set(frame["ap_sexo"]) == {"F", "M"}
     for name in ("ap_coidade", "ap_sexo"):
         field = load_dicionario(dataset).field_def(name)
