@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp.inventory import FtpPathNotFound
 from tests.support import fake_datasus
@@ -27,7 +27,7 @@ def test_a_scope_the_listing_does_not_have_is_not_listed_without_a_download(
     monkeypatch, tmp_path
 ) -> None:
     fetched = fake_datasus.serve(monkeypatch, "sim_obitos", {ScopeKey("RR", 2023): SIM_RR})
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sim_obitos",
         scopes=[ScopeKey("RR", 2023), ScopeKey("AC", 2023)],
         target=_target(tmp_path),
@@ -39,7 +39,7 @@ def test_a_scope_the_listing_does_not_have_is_not_listed_without_a_download(
 
 def test_outside_coverage_has_its_own_code(monkeypatch, tmp_path) -> None:
     fake_datasus.serve(monkeypatch, "sim_obitos", {})
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sim_obitos", scopes=[ScopeKey("RR", 1990)], target=_target(tmp_path)
     )
     assert report.outcomes[0].code == "outside_coverage"
@@ -54,7 +54,7 @@ def test_a_550_on_a_listed_file_is_a_failure_not_a_skip(monkeypatch, tmp_path) -
         raise FtpFileNotFound(f"{entry.path}: 550")
 
     monkeypatch.setattr("omnisus.sources.datasus_ftp._runner.fetch_dbc_bytes", gone)
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sim_obitos", scopes=[ScopeKey("RR", 2023)], target=_target(tmp_path)
     )
     assert report.outcomes[0].status == "failed"
@@ -69,14 +69,14 @@ def test_a_missing_registry_directory_aborts_before_any_scope(monkeypatch, tmp_p
 
     monkeypatch.setattr("omnisus.sources.datasus_ftp.inventory._blocking_list", denied)
     with pytest.raises(FtpPathNotFound):
-        odb.import_dataset("sim_obitos", scopes=[ScopeKey("RR", 2023)], target=_target(tmp_path))
+        sus.import_dataset("sim_obitos", scopes=[ScopeKey("RR", 2023)], target=_target(tmp_path))
 
 
 def test_the_same_file_again_is_unchanged(monkeypatch, tmp_path) -> None:
     fake_datasus.serve(monkeypatch, "sim_obitos", {ScopeKey("RR", 2023): SIM_RR})
     scopes = [ScopeKey("RR", 2023)]
-    odb.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
-    again = odb.import_dataset(
+    sus.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    again = sus.import_dataset(
         "sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same"
     )
     assert again.outcomes[0].code == "unchanged"
@@ -88,9 +88,9 @@ def test_an_unchanged_listing_is_skipped_without_a_download(monkeypatch, tmp_pat
     only to learn its SHA-256 matched."""
     scopes = [ScopeKey("RR", 2023)]
     fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: SIM_RR})
-    odb.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    sus.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
     fetched = fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: SIM_RR})
-    again = odb.import_dataset(
+    again = sus.import_dataset(
         "sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same"
     )
     assert (again.outcomes[0].status, again.outcomes[0].code) == ("skipped", "unchanged")
@@ -102,11 +102,11 @@ def test_a_new_server_time_downloads_and_compares_the_bytes(monkeypatch, tmp_pat
     still ``unchanged``, now proven by SHA-256."""
     scopes = [ScopeKey("RR", 2023)]
     fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: SIM_RR})
-    odb.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    sus.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
     fetched = fake_datasus.serve(
         monkeypatch, "sim_obitos", {scopes[0]: SIM_RR}, modified=datetime(2025, 1, 2, 3, 4)
     )
-    again = odb.import_dataset(
+    again = sus.import_dataset(
         "sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same"
     )
     assert again.outcomes[0].code == "unchanged"
@@ -122,10 +122,10 @@ def test_a_new_dictionary_downloads_even_when_the_listing_is_unchanged(
 
     scopes = [ScopeKey("RR", 2023)]
     fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: SIM_RR})
-    odb.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    sus.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
     fetched = fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: SIM_RR})
     monkeypatch.setattr(_runner, "parser_version", lambda d: "dbc-staging-v1:" + "0" * 64)
-    again = odb.import_dataset(
+    again = sus.import_dataset(
         "sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same"
     )
     assert again.outcomes[0].status == "failed"
@@ -133,10 +133,76 @@ def test_a_new_dictionary_downloads_even_when_the_listing_is_unchanged(
     assert len(fetched) == 1
 
 
+def _edited_dictionary(tmp_path: Path, dataset: str, edit) -> Path:
+    """``dataset``'s packaged YAML, parsed, changed by ``edit`` and written to ``tmp_path``."""
+    from importlib.resources import files
+
+    import yaml
+
+    raw = yaml.safe_load(
+        (files("omnisus.data.dicionarios") / f"{dataset}.yaml").read_text("utf-8")
+    )
+    edit(raw)
+    path = tmp_path / f"{dataset}.yaml"
+    path.write_text(yaml.safe_dump(raw, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    return path
+
+
+def _relabel(raw: dict) -> None:
+    """An editorial change: a label, a code map and a claim note, none read by the import."""
+    field = raw["schema"]["fields"][0]
+    field["label"] = field.get("label", "") + " (revisto)"
+    field["x-decode"] = {"1": "Um"}
+    field["x-metadata"] = {"claims": [{"target": "/field/codes", "note": "Conferido de novo."}]}
+
+
+def test_an_editorial_dictionary_change_keeps_the_scope_unchanged(monkeypatch, tmp_path) -> None:
+    """Labels, code maps and claims are read when rows are queried, never when they are
+    imported, so a lake imported under the old dictionary needs no replace (issue #13)."""
+    from dataclasses import replace
+
+    from omnisus.sources.datasus_ftp.datasets import REGISTRY
+
+    scopes = [ScopeKey("RR", 2023)]
+    fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: SIM_RR})
+    sus.import_dataset("sim_obitos", scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    edited = replace(
+        REGISTRY["sim_obitos"], dictionary=_edited_dictionary(tmp_path, "sim_obitos", _relabel)
+    )
+    fetched = fake_datasus.serve(monkeypatch, edited, {scopes[0]: SIM_RR})
+    again = sus.import_dataset(edited, scopes=scopes, target=_target(tmp_path), policy="skip_same")
+    assert (again.outcomes[0].status, again.outcomes[0].code) == ("skipped", "unchanged")
+    assert fetched == []
+
+
+@pytest.mark.parametrize(
+    ("dataset", "edit", "same"),
+    [
+        ("sinan_hanseniase", _relabel, True),
+        ("sinan_hanseniase", lambda raw: raw.update(encoding="cp1252"), False),
+        ("sinan_hanseniase", lambda raw: raw["x-identity"].update(code="A30"), False),
+    ],
+    ids=["editorial", "encoding", "x-identity"],
+)
+def test_the_parser_version_follows_only_what_the_import_reads(
+    tmp_path, dataset, edit, same
+) -> None:
+    """The import reads the dictionary's ``encoding`` (to decode text) and ``x-identity``
+    (to accept or reject the file); nothing else in the YAML changes the stored rows."""
+    from dataclasses import replace
+
+    from omnisus.sources.datasus_ftp._runner import parser_version
+    from omnisus.sources.datasus_ftp.datasets import REGISTRY
+
+    packaged = REGISTRY[dataset]
+    edited = replace(packaged, dictionary=_edited_dictionary(tmp_path, dataset, edit))
+    assert (parser_version(edited) == parser_version(packaged)) is same
+
+
 def test_a_split_month_imports_through_the_runner(monkeypatch, tmp_path) -> None:
     scope = ScopeKey("MG", 2024, 12)
     fetched = fake_datasus.serve(monkeypatch, "sia_bpa_individualizado", {scope: BI_PARTS})
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sia_bpa_individualizado", scopes=[scope], target=_target(tmp_path)
     )
     assert report.outcomes[0].status == "ok" and report.rows == 400
@@ -155,7 +221,7 @@ def test_a_scope_over_the_inflight_budget_fails_and_the_run_continues(
         "omnisus.sources.datasus_ftp._runner.validate_identity", lambda *_a, **_k: None
     )
     budget = len(BI_PARTS[0]) + len(BI_PARTS[1]) - 1
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sia_bpa_individualizado",
         scopes=[big, small],
         target=_target(tmp_path),
@@ -174,7 +240,7 @@ def test_a_file_over_the_payload_cap_fails_before_it_is_downloaded(monkeypatch, 
     scope = ScopeKey("MG", 2024, 12)
     fetched = fake_datasus.serve(monkeypatch, "sia_bpa_individualizado", {scope: BI_PARTS})
     cap = len(BI_PARTS[0]) - 1
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sia_bpa_individualizado",
         scopes=[scope],
         target=_target(tmp_path),
@@ -218,7 +284,7 @@ def test_a_real_three_part_month_imports_under_default_limits(monkeypatch, tmp_p
     """SIA BPA-I SP 2025-10 is listed as three parts totalling 534,393,112
     bytes: more than two 512 MiB payload caps, well inside the 1 GiB budget."""
     fetched = _serve_real_sia_listing(monkeypatch, tmp_path)
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sia_bpa_individualizado", scopes=[ScopeKey("SP", 2025, 10)], target=_target(tmp_path)
     )
     assert report.outcomes[0].status == "ok", report.outcomes[0].reason
@@ -232,7 +298,7 @@ def test_a_real_split_month_reserves_the_sum_of_its_listed_sizes(monkeypatch, tm
     sum fails that month, naming the sum."""
     fetched = _serve_real_sia_listing(monkeypatch, tmp_path)
     october, november = ScopeKey("SP", 2025, 10), ScopeKey("SP", 2025, 11)
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sia_bpa_individualizado",
         scopes=[october, november],
         target=_target(tmp_path),
@@ -242,7 +308,7 @@ def test_a_real_split_month_reserves_the_sum_of_its_listed_sizes(monkeypatch, tm
     assert [o.status for o in report.outcomes] == ["ok", "ok"]
     assert fetched == [f"BISP25{m}_{n}.dbc" for m in (10, 11) for n in (1, 2, 3)]
 
-    short = odb.import_dataset(
+    short = sus.import_dataset(
         "sia_bpa_individualizado",
         scopes=[october],
         target=f"ducklake:{tmp_path}/short.ducklake",

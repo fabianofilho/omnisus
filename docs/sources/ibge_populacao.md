@@ -118,11 +118,11 @@ chamada pede um produto e um ano:
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-resultados = odb.import_ibge_populacao(years=[2022], census=True, target=alvo)
-with odb.LakeReader(alvo) as leitor:
+resultados = sus.import_ibge_populacao(years=[2022], census=True, target=alvo)
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, count(*) AS municipios, sum(populacao) FROM lake.ibge_populacao GROUP BY ano").pl())
 ```
 
@@ -165,9 +165,9 @@ Passo a passo com análise e procedência, que consulta o manifesto antes de imp
 O importador HTTP/SIDRA é separado e exige `years` e `census`:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-odb.import_ibge_populacao(years=[2022], census=True, target="ducklake:population.ducklake")
+sus.import_ibge_populacao(years=[2022], census=True, target="ducklake:population.ducklake")
 ```
 
 Ele devolve `list[ImportResult]`, fora do inventário do FTP e do `ImportReport`. Não

@@ -96,9 +96,9 @@ de UF nem de mês.
 Para saber em qual diretório cada ano está hoje:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-publicados = odb.available_releases("sinan_chagas", refresh=True)
+publicados = sus.available_releases("sinan_chagas", refresh=True)
 ```
 
 ## Armadilhas
@@ -159,15 +159,15 @@ publicados = odb.available_releases("sinan_chagas", refresh=True)
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-print(odb.available_releases("sinan_chagas", refresh=True))  # ano -> final ou prelim
-escopos = odb.available("sinan_chagas", years=[2022])
-relatorio = odb.import_dataset(
+print(sus.available_releases("sinan_chagas", refresh=True))  # ano -> final ou prelim
+escopos = sus.available("sinan_chagas", years=[2022])
+relatorio = sus.import_dataset(
     "sinan_chagas", scopes=escopos, target=alvo, policy="skip_same", run_id="chagas-2022"
 )
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT _source_ano, _source_release, count(*) FROM lake.sinan_chagas GROUP BY ALL").pl())
 ```
 
@@ -221,9 +221,9 @@ preliminares convivem na mesma tabela; a coluna diz qual é qual, e
 modalidade na outra em silêncio. Quando o DATASUS republica um ano preliminar como final:
 
 ```python
-with odb.LakeReader(alvo) as leitor:
-    movidos = odb.outdated("sinan_chagas", lake=leitor)
-odb.import_dataset("sinan_chagas", scopes=movidos, target=alvo,
+with sus.LakeReader(alvo) as leitor:
+    movidos = sus.outdated("sinan_chagas", lake=leitor)
+sus.import_dataset("sinan_chagas", scopes=movidos, target=alvo,
                    policy="replace", run_id="chagas-final-2026")
 ```
 

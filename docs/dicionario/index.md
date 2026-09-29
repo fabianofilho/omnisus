@@ -23,9 +23,9 @@ Os arquivos vão dentro do pacote instalado: a biblioteca lê tudo offline.
 ## Conferir um rótulo
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-meta = odb.describe_dataset("sim_obitos")
+meta = sus.describe_dataset("sim_obitos")
 campo = next(f for f in meta["fields"] if f["field"]["name"] == "sexo")
 
 campo["field"]["codes"]      # [{'value': '0', 'label': 'Ignorado', ...}, ...]
@@ -46,9 +46,9 @@ documento de 2025 não prova que vale para os arquivos de 1996.
 
 ## O que a biblioteca faz com o dicionário
 
-- **`odb.label`** acrescenta `<coluna>_rotulo` a partir do `x-decode`. Um código que o mapa
+- **`sus.label`** acrescenta `<coluna>_rotulo` a partir do `x-decode`. Um código que o mapa
   não conhece fica sem rótulo (`None`); ele nunca é adivinhado.
-- **`odb.check_columns`** mostra, por coluna, vazios, códigos sem rótulo e as datas mínima
+- **`sus.check_columns`** mostra, por coluna, vazios, códigos sem rótulo e as datas mínima
   e máxima.
 - **Categorias harmonizadas** (idade em anos, sexo, datas) só aparecem para arquivos cujo
   SHA-256 foi auditado, listados em `describe_dataset(...)["analytics"]["validated_sources"]`

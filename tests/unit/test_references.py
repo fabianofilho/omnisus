@@ -15,7 +15,7 @@ import duckdb
 import polars as pl
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.dictionaries import load_dicionario
 
@@ -69,7 +69,7 @@ def test_declared_references_resolve_on_real_fixtures(con, dbc_fixture, dataset,
     for field in referenced_fields(dataset):
         if field not in frame.columns:  # declared for other years of the layout
             continue
-        join = odb.reference_join_sql(dataset, field, alias="d")
+        join = sus.reference_join_sql(dataset, field, alias="d")
         joined = con.execute(f"SELECT count(*) FROM d {join}").fetchone()
         assert joined == (frame.height,), f"{dataset}.{field} multiplies rows"
         ref = f"ref_{field}"
@@ -86,13 +86,42 @@ def test_declared_references_resolve_on_real_fixtures(con, dbc_fixture, dataset,
     assert found == UNRESOLVED[(dataset, fixture, ano)]
 
 
+def test_secondary_diagnoses_declare_the_cid10_reference(con, dbc_fixture):
+    """RD2008.DEF, lines 389-406, relates DIAGSEC1-9 to DBF/CID10.DBF (IT_SIHSUS_1603, p. 4:
+    "Diagnóstico secundário N"). Each declares aux_cid10 and every filled code of RDRR2401
+    finds its row. The UNRESOLVED list above cannot see a lost reference: a field without
+    foreignKeys is skipped there, so this test counts the joins itself."""
+    fields = [f"diagsec{n}" for n in range(1, 10)]
+    assert set(fields) <= set(referenced_fields("sih_aih_reduzida"))
+    frame = dbc_bytes_to_lazyframe(
+        dbc_fixture("sih_rr_2024_01_mini").read_bytes(),
+        dataset="sih_aih_reduzida",
+        ano=2024,
+        uf="RR",
+    ).collect()
+    con.register("d", frame.to_arrow())
+    counted = {}
+    for field in fields:
+        assert field in frame.columns, f"{field} missing from RDRR2401"
+        join = sus.reference_join_sql("sih_aih_reduzida", field, alias="d")
+        counted[field] = con.execute(
+            f"SELECT count(*) FILTER (WHERE d.\"{field}\" <> ''), count(ref_{field}.codigo) "
+            f"FROM d {join}"
+        ).fetchone()
+    con.unregister("d")
+    # (filled, resolved); diagsec3-9 are blank in every row of the excerpt.
+    assert counted == {"diagsec1": (622, 622), "diagsec2": (15, 15)} | {
+        f"diagsec{n}": (0, 0) for n in range(3, 10)
+    }
+
+
 def test_occupation_joins_cbo2002_from_2006_only(con, dbc_fixture):
     """SIM ``ocup`` resolves against CBO 2002 in 2023; TABOCUP titles never join."""
     frame = dbc_bytes_to_lazyframe(
         dbc_fixture("sim_rr_2023_mini").read_bytes(), dataset="sim_obitos", ano=2023, uf="RR"
     ).collect()
     con.register("d", frame.to_arrow())
-    join = odb.reference_join_sql("sim_obitos", "ocup", alias="d")
+    join = sus.reference_join_sql("sim_obitos", "ocup", alias="d")
     rows = con.execute(
         f"SELECT ref_ocup.esquema, count(*) FROM d {join} WHERE d.ocup = '622020' GROUP BY 1"
     ).fetchall()
@@ -106,10 +135,10 @@ def test_occupation_joins_cbo2002_from_2006_only(con, dbc_fixture):
 
 
 def test_reference_join_sql_names_the_resource_and_rule():
-    assert odb.reference_join_sql("sim_obitos", "ocup", alias="d") == (
+    assert sus.reference_join_sql("sim_obitos", "ocup", alias="d") == (
         'LEFT JOIN "lake"."aux_ocupacoes" AS "ref_ocup" '
         'ON d."ocup" = "ref_ocup"."codigo" '
         "AND (\"ref_ocup\".esquema = 'cbo2002' AND d.ano >= 2006)"
     )
     with pytest.raises(ValueError, match="no reference"):
-        odb.reference_join_sql("sim_obitos", "dtobito")
+        sus.reference_join_sql("sim_obitos", "dtobito")

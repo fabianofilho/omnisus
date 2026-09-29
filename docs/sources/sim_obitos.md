@@ -66,9 +66,9 @@ Arquivos anuais por UF, de 1996 em diante, no diretório final
 Um ano pode estar em só um dos dois diretórios. Para saber qual:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-publicados = odb.available_releases("sim_obitos", ufs=["RR"], refresh=True)
+publicados = sus.available_releases("sim_obitos", ufs=["RR"], refresh=True)
 ```
 
 ### Subconjuntos nacionais e a era CID-9
@@ -168,14 +168,14 @@ fica sem rótulo no DOFET e no CID-9: `SEXO.CNV` rotula só com as letras M, F e
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("sim_obitos", years=[2022], ufs=["RR"], refresh=True)
-relatorio = odb.import_dataset(
+escopos = sus.available("sim_obitos", years=[2022], ufs=["RR"], refresh=True)
+relatorio = sus.import_dataset(
     "sim_obitos", scopes=escopos, target=alvo, policy="skip_same", run_id="sim-rr-2022"
 )
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, count(*) AS obitos FROM lake.sim_obitos GROUP BY ano").pl())
 ```
 
@@ -230,9 +230,9 @@ convive na mesma tabela com anos finais sem se confundir com eles. Quando o DATA
 republica um ano preliminar como final:
 
 ```python
-with odb.LakeReader() as leitor:
-    movidos = odb.outdated("sim_obitos", lake=leitor)
-odb.import_dataset("sim_obitos", scopes=movidos,
+with sus.LakeReader() as leitor:
+    movidos = sus.outdated("sim_obitos", lake=leitor)
+sus.import_dataset("sim_obitos", scopes=movidos,
                    policy="replace", run_id="sim-final-2026")
 ```
 

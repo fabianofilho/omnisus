@@ -3,7 +3,7 @@
 import polars as pl
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp.datasets import resolve
 from omnisus.sources.datasus_ftp.filenames import decode_for
@@ -12,17 +12,17 @@ from tests.support.datasus_names import filename_for
 
 def test_national_filename_and_planner():
     d = resolve("sinan_chagas")
-    scopes = odb.scopes_for(d, years=[2023, 2024])
+    scopes = sus.scopes_for(d, years=[2023, 2024])
     assert scopes == [ScopeKey(uf=None, ano=2023), ScopeKey(uf=None, ano=2024)]
     assert filename_for(d, scopes[0]) == "CHAGBR23.dbc"
     assert decode_for(d, "CHAGBR23.dbc") == scopes[0]
     assert decode_for(d, "CHAGSP23.dbc") is None
     with pytest.raises(ValueError, match="national"):
-        odb.scopes_for(d, years=[2023], ufs=["SP"])
+        sus.scopes_for(d, years=[2023], ufs=["SP"])
 
 
 def test_national_publication_replace_and_rollback(tmp_path):
-    with odb.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
+    with sus.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
 
         def publish(year, value, policy="append"):
             p = tmp_path / "data.parquet"
@@ -73,7 +73,7 @@ def test_identity_rejects_wrong_year_source(tmp_path, monkeypatch):
     d = resolve("sinan_chagas")
     scope = ScopeKey(uf=None, ano=2023)
     with (
-        odb.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake,
+        sus.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake,
         pytest.raises(ValueError, match="year"),
     ):
         ingest_raw(d, scope, listed(d, scope, wrong_year), lake, policy="skip_same")
@@ -98,7 +98,7 @@ def test_synthetic_full_pipeline_and_corruption_preserve_publication(tmp_path, m
     wrong = make_dbf(fields, [b" B5712022152019PA"])
     d = resolve("sinan_chagas")
     scope = ScopeKey(uf=None, ano=2023)
-    with odb.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
+    with sus.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
         ingest_raw(d, scope, listed(d, scope, good), lake, policy="skip_same", run_id="initial")
         assert ingest_raw(d, scope, listed(d, scope, good), lake, policy="skip_same") is None
         before = lake.connect().sql("SELECT * FROM lake.sinan_chagas").pl()
@@ -144,14 +144,14 @@ def test_national_inventory_and_cli_rejects_state_before_network(monkeypatch):
         return inventory.Listing(entries=entries, skipped=0, path=path)
 
     monkeypatch.setattr(inventory, "list_dir_cached", fake_list)
-    assert odb.available("sinan_chagas", years=[2023]) == [ScopeKey(uf=None, ano=2023)]
+    assert sus.available("sinan_chagas", years=[2023]) == [ScopeKey(uf=None, ano=2023)]
     for plan in ["product", "inventory"]:
         with pytest.raises(ValueError, match="national"):
             _plan_scopes(resolve("sinan_chagas"), plan=plan, years=[2023], ufs=["PA"], months=None)
 
 
 def test_national_cannot_replace_state_table(tmp_path):
-    with odb.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
+    with sus.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
         p = tmp_path / "data.parquet"
         pl.DataFrame({"ano": [2023], "uf": ["PA"]}).write_parquet(p)
         lake.publish_scope(
@@ -171,7 +171,7 @@ def test_national_cannot_replace_state_table(tmp_path):
 
 
 def test_legacy_manifest_url_migration_and_two_publications_in_one_transaction(tmp_path):
-    with odb.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
+    with sus.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
         lake.connect().execute("""CREATE TABLE lake._omnisus_publications (
             publication_id VARCHAR, dataset VARCHAR, scope_json VARCHAR,
             source_sha256 VARCHAR, parser_version VARCHAR, run_id VARCHAR,

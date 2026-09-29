@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.lake.publication import aggregate_sha256
 from omnisus.sources._base import ScopeKey
@@ -37,7 +37,7 @@ def test_both_parts_land_in_one_publication(tmp_path) -> None:
             "BIMG2412_2.dbc",
         ]
         assert row["release"] == "final"
-        text = odb.cite(lake, dataset=BI.name).text
+        text = sus.cite(lake, dataset=BI.name).text
         assert "BIMG2412_1.dbc" in text and "BIMG2412_2.dbc" in text
 
 

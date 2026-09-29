@@ -2161,6 +2161,8 @@ schema:
     - name: diagsec1
       type: string
       label: Diagnóstico secundário 1
+      foreignKeys:
+        - { fields: diagsec1, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec1
       type: string
       label: Tipo de diagnóstico secundário 1
@@ -2189,6 +2191,8 @@ schema:
     - name: diagsec2
       type: string
       label: Diagnóstico secundário 2
+      foreignKeys:
+        - { fields: diagsec2, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec2
       type: string
       label: Tipo de diagnóstico secundário 2
@@ -2217,6 +2221,8 @@ schema:
     - name: diagsec3
       type: string
       label: Diagnóstico secundário 3
+      foreignKeys:
+        - { fields: diagsec3, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec3
       type: string
       label: Tipo de diagnóstico secundário 3
@@ -2245,6 +2251,8 @@ schema:
     - name: diagsec4
       type: string
       label: Diagnóstico secundário 4
+      foreignKeys:
+        - { fields: diagsec4, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec4
       type: string
       label: Tipo de diagnóstico secundário 4
@@ -2273,6 +2281,8 @@ schema:
     - name: diagsec5
       type: string
       label: Diagnóstico secundário 5
+      foreignKeys:
+        - { fields: diagsec5, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec5
       type: string
       label: Tipo de diagnóstico secundário 5
@@ -2301,6 +2311,8 @@ schema:
     - name: diagsec6
       type: string
       label: Diagnóstico secundário 6
+      foreignKeys:
+        - { fields: diagsec6, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec6
       type: string
       label: Tipo de diagnóstico secundário 6
@@ -2329,6 +2341,8 @@ schema:
     - name: diagsec7
       type: string
       label: Diagnóstico secundário 7
+      foreignKeys:
+        - { fields: diagsec7, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec7
       type: string
       label: Tipo de diagnóstico secundário 7
@@ -2357,6 +2371,8 @@ schema:
     - name: diagsec8
       type: string
       label: Diagnóstico secundário 8
+      foreignKeys:
+        - { fields: diagsec8, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec8
       type: string
       label: Tipo de diagnóstico secundário 8
@@ -2385,6 +2401,8 @@ schema:
     - name: diagsec9
       type: string
       label: Diagnóstico secundário 9
+      foreignKeys:
+        - { fields: diagsec9, reference: { resource: aux_cid10, fields: codigo } }
     - name: tpdisec9
       type: string
       label: Tipo de diagnóstico secundário 9
@@ -2415,7 +2433,7 @@ x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
 x-partitions: [ano, uf, mes]
-x-version: "2.9.0"
+x-version: "2.10.0"
 
 x-analytics:
   version: 1.2.0

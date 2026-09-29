@@ -50,9 +50,9 @@ def latest_snapshot_id(lake: Lake | LakeReader) -> int:
         LookupError: the lake has no snapshots yet.
 
     Examples:
-        >>> import omnisus as odb
-        >>> with odb.LakeReader() as lake:  # doctest: +SKIP
-        ...     snapshot = odb.latest_snapshot_id(lake)
+        >>> import omnisus as sus
+        >>> with sus.LakeReader() as lake:  # doctest: +SKIP
+        ...     snapshot = sus.latest_snapshot_id(lake)
     """
     snaps = lake.snapshots()
     if not snaps:
@@ -102,9 +102,9 @@ def import_research(
         ImportAbortedError: as :func:`~omnisus.import_dataset`.
 
     Examples:
-        >>> import omnisus as odb
-        >>> scopes = odb.scopes_for("sim_obitos", years=[2023], ufs=["RR"])
-        >>> odb.import_research("sim_obitos", scopes=scopes, run_id="cap2")  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> scopes = sus.scopes_for("sim_obitos", years=[2023], ufs=["RR"])
+        >>> sus.import_research("sim_obitos", scopes=scopes, run_id="cap2")  # doctest: +SKIP
     """
     from omnisus import import_dataset
 
@@ -144,10 +144,10 @@ def municipality_join_key(value: object, *, digits: int = 6) -> str | None:
         ValueError: ``digits`` is not 6 or 7.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.municipality_join_key("3550308")
+        >>> import omnisus as sus
+        >>> sus.municipality_join_key("3550308")
         '355030'
-        >>> odb.municipality_join_key(" ") is None
+        >>> sus.municipality_join_key(" ") is None
         True
     """
     _require_join_digits(digits)
@@ -173,8 +173,8 @@ def municipality_join_key_sql(column: str, *, digits: int = 6) -> str:
         ValueError: ``digits`` is not 6 or 7.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.municipality_join_key_sql("codmunres")
+        >>> import omnisus as sus
+        >>> sus.municipality_join_key_sql("codmunres")
         'left(trim(CAST("codmunres" AS VARCHAR)), 6)'
     """
     _require_join_digits(digits)
@@ -206,8 +206,8 @@ def reference_join_sql(
         FileNotFoundError: ``dataset`` has no packaged dictionary.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.reference_join_sql("sim_obitos", "causabas")
+        >>> import omnisus as sus
+        >>> sus.reference_join_sql("sim_obitos", "causabas")
         'LEFT JOIN "lake"."aux_cid10" AS "ref_causabas" ON d."causabas" = "ref_causabas"."codigo"'
     """
     definition = load_dicionario(dataset).field_def(field) or {}
@@ -249,14 +249,14 @@ def citation_from_publications(
 
     Examples:
         >>> from datetime import date
-        >>> import omnisus as odb
+        >>> import omnisus as sus
         >>> row = {
         ...     "dataset": "sim_obitos",
         ...     "source_uri": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DORES/DORR2023.dbc",
         ...     "source_sha256": "15b5203507161b7c35f9c69a52c955bdac133629549099b85a88e03a9a45baf0",
         ...     "run_id": "cap2",
         ... }
-        >>> print(odb.citation_from_publications([row], snapshot_id=7, accessed=date(2026, 9, 23)).text)
+        >>> print(sus.citation_from_publications([row], snapshot_id=7, accessed=date(2026, 9, 23)).text)
         SIM — Declarações de Óbito (sim_obitos), arquivo DORR2023.dbc (...), SHA-256 15b5...baf0, acessado em 2026-09-23 pelo DATASUS. Importado com omnisus ..., lake snapshot 7, execução cap2.
     """
     accessed_on = accessed or datetime.now(UTC).date()
@@ -313,9 +313,9 @@ def cite(
         LookupError: ``snapshot_id`` is ``None`` and the lake has no snapshots.
 
     Examples:
-        >>> import omnisus as odb
-        >>> with odb.LakeReader() as lake:  # doctest: +SKIP
-        ...     print(odb.cite(lake, dataset="sim_obitos").text)
+        >>> import omnisus as sus
+        >>> with sus.LakeReader() as lake:  # doctest: +SKIP
+        ...     print(sus.cite(lake, dataset="sim_obitos").text)
     """
     pinned = latest_snapshot_id(lake) if snapshot_id is None else snapshot_id
     if dataset == "ibge_populacao":

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp._ftp import ftp_host
@@ -35,7 +35,7 @@ def test_final_2023_and_2024_are_available(monkeypatch) -> None:
         monkeypatch,
         {SINASC.ftp_dir: "sinasc_1996_dados_dnres", SINASC.prelim_dir: "sinasc_prelim_dnres"},
     )
-    releases = odb.available_releases(SINASC.name, years=[2023, 2024], ufs=["RR"])
+    releases = sus.available_releases(SINASC.name, years=[2023, 2024], ufs=["RR"])
     assert releases == {ScopeKey("RR", 2023): "final", ScopeKey("RR", 2024): "final"}
 
 
@@ -50,7 +50,7 @@ def test_a_publication_from_the_old_directory_is_outdated(monkeypatch, tmp_path)
             monkeypatch,
             {SINASC.ftp_dir: "sinasc_1996_dados_dnres", SINASC.prelim_dir: "sinasc_prelim_dnres"},
         )
-        assert odb.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
+        assert sus.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
 
 
 def test_a_publication_matching_the_listing_is_current(monkeypatch, tmp_path) -> None:
@@ -65,7 +65,7 @@ def test_a_publication_matching_the_listing_is_current(monkeypatch, tmp_path) ->
     assert len(raw) == entry.size_bytes, "fixture and listing disagree; see FIXTURES.md"
     with Lake.local(f"ducklake:{tmp_path}/x.ducklake") as lake:
         ingest_raw(SINASC, ScopeKey("RR", 2022), [(entry, raw)], lake)
-        assert odb.outdated(SINASC.name, lake=lake) == []
+        assert sus.outdated(SINASC.name, lake=lake) == []
 
 
 def test_a_file_republished_at_the_same_path_is_outdated(monkeypatch, tmp_path) -> None:
@@ -88,7 +88,7 @@ def test_a_file_republished_at_the_same_path_is_outdated(monkeypatch, tmp_path) 
     )
     with Lake.local(f"ducklake:{tmp_path}/x.ducklake") as lake:
         ingest_raw(SINASC, ScopeKey("RR", 2022), [(stale, raw)], lake)
-        assert odb.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
+        assert sus.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
 
 
 def _legacy_lake(target: str, *, with_source_uri: bool) -> None:
@@ -140,7 +140,7 @@ def test_a_publication_without_a_recorded_source_is_always_outdated(monkeypatch,
     _serve_sinasc_listings(monkeypatch)
     with Lake.local(target) as lake:
         assert lake.publications()[0]["sources"] == []
-        assert odb.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
+        assert sus.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
 
 
 def test_replacing_an_outdated_legacy_publication_records_its_listed_files(
@@ -161,8 +161,8 @@ def test_replacing_an_outdated_legacy_publication_records_its_listed_files(
 
     monkeypatch.setattr(_runner, "fetch_dbc_bytes", fetch)
     with Lake.local(target) as lake:
-        assert odb.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
-    report = odb.import_dataset(
+        assert sus.outdated(SINASC.name, lake=lake) == [ScopeKey("RR", 2022)]
+    report = sus.import_dataset(
         SINASC.name,
         scopes=[ScopeKey("RR", 2022)],
         target=target,
@@ -172,7 +172,7 @@ def test_replacing_an_outdated_legacy_publication_records_its_listed_files(
     assert report.outcomes[0].status == "ok", report.outcomes[0].reason
     listed = list_sources(SINASC)[ScopeKey("RR", 2022)].files[0]
     with Lake.local(target) as lake:
-        assert odb.outdated(SINASC.name, lake=lake) == []
+        assert sus.outdated(SINASC.name, lake=lake) == []
         (active,) = [p for p in lake.publications() if p["active"]]
     ((uri, size, modified),) = [
         (s["source_uri"], s["source_bytes"], s["source_modified"]) for s in active["sources"]

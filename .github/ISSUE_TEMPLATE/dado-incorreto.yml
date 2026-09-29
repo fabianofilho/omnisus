@@ -25,7 +25,7 @@ body:
     id: omnisus
     attributes:
       label: O que o omnisus mostra
-      description: O código, o rótulo ou a contagem, e a versão (`odb.__version__`).
+      description: O código, o rótulo ou a contagem, e a versão (`sus.__version__`).
     validations:
       required: true
   - type: textarea

@@ -108,7 +108,11 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
   no mês está em `uti_mes_to` (p. 1).
 - `diag_secun` vem preenchido com zeros a partir de 201501
   (Informe SIH 2016-03, p. 2); os diagnósticos secundários estão em `diagsec1` a
-  `diagsec9` (p. 4). O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
+  `diagsec9` (p. 4), e o dicionário os liga à tabela `aux_cid10`, como o `diag_princ`
+  (`RD2008.DEF`, linhas 389-406, relaciona `DIAGSEC1` a `DIAGSEC9` a
+  `DBF/CID10.DBF`). A `aux_cid10` vem do `CID10.DBF` do SIM (ver
+  [Vocabulários](vocabularios.md)), não do `DBF/CID10.DBF` do TAB_SIH, que não está
+  arquivado. O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
   `RD2008.DEF` → `TP_DIAGSEC.CNV`: 1 = preexistente, 2 = adquirido. O `0` que os
   arquivos publicam não está na tabela e fica sem rótulo.
 - `natureza` tem conteúdo só até maio de 2012; a natureza jurídica pela CONCLA está em
@@ -166,14 +170,14 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1], refresh=True)
-relatorio = odb.import_dataset(
+escopos = sus.available("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1], refresh=True)
+relatorio = sus.import_dataset(
     "sih_aih_reduzida", scopes=escopos, target=alvo, policy="skip_same", run_id="sih-rr-2024-01"
 )
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, mes, count(*) AS aih FROM lake.sih_aih_reduzida GROUP BY ALL").pl())
 ```
 

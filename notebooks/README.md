@@ -2,8 +2,8 @@
 
 Um notebook [marimo](https://marimo.io) por base, para pesquisa. Todos seguem as
 mesmas seis etapas com as mesmas funções da biblioteca: o que a base registra
-(`odb.describe_dataset`), descobrir (`odb.available`), baixar e ler (`odb.load`),
-conferir (`odb.check_columns`), analisar (`odb.label` e polars) e citar (`odb.cite`).
+(`sus.describe_dataset`), descobrir (`sus.available`), baixar e ler (`sus.load`),
+conferir (`sus.check_columns`), analisar (`sus.label` e polars) e citar (`sus.cite`).
 Troque `BASE`, `UF` e `ANO` na célula de parâmetros para outra base ou recorte. Comece
 pelo [guia do pesquisador](https://raphaelfh.github.io/omnisus/pesquisa/).
 

@@ -1,7 +1,7 @@
 # Ferramentas de metadados
 
 Utilitários de desenvolvimento e consulta ao contrato público do pacote. Pela
-biblioteca, `odb.describe_dataset` devolve os mesmos metadados.
+biblioteca, `sus.describe_dataset` devolve os mesmos metadados.
 
 | Local | Responsabilidade |
 | --- | --- |

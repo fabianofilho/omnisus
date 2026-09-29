@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
 from tests.support import fake_datasus
@@ -20,9 +20,9 @@ def test_import_sih_monthly(monkeypatch, tmp_path: Path, dbc_fixture) -> None:
     )
 
     target = f"ducklake:{tmp_path}/test.ducklake"
-    odb.import_dataset(
+    sus.import_dataset(
         "sih_aih_reduzida",
-        scopes=odb.scopes_for("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1]),
+        scopes=sus.scopes_for("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1]),
         target=target,
     )
 

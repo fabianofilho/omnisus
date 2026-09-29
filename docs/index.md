@@ -11,11 +11,11 @@ a procedência necessária para citar cada resultado.
     errado é um bug: [abra uma issue](https://github.com/raphaelfh/omnisus/issues/new/choose).
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-dados = odb.load("sim_obitos", years=[2023], ufs=["RR"])             # baixa e devolve as linhas
-dados = odb.label("sim_obitos", dados, columns=["sexo", "racacor"])  # + sexo_rotulo, racacor_rotulo
-odb.check_columns("sim_obitos", dados)                               # vazios, códigos sem rótulo, datas
+dados = sus.load("sim_obitos", years=[2023], ufs=["RR"])             # baixa e devolve as linhas
+dados = sus.label("sim_obitos", dados, columns=["sexo", "racacor"])  # + sexo_rotulo, racacor_rotulo
+sus.check_columns("sim_obitos", dados)                               # vazios, códigos sem rótulo, datas
 ```
 
 ## O que faz

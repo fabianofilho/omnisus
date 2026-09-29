@@ -124,14 +124,14 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
   `qtleitp1` a `qtleitp3` (Informe CNES 2017-06, p. 5); o arquivo de leitos é o LT
   (p. 2), que a biblioteca não importa ([catálogo](../datasets.md)).
 - O nome do estabelecimento não está no ST (Informe CNES 2017-06, p. 3–11):
-  `odb.import_cnes_master` busca os nomes na API pública e os junta a `aux_cnes`
+  `sus.import_cnes_master` busca os nomes na API pública e os junta a `aux_cnes`
   (`src/omnisus/__init__.py`, docstring de `import_cnes_master`).
 - `aux_cnes` mostra `tp_unid` e `codufmun` da competência mais recente de cada CNES,
   não os da competência que você analisa
   (`src/omnisus/lake/operations.py`, `ensure_aux_cnes_view`).
-- Toda importação do CNES-ST (`odb.load`, `odb.import_dataset`, `odb.import_research`)
+- Toda importação do CNES-ST (`sus.load`, `sus.import_dataset`, `sus.import_research`)
   atualiza `aux_cnes` ao terminar (`src/omnisus/__init__.py`, `_AFTER_IMPORT`).
-- Os códigos ficam no lake como publicados: `odb.label` põe o rótulo do dicionário ao
+- Os códigos ficam no lake como publicados: `sus.label` põe o rótulo do dicionário ao
   lado de cada código, sem mudar o lake (`src/omnisus/transforms/dictionaries.py`,
   docstring do módulo; `src/omnisus/sources/datasus_ftp/staging.py`, que não
   decodifica).
@@ -162,14 +162,14 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("cnes_estabelecimentos", years=[2024], ufs=["RR"], months=[1], refresh=True)
-relatorio = odb.import_dataset(
+escopos = sus.available("cnes_estabelecimentos", years=[2024], ufs=["RR"], months=[1], refresh=True)
+relatorio = sus.import_dataset(
     "cnes_estabelecimentos", scopes=escopos, target=alvo, policy="skip_same", run_id="cnes-rr-2024-01"
 )
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT competen, count(DISTINCT cnes) AS estabelecimentos FROM lake.cnes_estabelecimentos GROUP BY ALL").pl())
 ```
 
@@ -199,10 +199,10 @@ cadência, cobertura e partições. Qualquer importação devolve um `ImportRepo
 atualiza `aux_cnes` depois da carga:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-escopos = odb.scopes_for("cnes_estabelecimentos", years=[2023], ufs=["RR"], months=[1])
-relatorio = odb.import_dataset("cnes_estabelecimentos", scopes=escopos)
+escopos = sus.scopes_for("cnes_estabelecimentos", years=[2023], ufs=["RR"], months=[1])
+relatorio = sus.import_dataset("cnes_estabelecimentos", scopes=escopos)
 print(relatorio.rows, relatorio.failed)
 ```
 
@@ -232,7 +232,7 @@ Os nomes vêm à parte, por `import_cnes_master()`, da API pública do CNES. O v
 devolvido é o número de registros úteis obtidos, não um `ImportReport`.
 
 ```python
-atualizados = odb.import_cnes_master()  # códigos ausentes, descobertos em cnes_estabelecimentos
+atualizados = sus.import_cnes_master()  # códigos ausentes, descobertos em cnes_estabelecimentos
 ```
 
 A atualização valida os registros antes de alterar o lake e grava juntas a criação da

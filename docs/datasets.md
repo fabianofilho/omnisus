@@ -3,24 +3,24 @@
 # Bases e argumentos
 
 Cada linha é uma base do registro (`src/omnisus/sources/datasus_ftp/datasets.py`) e diz
-o que passar para `odb.load` e `odb.available`. A página é gerada do registro e dos
-dicionários da versão que você está lendo; `help(odb.load)` mostra o mesmo na versão
+o que passar para `sus.load` e `sus.available`. A página é gerada do registro e dos
+dicionários da versão que você está lendo; `help(sus.load)` mostra o mesmo na versão
 instalada.
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-odb.load("sim_obitos", years=[2023], ufs=["RR"])        # base por UF
-odb.load("sinan_chagas", years=[2023])                  # base nacional: sem ufs
-odb.load("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1, 2])
+sus.load("sim_obitos", years=[2023], ufs=["RR"])        # base por UF
+sus.load("sinan_chagas", years=[2023])                  # base nacional: sem ufs
+sus.load("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1, 2])
 ```
 
 - **`years`**: anos dentro da cobertura. "em diante" quer dizer que não há ano final
-  declarado, não que todo ano exista; `odb.available(base)` lista o que o servidor
+  declarado, não que todo ano exista; `sus.available(base)` lista o que o servidor
   publica hoje.
-- **`ufs`**: siglas das UFs (`odb.ALL_UFS` para todas). Bases nacionais aceitam só `None`.
+- **`ufs`**: siglas das UFs (`sus.ALL_UFS` para todas). Bases nacionais aceitam só `None`.
 - **`months`**: meses 1 a 12 das bases mensais; `None` quer dizer todos.
-- **Colunas com rótulo**: as que `odb.label` rotula, pelo mapa `x-decode` do dicionário
+- **Colunas com rótulo**: as que `sus.label` rotula, pelo mapa `x-decode` do dicionário
   (o link abre o dicionário).
 - **Diretório**: onde a base fica em `ftp://ftp.datasus.gov.br/dissemin/publicos/`.
 

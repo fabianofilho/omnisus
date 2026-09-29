@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp import fetch
 from tests.support import fake_datasus
@@ -33,7 +33,7 @@ def test_a_gap_mid_run_is_skipped_and_the_run_continues(
     scopes = [ScopeKey(uf="RR", ano=y) for y in (2021, 2022, 2023)]
     fake_datasus.serve(monkeypatch, "sim_obitos", {scopes[0]: raw, scopes[2]: raw})
 
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sim_obitos", scopes=scopes, target=f"ducklake:{tmp_path}/t.ducklake"
     )
 
@@ -52,7 +52,7 @@ def test_a_missing_scope_is_skipped_never_failed(monkeypatch, tmp_path: Path) ->
     published for a UF is not an error, and must not make the CLI exit 1."""
     fetched = fake_datasus.serve(monkeypatch, "sim_obitos", {})
 
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sim_obitos",
         scopes=[ScopeKey(uf="RR", ano=2023)],
         target=f"ducklake:{tmp_path}/t.ducklake",
@@ -83,7 +83,7 @@ def test_a_transient_failure_is_failed_never_skipped(
         "omnisus.sources.datasus_ftp.fetch._blocking_fetch",
         side_effect=always_throttled,
     ):
-        report = odb.import_dataset(
+        report = sus.import_dataset(
             "sim_obitos",
             scopes=[ScopeKey(uf="RR", ano=2023)],
             target=f"ducklake:{tmp_path}/t.ducklake",
@@ -98,7 +98,7 @@ def test_out_of_coverage_scopes_are_never_downloaded(monkeypatch, tmp_path: Path
     """The cheapest filter. sim_obitos starts in 1996, so 1990 cannot exist — and
     the run must not spend a download finding that out."""
     fetched = fake_datasus.serve(monkeypatch, "sim_obitos", {})
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sim_obitos",
         scopes=[ScopeKey(uf="RR", ano=1990), ScopeKey(uf="RR", ano=1991)],
         target=f"ducklake:{tmp_path}/t.ducklake",
@@ -119,7 +119,7 @@ def test_a_monthly_dataset_without_a_month_fails_fast(tmp_path: Path) -> None:
         patch("omnisus.sources.datasus_ftp.fetch._blocking_fetch") as spy,
         pytest.raises(ValueError, match="monthly"),
     ):
-        odb.import_dataset(
+        sus.import_dataset(
             "sih_aih_reduzida",
             scopes=[ScopeKey(uf="RR", ano=2024)],
             target=f"ducklake:{tmp_path}/t.ducklake",
@@ -132,7 +132,7 @@ def test_report_counts_rows_only_from_successful_scopes(
 ) -> None:
     raw = dbc_fixture("sim_rr_2023_mini").read_bytes()
     fake_datasus.serve(monkeypatch, "sim_obitos", {ScopeKey(uf="RR", ano=2023): raw})
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sim_obitos",
         scopes=[ScopeKey(uf="RR", ano=2022), ScopeKey(uf="RR", ano=2023)],
         target=f"ducklake:{tmp_path}/t.ducklake",

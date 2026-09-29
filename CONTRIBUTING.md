@@ -12,12 +12,12 @@ divergirem, vale o `AGENTS.md`.
 **Os pilares**, o que o pesquisador pode esperar do omnisus:
 
 1. **Citável.** Cada linha importada leva ao arquivo do servidor de onde veio: a
-   publicação registra o recorte, o caminho e o SHA-256, e `odb.cite` gera a citação.
+   publicação registra o recorte, o caminho e o SHA-256, e `sus.cite` gera a citação.
 2. **Nada adivinhado.** O código fica como o DATASUS publicou; o rótulo vem só do
    dicionário, e um código desconhecido fica sem rótulo. Cada mapa de códigos diz se
    foi conferido no documento oficial.
 3. **Conferível.** Quem duvida de um fato consegue checá-lo: documentos com URL e
-   SHA-256, auditorias em `evidence/`, `odb.check_columns` para os dados.
+   SHA-256, auditorias em `evidence/`, `sus.check_columns` para os dados.
 4. **Simples.** Um mecanismo para cada coisa, nada de código morto, código e
    documentação que se leem uma vez.
 5. **Público.** Nada sobre pessoas ou sobre o seu computador entra no repositório.
