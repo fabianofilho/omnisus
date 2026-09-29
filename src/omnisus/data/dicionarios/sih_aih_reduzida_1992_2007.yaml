@@ -46,7 +46,7 @@ schema:
       - target: /field/codes
         value_sha256: 09f3215720dc054cd57289cab5d47ecb7ef2e2d78b9fec9fbe9d112a5c891fc5
         status: verified_in_source
-        checked_at: '2026-09-27'
+        checked_at: '2026-09-29'
         method: cnv-parse
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
@@ -84,7 +84,7 @@ schema:
       - target: /field/codes
         value_sha256: 42339c23e104260a8f96eac31ab54010db19ec1275aca55ab5ea4e6c4e09e239
         status: verified_in_source
-        checked_at: '2026-09-27'
+        checked_at: '2026-09-29'
         method: cnv-parse
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
@@ -268,7 +268,7 @@ schema:
       - target: /field/codes
         value_sha256: d9e116a3616391f2860d66ffa88f4cff04022c7583923d95c131a75c3247ef71
         status: verified_in_source
-        checked_at: '2026-09-27'
+        checked_at: '2026-09-29'
         method: cnv-parse
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
@@ -302,7 +302,7 @@ schema:
       - target: /field/codes
         value_sha256: 1f7afbd8ec687eb01947ff6759a9a6d7af201a75af70f9a19f7a41d576aca7d7
         status: verified_in_source
-        checked_at: '2026-09-27'
+        checked_at: '2026-09-29'
         method: cnv-parse
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
@@ -338,7 +338,7 @@ schema:
       - target: /field/codes
         value_sha256: b9f5ab9277a51625f5753fd63190d7c055200c29dba492081f1b15c143d11bc1
         status: verified_in_source
-        checked_at: '2026-09-27'
+        checked_at: '2026-09-29'
         method: cnv-parse
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
@@ -384,7 +384,7 @@ schema:
       - target: /field/codes
         value_sha256: 595254be2c676a5195ea0ca54a893ffbd5afeac487ded164340700af37e75d95
         status: verified_in_source
-        checked_at: '2026-09-27'
+        checked_at: '2026-09-29'
         method: cnv-parse
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
@@ -432,7 +432,7 @@ schema:
       - target: /field/codes
         value_sha256: 52f021de88a24ff76075cbea8171064f8430de036ac18981ef4980504033719c
         status: verified_in_source
-        checked_at: '2026-09-27'
+        checked_at: '2026-09-29'
         method: cnv-parse
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:

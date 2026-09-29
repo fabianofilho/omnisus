@@ -2,7 +2,7 @@
 
 `ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Auxiliar/` listed, on
 2026-09-29, one TabWin package per era of the old RD layout (`199201_200712/Auxiliar/`
-lists only the first):
+lists only the first, with the same SHA-256; the registry cites it there):
 
 | Package | Bytes | Server date | SHA-256 |
 | --- | ---: | --- | --- |
@@ -17,8 +17,12 @@ on the three zips, writes it with the repository's DEF and CNV parsers.
 - The three `RD.DEF` differ as files, but each has the same ten lines for these fields
   (`NATUREZA` has four: `NATUREZA.CNV` twice, `NATUREZC.CNV` and `REGIME.CNV`).
 - Each CNV has the same SHA-256 in the three packages, and so the same parsed map.
+  `map_sha256` hashes that map (`cnv_map`) as canonical JSON, the parser's output
+  before the dictionary writes it as `x-decode`.
 - These are the bytes packaged in `src/omnisus/data/dicionarios/sources/cnv/sih_199201_199712/`
   (`vinculos.json` records the same SHA-256).
 
 So one map per field serves 1992-01 to 2007-12, and the `/field/codes` claims of
-`sih_aih_reduzida_1992_2007` cite the three packages.
+`sih_aih_reduzida_1992_2007` cite the three packages. `gerar_decode_cnv.py` writes one
+source per claim; the entries for the second and third package were added by hand, and
+the script keeps a claim whose map has not changed.
