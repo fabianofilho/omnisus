@@ -113,8 +113,8 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   `diagsec9` (p. 4), e o dicionário os liga à tabela `aux_cid10`, como o `diag_princ`
   (`RD2008.DEF`, linhas 389-406, relaciona `DIAGSEC1` a `DIAGSEC9` a
   `DBF/CID10.DBF`). A `aux_cid10` vem do `CID10.DBF` do SIM (ver
-  [Vocabulários](vocabularios.md)), não do `DBF/CID10.DBF` do TAB_SIH, que não está
-  arquivado. O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
+  [Vocabulários](vocabularios.md)), não do `DBF/cid10.dbf` de `TAB_SIH.zip`, que o
+  repositório não empacota. O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
   `RD2008.DEF` → `TP_DIAGSEC.CNV`: 1 = preexistente, 2 = adquirido. O `0` que os
   arquivos publicam não está na tabela e fica sem rótulo.
 - `natureza` tem conteúdo só até maio de 2012; a natureza jurídica pela CONCLA está em
