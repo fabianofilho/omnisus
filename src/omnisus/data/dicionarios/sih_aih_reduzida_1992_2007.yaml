@@ -8,8 +8,10 @@ x-partitions:
 - _source_ano
 x-evidence:
   physical_schema: sih_rd_rr_2007_12_mini.dbc, 75 fields; observed 2026-09-22
-  semantic_status: Physical inventory; individual semantic fields not audited. No
-    inferred category mappings.
+  semantic_status: >-
+    Physical inventory; individual semantic fields not audited. The code maps of ident,
+    sexo, morte, natureza, gestao, instru and vincprev come from the CNV that RD.DEF binds
+    in the three era packages, byte-identical (evidence/2026-09-29-tab-sih-rd-eras/).
   dictionary_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Doc/
   source_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Dados/RDRR0712.dbc
 schema:
@@ -51,6 +53,12 @@ schema:
         - source_id: sih-tab-b433310785e0
           pages: []
           locator: 'RD.DEF: XTipo de AIH, IDENT, 1, IDENT.CNV; IDENT.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XTipo de AIH, IDENT, 1, IDENT.CNV; IDENT.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XTipo de AIH, IDENT, 1, IDENT.CNV; IDENT.CNV'
         note: Mapa do CNV.
   - name: cep
     type: string
@@ -81,6 +89,12 @@ schema:
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
         - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XSexo, SEXO, 1, SEXO.CNV; SEXO.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XSexo, SEXO, 1, SEXO.CNV; SEXO.CNV'
+        - source_id: sih-tab-80582969071f
           pages: []
           locator: 'RD.DEF: XSexo, SEXO, 1, SEXO.CNV; SEXO.CNV'
         note: Mapa do CNV.
@@ -261,6 +275,12 @@ schema:
         - source_id: sih-tab-b433310785e0
           pages: []
           locator: 'RD.DEF: LNatureza, NATUREZA, 1, NATUREZA.CNV; NATUREZA.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: LNatureza, NATUREZA, 1, NATUREZA.CNV; NATUREZA.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: LNatureza, NATUREZA, 1, NATUREZA.CNV; NATUREZA.CNV'
         note: Mapa do CNV.
   - name: gestao
     type: string
@@ -287,6 +307,12 @@ schema:
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
         - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
+        - source_id: sih-tab-80582969071f
           pages: []
           locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
         note: Mapa do CNV.
@@ -317,6 +343,12 @@ schema:
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
         - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XÓbitos, MORTE, 1, MORTES.CNV; MORTES.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XÓbitos, MORTE, 1, MORTES.CNV; MORTES.CNV'
+        - source_id: sih-tab-80582969071f
           pages: []
           locator: 'RD.DEF: XÓbitos, MORTE, 1, MORTES.CNV; MORTES.CNV'
         note: Mapa do CNV.
@@ -359,6 +391,12 @@ schema:
         - source_id: sih-tab-b433310785e0
           pages: []
           locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
         note: Mapa do CNV.
   - name: cid_notif
     type: string
@@ -399,6 +437,12 @@ schema:
         reviewer: scripts/metadados/gerar_decode_cnv.py
         evidence:
         - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
+        - source_id: sih-tab-80582969071f
           pages: []
           locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
         note: Mapa do CNV.

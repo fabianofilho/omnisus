@@ -299,6 +299,34 @@
       "last_checked_on": "2026-09-27"
     },
     {
+      "id": "sih-tab-171271844c06",
+      "category": "SIHSUS",
+      "title": "TAB_SIH_199801-200307.zip",
+      "publisher": "Ministério da Saúde / DATASUS",
+      "authority": "official",
+      "url": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Auxiliar/TAB_SIH_199801-200307.zip",
+      "sha256": "171271844c06ec66e2ed0c0abd2ef18f0d67c652e8d9b58d7f0f10d9bf269656",
+      "bytes": 2928165,
+      "edition": null,
+      "published_on": null,
+      "retrieved_on": "2026-09-29",
+      "last_checked_on": "2026-09-29"
+    },
+    {
+      "id": "sih-tab-80582969071f",
+      "category": "SIHSUS",
+      "title": "TAB_SIH_200308-200712.zip",
+      "publisher": "Ministério da Saúde / DATASUS",
+      "authority": "official",
+      "url": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Auxiliar/TAB_SIH_200308-200712.zip",
+      "sha256": "80582969071fdd2b9008e9121e3052e1705d8a0e9c456d153b13655c787966cd",
+      "bytes": 3113570,
+      "edition": null,
+      "published_on": null,
+      "retrieved_on": "2026-09-29",
+      "last_checked_on": "2026-09-29"
+    },
+    {
       "id": "cnes-tab-50988af5d88b",
       "category": "CNES",
       "title": "TAB_CNES.zip",

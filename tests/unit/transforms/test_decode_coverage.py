@@ -166,8 +166,6 @@ REMAINING = {
         ("tpresginfo", "", 115),
     ],
     ("sim_obitos_cid9", "sim_cid9_rr_1995_mini"): [],
-    # RD 1992-2007: RD.DEF of TAB_SIH_199201-199712.zip binds only the fields whose
-    # CNV map equals the 2008 one; RDRR9709 lacks gestao, instru and vincprev.
     ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini"): [],
     ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2007_12_mini"): [],
     # SIA families of Informe Técnico SIASUS 2019-07, same rule; AMP has no DEF.
@@ -296,8 +294,15 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
         # RD2008.DEF lines 407-433 bind TPDISEC1-9 to TP_DIAGSEC.CNV.
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", {"1": "Preexistente"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec2", {"1": "Preexistente"}),
-        # RD.DEF (TAB_SIH_199201-199712.zip) binds these fields to the same CNV maps as
-        # RD2008.DEF; RDRR9709 and RDRR0712 are the two ends of what we checked.
+        # RD 1992-2007. The RD.DEF of each era package, TAB_SIH_199201-199712.zip,
+        # TAB_SIH_199801-200307.zip and TAB_SIH_200308-200712.zip, binds ident, sexo,
+        # morte, natureza, gestao, instru and vincprev to the same CNV bytes
+        # (evidence/2026-09-29-tab-sih-rd-eras/). RDRR9709 (TAB_SIH_199201-199712.zip)
+        # has no gestao, instru or vincprev, so those are asserted on RDRR0712
+        # (TAB_SIH_200308-200712.zip). instru 0 and vincprev 0 get their label from the
+        # CNV's reserve range 0-9. IDENT, SEXO, INSTRU, VINCPREV (0-9), NATUREZA (00-99)
+        # and GESTAO label every digit, so their empty REMAINING entries say nothing
+        # about unknown codes; only MORTES has no reserve range.
         (
             "sih_aih_reduzida_1992_2007",
             "sih_rd_rr_1997_09_mini",
