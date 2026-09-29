@@ -233,3 +233,14 @@ def cnv_map(lines: list[CnvLine]) -> dict[str, str]:
                 raise CnvFormatError(f"CNV codes collide once blanks are stripped: {key!r}")
             decode[key] = line.label
     return decode
+
+
+def range_keys(lines: list[CnvLine]) -> frozenset[str]:
+    """Keys of :func:`cnv_map` whose label comes only from a ``first-last`` range.
+
+    A range can reserve every code of the width for one label, as SIH SEXO.CNV does
+    with ``Ignorado 0-9``: a published code it labels is not one the table names.
+    :func:`parse_cnv` leaves each code on the last line that lists it, so a code a
+    later line lists by itself is not a range key.
+    """
+    return frozenset(code.rstrip(" ") for line in lines for code in line.ranged)

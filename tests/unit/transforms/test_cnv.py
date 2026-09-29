@@ -18,6 +18,7 @@ from omnisus.transforms.cnv import (
     parse_cnv,
     parse_def,
     parse_def_lookups,
+    range_keys,
 )
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
@@ -117,6 +118,14 @@ def test_a_cnv_line_lists_several_codes():
     assert len(lines) == 28
     assert lines[15] == CnvLine(16, "Transferência para internação domiciliar", ("29", "32"), ())
     assert lines[21].codes == ("61", "17")
+
+
+def test_range_keys_are_the_codes_only_a_range_labels():
+    """Issue #31: SIH SEXO.CNV labels 0 and 4-9 only through ``Ignorado 0-9``, and CNES
+    tiposegm.cnv labels 3-9 only through ``INVÁLIDO ,0,3-9``; the codes a line lists by
+    themselves (SEXO 1-3; tiposegm blank, 0, 1, 2) are not range keys."""
+    assert range_keys(parse_cnv(member("sih/CNV/SEXO.CNV"))) == {"0", *"456789"}
+    assert range_keys(parse_cnv(member("cnes/CNV/tiposegm.cnv"))) == set("3456789")
 
 
 def test_a_short_code_listed_again_takes_the_later_line():
