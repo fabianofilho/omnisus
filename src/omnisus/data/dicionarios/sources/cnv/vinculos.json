@@ -400,6 +400,11 @@
       "membro": "CNV/COMPLEX2.CNV",
       "sha256": "680eb03bd06964cf4dae4b571bc757990688279adb164b54d5253009d8a3975f"
     },
+    "sih/CNV/CONTRAC.CNV": {
+      "fonte": "sih-tab-f05b32f32908",
+      "membro": "CNV/CONTRAC.CNV",
+      "sha256": "bf314d446fec10ffce4d4bd9a2d78f551fe7b7a2504df5ed2350e868ae62a5ac"
+    },
     "sih/CNV/FINANC.CNV": {
       "fonte": "sih-tab-f05b32f32908",
       "membro": "CNV/FINANC.CNV",
@@ -439,6 +444,11 @@
       "fonte": "sih-tab-f05b32f32908",
       "membro": "CNV/MORTES.CNV",
       "sha256": "f92d8ba2da0dbbab84a799309743a271c13eb974c1ff49f02b72079348cceb5e"
+    },
+    "sih/CNV/NACION3D.CNV": {
+      "fonte": "sih-tab-f05b32f32908",
+      "membro": "CNV/NACION3D.CNV",
+      "sha256": "b8ed1298daf8c3e7757d59fa192f2c2c0631ef64362282e16af814c94995a5cb"
     },
     "sih/CNV/NATUREZA.CNV": {
       "fonte": "sih-tab-f05b32f32908",
@@ -484,6 +494,11 @@
       "fonte": "sih-tab-f05b32f32908",
       "membro": "CNV/VINCPREV.CNV",
       "sha256": "f5a6c3ec24355fefd3c2d9f439ca0020df028c8ddcd0a2b246ad99831056f1df"
+    },
+    "sih/CNV/motbloqueio.cnv": {
+      "fonte": "sih-tab-f05b32f32908",
+      "membro": "CNV/motbloqueio.cnv",
+      "sha256": "f603c662bdda900dc8a453b3db8c383eb0bfc653f7615d1636b1ecbdceb16b18"
     },
     "sih/CNV/sitbloqueio.cnv": {
       "fonte": "sih-tab-f05b32f32908",
@@ -878,6 +893,8 @@
         "car_int": "sih/CNV/CARATEND.CNV",
         "cobranca": "sih/CNV/SAIDAPERM.CNV",
         "complex": "sih/CNV/COMPLEX2.CNV",
+        "contracep1": "sih/CNV/CONTRAC.CNV",
+        "contracep2": "sih/CNV/CONTRAC.CNV",
         "espec": "sih/CNV/LEITOS.CNV",
         "financ": "sih/CNV/FINANC.CNV",
         "gestao": "sih/CNV/GESTAO.CNV",
@@ -889,6 +906,7 @@
         "marca_uci": "sih/CNV/MARCAUCI.cnv",
         "marca_uti": "sih/CNV/MARCAUTI.CNV",
         "morte": "sih/CNV/MORTES.CNV",
+        "nacional": "sih/CNV/NACION3D.CNV",
         "natureza": "sih/CNV/NATUREZA.CNV",
         "raca_cor": "sih/CNV/RACACOR.CNV",
         "regct": "sih/CNV/REGCT.cnv",
@@ -1191,6 +1209,8 @@
         "car_int": "sih/CNV/CARATEND.CNV",
         "cobranca": "sih/CNV/SAIDAPERM.CNV",
         "complex": "sih/CNV/COMPLEX2.CNV",
+        "contracep1": "sih/CNV/CONTRAC.CNV",
+        "contracep2": "sih/CNV/CONTRAC.CNV",
         "espec": "sih/CNV/LEITOS.CNV",
         "financ": "sih/CNV/FINANC.CNV",
         "gestao": "sih/CNV/GESTAO.CNV",
@@ -1201,11 +1221,13 @@
         "instru": "sih/CNV/INSTRU.CNV",
         "marca_uti": "sih/CNV/MARCAUTI.CNV",
         "morte": "sih/CNV/MORTES.CNV",
+        "nacional": "sih/CNV/NACION3D.CNV",
         "natureza": "sih/CNV/NATUREZA.CNV",
         "raca_cor": "sih/CNV/RACACOR.CNV",
         "regct": "sih/CNV/REGCT.cnv",
         "sexo": "sih/CNV/SEXO.CNV",
         "st_bloq": "sih/CNV/sitbloqueio.cnv",
+        "st_mot_blo": "sih/CNV/motbloqueio.cnv",
         "st_situac": "sih/CNV/sitrejeicao.cnv",
         "vincprev": "sih/CNV/VINCPREV.CNV"
       }

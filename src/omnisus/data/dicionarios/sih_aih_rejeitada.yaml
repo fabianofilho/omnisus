@@ -2,7 +2,7 @@ name: sih_aih_rejeitada
 title: SIHSUS — AIH rejeitada (RJ)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.0
+x-version: 1.2.0
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -482,6 +482,352 @@ schema:
         note: Mapa do CNV.
   - name: nacional
     type: string
+    x-decode:
+      '010': Brasil
+      '020': Reservado
+      '021': Argentina
+      '022': Bolivia
+      '023': Chile
+      '024': Paraguai
+      '025': Uruguai
+      '026': Colombia
+      '027': Equador
+      '028': Antigua e. dep. barbuda
+      '029': Antilhas holandesas
+      '030': Alemanha
+      '031': Belgica
+      '032': Gra-bretanha
+      '033': Aruba
+      '034': Canada
+      '035': Espanha
+      '036': Estados unidos da america (eua)
+      '037': Franca
+      '038': Suica
+      '039': Italia
+      '040': Comunidade das bahamas
+      '041': Japao
+      '042': China
+      '043': Coreia
+      '044': Barbados
+      '045': Portugal
+      '046': Belize
+      '047': Ilhas turks e caicos
+      '048': Reservado
+      '049': Reservado
+      '050': Reservado
+      '051': Costa rica
+      '052': Cuba
+      '053': Curacao
+      '054': Comunidade dominicana
+      '055': Republica dominicana
+      '056': Republica de el salvador
+      '057': Estados assoc. das antilhas
+      '058': Ilhas falklands
+      '059': Granada
+      '060': Ilhas guadalupe
+      '061': Guatemala
+      '062': Republica do haiti
+      '063': Honduras britanicas
+      '064': Honduras
+      '065': Ilhas serranas
+      '066': Jamaica
+      '067': Ilhas malvinas
+      '068': Martinica
+      '069': Ilha milhos
+      '070': Monte serrat
+      '071': Nicaragua
+      '072': Panama
+      '073': Panama(zona do canal)
+      '074': Porto rico
+      '075': Quitasueno
+      '076': Roncador
+      '077': Santa lucia
+      '078': Sao cristovao
+      '079': Sao vicente
+      '080': Ilhas turca
+      '081': Ilhas virgens britanicas
+      '082': Ilhas virgens americanas
+      '083': Bermudas
+      '084': Groenlandia
+      '085': Mexico
+      '086': St. pierre et miquelon
+      '087': Guiana francesa
+      '088': Republica guiana
+      '089': Peru
+      '090': Suriname
+      '091': Trinidad e tobago
+      '092': Venezuela
+      '093': Albania
+      '094': Andorra
+      '095': Austria
+      '096': Bulgaria
+      '097': Chipre
+      '098': Dinamarca
+      '099': Eire
+      '100': Escocia
+      '101': Ilhas faroes
+      '102': Finlandia
+      '103': Gibraltar
+      '104': Grecia
+      '105': Holanda
+      '106': Hungria
+      '107': Ilhas baleares
+      '108': Ilhas cosmoledo (lomores)
+      '109': Ilhas do canal
+      '110': Inglaterra
+      '111': Irlanda do norte
+      '112': Irlanda
+      '113': Islandia
+      '114': Iugoslavia
+      '115': Liechtenstein
+      '116': Luxemburgo
+      '117': Ilhas de man
+      '118': Monaco
+      '119': Noruega
+      '120': Republica de malta
+      '121': Pais de gales
+      '122': Paises baixos
+      '123': Polonia
+      '124': Romenia
+      '125': San marino
+      '126': Suecia
+      '127': Svalbard e jan mayer,is
+      '128': Tchecoslovaquia
+      '129': Estado da cidade do vaticano
+      '130': Croacia
+      '131': Servia
+      '132': Eslovenia
+      '133': Republica da macedonia
+      '134': Bosnia herzegovina
+      '135': Republica tcheca
+      '136': Eslovaquia
+      '137': Montenegro
+      '138': Azerbaijao
+      '139': Bashkista
+      '140': Republica da bielorrussia
+      '141': Buryat
+      '142': Carelia
+      '143': Cazaquistao
+      '144': Chechen ingusth
+      '145': Chuvash
+      '146': Dagesta
+      '147': Estonia
+      '148': Georgia
+      '149': Gorno altai
+      '150': Kabardino balkar
+      '151': Kalmir
+      '152': Karachaevocherkess
+      '153': Khakass
+      '154': Komi
+      '155': Letonia
+      '156': Lituania
+      '157': Mari
+      '158': Moldavia
+      '159': Ossetia setentrional
+      '160': Quirguistao
+      '161': Tadjiquistao
+      '162': Tartaria
+      '163': Turcomenistao
+      '164': Tuvin
+      '165': Ucrania
+      '166': Udmurt
+      '167': Uniao sovietica
+      '168': Uzbequistao
+      '169': Yakut
+      '170': Abissinia
+      '171': Acores
+      '172': Afar frances
+      '173': Republica da africa do sul
+      '174': Alto volta
+      '175': Angola
+      '176': Argelia
+      '177': Bechuanalandia
+      '178': Benin
+      '179': Botsuana
+      '180': Burundi
+      '181': Camaroes
+      '182': Ceuta e melilla
+      '183': Chade
+      '184': Ilhas comores
+      '185': Congo
+      '186': Costa do marfim
+      '187': Daome
+      '188': Djibuti
+      '189': Republica arabe do egito
+      '190': Etiopia
+      '191': Republica do gabao
+      '192': Gambia
+      '193': Gana
+      '194': Gaza
+      '195': Guine
+      '196': Guine equatorial
+      '197': Ifni
+      '198': Ascensao e tristao da cunha,is
+      '199': Ilhas canarias
+      '200': Lesoto
+      '201': Liberia
+      '202': Libia
+      '203': Madeira
+      '204': Malawi
+      '205': Madagascar
+      '206': Mali
+      '207': Marrocos
+      '208': Mauricio
+      '209': Mauritania
+      '210': Mocambique
+      '211': Nguane
+      '212': Republica do niger
+      '213': Nigeria
+      '214': Papua nova guine
+      '215': Pracas norte africanas
+      '216': Protetor do sudoeste africano
+      '217': Quenia
+      '218': Republica centro africana
+      '219': Reuniao
+      '220': Rodesia (zimbabwe)
+      '221': Ruanda
+      '222': Saara espanhol
+      '223': Santa helena
+      '224': Sao tome e principe
+      '225': Seychelles
+      '226': Serra leoa
+      '227': Somalia, republica
+      '228': Suazilandia
+      '229': Sudao
+      '230': Tanganica
+      '231': Territ. britanico do oceano indico
+      '232': Transkei
+      '233': Togo
+      '234': Tunisia
+      '235': Uganda
+      '236': Zaire
+      '237': Zambia
+      '238': Burkina fasso
+      '239': Zimbabwe
+      '240': Namibia
+      '241': Afeganistao
+      '242': Arabia saudita
+      '243': Bahrein
+      '244': Birmania
+      '245': Brunei
+      '246': Bhutan
+      '247': Catar
+      '248': Ceilao
+      '249': China (taiwan)
+      '250': Coveite
+      '251': Emirados arabes unidos
+      '252': Filipinas
+      '253': Hong-kong
+      '254': Iemen
+      '255': India
+      '256': Indonesia
+      '257': Ira
+      '258': Iraque
+      '259': Israel
+      '260': Jordania
+      '261': Kmer/camboja
+      '262': Kuwait
+      '263': Laos
+      '264': Libano
+      '265': Macau
+      '266': Malasia
+      '267': Maldivas,is
+      '268': Mascate
+      '269': Mongolia
+      '270': Nepal
+      '271': Oman
+      '272': Palestina
+      '273': Paquistao
+      '274': Ruiquiu,is
+      '275': Cingapura
+      '276': Sequin
+      '277': Siria
+      '278': Sri-lanka
+      '279': Tailandia
+      '280': Tregua, estado
+      '281': Turquia
+      '282': Vietna do norte
+      '283': Vietna do sul
+      '284': Mianma
+      '285': Arquipelago manahiki
+      '286': Arquipelago midway
+      '287': Ashmore e cartier
+      '288': Australia
+      '289': Arquipelago de bismark
+      '290': Ilhas cook
+      '291': Republica de fiji
+      '292': Guam
+      '293': Ilhas baker
+      '294': Ilhas cantao e enderburg
+      '295': Ilhas carolinas
+      '296': Ilhas do pacifico
+      '297': Ilhas christmas
+      '298': Ilhas gilbert
+      '299': Ilhas howland e jarvis
+      '300': Ilha johnston e sand
+      '301': Ilhas kingman reef
+      '302': Ilhas macquaire
+      '303': Ilhas marianas
+      '304': Ilhas marshall
+      '305': Ilhas macdonal e heard
+      '306': Ilhas niue
+      '307': Ilhas norfolk
+      '308': Ilhas palau
+      '309': Ilhas salomao
+      '310': Ilhas tokelau
+      '311': Ilhas wake
+      '312': Kalimatan
+      '313': Ilhas linha
+      '314': Nauru
+      '315': Ilhas nova caledonia
+      '316': Nova guine
+      '317': Nova zelandia
+      '318': Ilhas novas hebridas
+      '319': Territorio de papua
+      '320': Ilhas pascoa
+      '321': Ilhas pitcairin
+      '322': Polinesia francesa
+      '323': Sabah
+      '324': Samoa americana
+      '325': Samoa ocidental
+      '326': Ilhas santa cruz
+      '327': Sarawak
+      '328': Territorio de cocos
+      '329': Timor
+      '330': Tonga
+      '331': Tuvalu
+      '332': Ilhas wallis e futuna
+      '333': Antartico britanico, territorio
+      '334': Antartica francesa
+      '335': Terr. antartico da australia
+      '336': Antartico chileno
+      '337': Antartico argentino
+      '338': Antartico noruegues
+      '339': Apatrida
+      '340': Dependencia de ross
+      '341': Terras austrais
+      '342': Bangladesh
+      '343': Cabo verde
+      '344': Guine bissau
+      '345': Iemen do sul
+      '346': Kara kalpak
+      '347': Armenia
+      '348': Russia
+      '349': Senegal
+      '350': Tanzania
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: d0e15c5e53f0fde2d400d8ce9aebace3871a5ef02f188d4c994a259093fae2d4
+        status: verified_in_source
+        checked_at: '2026-09-21'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-f05b32f32908
+          pages: []
+          locator: 'RJ2008.DEF: XNacionalidade, NACIONAL, 1, CNV\NACION3D.CNV; CNV/NACION3D.CNV'
+        note: Mapa do CNV.
   - name: num_proc
     type: string
   - name: car_int
@@ -544,8 +890,236 @@ schema:
     type: string
   - name: contracep1
     type: string
+    x-decode:
+      '00': Ignorado/não se aplica
+      '01': LAM
+      '02': Ogino Knaus
+      '03': Temperatura basal
+      '04': Billings
+      '05': Cinto térmico
+      '06': DIU
+      '07': Diafragma
+      '08': Preservativo
+      '09': Espermicida
+      '10': Hormônio oral
+      '11': Hormônio injetável
+      '12': Coito interrompido
+      '13': Ignorado/não se aplica
+      '14': Ignorado/não se aplica
+      '15': Ignorado/não se aplica
+      '16': Ignorado/não se aplica
+      '17': Ignorado/não se aplica
+      '18': Ignorado/não se aplica
+      '19': Ignorado/não se aplica
+      '20': Ignorado/não se aplica
+      '21': Ignorado/não se aplica
+      '22': Ignorado/não se aplica
+      '23': Ignorado/não se aplica
+      '24': Ignorado/não se aplica
+      '25': Ignorado/não se aplica
+      '26': Ignorado/não se aplica
+      '27': Ignorado/não se aplica
+      '28': Ignorado/não se aplica
+      '29': Ignorado/não se aplica
+      '30': Ignorado/não se aplica
+      '31': Ignorado/não se aplica
+      '32': Ignorado/não se aplica
+      '33': Ignorado/não se aplica
+      '34': Ignorado/não se aplica
+      '35': Ignorado/não se aplica
+      '36': Ignorado/não se aplica
+      '37': Ignorado/não se aplica
+      '38': Ignorado/não se aplica
+      '39': Ignorado/não se aplica
+      '40': Ignorado/não se aplica
+      '41': Ignorado/não se aplica
+      '42': Ignorado/não se aplica
+      '43': Ignorado/não se aplica
+      '44': Ignorado/não se aplica
+      '45': Ignorado/não se aplica
+      '46': Ignorado/não se aplica
+      '47': Ignorado/não se aplica
+      '48': Ignorado/não se aplica
+      '49': Ignorado/não se aplica
+      '50': Ignorado/não se aplica
+      '51': Ignorado/não se aplica
+      '52': Ignorado/não se aplica
+      '53': Ignorado/não se aplica
+      '54': Ignorado/não se aplica
+      '55': Ignorado/não se aplica
+      '56': Ignorado/não se aplica
+      '57': Ignorado/não se aplica
+      '58': Ignorado/não se aplica
+      '59': Ignorado/não se aplica
+      '60': Ignorado/não se aplica
+      '61': Ignorado/não se aplica
+      '62': Ignorado/não se aplica
+      '63': Ignorado/não se aplica
+      '64': Ignorado/não se aplica
+      '65': Ignorado/não se aplica
+      '66': Ignorado/não se aplica
+      '67': Ignorado/não se aplica
+      '68': Ignorado/não se aplica
+      '69': Ignorado/não se aplica
+      '70': Ignorado/não se aplica
+      '71': Ignorado/não se aplica
+      '72': Ignorado/não se aplica
+      '73': Ignorado/não se aplica
+      '74': Ignorado/não se aplica
+      '75': Ignorado/não se aplica
+      '76': Ignorado/não se aplica
+      '77': Ignorado/não se aplica
+      '78': Ignorado/não se aplica
+      '79': Ignorado/não se aplica
+      '80': Ignorado/não se aplica
+      '81': Ignorado/não se aplica
+      '82': Ignorado/não se aplica
+      '83': Ignorado/não se aplica
+      '84': Ignorado/não se aplica
+      '85': Ignorado/não se aplica
+      '86': Ignorado/não se aplica
+      '87': Ignorado/não se aplica
+      '88': Ignorado/não se aplica
+      '89': Ignorado/não se aplica
+      '90': Ignorado/não se aplica
+      '91': Ignorado/não se aplica
+      '92': Ignorado/não se aplica
+      '93': Ignorado/não se aplica
+      '94': Ignorado/não se aplica
+      '95': Ignorado/não se aplica
+      '96': Ignorado/não se aplica
+      '97': Ignorado/não se aplica
+      '98': Ignorado/não se aplica
+      '99': Ignorado/não se aplica
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: b29176087604c7d1cf1b34980268acc8e927e9fd82cc61a056eec49e1ebabb1f
+        status: verified_in_source
+        checked_at: '2026-09-21'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-f05b32f32908
+          pages: []
+          locator: 'RJ2008.DEF: XContraceptivo 1, CONTRACEP1, 1, CNV\CONTRAC.CNV; CNV/CONTRAC.CNV'
+        note: Mapa do CNV.
   - name: contracep2
     type: string
+    x-decode:
+      '00': Ignorado/não se aplica
+      '01': LAM
+      '02': Ogino Knaus
+      '03': Temperatura basal
+      '04': Billings
+      '05': Cinto térmico
+      '06': DIU
+      '07': Diafragma
+      '08': Preservativo
+      '09': Espermicida
+      '10': Hormônio oral
+      '11': Hormônio injetável
+      '12': Coito interrompido
+      '13': Ignorado/não se aplica
+      '14': Ignorado/não se aplica
+      '15': Ignorado/não se aplica
+      '16': Ignorado/não se aplica
+      '17': Ignorado/não se aplica
+      '18': Ignorado/não se aplica
+      '19': Ignorado/não se aplica
+      '20': Ignorado/não se aplica
+      '21': Ignorado/não se aplica
+      '22': Ignorado/não se aplica
+      '23': Ignorado/não se aplica
+      '24': Ignorado/não se aplica
+      '25': Ignorado/não se aplica
+      '26': Ignorado/não se aplica
+      '27': Ignorado/não se aplica
+      '28': Ignorado/não se aplica
+      '29': Ignorado/não se aplica
+      '30': Ignorado/não se aplica
+      '31': Ignorado/não se aplica
+      '32': Ignorado/não se aplica
+      '33': Ignorado/não se aplica
+      '34': Ignorado/não se aplica
+      '35': Ignorado/não se aplica
+      '36': Ignorado/não se aplica
+      '37': Ignorado/não se aplica
+      '38': Ignorado/não se aplica
+      '39': Ignorado/não se aplica
+      '40': Ignorado/não se aplica
+      '41': Ignorado/não se aplica
+      '42': Ignorado/não se aplica
+      '43': Ignorado/não se aplica
+      '44': Ignorado/não se aplica
+      '45': Ignorado/não se aplica
+      '46': Ignorado/não se aplica
+      '47': Ignorado/não se aplica
+      '48': Ignorado/não se aplica
+      '49': Ignorado/não se aplica
+      '50': Ignorado/não se aplica
+      '51': Ignorado/não se aplica
+      '52': Ignorado/não se aplica
+      '53': Ignorado/não se aplica
+      '54': Ignorado/não se aplica
+      '55': Ignorado/não se aplica
+      '56': Ignorado/não se aplica
+      '57': Ignorado/não se aplica
+      '58': Ignorado/não se aplica
+      '59': Ignorado/não se aplica
+      '60': Ignorado/não se aplica
+      '61': Ignorado/não se aplica
+      '62': Ignorado/não se aplica
+      '63': Ignorado/não se aplica
+      '64': Ignorado/não se aplica
+      '65': Ignorado/não se aplica
+      '66': Ignorado/não se aplica
+      '67': Ignorado/não se aplica
+      '68': Ignorado/não se aplica
+      '69': Ignorado/não se aplica
+      '70': Ignorado/não se aplica
+      '71': Ignorado/não se aplica
+      '72': Ignorado/não se aplica
+      '73': Ignorado/não se aplica
+      '74': Ignorado/não se aplica
+      '75': Ignorado/não se aplica
+      '76': Ignorado/não se aplica
+      '77': Ignorado/não se aplica
+      '78': Ignorado/não se aplica
+      '79': Ignorado/não se aplica
+      '80': Ignorado/não se aplica
+      '81': Ignorado/não se aplica
+      '82': Ignorado/não se aplica
+      '83': Ignorado/não se aplica
+      '84': Ignorado/não se aplica
+      '85': Ignorado/não se aplica
+      '86': Ignorado/não se aplica
+      '87': Ignorado/não se aplica
+      '88': Ignorado/não se aplica
+      '89': Ignorado/não se aplica
+      '90': Ignorado/não se aplica
+      '91': Ignorado/não se aplica
+      '92': Ignorado/não se aplica
+      '93': Ignorado/não se aplica
+      '94': Ignorado/não se aplica
+      '95': Ignorado/não se aplica
+      '96': Ignorado/não se aplica
+      '97': Ignorado/não se aplica
+      '98': Ignorado/não se aplica
+      '99': Ignorado/não se aplica
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: b29176087604c7d1cf1b34980268acc8e927e9fd82cc61a056eec49e1ebabb1f
+        status: verified_in_source
+        checked_at: '2026-09-21'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-f05b32f32908
+          pages: []
+          locator: 'RJ2008.DEF: XContraceptivo 2, CONTRACEP2, 1, CNV\CONTRAC.CNV; CNV/CONTRAC.CNV'
+        note: Mapa do CNV.
   - name: gestrisco
     type: string
     x-decode:
@@ -977,6 +1551,120 @@ schema:
         note: Mapa do CNV.
   - name: st_mot_blo
     type: string
+    x-decode:
+      '00': NÃO ESPECIFICADO
+      '01': DUPLICIDADE
+      '02': AGRAVO
+      '03': DUPLICIDADE E AGRAVO
+      '04': AIH DE PARTO SEM VDRL
+      '05': DUPLICIDADE E AIH DE PARTO S/VDRL
+      '06': AGRAVO E AIH DE PARTO S/VDRL
+      '07': DUPLICIDADE, AGRAVO, AIH DE PARTO S/VDRL
+      '08': SOLICITAÇÃO DE LIBERAÇÃO
+      '09': DUPLICIDADE E SOLICITAÇÃO DE LIBERAÇÃO
+      '10': AGRAVO E SOLICITAÇÃO DE LIBERAÇÃO
+      '11': DUPLICIDADE, AGRAVO E SOLICITAÇÃO DE LIBERAÇÃO
+      '12': AIH DE PARTO S/VDRL E SOLICITAÇÃO DE LIBERAÇÃO
+      '13': DUPLICIDADE, AIH DE PARTO S/VDRL E SOLIC LIBERAÇÃO
+      '14': AGRAVO, AIH DE PARTO S/VDRL E SOLIC LIBERAÇÃO
+      '15': DUPLIC AGRAV AIH PARTO S/VDRL E SOLIC LIBERAÇÃO
+      '16': BLOQUEADO EM PROCESSAMENTO ANTERIOR
+      '17': NÃO ESPECIFICADO
+      '18': NÃO ESPECIFICADO
+      '19': NÃO ESPECIFICADO
+      '20': NÃO ESPECIFICADO
+      '21': NÃO ESPECIFICADO
+      '22': NÃO ESPECIFICADO
+      '23': NÃO ESPECIFICADO
+      '24': NÃO ESPECIFICADO
+      '25': NÃO ESPECIFICADO
+      '26': NÃO ESPECIFICADO
+      '27': NÃO ESPECIFICADO
+      '28': NÃO ESPECIFICADO
+      '29': NÃO ESPECIFICADO
+      '30': NÃO ESPECIFICADO
+      '31': NÃO ESPECIFICADO
+      '32': NÃO ESPECIFICADO
+      '33': NÃO ESPECIFICADO
+      '34': NÃO ESPECIFICADO
+      '35': NÃO ESPECIFICADO
+      '36': NÃO ESPECIFICADO
+      '37': NÃO ESPECIFICADO
+      '38': NÃO ESPECIFICADO
+      '39': NÃO ESPECIFICADO
+      '40': NÃO ESPECIFICADO
+      '41': NÃO ESPECIFICADO
+      '42': NÃO ESPECIFICADO
+      '43': NÃO ESPECIFICADO
+      '44': NÃO ESPECIFICADO
+      '45': NÃO ESPECIFICADO
+      '46': NÃO ESPECIFICADO
+      '47': NÃO ESPECIFICADO
+      '48': NÃO ESPECIFICADO
+      '49': NÃO ESPECIFICADO
+      '50': DUPL.REINTERNAÇÃO, MESMO CID< 3 DIAS
+      '51': DUPL.INTERNAÇÃO C/INTERSERCÇÃO DE PERÍODOS
+      '52': CIRURGIA RELAC. C/TRATAM. CLIN. INICIAL
+      '53': PROCED. CLIN. DECORRENTE OU CONSEQ CIRURG INICIAL
+      '54': DUPLICIDADE INT. NO MESMO PERÍODO EM PSIQUIATRIA
+      '55': DUPLICIDADE ALTA ADM. INDEVIDA(> 5 PROCED. ESP.)
+      '56': PROCED. OBST.RELAC S/PERMAN.MEDIA NO PROC INICIAL
+      '57': NAO AUTORIZADO PARA REALIZAR O PROCEDIMENTO
+      '58': DUPL.CIRURG. APOS TRAT.CLIN. NAO ATINGIU METADE MP
+      '59': DUPL. PROCED. JÁ INCL EM OUTRA AIH NESTE PROCESS
+      '60': DUPL. C/REGISTROS INCOMPATÍVEIS ENTRE SI
+      '61': CIRURG ELET NAO REALIZ C/REINT EM ATE 15 D P/PROC
+      '62': PERMANÊNCIA A MENOR INJUSTIFICADA
+      '63': CIR MÚLT NÃO CARACT(MESMA INCISÃO REGIÃO PATOLOG)
+      '64': DUPL. PROCEDIMENTO ESPECIAL NÃO JUSTIFICADO
+      '65': PROCEDIMENTO ESPECIAL NÃO JUSTIFICADO, MAS AUTORIZ
+      '66': CANCELADA EM OUTRO PROCESSAMENTO
+      '67': POLITRAUMATIZADO NÃO CARACTERIZADO(MESMO SEGUIM)
+      '68': POLITRAUMATIZADO LANÇADO COMO CIRURGIA MÚLTIPLA
+      '69': PARA AUDITORIA NO PRONTUÁRIO
+      '70': INFORMAÇÕES OU REGISTROS INCOMPATÍVEIS
+      '71': PARA ADEQUAR AO TETO FINANCEIRO DO GESTOR
+      '72': PROCEDIMENTO DE ADULTO UTILIZADO PARA CRIANCAS
+      '73': PROCEDIMENTOS DE HOSPITAL/DIA
+      '74': ALTA PEDID/ÓBIT/TRANSF/EVAS C/1D PROC MP>2D =1º AT
+      '75': OUTROS MOTIVOS
+      '76': AIH JÁ CONSTA NO BD NACIONAL
+      '77': NÃO ESPECIFICADO
+      '78': NÃO ESPECIFICADO
+      '79': NÃO ESPECIFICADO
+      '80': NÃO ESPECIFICADO
+      '81': NÃO ESPECIFICADO
+      '82': NÃO ESPECIFICADO
+      '83': NÃO ESPECIFICADO
+      '84': NÃO ESPECIFICADO
+      '85': NÃO ESPECIFICADO
+      '86': NÃO ESPECIFICADO
+      '87': NÃO ESPECIFICADO
+      '88': NÃO ESPECIFICADO
+      '89': NÃO ESPECIFICADO
+      '90': NÃO ESPECIFICADO
+      '91': NÃO ESPECIFICADO
+      '92': NÃO ESPECIFICADO
+      '93': NÃO ESPECIFICADO
+      '94': NÃO ESPECIFICADO
+      '95': NÃO ESPECIFICADO
+      '96': NÃO ESPECIFICADO
+      '97': NÃO ESPECIFICADO
+      '98': NÃO ESPECIFICADO
+      '99': NÃO ESPECIFICADO
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: a7b9189f9efeef0f7cd36f81727f1fd7746ed10a5fad940f453e3467a059d64f
+        status: verified_in_source
+        checked_at: '2026-09-21'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-f05b32f32908
+          pages: []
+          locator: 'RJ2008.DEF: XMotivo bloqueio, ST_MOT_BLO, 1, CNV\MOTBLOQUEIO.CNV; CNV/motbloqueio.cnv'
+        note: Mapa do CNV.
   - name: sequencia
     type: integer
   - name: remessa

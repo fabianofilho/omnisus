@@ -78,6 +78,8 @@ descreve (Informe SIH 2016-03, p. 4–5), são linhas próprias; veja abaixo.
 
 Os dicionários dessas linhas partem do inventário físico do descritor DBF de uma fixture real (`scripts/gen_dicionario.py`). Os rótulos de categoria vêm do CNV do TabWin quando o DEF liga o campo e todo valor não branco da fixture é chave do mapa (`sources/cnv/vinculos.json`); calendários, cadastros e faixas não são copiados. Fica sem rótulos `sih_aih_rejeitada_erro` (o DEF só liga ano e mês). Em `sih_aih_reduzida_1992_2007`, `ident`, `sexo`, `morte`, `natureza`, `gestao`, `instru` e `vincprev` têm os rótulos dos CNV de `TAB_SIH_199201-199712.zip`. O servidor publica um pacote por era em `SIHSUS/200801_/Auxiliar/`: `TAB_SIH_199201-199712.zip`, `TAB_SIH_199801-200307.zip` e `TAB_SIH_200308-200712.zip`. O `RD.DEF` de cada um liga esses sete campos aos mesmos CNV, byte a byte; o SHA-256 de cada pacote e de cada CNV está em `evidence/2026-09-29-tab-sih-rd-eras/`. Os outros campos categóricos que o `RD.DEF` liga, como `espec`, `car_int`, `cobranca` e `marca_uti`, seguem sem rótulo nessa linha. `CH` e `CM` (nacionais, desde 2019) e as eras antigas de `RJ` e `SP` não estão no catálogo.
 
+Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `contracep2`) e `motbloqueio.cnv` (`st_mot_blo`, só em `RJ`) abrem com a faixa `00-99`, que rotula qualquer código de dois dígitos: um código fora da tabela recebe "Ignorado/não se aplica" ou "NÃO ESPECIFICADO", e não fica sem rótulo.
+
 ## Armadilhas
 
 - Há AIH de tipos diferentes em `ident` (Informe SIH 2016-03, p. 1) e um sequencial
@@ -108,7 +110,11 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
   no mês está em `uti_mes_to` (p. 1).
 - `diag_secun` vem preenchido com zeros a partir de 201501
   (Informe SIH 2016-03, p. 2); os diagnósticos secundários estão em `diagsec1` a
-  `diagsec9` (p. 4). O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
+  `diagsec9` (p. 4), e o dicionário os liga à tabela `aux_cid10`, como o `diag_princ`
+  (`RD2008.DEF`, linhas 389-406, relaciona `DIAGSEC1` a `DIAGSEC9` a
+  `DBF/CID10.DBF`). A `aux_cid10` vem do `CID10.DBF` do SIM (ver
+  [Vocabulários](vocabularios.md)), não do `DBF/CID10.DBF` do TAB_SIH, que não está
+  arquivado. O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
   `RD2008.DEF` → `TP_DIAGSEC.CNV`: 1 = preexistente, 2 = adquirido. O `0` que os
   arquivos publicam não está na tabela e fica sem rótulo.
 - `natureza` tem conteúdo só até maio de 2012; a natureza jurídica pela CONCLA está em
