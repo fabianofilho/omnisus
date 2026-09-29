@@ -78,6 +78,8 @@ descreve (Informe SIH 2016-03, p. 4–5), são linhas próprias; veja abaixo.
 
 Os dicionários dessas linhas partem do inventário físico do descritor DBF de uma fixture real (`scripts/gen_dicionario.py`). Os rótulos de categoria vêm do CNV do TabWin quando o DEF liga o campo e todo valor não branco da fixture é chave do mapa (`sources/cnv/vinculos.json`); calendários, cadastros e faixas não são copiados. Ficam sem rótulos `sih_aih_rejeitada_erro` (o DEF só liga ano e mês) e `sih_aih_reduzida_1992_2007` (os DEF das eras antigas, `SIHSUS/200801_/Auxiliar/TAB_SIH_199201-199712.zip` e os dois seguintes, não estão arquivados). `CH` e `CM` (nacionais, desde 2019) e as eras antigas de `RJ` e `SP` não estão no catálogo.
 
+Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `contracep2`) e `motbloqueio.cnv` (`st_mot_blo`, só em `RJ`) abrem com a faixa `00-99`, que rotula qualquer código de dois dígitos: um código fora da tabela recebe "Ignorado/não se aplica" ou "NÃO ESPECIFICADO", e não fica sem rótulo.
+
 ## Armadilhas
 
 - Há AIH de tipos diferentes em `ident` (Informe SIH 2016-03, p. 1) e um sequencial
