@@ -43,8 +43,8 @@ class Session:
             RuntimeError: the handle is closed, or unusable after a failed transaction.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.LakeReader() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.LakeReader() as lake:  # doctest: +SKIP
             ...     df = lake.connect().sql("SELECT count(*) FROM lake.sim_obitos").pl()
         """
         if self._closed:
@@ -63,8 +63,8 @@ class Session:
             RuntimeError: the handle is closed or unusable.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.LakeReader() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.LakeReader() as lake:  # doctest: +SKIP
             ...     "sim_obitos" in lake.tables()
             True
         """
@@ -94,8 +94,8 @@ class Session:
             RuntimeError: the handle is closed or unusable.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.LakeReader() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.LakeReader() as lake:  # doctest: +SKIP
             ...     latest = lake.snapshots()[-1]["snapshot_id"]
         """
         self.connect()
@@ -129,8 +129,8 @@ class Session:
             RuntimeError: the handle is closed or unusable.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.LakeReader() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.LakeReader() as lake:  # doctest: +SKIP
             ...     [p["scope"] for p in lake.publications() if p["dataset"] == "sim_obitos"]
             [ScopeKey(uf='RR', ano=2023, mes=None)]
         """
@@ -151,8 +151,8 @@ class Session:
             RuntimeError: the handle is closed or unusable.
 
         Examples:
-            >>> import omnisus as odb
-            >>> with odb.LakeReader() as lake:  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> with sus.LakeReader() as lake:  # doctest: +SKIP
             ...     failed = lake.attempts(run_id="cap2")
         """
         from omnisus.lake.publication import attempts
@@ -163,8 +163,8 @@ class Session:
         """Detach the lake and close the connection; closing twice is harmless.
 
         Examples:
-            >>> import omnisus as odb
-            >>> reader = odb.LakeReader()  # doctest: +SKIP
+            >>> import omnisus as sus
+            >>> reader = sus.LakeReader()  # doctest: +SKIP
             >>> reader.close()  # doctest: +SKIP
         """
         if self._closed:

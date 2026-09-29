@@ -39,8 +39,8 @@ class SourceContext:
             ValueError: the row lacks one of those keys or has no supported scope.
 
         Examples:
-            >>> import omnisus as odb
-            >>> odb.SourceContext.from_publication({
+            >>> import omnisus as sus
+            >>> sus.SourceContext.from_publication({
             ...     "dataset": "sim_obitos",
             ...     "scope_json": '{"ano": 2023, "uf": "RR"}',
             ...     "source_uri": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DORES/DORR2023.dbc",
@@ -162,13 +162,13 @@ def analytical_projection(
             differ only by case, or a derived name collides with a source column.
 
     Examples:
-        >>> import omnisus as odb
-        >>> dorr2023 = odb.SourceContext(
-        ...     odb.ScopeKey("RR", 2023),
+        >>> import omnisus as sus
+        >>> dorr2023 = sus.SourceContext(
+        ...     sus.ScopeKey("RR", 2023),
         ...     "final",
         ...     "15b5203507161b7c35f9c69a52c955bdac133629549099b85a88e03a9a45baf0",
         ... )
-        >>> projection = odb.analytical_projection(
+        >>> projection = sus.analytical_projection(
         ...     "sim_obitos", observed_schema={"sexo": "VARCHAR"}, scopes=[dorr2023]
         ... )
         >>> [column.name for column in projection.columns]

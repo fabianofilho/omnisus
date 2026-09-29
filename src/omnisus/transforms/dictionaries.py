@@ -141,7 +141,7 @@ def display_row(dataset: str, row: Mapping[str, Any]) -> dict[str, Any]:
     field is returned as published.
 
     Args:
-        dataset: Dataset name, e.g. ``"sim_obitos"``; see ``odb.datasets()``.
+        dataset: Dataset name, e.g. ``"sim_obitos"``; see ``sus.datasets()``.
         row: One record as ``{column: value}``. Keys match case-insensitively.
 
     Returns:
@@ -151,8 +151,8 @@ def display_row(dataset: str, row: Mapping[str, Any]) -> dict[str, Any]:
         FileNotFoundError: ``dataset`` has no packaged dictionary.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.display_row("sim_obitos", {"sexo": "2", "dtobito": "01012023"})
+        >>> import omnisus as sus
+        >>> sus.display_row("sim_obitos", {"sexo": "2", "dtobito": "01012023"})
         {'sexo': 'Feminino', 'dtobito': '01012023'}
     """
     return load_dicionario(dataset).decode_row(dict(row))
@@ -166,7 +166,7 @@ def label(dataset: str, df: pl.DataFrame, *, columns: Sequence[str] | None = Non
     map does not declare: nothing is guessed, and the code stays in ``c``.
 
     Args:
-        dataset: Dataset name, e.g. ``"sim_obitos"``; see ``odb.datasets()``.
+        dataset: Dataset name, e.g. ``"sim_obitos"``; see ``sus.datasets()``.
         df: Rows of that dataset, e.g. from :func:`omnisus.load`.
         columns: Columns to label, e.g. ``["sexo", "racacor"]``. ``None`` (the
             default) labels every column of ``df`` that has a code map.
@@ -180,9 +180,9 @@ def label(dataset: str, df: pl.DataFrame, *, columns: Sequence[str] | None = Non
 
     Examples:
         >>> import polars as pl
-        >>> import omnisus as odb
+        >>> import omnisus as sus
         >>> dados = pl.DataFrame({"sexo": ["1", "2", " "], "idade": ["435", "450", "401"]})
-        >>> odb.label("sim_obitos", dados)
+        >>> sus.label("sim_obitos", dados)
         shape: (3, 3)
         ┌──────┬─────────────┬───────┐
         │ sexo ┆ sexo_rotulo ┆ idade │

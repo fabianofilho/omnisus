@@ -93,8 +93,8 @@ class Dataset:
             files elsewhere.
 
         Examples:
-            >>> import omnisus as odb
-            >>> odb.resolve("sim_obitos").directories()["prelim"]
+            >>> import omnisus as sus
+            >>> sus.resolve("sim_obitos").directories()["prelim"]
             '/dissemin/publicos/SIM/PRELIM/DORES'
         """
         dirs: dict[Release, str] = {"final": self.ftp_dir}
@@ -191,8 +191,8 @@ def resolve(dataset: str | Dataset) -> Dataset:
         ValueError: the name is not in the registry.
 
     Examples:
-        >>> import omnisus as odb
-        >>> d = odb.resolve("sih_aih_reduzida")
+        >>> import omnisus as sus
+        >>> d = sus.resolve("sih_aih_reduzida")
         >>> (d.geography, d.monthly)
         ('state', True)
     """

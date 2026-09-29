@@ -107,14 +107,14 @@ def import_cmd(
     """
     from typing import cast
 
-    import omnisus as odb
+    import omnisus as sus
     from omnisus.lake.publication import ImportPolicy, validate_policy
 
     validate_policy(policy)
     import_policy = cast(ImportPolicy, policy)
 
-    non_ftp_importers: dict[str, Callable[..., list[odb.ImportResult]]] = {
-        "ibge_populacao": lambda **kw: odb.import_ibge_populacao(**kw),
+    non_ftp_importers: dict[str, Callable[..., list[sus.ImportResult]]] = {
+        "ibge_populacao": lambda **kw: sus.import_ibge_populacao(**kw),
     }
 
     # Resolve years
@@ -157,7 +157,7 @@ def import_cmd(
     scopes = _plan_scopes(d, plan=plan, years=yrs, ufs=uf_list, months=month_list)
 
     try:
-        report = odb.import_dataset(
+        report = sus.import_dataset(
             d,
             scopes=scopes,
             target=target,
@@ -166,7 +166,7 @@ def import_cmd(
             max_payload_bytes=max_payload_bytes,
             max_inflight_bytes=max_inflight_bytes,
         )
-    except odb.ImportAbortedError as exc:
+    except sus.ImportAbortedError as exc:
         console.print(
             "[red]import interrupted[/red]: "
             f"{exc.report.rows:,} confirmed rows, "
@@ -211,14 +211,14 @@ def _plan_scopes(
     anyway, so the listing costs one extra LIST and removes that whole class of
     silent omission.
     """
-    import omnisus as odb
+    import omnisus as sus
 
     if d.geography == "national" and (ufs is not None or months is not None):
         raise ValueError("national yearly datasets do not accept UF/month filters")
     if plan == "product":
-        return odb.scopes_for(d, years=years, ufs=ufs, months=months)
+        return sus.scopes_for(d, years=years, ufs=ufs, months=months)
 
-    return odb.available(d, years=years, ufs=ufs, months=months, refresh=True)
+    return sus.available(d, years=years, ufs=ufs, months=months, refresh=True)
 
 
 @app.command()
@@ -235,7 +235,7 @@ def inventory(
     """Show what DATASUS actually publishes, from a cached FTP listing."""
     from rich.table import Table as RichTable
 
-    import omnisus as odb
+    import omnisus as sus
     from omnisus.sources.datasus_ftp.datasets import resolve
     from omnisus.sources.datasus_ftp.inventory import FtpPathNotFound, FtpUnavailable
 
@@ -246,7 +246,7 @@ def inventory(
 
     try:
         if path is not None:
-            entries = odb.browse(path, depth=depth, refresh=refresh)
+            entries = sus.browse(path, depth=depth, refresh=refresh)
             table = RichTable("Name", "Type", "Size", "Modified")
             for e in entries:
                 table.add_row(
@@ -265,7 +265,7 @@ def inventory(
             raise typer.BadParameter(
                 f"{exc}. Choose from: {', '.join(ftp_dataset_choices())}"
             ) from exc
-        releases = odb.available_releases(d, refresh=refresh)
+        releases = sus.available_releases(d, refresh=refresh)
         table = RichTable("UF", "Ano", "Mês", "Release")
         for s, release in releases.items():
             table.add_row(

@@ -50,8 +50,8 @@ def datasets() -> tuple[Dataset, ...]:
         and the other functions accept.
 
     Examples:
-        >>> import omnisus as odb
-        >>> "sim_obitos" in [d.name for d in odb.datasets()]
+        >>> import omnisus as sus
+        >>> "sim_obitos" in [d.name for d in sus.datasets()]
         True
     """
     return tuple(REGISTRY.values())
@@ -65,8 +65,8 @@ def products() -> tuple[Product, ...]:
         policies and how an interrupted run is reconciled.
 
     Examples:
-        >>> import omnisus as odb
-        >>> [(p.name, p.reconcile_by) for p in odb.products()[-2:]]
+        >>> import omnisus as sus
+        >>> [(p.name, p.reconcile_by) for p in sus.products()[-2:]]
         [('ibge_populacao', 'publication_id'), ('cnes_master', 'rerun')]
     """
     ftp = tuple(

@@ -170,14 +170,14 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1], refresh=True)
-relatorio = odb.import_dataset(
+escopos = sus.available("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1], refresh=True)
+relatorio = sus.import_dataset(
     "sih_aih_reduzida", scopes=escopos, target=alvo, policy="skip_same", run_id="sih-rr-2024-01"
 )
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     print(leitor.connect().sql("SELECT ano, mes, count(*) AS aih FROM lake.sih_aih_reduzida GROUP BY ALL").pl())
 ```
 

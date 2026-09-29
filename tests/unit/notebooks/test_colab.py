@@ -7,7 +7,7 @@ import json
 import re
 from pathlib import Path
 
-import omnisus as odb
+import omnisus as sus
 
 NOTEBOOK = Path(__file__).resolve().parents[3] / "notebooks" / "colab.ipynb"
 
@@ -20,7 +20,7 @@ def _code() -> list[str]:
 
 def test_installs_the_tag_of_this_version():
     install = _code()[0]
-    assert f'"omnisus @ git+https://github.com/raphaelfh/omnisus@v{odb.__version__}"' in install
+    assert f'"omnisus @ git+https://github.com/raphaelfh/omnisus@v{sus.__version__}"' in install
 
 
 def test_cells_are_python_that_uses_only_public_names():
@@ -28,8 +28,8 @@ def test_cells_are_python_that_uses_only_public_names():
         python = "\n".join(line for line in cell.splitlines() if not line.startswith("%"))
         tree = ast.parse(python)
         for node in ast.walk(tree):
-            if isinstance(node, ast.Attribute) and getattr(node.value, "id", None) == "odb":
-                assert node.attr in odb.__all__, node.attr
+            if isinstance(node, ast.Attribute) and getattr(node.value, "id", None) == "sus":
+                assert node.attr in sus.__all__, node.attr
 
 
 def test_every_link_points_to_the_published_docs_or_repository():

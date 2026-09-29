@@ -6,7 +6,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.age import decode_age
 
@@ -14,10 +14,10 @@ ROOT = Path(__file__).resolve().parents[3]
 
 
 def contexts(dataset):
-    rules = odb.describe_dataset(dataset)["analytics"]
+    rules = sus.describe_dataset(dataset)["analytics"]
     return [
-        odb.SourceContext(
-            odb.ScopeKey(uf=x["uf"], ano=x["ano"], mes=x.get("mes")),
+        sus.SourceContext(
+            sus.ScopeKey(uf=x["uf"], ano=x["ano"], mes=x.get("mes")),
             x["release"],
             x["source_sha256"],
         )
@@ -26,7 +26,7 @@ def contexts(dataset):
 
 
 def test_projection_requires_confirmed_source_context():
-    projection = odb.analytical_projection(
+    projection = sus.analytical_projection(
         "sim_obitos", observed_schema={"idade": "VARCHAR"}, scopes=[]
     )
     assert not projection.columns
@@ -35,11 +35,11 @@ def test_projection_requires_confirmed_source_context():
 
 def test_projection_rejects_unknown_version_and_schema_collision():
     with pytest.raises(ValueError, match="version"):
-        odb.analytical_projection(
+        sus.analytical_projection(
             "sim_obitos", observed_schema={}, scopes=[], rule_version="future"
         )
     with pytest.raises(ValueError, match="collision"):
-        odb.analytical_projection(
+        sus.analytical_projection(
             "sim_obitos",
             observed_schema={"idade": "VARCHAR", "idade_status": "VARCHAR"},
             scopes=contexts("sim_obitos"),
@@ -48,7 +48,7 @@ def test_projection_rejects_unknown_version_and_schema_collision():
 
 def test_native_sql_age_sex_dates_and_invalid_dates():
     schema = {"idade": "VARCHAR", "sexo": "VARCHAR", "dtobito": "VARCHAR"}
-    projection = odb.analytical_projection(
+    projection = sus.analytical_projection(
         "sim_obitos", observed_schema=schema, scopes=contexts("sim_obitos")
     )
     expressions = ", ".join(f'{c.expression} AS "{c.name}"' for c in projection.columns)
@@ -70,13 +70,13 @@ def test_context_hash_and_scope_must_both_match():
     valid = contexts("sim_obitos")[0]
     for bad in [
         replace(valid, source_sha256="0" * 64),
-        replace(valid, scope=odb.ScopeKey("XX", 2024)),
+        replace(valid, scope=sus.ScopeKey("XX", 2024)),
     ]:
-        p = odb.analytical_projection(
+        p = sus.analytical_projection(
             "sim_obitos", observed_schema={"idade": "VARCHAR"}, scopes=[bad]
         )
         assert not p.columns
-    p = odb.analytical_projection(
+    p = sus.analytical_projection(
         "sim_obitos", observed_schema={"idade": "VARCHAR"}, scopes=[valid, bad]
     )
     assert not p.columns
@@ -89,22 +89,22 @@ def test_publication_context_uses_publication_identity():
         "source_uri": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DORES/DORR2023.dbc",
         "source_sha256": "a" * 64,
     }
-    context = odb.SourceContext.from_publication(row)
-    assert context.scope == odb.ScopeKey("RR", 2023)
+    context = sus.SourceContext.from_publication(row)
+    assert context.scope == sus.ScopeKey("RR", 2023)
     assert context.release == "final"
     with pytest.raises(ValueError):
-        odb.SourceContext.from_publication({})
+        sus.SourceContext.from_publication({})
 
 
 def test_sinasc_maternal_age_uses_own_rule_and_source_identity():
     dataset = "sinasc_nascidos_vivos"
-    rule = odb.describe_dataset(dataset)["analytics"]
+    rule = sus.describe_dataset(dataset)["analytics"]
     assert rule is not None
     assert rule["age"]["field"] == "idademae"
     assert rule["age"]["subject"] == "mother"
     valid = contexts(dataset)[0]
     schema = {"IDADEMAE": "VARCHAR", "SEXO": "VARCHAR"}
-    projection = odb.analytical_projection(dataset, observed_schema=schema, scopes=[valid])
+    projection = sus.analytical_projection(dataset, observed_schema=schema, scopes=[valid])
     assert [x.name for x in projection.columns] == [
         "idade_anos_completos",
         "idade_status",
@@ -124,13 +124,13 @@ def test_sinasc_maternal_age_uses_own_rule_and_source_identity():
     for bad in [
         replace(valid, source_sha256="0" * 64),
         replace(valid, release="prelim"),
-        replace(valid, scope=odb.ScopeKey("RR", 2022)),
+        replace(valid, scope=sus.ScopeKey("RR", 2022)),
     ]:
         for scopes in [[bad], [valid, bad]]:
-            assert not odb.analytical_projection(
+            assert not sus.analytical_projection(
                 dataset, observed_schema=schema, scopes=scopes
             ).columns
-    assert not odb.analytical_projection(
+    assert not sus.analytical_projection(
         dataset, observed_schema={"idade": "INTEGER"}, scopes=[valid]
     ).columns
 
@@ -153,10 +153,10 @@ def test_sinasc_maternal_age_uses_own_rule_and_source_identity():
     ],
 )
 def test_additional_audited_files_enable_age_sex_and_dates(dataset, year, month, sha):
-    context = odb.SourceContext(odb.ScopeKey("RR", year, month), "final", sha)
+    context = sus.SourceContext(sus.ScopeKey("RR", year, month), "final", sha)
     date_field = "dtobito" if dataset == "sim_obitos" else "dt_inter"
     schema = {"idade": "VARCHAR", "cod_idade": "VARCHAR", "sexo": "VARCHAR", date_field: "VARCHAR"}
-    projection = odb.analytical_projection(dataset, observed_schema=schema, scopes=[context])
+    projection = sus.analytical_projection(dataset, observed_schema=schema, scopes=[context])
     assert {c.name for c in projection.columns} == {
         "idade_anos_completos",
         "idade_status",
@@ -170,9 +170,9 @@ def test_additional_audited_files_enable_age_sex_and_dates(dataset, year, month,
     for bad in [
         replace(context, release="prelim"),
         replace(context, source_sha256="f" * 64),
-        replace(context, scope=odb.ScopeKey("AP", year, month)),
+        replace(context, scope=sus.ScopeKey("AP", year, month)),
     ]:
-        assert not odb.analytical_projection(
+        assert not sus.analytical_projection(
             dataset, observed_schema=schema, scopes=[context, bad]
         ).columns
 
@@ -192,9 +192,9 @@ def test_sinan_age_is_enabled_only_for_the_audited_file(dataset, fixture, year):
 
     (row,) = [r for r in load_fixture_rows() if r["file"] == f"dbc/{fixture}.dbc"]
     sha = row["source_sha256"]
-    context = odb.SourceContext(odb.ScopeKey(uf=None, ano=year), "prelim", sha)
+    context = sus.SourceContext(sus.ScopeKey(uf=None, ano=year), "prelim", sha)
     schema = {"NU_IDADE_N": "BIGINT"}
-    projection = odb.analytical_projection(dataset, observed_schema=schema, scopes=[context])
+    projection = sus.analytical_projection(dataset, observed_schema=schema, scopes=[context])
     assert [c.name for c in projection.columns] == [
         "idade_anos_completos",
         "idade_status",
@@ -204,10 +204,10 @@ def test_sinan_age_is_enabled_only_for_the_audited_file(dataset, fixture, year):
     for bad in [
         replace(context, source_sha256="0" * 64),
         replace(context, release="final"),
-        replace(context, scope=odb.ScopeKey(uf=None, ano=year - 1)),
+        replace(context, scope=sus.ScopeKey(uf=None, ano=year - 1)),
     ]:
         for scopes in [[bad], [context, bad]]:
-            assert not odb.analytical_projection(
+            assert not sus.analytical_projection(
                 dataset, observed_schema=schema, scopes=scopes
             ).columns
 
@@ -226,12 +226,12 @@ def test_tuberculose_audited_source_matches_the_evidence_manifest():
 def test_sim_subyear_age_keeps_quantity_and_unit(dbc_fixture):
     """Real DORR2023: sub-year deaths keep their unit instead of collapsing to 0 years."""
     raw = dbc_fixture("sim_rr_2023_mini").read_bytes()
-    context = odb.SourceContext(odb.ScopeKey("RR", 2023), "final", hashlib.sha256(raw).hexdigest())
+    context = sus.SourceContext(sus.ScopeKey("RR", 2023), "final", hashlib.sha256(raw).hexdigest())
     frame = dbc_bytes_to_lazyframe(raw, dataset="sim_obitos").collect()
     with duckdb.connect() as con:
         con.register("source", frame)
         schema = {row[0]: row[1] for row in con.execute("DESCRIBE source").fetchall()}
-        projection = odb.analytical_projection(
+        projection = sus.analytical_projection(
             "sim_obitos", observed_schema=schema, scopes=[context]
         )
         age = [c for c in projection.columns if c.name.startswith("idade_")]
@@ -256,7 +256,7 @@ def test_sim_subyear_age_keeps_quantity_and_unit(dbc_fixture):
         ("year", 1, 106, 2997),
         (None, None, None, 1),
     ]
-    rule = odb.describe_dataset("sim_obitos")["analytics"]["age"]
+    rule = sus.describe_dataset("sim_obitos")["analytics"]["age"]
     for value, years, status, quantity, unit in rows:
         scalar = decode_age(rule, value)
         valid_unit = scalar.unit if scalar.status == "valid" else None
@@ -282,9 +282,9 @@ def test_sia_age_is_enabled_only_for_the_audited_files(dataset, fixture, uf, yea
     from tests.unit.test_fixture_provenance import load_fixture_rows
 
     (row,) = [r for r in load_fixture_rows() if r["file"] == f"dbc/{fixture}.dbc"]
-    context = odb.SourceContext(odb.ScopeKey(uf, year, month), "final", row["source_sha256"])
+    context = sus.SourceContext(sus.ScopeKey(uf, year, month), "final", row["source_sha256"])
     schema = {"TPIDADEPAC": "VARCHAR", "IDADEPAC": "VARCHAR"}
-    projection = odb.analytical_projection(dataset, observed_schema=schema, scopes=[context])
+    projection = sus.analytical_projection(dataset, observed_schema=schema, scopes=[context])
     assert [c.name for c in projection.columns] == [
         "idade_anos_completos",
         "idade_status",
@@ -294,8 +294,8 @@ def test_sia_age_is_enabled_only_for_the_audited_files(dataset, fixture, uf, yea
     for bad in [
         replace(context, source_sha256="0" * 64),
         replace(context, release="prelim"),
-        replace(context, scope=odb.ScopeKey("AP", year, month)),
+        replace(context, scope=sus.ScopeKey("AP", year, month)),
     ]:
-        assert not odb.analytical_projection(
+        assert not sus.analytical_projection(
             dataset, observed_schema=schema, scopes=[context, bad]
         ).columns

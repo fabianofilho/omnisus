@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp import fetch
 from tests.support import fake_datasus
@@ -63,7 +63,7 @@ def test_fetches_overlap_instead_of_running_one_at_a_time(
     _list(monkeypatch, scopes, probe.payload)
 
     with patch("omnisus.sources.datasus_ftp.fetch._blocking_fetch", probe):
-        report = odb.import_dataset(
+        report = sus.import_dataset(
             "sim_obitos", scopes=scopes, target=f"ducklake:{tmp_path}/c.ducklake", concurrency=4
         )
 
@@ -82,7 +82,7 @@ def test_concurrency_is_bounded_because_datasus_is_shared(
     _list(monkeypatch, scopes, probe.payload)
 
     with patch("omnisus.sources.datasus_ftp.fetch._blocking_fetch", probe):
-        odb.import_dataset(
+        sus.import_dataset(
             "sim_obitos", scopes=scopes, target=f"ducklake:{tmp_path}/b.ducklake", concurrency=3
         )
 
@@ -92,7 +92,7 @@ def test_concurrency_is_bounded_because_datasus_is_shared(
 @pytest.mark.parametrize("concurrency", [0, -1])
 def test_concurrency_must_be_positive(tmp_path: Path, concurrency: int) -> None:
     with pytest.raises(ValueError, match="concurrency"):
-        odb.import_dataset(
+        sus.import_dataset(
             "sim_obitos",
             scopes=[ScopeKey(uf="RR", ano=2023)],
             target=f"ducklake:{tmp_path}/x.ducklake",
@@ -115,7 +115,7 @@ def test_scopes_commit_in_batches_not_one_snapshot_each(
         "omnisus.sources.datasus_ftp.fetch._blocking_fetch",
         lambda *_a: payload,
     ):
-        report = odb.import_dataset("sim_obitos", scopes=scopes, target=target, batch_size=2)
+        report = sus.import_dataset("sim_obitos", scopes=scopes, target=target, batch_size=2)
 
     assert len(report.ok) == 6
     with Lake.local(target) as lake:
@@ -135,7 +135,7 @@ def test_the_report_is_ordered_by_the_scopes_the_caller_asked_for(
         "omnisus.sources.datasus_ftp.fetch._blocking_fetch",
         _ConcurrencyProbe(payload, delay=0.01),
     ):
-        report = odb.import_dataset(
+        report = sus.import_dataset(
             "sim_obitos", scopes=scopes, target=f"ducklake:{tmp_path}/o.ducklake", concurrency=6
         )
 

@@ -25,9 +25,9 @@ def _():
     import marimo as mo
     import polars as pl
 
-    import omnisus as odb
+    import omnisus as sus
 
-    return Path, mo, odb, pl
+    return Path, mo, sus, pl
 
 
 @app.cell(hide_code=True)
@@ -73,17 +73,17 @@ def _(BASE, mo):
     mo.md(f"""
     ## 1 · O que a tabela `{BASE}` registra
 
-    Campos do dicionário da biblioteca (`odb.describe_dataset`), sem rede.
+    Campos do dicionário da biblioteca (`sus.describe_dataset`), sem rede.
     """)
     return
 
 
 @app.cell
-def _(BASE, odb, pl):
+def _(BASE, sus, pl):
     pl.DataFrame(
         [
             {"campo": f["name"], "tipo": f["type"], "rótulo": f.get("label", "")}
-            for f in odb.describe_dataset(BASE)["schema"]["fields"]
+            for f in sus.describe_dataset(BASE)["schema"]["fields"]
         ]
     )
     return
@@ -94,16 +94,16 @@ def _(mo):
     mo.md(r"""
     ## 2 · Descobrir
 
-    `odb.available` lista agora os arquivos da tabela no FTP do DATASUS. Nem toda
+    `sus.available` lista agora os arquivos da tabela no FTP do DATASUS. Nem toda
     tabela existe para toda UF e mês.
     """)
     return
 
 
 @app.cell
-def _(BASE, UF, executar, mo, odb, pl):
+def _(BASE, UF, executar, mo, sus, pl):
     mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
-    publicados = odb.available(BASE, ufs=[UF], refresh=True)
+    publicados = sus.available(BASE, ufs=[UF], refresh=True)
     pl.DataFrame(publicados).sort("ano", "mes", descending=True)
     return
 
@@ -113,16 +113,16 @@ def _(mo):
     mo.md(r"""
     ## 3 · Baixar e ler
 
-    `odb.load` importa o recorte para o lake e devolve as linhas, com os códigos como
+    `sus.load` importa o recorte para o lake e devolve as linhas, com os códigos como
     o DATASUS publicou. Rodar de novo não baixa nem duplica nada.
     """)
     return
 
 
 @app.cell
-def _(ANO, BASE, MES, UF, executar, mo, odb):
+def _(ANO, BASE, MES, UF, executar, mo, sus):
     mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
-    dados = odb.load(BASE, years=[ANO], ufs=[UF], months=[MES])
+    dados = sus.load(BASE, years=[ANO], ufs=[UF], months=[MES])
     dados
     return (dados,)
 
@@ -132,16 +132,16 @@ def _(mo):
     mo.md(r"""
     ## 4 · Conferir
 
-    `odb.check_columns` mostra, por coluna, vazios, códigos sem rótulo e datas fora
-    do esperado. O SIA é publicado num único diretório, então `odb.outdated` não se
+    `sus.check_columns` mostra, por coluna, vazios, códigos sem rótulo e datas fora
+    do esperado. O SIA é publicado num único diretório, então `sus.outdated` não se
     aplica.
     """)
     return
 
 
 @app.cell
-def _(BASE, dados, odb):
-    odb.check_columns(BASE, dados)
+def _(BASE, dados, sus):
+    sus.check_columns(BASE, dados)
     return
 
 
@@ -189,7 +189,7 @@ def _(mo):
     mo.md(r"""
     ## 6 · Citar e guardar
 
-    `odb.cite` nomeia o arquivo do servidor, o SHA-256 e o snapshot do lake de cada
+    `sus.cite` nomeia o arquivo do servidor, o SHA-256 e o snapshot do lake de cada
     publicação da tabela. As tabelas e a citação vão para `resultados/<BASE>/`. Veja
     [Reprodutibilidade](https://raphaelfh.github.io/omnisus/pesquisa/reprodutibilidade/).
     """)
@@ -197,9 +197,9 @@ def _(mo):
 
 
 @app.cell
-def _(BASE, Path, odb, tabelas):
-    with odb.LakeReader() as _lake:
-        citacao = odb.cite(_lake, dataset=BASE)
+def _(BASE, Path, sus, tabelas):
+    with sus.LakeReader() as _lake:
+        citacao = sus.cite(_lake, dataset=BASE)
     pasta = Path("resultados") / BASE
     pasta.mkdir(parents=True, exist_ok=True)
     for _nome, _tabela in tabelas.items():

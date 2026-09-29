@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
 from tests.support import fake_datasus
@@ -24,7 +24,7 @@ def test_a_scope_rejected_by_identity_does_not_roll_back_its_batch(monkeypatch, 
     raw = FIXTURE.read_bytes()
     fake_datasus.serve(monkeypatch, "sia_apac_radioterapia", {good: raw, wrong: raw})
     target = f"ducklake:{tmp_path}/lake.ducklake"
-    report = odb.import_dataset(
+    report = sus.import_dataset(
         "sia_apac_radioterapia", scopes=[good, wrong], target=target, concurrency=1
     )
     assert [(o.status, o.code) for o in report.outcomes] == [

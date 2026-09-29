@@ -47,7 +47,7 @@ def check_columns(dataset: str, df: pl.DataFrame) -> pl.DataFrame:
     ``date_min``). A value counts as empty when it is null or an empty string.
 
     Args:
-        dataset: Dataset name, e.g. ``"sim_obitos"``; see ``odb.datasets()``.
+        dataset: Dataset name, e.g. ``"sim_obitos"``; see ``sus.datasets()``.
         df: Rows of that dataset, e.g. from :func:`omnisus.load`.
 
     Returns:
@@ -67,9 +67,9 @@ def check_columns(dataset: str, df: pl.DataFrame) -> pl.DataFrame:
         SIH publishes ``homonimo`` ``2``, which no DATASUS table labels:
 
         >>> import polars as pl
-        >>> import omnisus as odb
+        >>> import omnisus as sus
         >>> dados = pl.DataFrame({"homonimo": ["0", "2", ""], "nasc": ["19850320", "18991230", ""]})
-        >>> relatorio = odb.check_columns("sih_aih_reduzida", dados)
+        >>> relatorio = sus.check_columns("sih_aih_reduzida", dados)
         >>> relatorio.select("column", "pct_empty", "unlabelled_codes", "date_min").rows()
         [('homonimo', 33.3, ['2'], None), ('nasc', 33.3, [], datetime.date(1899, 12, 30))]
     """

@@ -25,10 +25,10 @@ def _():
     import marimo as mo
     import polars as pl
 
-    import omnisus as odb
+    import omnisus as sus
     from omnisus.sources.ibge.products import CENSUS_YEARS, ESTIMATE_UNAVAILABLE_YEARS
 
-    return CENSUS_YEARS, ESTIMATE_UNAVAILABLE_YEARS, Path, mo, odb, pl
+    return CENSUS_YEARS, ESTIMATE_UNAVAILABLE_YEARS, Path, mo, sus, pl
 
 
 @app.cell(hide_code=True)
@@ -73,17 +73,17 @@ def _(mo):
     ## 1 · O que a base registra
 
     Colunas da visão `ibge_populacao`, do dicionário da biblioteca
-    (`odb.describe_dataset`), sem rede.
+    (`sus.describe_dataset`), sem rede.
     """)
     return
 
 
 @app.cell
-def _(BASE, odb, pl):
+def _(BASE, sus, pl):
     pl.DataFrame(
         [
             {"campo": f["name"], "tipo": f["type"], "rótulo": f.get("label", "")}
-            for f in odb.describe_dataset(BASE)["schema"]["fields"]
+            for f in sus.describe_dataset(BASE)["schema"]["fields"]
         ]
     )
     return
@@ -120,27 +120,27 @@ def _(mo):
     mo.md(r"""
     ## 3 · Baixar
 
-    `odb.import_ibge_populacao` importa a edição para o mesmo lake do SIM, para
+    `sus.import_ibge_populacao` importa a edição para o mesmo lake do SIM, para
     poder calcular taxas. Uma edição já importada não é importada de novo: a visão
     `ibge_populacao` falha quando um município e ano têm duas publicações. As
-    publicações do lake vêm de `odb.cite`.
+    publicações do lake vêm de `sus.cite`.
     """)
     return
 
 
 @app.cell
-def _(ANO, BASE, PRODUTO, executar, mo, odb):
+def _(ANO, BASE, PRODUTO, executar, mo, sus):
     mo.stop(not executar, mo.md("Defina `EXECUTAR = True` na célula de parâmetros."))
     try:
-        with odb.LakeReader() as _lake:
-            _edicoes = odb.cite(_lake, dataset=BASE).publications
-    except (odb.CatalogAttachError, LookupError):  # o lake ainda não existe
+        with sus.LakeReader() as _lake:
+            _edicoes = sus.cite(_lake, dataset=BASE).publications
+    except (sus.CatalogAttachError, LookupError):  # o lake ainda não existe
         _edicoes = ()
     ja_importada = [e for e in _edicoes if e["product"] == PRODUTO and e["ano"] == ANO]
     if ja_importada:
         importadas = []
     else:
-        importadas = odb.import_ibge_populacao(years=[ANO], census=PRODUTO == "census")
+        importadas = sus.import_ibge_populacao(years=[ANO], census=PRODUTO == "census")
     {"ja_no_lake": ja_importada, "importadas_agora": importadas}
     return (importadas,)
 
@@ -157,8 +157,8 @@ def _(mo):
 
 
 @app.cell
-def _(ANO, importadas, odb, pl):
-    with odb.LakeReader() as _lake:
+def _(ANO, importadas, sus, pl):
+    with sus.LakeReader() as _lake:
         populacao = (
             _lake.connect().execute("SELECT * FROM lake.ibge_populacao WHERE ano = ?", [ANO]).pl()
         )
@@ -177,21 +177,21 @@ def _(mo):
     mo.md(r"""
     ## 5 · Analisar
 
-    `odb.load` traz os óbitos do SIM da mesma UF e ano (nada de novo se já estiverem
+    `sus.load` traz os óbitos do SIM da mesma UF e ano (nada de novo se já estiverem
     no lake). A taxa junta os municípios pelos **6 primeiros dígitos**
-    (`odb.municipality_join_key`); os óbitos entram pelo município de residência
+    (`sus.municipality_join_key`); os óbitos entram pelo município de residência
     (`codmunres`).
     """)
     return
 
 
 @app.cell
-def _(ANO, CODIGO_UF, UF, odb, pl, populacao):
+def _(ANO, CODIGO_UF, UF, sus, pl, populacao):
     _municipio = pl.col("municipio").map_elements(
-        odb.municipality_join_key, return_dtype=pl.String
+        sus.municipality_join_key, return_dtype=pl.String
     )
     obitos = (
-        odb.load("sim_obitos", years=[ANO], ufs=[UF])
+        sus.load("sim_obitos", years=[ANO], ufs=[UF])
         .group_by(municipio="codmunres")
         .len("obitos")
         .with_columns(_municipio)
@@ -222,7 +222,7 @@ def _(mo):
     mo.md(r"""
     ## 6 · Citar e guardar
 
-    Uma taxa cita as duas bases: `odb.cite` nomeia a URL e o SHA-256 da edição do
+    Uma taxa cita as duas bases: `sus.cite` nomeia a URL e o SHA-256 da edição do
     IBGE e o arquivo e o SHA-256 do SIM, com o snapshot do lake. As tabelas e a
     citação vão para `resultados/ibge_populacao/`. Veja
     [Reprodutibilidade](https://raphaelfh.github.io/omnisus/pesquisa/reprodutibilidade/).
@@ -231,9 +231,9 @@ def _(mo):
 
 
 @app.cell
-def _(BASE, Path, odb, tabelas):
-    with odb.LakeReader() as _lake:
-        citacao = "\n\n".join(odb.cite(_lake, dataset=base).text for base in (BASE, "sim_obitos"))
+def _(BASE, Path, sus, tabelas):
+    with sus.LakeReader() as _lake:
+        citacao = "\n\n".join(sus.cite(_lake, dataset=base).text for base in (BASE, "sim_obitos"))
     pasta = Path("resultados") / BASE
     pasta.mkdir(parents=True, exist_ok=True)
     for _nome, _tabela in tabelas.items():

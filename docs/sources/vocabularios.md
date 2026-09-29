@@ -27,9 +27,9 @@ O dicionário de cada base declara a referência do campo (`foreignKeys`). Peça
 junção em vez de escrevê-lo:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-join = odb.reference_join_sql("sim_obitos", "causabas", alias="d")
+join = sus.reference_join_sql("sim_obitos", "causabas", alias="d")
 sql = f"SELECT d.causabas, ref_causabas.descricao FROM lake.sim_obitos AS d {join}"
 ```
 
@@ -70,8 +70,8 @@ Os procedimentos do SIGTAP não vêm no zip: cada competência é um arquivo do 
 você importa as que precisa.
 
 ```python
-odb.available_sigtap()[-3:]      # [(2026, 7), (2026, 8), (2026, 9)]
-odb.import_sigtap(years=[2024], months=[1, 2])
+sus.available_sigtap()[-3:]      # [(2026, 7), (2026, 8), (2026, 9)]
+sus.import_sigtap(years=[2024], months=[1, 2])
 ```
 
 Cada competência vira uma publicação nacional mensal de `aux_sigtap_procedimentos`

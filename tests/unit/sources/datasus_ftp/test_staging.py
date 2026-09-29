@@ -262,7 +262,7 @@ def test_a_column_blank_in_one_year_takes_its_descriptor_type(monkeypatch, tmp_p
     """A DATE column that is empty in the older file must not pin the lake column
     to the type of "nothing" and reject the next year's real dates
     (sinan_hanseniase: dt_transrm is blank in every record of HANSBR23)."""
-    import omnisus as odb
+    import omnisus as sus
     from omnisus.sources._base import ScopeKey
     from omnisus.sources.datasus_ftp._runner import ingest_raw
     from tests.support.dbf import make_dbf
@@ -274,7 +274,7 @@ def test_a_column_blank_in_one_year_takes_its_descriptor_type(monkeypatch, tmp_p
     dated = make_dbf(fields, [b" 20240115c"])
     d = _adhoc_dataset(_dictionary_with_a_date(tmp_path))
 
-    with odb.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
+    with sus.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
         older, newer = ScopeKey(uf="RR", ano=2023), ScopeKey(uf="RR", ano=2024)
         ingest_raw(d, older, listed(d, older, blank), lake, policy="append")
         ingest_raw(d, newer, listed(d, newer, dated), lake, policy="append")
@@ -309,7 +309,7 @@ def test_a_blank_column_the_dictionary_mistypes_still_accepts_the_next_file(monk
     an ``N`` field sih_aih_reduzida declares as ``string``. Typing a blank
     column from the dicionario would pin the lake to VARCHAR and make the next
     month's integers an unsafe schema change."""
-    import omnisus as odb
+    import omnisus as sus
     from omnisus.sources._base import ScopeKey
     from omnisus.sources.datasus_ftp._runner import ingest_raw
     from tests.support.dbf import make_dbf
@@ -321,7 +321,7 @@ def test_a_blank_column_the_dictionary_mistypes_still_accepts_the_next_file(monk
     numbered = make_dbf(fields, [b" " + b" " * 8 + b"b" + b"  42"])
     d = _adhoc_dataset(_dictionary_with_a_date(tmp_path, extra_fields=("n_x",)))
 
-    with odb.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
+    with sus.Lake.local(f"ducklake:{tmp_path}/lake.ducklake") as lake:
         older, newer = ScopeKey(uf="RR", ano=2023), ScopeKey(uf="RR", ano=2024)
         ingest_raw(d, older, listed(d, older, blank), lake, policy="append")
         ingest_raw(d, newer, listed(d, newer, numbered), lake, policy="append")

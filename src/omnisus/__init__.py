@@ -95,10 +95,10 @@ def scopes_for(
             ``months``.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.scopes_for("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1, 2])
+        >>> import omnisus as sus
+        >>> sus.scopes_for("sih_aih_reduzida", years=[2024], ufs=["RR"], months=[1, 2])
         [ScopeKey(uf='RR', ano=2024, mes=1), ScopeKey(uf='RR', ano=2024, mes=2)]
-        >>> odb.scopes_for("sinan_chagas", years=[2023])
+        >>> sus.scopes_for("sinan_chagas", years=[2023])
         [ScopeKey(uf=None, ano=2023, mes=None)]
     """
     d = resolve(dataset)
@@ -142,8 +142,8 @@ def browse(path: str, *, depth: int = 1, refresh: bool = False) -> list[FtpEntry
         FtpUnavailable: the server did not answer after retries.
 
     Examples:
-        >>> import omnisus as odb
-        >>> entries = odb.browse("/dissemin/publicos/SINAN/DADOS/FINAIS")  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> entries = sus.browse("/dissemin/publicos/SINAN/DADOS/FINAIS")  # doctest: +SKIP
         >>> entries[0].name  # doctest: +SKIP
         'ACBIBR06.dbc'
     """
@@ -211,9 +211,9 @@ def import_dataset(
         ValueError: ``dataset`` is unknown or ``policy`` is not one of the four values.
 
     Examples:
-        >>> import omnisus as odb
-        >>> scopes = odb.available("sim_obitos", years=[2023], ufs=["RR"])  # doctest: +SKIP
-        >>> report = odb.import_dataset("sim_obitos", scopes=scopes)  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> scopes = sus.available("sim_obitos", years=[2023], ufs=["RR"])  # doctest: +SKIP
+        >>> report = sus.import_dataset("sim_obitos", scopes=scopes)  # doctest: +SKIP
         >>> [(str(o.scope), o.status) for o in report.outcomes]  # doctest: +SKIP
         [('RR_2023', 'ok')]
     """
@@ -244,7 +244,7 @@ def _loadable(dataset: str | Dataset) -> Dataset:
     other = {p.name for p in products() if p.dataset is None}
     if dataset in other:
         raise ValueError(
-            f"load reads DATASUS FTP datasets; use odb.import_{dataset} for {dataset}"
+            f"load reads DATASUS FTP datasets; use sus.import_{dataset} for {dataset}"
         )
     return resolve(dataset)
 
@@ -299,16 +299,16 @@ def load(
         UserWarning: harmonised categories were left out, and why.
 
     Examples:
-        >>> import omnisus as odb
-        >>> dados = odb.load("sim_obitos", years=[2023], ufs=["RR"])  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> dados = sus.load("sim_obitos", years=[2023], ufs=["RR"])  # doctest: +SKIP
         >>> dados.height  # doctest: +SKIP
         3311
-        >>> dados = odb.label("sim_obitos", dados, columns=["sexo"])  # doctest: +SKIP
+        >>> dados = sus.label("sim_obitos", dados, columns=["sexo"])  # doctest: +SKIP
     """
     d = _loadable(dataset)
     if ufs is None and d.geography != "national":
         raise ValueError(
-            f"{d.name} is published per UF: pass ufs=['RR', ...], or ufs=odb.ALL_UFS "
+            f"{d.name} is published per UF: pass ufs=['RR', ...], or ufs=sus.ALL_UFS "
             "for all of Brazil"
         )
     scopes = scopes_for(d, years=years, ufs=ufs, months=months)
@@ -364,7 +364,7 @@ def _read_with_harmonised(
             f"{d.name}: harmonised categories left out: "
             + ", ".join(f"{u.field} ({u.reason})" for u in left_out)
             + ". They exist only for validated sources (docs/decisions/0003); "
-            "labels from odb.label work for any scope.",
+            "labels from sus.label work for any scope.",
             UserWarning,
             stacklevel=3,
         )
@@ -400,8 +400,8 @@ def import_ibge_populacao(
         TypeError: ``census`` was not given.
 
     Examples:
-        >>> import omnisus as odb
-        >>> (censo,) = odb.import_ibge_populacao(years=[2022], census=True)  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> (censo,) = sus.import_ibge_populacao(years=[2022], census=True)  # doctest: +SKIP
         >>> censo.rows  # doctest: +SKIP
         5570
     """
@@ -447,8 +447,8 @@ def import_sigtap(
         ``skipped``/``not_listed``. :func:`cite` names each zip.
 
     Examples:
-        >>> import omnisus as odb
-        >>> report = odb.import_sigtap(years=[2024], months=[1])  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> report = sus.import_sigtap(years=[2024], months=[1])  # doctest: +SKIP
         >>> [(str(o.scope), o.status) for o in report.outcomes]  # doctest: +SKIP
         [('national_2024_01', 'ok')]
     """
@@ -470,8 +470,8 @@ def available_sigtap() -> list[tuple[int, int]]:
         FtpUnavailable: the server did not answer after retries.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.available_sigtap()[:2]  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> sus.available_sigtap()[:2]  # doctest: +SKIP
         [(2008, 1), (2008, 2)]
     """
     from omnisus.sources.sigtap import available_sigtap as _impl
@@ -512,8 +512,8 @@ def import_cnes_master(
             records for one code.
 
     Examples:
-        >>> import omnisus as odb
-        >>> odb.import_cnes_master(codes=["2789590"])  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> sus.import_cnes_master(codes=["2789590"])  # doctest: +SKIP
         1
     """
     from omnisus.sources.cnes.importers.master import (
@@ -557,10 +557,10 @@ def outdated(
         FtpUnavailable: the server did not answer after retries.
 
     Examples:
-        >>> import omnisus as odb
-        >>> with odb.LakeReader() as lake:  # doctest: +SKIP
-        ...     stale = odb.outdated("sim_obitos", lake=lake)
-        >>> odb.import_dataset(  # doctest: +SKIP
+        >>> import omnisus as sus
+        >>> with sus.LakeReader() as lake:  # doctest: +SKIP
+        ...     stale = sus.outdated("sim_obitos", lake=lake)
+        >>> sus.import_dataset(  # doctest: +SKIP
         ...     "sim_obitos", scopes=stale, policy="replace", run_id="refresh-2026-09"
         ... )
     """

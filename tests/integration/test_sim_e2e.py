@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-import omnisus as odb
+import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
 from tests.support import fake_datasus
@@ -19,8 +19,8 @@ def test_import_sim_e2e_with_fixture(monkeypatch, tmp_path: Path, dbc_fixture) -
     fake_datasus.serve(monkeypatch, "sim_obitos", {ScopeKey(uf="RR", ano=2023): fixture_bytes})
 
     target = f"ducklake:{tmp_path}/test.ducklake"
-    report = odb.import_dataset(
-        "sim_obitos", scopes=odb.scopes_for("sim_obitos", years=[2023], ufs=["RR"]), target=target
+    report = sus.import_dataset(
+        "sim_obitos", scopes=sus.scopes_for("sim_obitos", years=[2023], ufs=["RR"]), target=target
     )
     assert not report.failed, report.failed
     assert report.rows > 0

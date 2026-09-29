@@ -163,8 +163,8 @@ def describe_dataset(dataset: str) -> dict[str, Any]:
         FileNotFoundError: ``dataset`` has no packaged dictionary.
 
     Examples:
-        >>> import omnisus as odb
-        >>> metadata = odb.describe_dataset("sim_obitos")
+        >>> import omnisus as sus
+        >>> metadata = sus.describe_dataset("sim_obitos")
         >>> sorted(metadata)[:3]
         ['analytics', 'dataset', 'dictionary_version']
         >>> len(metadata["metadata_hash"])

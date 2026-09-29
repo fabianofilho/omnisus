@@ -56,11 +56,11 @@ Escolha onde rodar. Os três caminhos usam a mesma biblioteca e chegam à mesma 
     ```
 
     ```python
-    import omnisus as odb
+    import omnisus as sus
 
-    dados = odb.load("sim_obitos", years=[2023], ufs=["RR"])
-    dados = odb.label("sim_obitos", dados, columns=["sexo", "racacor"])
-    odb.check_columns("sim_obitos", dados)
+    dados = sus.load("sim_obitos", years=[2023], ufs=["RR"])
+    dados = sus.label("sim_obitos", dados, columns=["sexo", "racacor"])
+    sus.check_columns("sim_obitos", dados)
     ```
 
 Abrir um notebook marimo não baixa nem grava nada: rede e escrita ficam atrás de
@@ -88,34 +88,34 @@ e os municípios e o que ainda está em aberto.
 ## As seis etapas
 
 Todo notebook de `notebooks/` segue as mesmas etapas, com as mesmas funções da
-biblioteca, `import omnisus as odb` e nada mais. Troque `BASE`, `UF`, `ANO` (e `MES`)
+biblioteca, `import omnisus as sus` e nada mais. Troque `BASE`, `UF`, `ANO` (e `MES`)
 na célula de parâmetros para outra base ou outro recorte. Rede e escrita só correm com
 `EXECUTAR = True`, ou com `-- --executar true` na exportação.
 
-**1 · O que a base registra.** `odb.describe_dataset(base)` mostra os campos do
+**1 · O que a base registra.** `sus.describe_dataset(base)` mostra os campos do
 dicionário da biblioteca, sem rede.
 
 **2 · Descobrir.** Pergunta ao FTP do DATASUS o que existe agora:
-`odb.available_releases(base, ufs=[...], refresh=True)` diz se cada ano está no
-diretório final ou no preliminar, e `odb.available(...)` devolve os escopos que podem
+`sus.available_releases(base, ufs=[...], refresh=True)` diz se cada ano está no
+diretório final ou no preliminar, e `sus.available(...)` devolve os escopos que podem
 ser importados. A população do IBGE não tem inventário: o notebook mostra as edições que
 a biblioteca aceita.
 
-**3 · Baixar e ler.** `dados = odb.load(base, years=[...], ufs=[...])` importa o
+**3 · Baixar e ler.** `dados = sus.load(base, years=[...], ufs=[...])` importa o
 recorte para o lake e devolve as linhas num DataFrame polars, com os códigos como o
 DATASUS publicou. A política padrão (`skip_same`) faz com que rodar de novo não baixe nem
-duplique nada. A população usa `odb.import_ibge_populacao`.
+duplique nada. A população usa `sus.import_ibge_populacao`.
 
-**4 · Conferir.** `odb.check_columns(base, dados)` mostra, por coluna, vazios, códigos
-sem rótulo e datas fora do esperado. `odb.outdated(base, lake=...)` é usado quando a
+**4 · Conferir.** `sus.check_columns(base, dados)` mostra, por coluna, vazios, códigos
+sem rótulo e datas fora do esperado. `sus.outdated(base, lake=...)` é usado quando a
 base tem diretório preliminar (SIM, SINASC, SINAN); as demais bases do DATASUS são
 publicadas num único diretório, e o notebook não chama `outdated` para elas.
 
-**5 · Analisar.** `odb.label(base, dados, columns=[...])` põe o rótulo do dicionário
+**5 · Analisar.** `sus.label(base, dados, columns=[...])` põe o rótulo do dicionário
 ao lado de cada código (`sexo` → `sexo_rotulo`), e a análise é polars sobre esse
 DataFrame (`group_by`, `agg`, `join`).
 
-**6 · Citar e guardar.** `odb.cite(lake, dataset=base)` nomeia o arquivo do servidor, o
+**6 · Citar e guardar.** `sus.cite(lake, dataset=base)` nomeia o arquivo do servidor, o
 SHA-256, a versão da biblioteca e o snapshot do lake. O notebook grava as tabelas em CSV
 e a citação em `resultados/<base>/citacao.txt`. Veja
 [Reprodutibilidade](reprodutibilidade.md).
@@ -146,7 +146,7 @@ lê `sim_obitos` e `ibge_populacao`
   Armadilhas de cada perfil, por exemplo as do
   [SINAN Chagas](../sources/sinan_chagas.md#armadilhas) e as do
   [SINAN hanseníase](../sources/sinan_hanseniase.md#armadilhas).
-- **Uma data que passa no formato pode ser impossível.** `odb.check_columns` mostra
+- **Uma data que passa no formato pode ser impossível.** `sus.check_columns` mostra
   `date_min` e `date_max` de cada campo de data; `*_data_status = 'valid'` só diz que o
   texto é uma data. Nos arquivos de RR e SP de 2022 lidos pelo notebook de linkage há
   autorizações de APAC em 9202, nascimentos em 1366 (RAAS) e mães nascidas em 0980

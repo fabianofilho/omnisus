@@ -47,16 +47,16 @@ de cada base. Outros caminhos (marimo no seu computador, Jupyter) estão em
 Em Python:
 
 ```python
-import omnisus as odb
+import omnisus as sus
 
-dados = odb.load("sim_obitos", years=[2023], ufs=["RR"])             # baixa e devolve as linhas
-dados = odb.label("sim_obitos", dados, columns=["sexo", "racacor"])  # + sexo_rotulo, racacor_rotulo
-odb.check_columns("sim_obitos", dados)                               # vazios, códigos sem rótulo, datas
+dados = sus.load("sim_obitos", years=[2023], ufs=["RR"])             # baixa e devolve as linhas
+dados = sus.label("sim_obitos", dados, columns=["sexo", "racacor"])  # + sexo_rotulo, racacor_rotulo
+sus.check_columns("sim_obitos", dados)                               # vazios, códigos sem rótulo, datas
 ```
 
 O lake fica em `data/raw/` no diretório de trabalho, e um segundo `load` do mesmo
 recorte não baixa nada. Toda função documenta seus parâmetros com um exemplo:
-`help(odb.load)`.
+`help(sus.load)`.
 
 Para ir além:
 
@@ -69,18 +69,18 @@ Para ir além:
 - [Bases e argumentos](https://raphaelfh.github.io/omnisus/datasets/): cada base, com o
   que passar em `years`, `ufs` e `months` e quais colunas têm rótulo. É gerada do
   código a cada versão, como a [API](https://raphaelfh.github.io/omnisus/api/);
-  `help(odb.load)` mostra o mesmo na versão instalada.
+  `help(sus.load)` mostra o mesmo na versão instalada.
 
 ## Confira antes de usar
 
 - **Contagens.** Compare o total de linhas com o que o DATASUS publica (TabNet, painéis
-  oficiais) antes de analisar. `odb.check_columns` mostra, por coluna, a proporção de
+  oficiais) antes de analisar. `sus.check_columns` mostra, por coluna, a proporção de
   vazios, os códigos que o dicionário não conhece e as datas mínima e máxima.
 - **Rótulos.** Um código que o dicionário não conhece fica sem rótulo (`None`); ele nunca
   é adivinhado. Cada mapa de códigos diz se foi conferido no documento oficial:
 
   ```python
-  campo = next(f for f in odb.describe_dataset("sim_obitos")["fields"]
+  campo = next(f for f in sus.describe_dataset("sim_obitos")["fields"]
                if f["field"]["name"] == "sexo")
   [(c["status"], c["evidence"]) for c in campo["claims"] if c["target"] == "/field/codes"]
   # status: verified_in_source, conflicting ou unreviewed; evidence: documento e página
@@ -96,7 +96,7 @@ Para ir além:
 
 | O que | Onde |
 | --- | --- |
-| Arquivo de origem de cada linha importada | `reader.publications()` e `odb.cite(reader)` num `odb.LakeReader()`: caminho no servidor, SHA-256, `snapshot_id` |
+| Arquivo de origem de cada linha importada | `reader.publications()` e `sus.cite(reader)` num `sus.LakeReader()`: caminho no servidor, SHA-256, `snapshot_id` |
 | Diretório do FTP de cada base | [Bases e argumentos](https://raphaelfh.github.io/omnisus/datasets/) |
 | Dicionários (de-para de códigos, descrições, tipos) | [`src/omnisus/data/dicionarios/<base>.yaml`](src/omnisus/data/dicionarios/), campo `x-decode` |
 | Documentos oficiais citados (PDF, TabWin), com URL e SHA-256 | [`src/omnisus/data/dicionarios/sources/registry.json`](src/omnisus/data/dicionarios/sources/registry.json) |

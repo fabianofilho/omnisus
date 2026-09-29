@@ -26,7 +26,7 @@ from pathlib import Path
 
 import yaml
 
-import omnisus as odb
+import omnisus as sus
 from omnisus._loop import run_sync
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp._ftp import ftp_host
@@ -123,7 +123,7 @@ def main(
     (folder / "manifest.json").write_text(manifest, encoding="utf-8")
     report = {
         "audited_at": now.isoformat(),
-        "library_version": odb.__version__,
+        "library_version": sus.__version__,
         "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "manifest_sha256": hashlib.sha256(manifest.encode()).hexdigest(),
         "backends": {

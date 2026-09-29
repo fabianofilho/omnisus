@@ -146,12 +146,12 @@ Dispensação:
 ## Como usar
 
 ```python
-import omnisus as odb
+import omnisus as sus
 from omnisus.sources.medicamentos import fetch_stock_page
 
 alvo = "ducklake:./data/raw/omnisus.ducklake"  # o padrão de Lake.local() e load()
-escopos = odb.available("sia_apac_medicamentos", years=[2024], ufs=["RR"], months=[1], refresh=True)
-odb.import_dataset(
+escopos = sus.available("sia_apac_medicamentos", years=[2024], ufs=["RR"], months=[1], refresh=True)
+sus.import_dataset(
     "sia_apac_medicamentos", scopes=escopos, target=alvo, policy="skip_same", run_id="apac-am-rr-2024-01"
 )
 pagina = fetch_stock_page(filters={"codigo_uf": "14"}, limit=20)
@@ -203,7 +203,7 @@ publicação das demais bases do FTP; não há outro importador para SIA-AM. Gua
 desconhecido:
 
 ```python
-with odb.LakeReader(alvo) as leitor:
+with sus.LakeReader(alvo) as leitor:
     publicacoes = leitor.publications(run_id="apac-am-rr-2024-01")
 ```
 
@@ -262,5 +262,5 @@ O notebook tem três partes: A, a APAC de Roraima, janeiro de 2024, nas seis eta
 guia (o que a APAC registra, descobrir, baixar e ler, conferir, analisar, citar e
 guardar); B, uma página de estoque BNAFAR/Hórus guardada com procedência em
 `resultados/estoque/<sha256>/`, sem escrita no lake; e C, o que não existe
-publicamente. As APAC vão para o lake de pesquisa compartilhado por `odb.load`, cuja
+publicamente. As APAC vão para o lake de pesquisa compartilhado por `sus.load`, cuja
 política padrão (`skip_same`) impede duplicar um arquivo já publicado.
