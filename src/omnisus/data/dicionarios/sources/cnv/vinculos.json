@@ -535,6 +535,46 @@
       "membro": "SP2008.DEF",
       "sha256": "7744873b2324ed37cc281ad87ab51ea950b3c624733683ed36c4a5f8360f74f8"
     },
+    "sih_199201_199712/GESTAO.CNV": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "GESTAO.CNV",
+      "sha256": "c8d5e054def7ff4552507263aa77f9c4332ee86198a7479130fef1cd9e946c0e"
+    },
+    "sih_199201_199712/IDENT.CNV": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "IDENT.CNV",
+      "sha256": "85fe489e20e61abff994fc22d836ca208d7e9fee947bb5dbc76193d883c53828"
+    },
+    "sih_199201_199712/INSTRU.CNV": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "INSTRU.CNV",
+      "sha256": "ecdd8359a9fe8a07f77e250e758de9d8a0ac88901527f87d5f7271916a11ab04"
+    },
+    "sih_199201_199712/MORTES.CNV": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "MORTES.CNV",
+      "sha256": "f2cb9e690a4d1557d9044b8c9dace13e64a35ef69741091c08e1e0b64d984f30"
+    },
+    "sih_199201_199712/NATUREZA.CNV": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "NATUREZA.CNV",
+      "sha256": "837f2978a3703a15e97f4c451c2dcd2885a96e666998d6bce43b0d220ad41935"
+    },
+    "sih_199201_199712/RD.DEF": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "RD.DEF",
+      "sha256": "d8640295f3021a1898594a74400b94ff081f8b3f8e316bcc0202c7330d71f662"
+    },
+    "sih_199201_199712/SEXO.CNV": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "SEXO.CNV",
+      "sha256": "003e1b250d26b987867b9d0c1d155c42e340c4a62bffdcd4db85c7c41e60691e"
+    },
+    "sih_199201_199712/VINCPREV.CNV": {
+      "fonte": "sih-tab-b433310785e0",
+      "membro": "VINCPREV.CNV",
+      "sha256": "b6afc5eace583f2c122c74bdc1ab0ebdaf43a4b7d057a94d44eeb3a7c8817f29"
+    },
     "sim/ACIDTRAB.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
       "membro": "OBITOS_CID10_TAB/tabdo/ACIDTRAB.CNV",
@@ -1478,6 +1518,18 @@
       },
       "largura": {
         "co_erro": 6
+      }
+    },
+    "sih_aih_reduzida_1992_2007": {
+      "def": "sih_199201_199712/RD.DEF",
+      "campos": {
+        "gestao": "sih_199201_199712/GESTAO.CNV",
+        "ident": "sih_199201_199712/IDENT.CNV",
+        "instru": "sih_199201_199712/INSTRU.CNV",
+        "morte": "sih_199201_199712/MORTES.CNV",
+        "natureza": "sih_199201_199712/NATUREZA.CNV",
+        "sexo": "sih_199201_199712/SEXO.CNV",
+        "vincprev": "sih_199201_199712/VINCPREV.CNV"
       }
     }
   },

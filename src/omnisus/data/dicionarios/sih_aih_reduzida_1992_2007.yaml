@@ -2,14 +2,16 @@ name: sih_aih_reduzida_1992_2007
 title: SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.1.0
 x-source-format: dbc
 x-partitions:
 - _source_ano
 x-evidence:
   physical_schema: sih_rd_rr_2007_12_mini.dbc, 75 fields; observed 2026-09-22
-  semantic_status: Physical inventory; individual semantic fields not audited. No
-    inferred category mappings.
+  semantic_status: >-
+    Physical inventory; individual semantic fields not audited. The code maps of ident,
+    sexo, morte, natureza, gestao, instru and vincprev come from the CNV that RD.DEF binds
+    in the three era packages, byte-identical (evidence/2026-09-29-tab-sih-rd-eras/).
   dictionary_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Doc/
   source_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Dados/RDRR0712.dbc
 schema:
@@ -28,6 +30,36 @@ schema:
     type: string
   - name: ident
     type: string
+    x-decode:
+      '0': Outras/ignorado
+      '1': Normal
+      '2': Outras/ignorado
+      '3': Outras/ignorado
+      '4': Outras/ignorado
+      '5': Longa permanência
+      '6': Outras/ignorado
+      '7': Outras/ignorado
+      '8': Outras/ignorado
+      '9': Outras/ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 09f3215720dc054cd57289cab5d47ecb7ef2e2d78b9fec9fbe9d112a5c891fc5
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XTipo de AIH, IDENT, 1, IDENT.CNV; IDENT.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XTipo de AIH, IDENT, 1, IDENT.CNV; IDENT.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XTipo de AIH, IDENT, 1, IDENT.CNV; IDENT.CNV'
+        note: Mapa do CNV.
   - name: cep
     type: string
   - name: munic_res
@@ -36,6 +68,36 @@ schema:
     type: string
   - name: sexo
     type: string
+    x-decode:
+      '0': Ignorado
+      '1': Masculino
+      '2': Feminino
+      '3': Feminino
+      '4': Ignorado
+      '5': Ignorado
+      '6': Ignorado
+      '7': Ignorado
+      '8': Ignorado
+      '9': Ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 42339c23e104260a8f96eac31ab54010db19ec1275aca55ab5ea4e6c4e09e239
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XSexo, SEXO, 1, SEXO.CNV; SEXO.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XSexo, SEXO, 1, SEXO.CNV; SEXO.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XSexo, SEXO, 1, SEXO.CNV; SEXO.CNV'
+        note: Mapa do CNV.
   - name: uti_mes_in
     type: integer
   - name: uti_mes_an
@@ -100,8 +162,160 @@ schema:
     type: string
   - name: natureza
     type: string
+    x-decode:
+      '00': Ignorado
+      '01': Ignorado
+      '02': Ignorado
+      '03': Ignorado
+      '04': Ignorado
+      '05': Ignorado
+      '06': Ignorado
+      '07': Ignorado
+      '08': Ignorado
+      '09': Ignorado
+      '10': Próprio
+      '11': Ignorado
+      '12': Ignorado
+      '13': Ignorado
+      '14': Ignorado
+      '15': Ignorado
+      '16': Ignorado
+      '17': Ignorado
+      '18': Ignorado
+      '19': Ignorado
+      '20': Contratado
+      '21': Ignorado
+      '22': Contratado optante SIMPLES
+      '23': Ignorado
+      '24': Ignorado
+      '25': Ignorado
+      '26': Ignorado
+      '27': Ignorado
+      '28': Ignorado
+      '29': Ignorado
+      '30': Federal
+      '31': Federal Verba Própria
+      '32': Ignorado
+      '33': Ignorado
+      '34': Ignorado
+      '35': Ignorado
+      '36': Ignorado
+      '37': Ignorado
+      '38': Ignorado
+      '39': Ignorado
+      '40': Estadual
+      '41': Estadual Verba Própria
+      '42': Ignorado
+      '43': Ignorado
+      '44': Ignorado
+      '45': Ignorado
+      '46': Ignorado
+      '47': Ignorado
+      '48': Ignorado
+      '49': Ignorado
+      '50': Municipal
+      '51': Ignorado
+      '52': Ignorado
+      '53': Ignorado
+      '54': Ignorado
+      '55': Ignorado
+      '56': Ignorado
+      '57': Ignorado
+      '58': Ignorado
+      '59': Ignorado
+      '60': Filantrópico
+      '61': Filantrópico isento tributos e contr.sociais
+      '62': Ignorado
+      '63': Filantrópico isento IR e contr.s/lucro líquido
+      '64': Ignorado
+      '65': Ignorado
+      '66': Ignorado
+      '67': Ignorado
+      '68': Ignorado
+      '69': Ignorado
+      '70': Universitário Ensino
+      '71': Ignorado
+      '72': Ignorado
+      '73': Ignorado
+      '74': Ignorado
+      '75': Ignorado
+      '76': Ignorado
+      '77': Ignorado
+      '78': Ignorado
+      '79': Ignorado
+      '80': Sindicato
+      '81': Ignorado
+      '82': Ignorado
+      '83': Ignorado
+      '84': Ignorado
+      '85': Ignorado
+      '86': Ignorado
+      '87': Ignorado
+      '88': Ignorado
+      '89': Ignorado
+      '90': Universitário Pesquisas
+      '91': Univ. Pesquisas isento tributos e contr.sociais
+      '92': Universitário de ensino e pesquisa privado
+      '93': Univ. Pesquisas isento IR e contr.s/lucro líquido
+      '94': Universitário de ensino e pesquisa privado
+      '95': Ignorado
+      '96': Ignorado
+      '97': Ignorado
+      '98': Ignorado
+      '99': Ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: d9e116a3616391f2860d66ffa88f4cff04022c7583923d95c131a75c3247ef71
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: LNatureza, NATUREZA, 1, NATUREZA.CNV; NATUREZA.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: LNatureza, NATUREZA, 1, NATUREZA.CNV; NATUREZA.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: LNatureza, NATUREZA, 1, NATUREZA.CNV; NATUREZA.CNV'
+        note: Mapa do CNV.
   - name: gestao
     type: string
+    x-decode:
+      '0': Estadual
+      '1': Municipal plena assist
+      '2': Estadual plena
+      '3': Não definida
+      '4': Não definida
+      '5': Não definida
+      '6': Não definida
+      '7': Não definida
+      '8': Não definida
+      '9': Não definida
+      E: Estadual plena
+      M: Municipal plena assist
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 1f7afbd8ec687eb01947ff6759a9a6d7af201a75af70f9a19f7a41d576aca7d7
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
+        note: Mapa do CNV.
   - name: rubrica
     type: integer
   - name: ind_vdrl
@@ -116,6 +330,28 @@ schema:
     type: integer
   - name: morte
     type: integer
+    x-decode:
+      '0': Sem óbito
+      '1': Com óbito
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: b9f5ab9277a51625f5753fd63190d7c055200c29dba492081f1b15c143d11bc1
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XÓbitos, MORTE, 1, MORTES.CNV; MORTES.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XÓbitos, MORTE, 1, MORTES.CNV; MORTES.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XÓbitos, MORTE, 1, MORTES.CNV; MORTES.CNV'
+        note: Mapa do CNV.
   - name: nacional
     type: string
   - name: num_proc
@@ -132,6 +368,36 @@ schema:
     type: integer
   - name: instru
     type: string
+    x-decode:
+      '0': Ignorado/não se aplica
+      '1': Analfabeto
+      '2': 1º grau
+      '3': 2º grau
+      '4': 3º grau
+      '5': Ignorado/não se aplica
+      '6': Ignorado/não se aplica
+      '7': Ignorado/não se aplica
+      '8': Ignorado/não se aplica
+      '9': Ignorado/não se aplica
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 595254be2c676a5195ea0ca54a893ffbd5afeac487ded164340700af37e75d95
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
+        note: Mapa do CNV.
   - name: cid_notif
     type: string
   - name: contracep1
@@ -150,6 +416,36 @@ schema:
     type: string
   - name: vincprev
     type: string
+    x-decode:
+      '0': Não classificado
+      '1': Autônomo
+      '2': Desempregado
+      '3': Aposentado
+      '4': Não segurado
+      '5': Empregado
+      '6': Empregador
+      '7': Não classificado
+      '8': Não classificado
+      '9': Não classificado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 52f021de88a24ff76075cbea8171064f8430de036ac18981ef4980504033719c
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
+        note: Mapa do CNV.
   - name: gestor_cod
     type: string
   - name: gestor_cpf

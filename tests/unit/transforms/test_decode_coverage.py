@@ -166,6 +166,8 @@ REMAINING = {
         ("tpresginfo", "", 115),
     ],
     ("sim_obitos_cid9", "sim_cid9_rr_1995_mini"): [],
+    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini"): [],
+    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2007_12_mini"): [],
     # SIA families of Informe Técnico SIASUS 2019-07, same rule; AMP has no DEF.
     ("sia_apac_acompanhamento_bariatrica", "sia_ab_se_2025_07_mini"): [],
     ("sia_apac_fistula_arteriovenosa", "sia_acf_rr_2024_01_mini"): [],
@@ -292,6 +294,40 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
         # RD2008.DEF lines 407-433 bind TPDISEC1-9 to TP_DIAGSEC.CNV.
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", {"1": "Preexistente"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec2", {"1": "Preexistente"}),
+        # RD 1992-2007: the RD.DEF of the three era packages binds these fields to the
+        # same CNV bytes (evidence/2026-09-29-tab-sih-rd-eras/). RDRR9709
+        # (TAB_SIH_199201-199712.zip) has no gestao, instru or vincprev, so those are
+        # asserted on RDRR0712 (TAB_SIH_200308-200712.zip); instru 0 and vincprev 0 are
+        # labelled by the reserve range 0-9. IDENT, SEXO, INSTRU, VINCPREV (0-9),
+        # NATUREZA (00-99) and GESTAO (0, 1, 2, 3-9) label every digit, so the empty
+        # REMAINING entries of these fixtures say nothing about unknown codes; only
+        # MORTES.CNV has no reserve range.
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_1997_09_mini",
+            "sexo",
+            {"1": "Masculino", "3": "Feminino"},
+        ),
+        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "natureza", {"40": "Estadual"}),
+        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "ident", {"1": "Normal"}),
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_2007_12_mini",
+            "gestao",
+            {"1": "Municipal plena assist", "2": "Estadual plena"},
+        ),
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_2007_12_mini",
+            "instru",
+            {"0": "Ignorado/não se aplica", "3": "2º grau"},
+        ),
+        (
+            "sih_aih_reduzida_1992_2007",
+            "sih_rd_rr_2007_12_mini",
+            "vincprev",
+            {"0": "Não classificado"},
+        ),
         # RD2008.DEF and RJ2008.DEF bind NACIONAL to NACION3D.CNV and CONTRACEP1-2 to
         # CONTRAC.CNV; RJ2008.DEF binds ST_MOT_BLO to MOTBLOQUEIO.CNV. CONTRAC and
         # MOTBLOQUEIO open with a fallback range (00-99).
