@@ -75,6 +75,17 @@ Em conflito, registrar as duas referências, as afirmações concorrentes e o
 recorte afetado; impedir interpretação automática nova até resolução. Não
 substituir o valor bruto por um palpite ou descartar códigos desconhecidos.
 
+## Versão do dicionário
+
+Cada dicionário empacotado tem o `x-version` travado pelo conteúdo em
+`tests/unit/transforms/dictionary_versions.json`: nome → versão → SHA-256 do texto do
+YAML sem a linha `x-version`. Qualquer mudança no arquivo, inclusive num comentário ou
+num dicionário regenerado, pede uma versão nova e uma linha nova nesse arquivo; o teste
+`test_dictionary_versions.py` falha e diz qual linha acrescentar. As versões antigas
+ficam registradas, e a atual precisa ser a maior. Dois pull requests que sobem o mesmo
+dicionário para a mesma versão entram em conflito nessa linha, em vez de mesclar duas
+mudanças sob uma versão só.
+
 ## Regenerar os rótulos
 
 Para os rótulos gerados de CNV do TabWin (`method: cnv-parse`), regenerar com:
