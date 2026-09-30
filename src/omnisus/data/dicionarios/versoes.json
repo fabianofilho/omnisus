@@ -1,0 +1,152 @@
+{
+  "aux_cid10": {
+    "2.0.0": "062a2410534a754d25e283051bd49f7f0f38c33a5744f3c7023b479e60dcdee4"
+  },
+  "aux_municipios": {
+    "2.0.0": "b2a3ca018507ba47167fe90fa3c8ba4b0b7624d767919348c9ff62b579421e26"
+  },
+  "aux_ocupacoes": {
+    "1.0.0": "78482a1807866e6392d7520aa535ceee728b2f2b495f5a9cb4764d34e3fc2acc"
+  },
+  "aux_paises": {
+    "1.0.0": "4cadcf5befd3dc931030a1bd72781ac3376eafda65604a2757a78ebde14c2a99"
+  },
+  "aux_sigtap_procedimentos": {
+    "1.0.0": "56c6b19f56c7d8d1daf59f3d013beddd6299d38c072398f0749b5176c3d58463"
+  },
+  "aux_uf": {
+    "2.0.0": "1cbe152500fcbafd3a45f1f9703b65af51e2ae838b70609a81f0be7fb293a392"
+  },
+  "cnes_dados_complementares": {
+    "1.1.0": "c4035e1acf94682f8be3fe1cce8c27d3e4460e0d20bce06c6897ff71b1e01a97"
+  },
+  "cnes_equipamentos": {
+    "1.1.0": "569b1479f3adc0340e459724c648d67bcf30d753928dc560a23f6f3a4aa19659"
+  },
+  "cnes_equipes": {
+    "1.1.0": "70062852c3bc6cdc1a159d880e1783aeadd1989cfe5a85b83b003792c4852963"
+  },
+  "cnes_estabelecimentos": {
+    "2.2.0": "ab7f93bea42b54b9daf7ae093777b17b5e1919d79076aad2d7abdc6a4d162f3b"
+  },
+  "cnes_estabelecimentos_ensino": {
+    "1.1.0": "6fc92a106915ed777e590c6bc6a2264542d97b69712c24c527590e338e119807"
+  },
+  "cnes_estabelecimentos_filantropicos": {
+    "1.1.0": "ae20bee5d86d32452d7b3edc43f683a12c7515f852d38573c89f4664e7074af9"
+  },
+  "cnes_gestao_metas": {
+    "1.1.0": "6261835288334ee954b71d403cdb848f0794623214687c91ded296ec6d98eccd"
+  },
+  "cnes_habilitacoes": {
+    "1.1.0": "465a4913fb23c0a38188af2f6f7e3ca7f48893c8e9963540b02f6fb2c378b609"
+  },
+  "cnes_incentivos": {
+    "1.1.0": "564154d6e25a38f0efe1e719a75554b23541de89c6214d6655a60c7ac52f0f5a"
+  },
+  "cnes_leitos": {
+    "1.1.0": "d7a475f7354a51c7f31acd12bb2f309fb207d20f922dd0adfb0e5c029c98ab90"
+  },
+  "cnes_regras_contratuais": {
+    "1.1.0": "56e0790a6a2ab8507850968d6b762fdb63d5756b6dd4d9eba1da0016608fddac"
+  },
+  "cnes_servicos_especializados": {
+    "1.1.0": "fe6a20d7d087297283e0ae598381808ba879a1ff88e97f3373f72c654ee856e1"
+  },
+  "ibge_populacao": {
+    "3.0.0": "5324447473cbefcc4fee03fb62b350c39786ee412795bc201d5f1142ae72b4f5"
+  },
+  "sia_apac_acompanhamento_bariatrica": {
+    "1.0.0": "d4164ba679368038ccc50ec4360160a331f09b552312c466075264fca8478549"
+  },
+  "sia_apac_acompanhamento_multiprofissional": {
+    "1.0.0": "eec31d3aa82be14e60da31ab2832d6f85f085ccac362e8ff56a3378c687ba302"
+  },
+  "sia_apac_cirurgia_bariatrica": {
+    "0.1.0": "76c3fcf936e9197e94f750018fae8491c77a0bd7ebbe4a4491d5b6587d88e04b"
+  },
+  "sia_apac_fistula_arteriovenosa": {
+    "1.0.0": "6e319462d7dbac4c4f242af12d8fa1ae4b4a7f7161f0d6c77c3a50f651fc7cad"
+  },
+  "sia_apac_laudos_diversos": {
+    "0.1.0": "d6a27960857cf8ffa591361f306849b427cc6009768de5d1782cf3a7120ad65a"
+  },
+  "sia_apac_medicamentos": {
+    "0.1.0": "2c27b86eda3384558fa38a575761e7e5e28ad9bb33e2d0141354692973862028"
+  },
+  "sia_apac_nefrologia": {
+    "1.0.0": "cabbee1075c795fdc00c45607a09f8566e05ae84f91d4cafea16a5fcf99bfa34"
+  },
+  "sia_apac_quimioterapia": {
+    "0.1.0": "0043c32ea956d615b753821aa941d306c4a31c78b52ec4567d353b7bb2ee619d"
+  },
+  "sia_apac_radioterapia": {
+    "1.0.0": "56e3fca2c75fa12a90ccf6466d3434039e4a5a09267d13421964f19acde7affd"
+  },
+  "sia_apac_tratamento_dialitico": {
+    "0.1.0": "3b51512577295a84cca20a912b494c6e5f2483747f5c2c844ae84151d0bda984"
+  },
+  "sia_atencao_domiciliar": {
+    "1.1.0": "b86b26914d40251fb0040b1fdc0b937280a23e9c52b2c7bb3d5def0bcb21bdcd"
+  },
+  "sia_bpa_individualizado": {
+    "0.2.0": "98b0ac433649fce8c3ca26ebc2e5de514949af1901c892741fd88c8efe0baa3e"
+  },
+  "sia_producao_ambulatorial": {
+    "1.1.0": "37c80bd4c170e95d4432453b871831167a5a8173795fc43cc0aac1287ccdf2bb"
+  },
+  "sia_producao_ambulatorial_1994_2007": {
+    "1.0.0": "cfa71be9d235afa75eaeb04839e48fa8dff4cd71e0e25c4e164349ab1427c9dd"
+  },
+  "sia_psicossocial": {
+    "0.2.0": "e97045b175c9b98a379af9d4131855e762b115f0f6dc33930f73af8c345e9c58"
+  },
+  "sih_aih_reduzida": {
+    "2.10.0": "cd8d8b957f2d87e25aa005ced848345a9bb7c4d94b519939afe486a44101a91d"
+  },
+  "sih_aih_reduzida_1992_2007": {
+    "1.1.0": "240c72f5e4d44279aaa6fe8a94a94984a4fc07de67fffce8912519c32573a7a8"
+  },
+  "sih_aih_rejeitada": {
+    "1.2.0": "c1c71c4838f33493d82ed17899afc33a0f6b173eb1ca8aa66a955194488b7e54"
+  },
+  "sih_aih_rejeitada_erro": {
+    "1.0.0": "b6de35b9d9b140f1acd181fe70dfe16773b34a29d7ae8010f550c41cfb1577ca"
+  },
+  "sih_servicos_profissionais": {
+    "1.1.0": "34a007b44a6ff54f22aba6af29fba978608da15ccdcd362f88884725eaf41f7b"
+  },
+  "sim_obitos": {
+    "2.5.0": "f8a339e1ea76bb7f9999cc7d01a6f3b988d6c9c7d3f782c2da7e642902d6a967"
+  },
+  "sim_obitos_cid9": {
+    "1.1.0": "cb087fdf1419616c24a1e2a2c8cec2bdc9f3f531fa3c1015dfe36c450efa32d0"
+  },
+  "sim_obitos_externos": {
+    "1.1.0": "9525eab149bc209d46865c924ecb7afd4a8511ff8e4bd2d751d56e6a5ce91505"
+  },
+  "sim_obitos_fetais": {
+    "1.1.0": "0c4f7a09f27a7901c967337e3a6cb34c03d4a5b57f65aefa3c2229e37894f83d"
+  },
+  "sim_obitos_infantis": {
+    "1.1.0": "9f0d1f619674c934d4fa7e3c6d54e0c4087188d62900d43c97994518ffaf68c7"
+  },
+  "sim_obitos_maternos": {
+    "1.1.0": "6d12bdf5e0b5cf0b6de722db665adca077721bc9778424efad80e9499acb8bb1"
+  },
+  "sinan_chagas": {
+    "1.2.0": "8b341da3cdae13f57e0c577a48b7b50b8c3a511eea1feb1f2ad110cbc52c016a"
+  },
+  "sinan_hanseniase": {
+    "1.2.0": "c87cbe69a097e515c7fa0718b7e3bb3b7a5beef094589b367a97fb20c0ba1244"
+  },
+  "sinan_tuberculose": {
+    "1.0.0": "b059a5403e7a0d1aa84dce8e8f7aab0b51ef41f1d15afb20560673b66a1667b6"
+  },
+  "sinasc_1994_1995": {
+    "1.0.0": "79f11487a9497e55d4d73c5a165bb2d0c16a701199d82ec58f02063cceefea55"
+  },
+  "sinasc_nascidos_vivos": {
+    "2.4.0": "2ceaadc6443235cc5f32606cdfdc232874c3849d9a1f8741a3fd2d1878738cea"
+  }
+}

@@ -65,7 +65,8 @@ server lists today.
   records the SHA-256 of what it read and that something cites.
 - Regenerate generated files instead of editing them: `docs/datasets.md`
   (`scripts/gen_datasets_doc.py`), CNV code maps and SINAN/SIM-subset dictionaries
-  (`scripts/metadados/`).
+  (`scripts/metadados/`), and
+  `src/omnisus/data/dicionarios/versoes.json` (`scripts/metadados/travar_versoes.py`).
 - Write researcher pages (`docs/pesquisa/`, `docs/sources/`, `docs/dicionario/`) in
   Portuguese; technical guides and the API reference in English.
 

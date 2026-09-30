@@ -77,6 +77,16 @@ substituir o valor bruto por um palpite ou descartar códigos desconhecidos.
 
 ## Regenerar os rótulos
 
+Toda mudança no conteúdo de um dicionário — inclusive a saída de `gerar_decode_cnv.py`,
+`gerar_sinan.py`, `gerar_subconjuntos_sim.py` e `validar_fonte.py --accept` — exige
+trocar a `x-version` do dicionário e rodar
+`uv run python scripts/metadados/travar_versoes.py`, que registra o SHA-256 do conteúdo
+da nova versão em `src/omnisus/data/dicionarios/versoes.json`. O teste
+`tests/unit/scripts/test_travar_versoes.py` falha enquanto isso não é feito. Uma versão
+travada nunca muda de hash: mudar o conteúdo sem trocar a `x-version` faz o script parar,
+e duas mudanças que chegam à mesma versão do mesmo dicionário conflitam no Git em vez de
+se fundirem em silêncio.
+
 Para os rótulos gerados de CNV do TabWin (`method: cnv-parse`), regenerar com:
 
 ```bash
