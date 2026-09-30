@@ -75,6 +75,23 @@ Em conflito, registrar as duas referências, as afirmações concorrentes e o
 recorte afetado; impedir interpretação automática nova até resolução. Não
 substituir o valor bruto por um palpite ou descartar códigos desconhecidos.
 
+## Versão do dicionário
+
+Toda mudança no conteúdo de um dicionário — inclusive a saída de `gerar_decode_cnv.py`,
+`gerar_sinan.py`, `gerar_subconjuntos_sim.py` e `validar_fonte.py --accept` — exige
+trocar a `x-version` do dicionário por uma maior e rodar
+`uv run python scripts/metadados/travar_versoes.py`, que registra o SHA-256 do conteúdo
+da nova versão em `src/omnisus/data/dicionarios/versoes.json`. O teste
+`tests/unit/scripts/test_travar_versoes.py` falha enquanto isso não é feito. O script
+para se o conteúdo mudou sem trocar a `x-version`, se a nova versão é menor que uma já
+travada ou se a `x-version` volta a uma versão anterior.
+
+`versoes.json` só cresce. Um conflito nele quer dizer que duas mudanças reivindicaram a
+mesma versão do mesmo dicionário: resolve-se trocando de novo a `x-version` e rodando o
+script, nunca editando ou apagando entradas à mão. O script não percebe uma entrada
+apagada e regerada; por isso, na revisão, recusar todo diff que remove ou altera uma
+linha de `versoes.json`.
+
 ## Regenerar os rótulos
 
 Para os rótulos gerados de CNV do TabWin (`method: cnv-parse`), regenerar com:
