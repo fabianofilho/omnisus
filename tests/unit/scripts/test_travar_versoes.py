@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -41,30 +42,71 @@ def test_committed_lock_is_current(monkeypatch):
     assert _load(monkeypatch).generate() == LOCK.read_text(encoding="utf-8")
 
 
+def _edit(path: Path, version: str | None = None, changed: bool = True) -> None:
+    """Rewrite a real dictionary: a new top-level key and/or another x-version line."""
+    text = path.read_text(encoding="utf-8")
+    if changed:
+        text += "x-teste: 1\n"
+    if version is not None:
+        text, n = re.subn(r"(?m)^x-version:.*$", f'x-version: "{version}"', text)
+        assert n == 1
+    path.write_text(text, encoding="utf-8")
+
+
+def _locked(module: ModuleType, text: str) -> dict[str, str]:
+    return module.load_lock(text)["sih_aih_reduzida"]
+
+
 def test_changed_content_without_a_new_version_is_refused(monkeypatch, tmp_path):
     module = _load(monkeypatch)
     dicionarios, lock = _copy(tmp_path)
-    path = dicionarios / "sih_aih_reduzida.yaml"
-    text = path.read_text(encoding="utf-8")
-    assert "label: Número da AIH\n" in text
-    path.write_text(text.replace("label: Número da AIH\n", "label: Nº da AIH\n"), "utf-8")
+    _edit(dicionarios / "sih_aih_reduzida.yaml")
     with pytest.raises(ValueError, match=r"sih_aih_reduzida.*bump x-version"):
         module.generate(dicionarios, lock)
 
 
-def test_a_new_version_is_added_and_the_old_one_kept(monkeypatch, tmp_path):
+def test_a_new_version_is_added_last_and_old_ones_kept(monkeypatch, tmp_path):
+    """10.0.0 sorts before 2.x as text: the lock orders versions as numbers."""
+    module = _load(monkeypatch)
+    dicionarios, lock = _copy(tmp_path)
+    old = _locked(module, lock.read_text(encoding="utf-8"))
+    _edit(dicionarios / "sih_aih_reduzida.yaml", "10.0.0")
+    new = _locked(module, module.generate(dicionarios, lock))
+    assert {v: new[v] for v in old} == old
+    assert list(new) == [*old, "10.0.0"]
+    assert new["10.0.0"] not in old.values()
+
+
+def test_a_new_version_lower_than_a_locked_one_is_refused(monkeypatch, tmp_path):
+    module = _load(monkeypatch)
+    dicionarios, lock = _copy(tmp_path)
+    _edit(dicionarios / "sih_aih_reduzida.yaml", "1.0.0")
+    with pytest.raises(ValueError, match="sih_aih_reduzida"):
+        module.generate(dicionarios, lock)
+
+
+def test_returning_to_an_earlier_locked_version_is_refused(monkeypatch, tmp_path):
     module = _load(monkeypatch)
     dicionarios, lock = _copy(tmp_path)
     path = dicionarios / "sih_aih_reduzida.yaml"
-    text = path.read_text(encoding="utf-8")
-    old = module.load_lock(lock.read_text(encoding="utf-8"))["sih_aih_reduzida"]
-    [(version, _)] = old.items()
-    text = text.replace("label: Número da AIH\n", "label: Nº da AIH\n")
-    path.write_text(text.replace(f'x-version: "{version}"', 'x-version: "99.0.0"'), "utf-8")
-    new = module.load_lock(module.generate(dicionarios, lock))["sih_aih_reduzida"]
-    assert new[version] == old[version]
-    assert list(new) == [version, "99.0.0"]
-    assert new["99.0.0"] != old[version]
+    original = path.read_text(encoding="utf-8")
+    _edit(path, "10.0.0")
+    lock.write_text(module.generate(dicionarios, lock), encoding="utf-8")
+    path.write_text(original, encoding="utf-8")
+    with pytest.raises(ValueError, match="sih_aih_reduzida"):
+        module.generate(dicionarios, lock)
+
+
+def test_a_dictionary_without_x_version_is_refused(monkeypatch, tmp_path):
+    """Synthetic removal of the x-version line from a copy of a real dictionary."""
+    module = _load(monkeypatch)
+    dicionarios, lock = _copy(tmp_path)
+    path = dicionarios / "sih_aih_reduzida.yaml"
+    text, n = re.subn(r"(?m)^x-version:.*\n", "", path.read_text(encoding="utf-8"))
+    assert n == 1
+    path.write_text(text, encoding="utf-8")
+    with pytest.raises(ValueError, match=r"sih_aih_reduzida\.yaml.*x-version"):
+        module.generate(dicionarios, lock)
 
 
 def test_lock_with_a_duplicate_version_is_refused(monkeypatch):

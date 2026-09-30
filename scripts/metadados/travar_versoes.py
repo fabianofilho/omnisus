@@ -7,7 +7,10 @@ ou fim de linha CRLF não mudem o hash. A versão atual de um dicionário que fa
 arquivo é acrescentada; uma versão já travada nunca muda de hash, e o script para se
 o conteúdo mudou sem trocar a `x-version`. As entradas antigas ficam para sempre, então
 dois pull requests que travam a mesma versão do mesmo dicionário conflitam no Git
-(issue #25). Uma chave repetida ou um dicionário sem YAML também param o script.
+(issue #25). O arquivo só cresce: a `x-version` atual é sempre a maior travada, e um
+conflito nele se resolve trocando de novo a versão e rodando o script, nunca editando ou
+apagando entradas à mão. Uma chave repetida, um dicionário sem YAML ou um YAML sem
+`x-version` também param o script.
 
 Rodar de novo não muda nada; `--check` falha se o arquivo mudaria.
 """
@@ -63,12 +66,19 @@ def generate(dicionarios: Path = DICIONARIOS, lock_path: Path = LOCK) -> str:
         raise ValueError(f"versoes.json names dictionaries without a YAML: {unknown}")
     for name, path in paths.items():
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if "x-version" not in raw:
+            raise ValueError(f"{path.name} has no x-version")
         version, sha = str(raw["x-version"]), digest(raw)
-        locked = lock.setdefault(name, {}).setdefault(version, sha)
-        if locked != sha:
+        versions = lock.setdefault(name, {})
+        if versions.setdefault(version, sha) != sha:
             raise ValueError(
                 f"{name}: content changed but x-version {version} is locked to another "
                 "content; bump x-version"
+            )
+        highest = max(versions, key=_version_key)
+        if highest != version:
+            raise ValueError(
+                f"{name}: x-version {version} is below the locked {highest}; x-version only grows"
             )
     out = {
         name: {v: lock[name][v] for v in sorted(lock[name], key=_version_key)}
