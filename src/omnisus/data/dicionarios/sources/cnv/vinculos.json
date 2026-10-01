@@ -995,7 +995,9 @@
   },
   "datasets": {
     "sih_aih_reduzida": {
-      "def": "sih/RD2008.DEF",
+      "def": [
+        "sih/RD2008.DEF"
+      ],
       "campos": {
         "car_int": "sih/CNV/CARATEND.CNV",
         "cobranca": "sih/CNV/SAIDAPERM.CNV",
@@ -1034,14 +1036,18 @@
       }
     },
     "cnes_estabelecimentos": {
-      "def": "cnes/Estabelecimento.def",
+      "def": [
+        "cnes/Estabelecimento.def"
+      ],
       "campos": {
         "tp_unid": "cnes/CNV/TP_ESTAB.CNV",
         "turno_at": "cnes/CNV/TurnosAt.CNV"
       }
     },
     "sia_apac_cirurgia_bariatrica": {
-      "def": "sia/APAC_Pos_Cirurgia_Bariatica.def",
+      "def": [
+        "sia/APAC_Pos_Cirurgia_Bariatica.def"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -1059,7 +1065,9 @@
       }
     },
     "sia_apac_laudos_diversos": {
-      "def": "sia/APAC_Laudos_Diversos.DEF",
+      "def": [
+        "sia/APAC_Laudos_Diversos.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -1077,7 +1085,9 @@
       }
     },
     "sia_apac_medicamentos": {
-      "def": "sia/APAC_Medicamentos.DEF",
+      "def": [
+        "sia/APAC_Medicamentos.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -1097,7 +1107,9 @@
       }
     },
     "sia_apac_quimioterapia": {
-      "def": "sia/APAC_Quimioterapia.DEF",
+      "def": [
+        "sia/APAC_Quimioterapia.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -1115,7 +1127,9 @@
       }
     },
     "sia_apac_tratamento_dialitico": {
-      "def": "sia/APAC_Tratamento_Dialitico.DEF",
+      "def": [
+        "sia/APAC_Tratamento_Dialitico.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -1133,7 +1147,9 @@
       }
     },
     "sia_psicossocial": {
-      "def": "sia/RAAS_Psicossocial.def",
+      "def": [
+        "sia/RAAS_Psicossocial.def"
+      ],
       "campos": {
         "cob_esf": "sia/CNV/COBERTURA.CNV",
         "loc_realiz": "sia/CNV/LOC_REALIZ.CNV",
@@ -1146,7 +1162,9 @@
       }
     },
     "sim_obitos": {
-      "def": "sim/Obito_1996_CID10.def",
+      "def": [
+        "sim/Obito_1996_CID10.def"
+      ],
       "campos": {
         "acidtrab": "sim/ACIDTRAB.CNV",
         "atestante": "sim/ATESTANT.CNV",
@@ -1185,7 +1203,9 @@
       }
     },
     "sinan_chagas": {
-      "def": "sinan/ChagasNET.def",
+      "def": [
+        "sinan/ChagasNET.def"
+      ],
       "campos": {},
       "sem_cnv": {
         "classi_fin": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
@@ -1199,7 +1219,9 @@
       }
     },
     "sinan_hanseniase": {
-      "def": "sinan/HansNET.def",
+      "def": [
+        "sinan/HansNET.def"
+      ],
       "campos": {
         "aval_atu_n": "sinan/AvaliaN.cnv",
         "avalia_n": "sinan/AvaliaN.cnv",
@@ -1215,7 +1237,9 @@
       }
     },
     "sinasc_nascidos_vivos": {
-      "def": "sinasc/NASCIDO.def",
+      "def": [
+        "sinasc/NASCIDO.def"
+      ],
       "campos": {
         "consultas": "sinasc/CONSULT.CNV",
         "escmae": "sinasc/INSTRUC.CNV",
@@ -1245,7 +1269,9 @@
       }
     },
     "sinan_tuberculose": {
-      "def": "sinan/TuberculNET5_0.def",
+      "def": [
+        "sinan/TuberculNET5_0.def"
+      ],
       "campos": {},
       "sem_cnv": {
         "agravaids": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
@@ -1289,7 +1315,9 @@
       }
     },
     "sia_producao_ambulatorial": {
-      "def": "sia/Producao_Ambulatorial.DEF",
+      "def": [
+        "sia/Producao_Ambulatorial.DEF"
+      ],
       "campos": {
         "pa_alta": "sia/CNV/ALTA.CNV",
         "pa_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1311,7 +1339,9 @@
       }
     },
     "sih_aih_rejeitada": {
-      "def": "sih/RJ2008.DEF",
+      "def": [
+        "sih/RJ2008.DEF"
+      ],
       "campos": {
         "car_int": "sih/CNV/CARATEND.CNV",
         "cobranca": "sih/CNV/SAIDAPERM.CNV",
@@ -1340,13 +1370,17 @@
       }
     },
     "sih_servicos_profissionais": {
-      "def": "sih/SP2008.DEF",
+      "def": [
+        "sih/SP2008.DEF"
+      ],
       "campos": {
         "in_tp_val": "sih/CNV/TP_VAL.CNV"
       }
     },
     "cnes_dados_complementares": {
-      "def": "cnes/DadosComplementares.def",
+      "def": [
+        "cnes/DadosComplementares.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "clientel": "cnes/CNV/Flux_Cli.CNV",
@@ -1358,7 +1392,9 @@
       }
     },
     "cnes_equipamentos": {
-      "def": "cnes/Equipamento.def",
+      "def": [
+        "cnes/Equipamento.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "ind_sus": "cnes/CNV/IND_SUS.CNV",
@@ -1368,7 +1404,9 @@
       }
     },
     "cnes_equipes": {
-      "def": "cnes/Equipes.def",
+      "def": [
+        "cnes/Equipes.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "motdesat": "cnes/CNV/motdesat.cnv",
@@ -1382,7 +1420,9 @@
       }
     },
     "cnes_estabelecimentos_ensino": {
-      "def": "cnes/Estabel_Ensino.def",
+      "def": [
+        "cnes/Estabel_Ensino.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1394,7 +1434,9 @@
       }
     },
     "cnes_estabelecimentos_filantropicos": {
-      "def": "cnes/Estabel_Filantropico.def",
+      "def": [
+        "cnes/Estabel_Filantropico.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1406,7 +1448,9 @@
       }
     },
     "cnes_gestao_metas": {
-      "def": "cnes/Gestao_de_Metas.def",
+      "def": [
+        "cnes/Gestao_de_Metas.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1417,7 +1461,9 @@
       }
     },
     "cnes_habilitacoes": {
-      "def": "cnes/Habilitacao.def",
+      "def": [
+        "cnes/Habilitacao.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1428,7 +1474,9 @@
       }
     },
     "cnes_incentivos": {
-      "def": "cnes/Incentivos.def",
+      "def": [
+        "cnes/Incentivos.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1439,7 +1487,9 @@
       }
     },
     "cnes_leitos": {
-      "def": "cnes/Leitos_Especialidade.def",
+      "def": [
+        "cnes/Leitos_Especialidade.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "codleito": "cnes/CNV/Esp_leit.CNV",
@@ -1450,7 +1500,9 @@
       }
     },
     "cnes_regras_contratuais": {
-      "def": "cnes/Regras_Contratuais.def",
+      "def": [
+        "cnes/Regras_Contratuais.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "tp_unid": "cnes/CNV/TP_ESTAB.CNV",
@@ -1459,7 +1511,9 @@
       }
     },
     "cnes_servicos_especializados": {
-      "def": "cnes/Servico_Especializado_200803_.def",
+      "def": [
+        "cnes/Servico_Especializado_200803_.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "caracter": "cnes/CNV/Srv_Caract.CNV",
@@ -1469,7 +1523,9 @@
       }
     },
     "sim_obitos_fetais": {
-      "def": "sim/Obito_1996_CID10.def",
+      "def": [
+        "sim/Obito_1996_CID10.def"
+      ],
       "campos": {
         "atestante": "sim/ATESTANT.CNV",
         "escmae": "sim/INSTRUC.CNV",
@@ -1495,7 +1551,9 @@
       }
     },
     "sim_obitos_cid9": {
-      "def": "sim/Obito_1979_95_CID-09.DEF",
+      "def": [
+        "sim/Obito_1979_95_CID-09.DEF"
+      ],
       "campos": {
         "assistmed": "sim/ASSMEDIC.CNV",
         "estcivil": "sim/ESTCIV.CNV",
@@ -1509,7 +1567,9 @@
       }
     },
     "sia_apac_acompanhamento_bariatrica": {
-      "def": "sia/APAC_Cirurgia_Bariatica.DEF",
+      "def": [
+        "sia/APAC_Cirurgia_Bariatica.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1529,7 +1589,9 @@
       }
     },
     "sia_apac_fistula_arteriovenosa": {
-      "def": "sia/APAC_Confeccao_de_Fistula.DEF",
+      "def": [
+        "sia/APAC_Confeccao_de_Fistula.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1552,7 +1614,9 @@
       }
     },
     "sia_apac_nefrologia": {
-      "def": "sia/APAC_Nefrologia.DEF",
+      "def": [
+        "sia/APAC_Nefrologia.DEF"
+      ],
       "campos": {
         "an_acevas": "sia/CNV/ACES_VASC.CNV",
         "an_cncdo": "sia/CNV/CNCDO.CNV",
@@ -1579,7 +1643,9 @@
       }
     },
     "sia_apac_radioterapia": {
-      "def": "sia/APAC_Radioterapia.DEF",
+      "def": [
+        "sia/APAC_Radioterapia.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1605,7 +1671,9 @@
       }
     },
     "sia_atencao_domiciliar": {
-      "def": "sia/Atencao_Domiciliar.def",
+      "def": [
+        "sia/Atencao_Domiciliar.def"
+      ],
       "campos": {
         "catend": "sia/CNV/CARAT_AT.CNV",
         "cob_esf": "sia/CNV/COBERTURA.CNV",
@@ -1619,7 +1687,9 @@
       }
     },
     "sih_aih_rejeitada_erro": {
-      "def": "sih/Motivo_de_Erro.DEF",
+      "def": [
+        "sih/Motivo_de_Erro.DEF"
+      ],
       "campos": {
         "co_erro": "sih/DBF/MOTERRO.dbf"
       },

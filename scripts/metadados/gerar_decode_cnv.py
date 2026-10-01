@@ -8,14 +8,15 @@ dataset a declara para o campo, guarda só os códigos com esse número de carac
 Entrada: `src/omnisus/data/dicionarios/sources/cnv/vinculos.json`, que nomeia, por
 dataset, o DEF e o CNV de cada campo, e os membros com o SHA-256 lido do arquivo
 oficial. Um membro com `mesmo_que` não tem arquivo: seus bytes são os do membro que ele
-nomeia, conferidos contra o seu próprio SHA-256. `def` pode ser uma lista, um DEF por
-pacote que publica os mesmos vínculos. Para cada campo o script confere o hash do
+nomeia, conferidos contra o seu próprio SHA-256. `def` é a lista dos DEF, um por pacote
+que publica os mesmos vínculos (um campo ligado a DBF aceita um DEF só). Para cada campo o script confere o hash do
 membro, confere que cada DEF liga o campo, na posição 1, ao membro de mesmo caminho
 relativo e mesmo SHA-256, escreve o mapa do CNV e uma claim `/field/codes` com
 `method: cnv-parse` e uma evidência por DEF. Um mapa anterior sem claim de códigos que
 discorda vira claim `conflicting` e um issue com o rótulo anterior de cada código. Uma
 claim de códigos existente nunca é substituída: de outro método, ou `cnv-parse` com mapa
-diferente, o script para e pede revisão. Uma linha de DEF fora
+diferente, o script para e pede revisão; com o mesmo mapa, só a evidência e o
+`checked_at` são reescritos, se diferem dos gerados. Uma linha de DEF fora
 do layout só é ignorada se `linhas_fora_do_layout` a lista com o texto exato. Rodar de novo não muda
 nada; `--check` falha se algum dicionário mudaria.
 """
@@ -160,10 +161,12 @@ def regenerate(
     checked_at: str,
     method: str = METHOD,
 ) -> dict[str, Any]:
-    """The field with the table's map, or the field itself if its map of `method` is current.
+    """The field with the table's map, or the field itself if its claim of `method` is current.
 
-    Only a field with no `/field/codes` claim is written. An existing claim of another
-    method, or a claim of `method` whose map differs from `decode`, raises for review.
+    A field with no `/field/codes` claim gets the map and a new claim. An existing claim
+    of another method, or a claim of `method` whose map differs from `decode`, raises for
+    review. A claim of `method` with the same map keeps every key except `evidence` and
+    `checked_at`, which the generator owns: a hand edit of them is rewritten.
     """
     where = f"{dataset}.{definition['name']}"
     meta = definition.get("x-metadata", {})
@@ -185,7 +188,11 @@ def regenerate(
                 f"{where}: the table's map differs from the {method} map in codes {changed}; "
                 "review the republished table and update the field by hand"
             )
-        return definition
+        if (current["evidence"], current["checked_at"]) == (evidence, checked_at):
+            return definition
+        rewritten = {**current, "evidence": evidence, "checked_at": checked_at}
+        claims = [rewritten if c is current else c for c in claims]
+        return {**definition, "x-metadata": {**meta, "claims": claims}}
     digest = hashlib.sha256(
         canonical_json(resolved_codes({**definition, "x-decode": decode}))
     ).hexdigest()
@@ -249,12 +256,6 @@ def replace_field(text: str, name: str, definition: dict[str, Any]) -> str:
     return "".join(lines[:start]) + block + "".join(lines[end:])
 
 
-def def_paths(spec: dict[str, Any]) -> list[str]:
-    """The DEF members of a dataset: `def` is one key, or a list of keys when several
-    packages publish the same bindings."""
-    return spec["def"] if isinstance(spec["def"], list) else [spec["def"]]
-
-
 def evidence_for(
     defs: list[str], field: str, member: str, vinculos: dict[str, Any]
 ) -> list[dict[str, Any]]:
@@ -265,6 +266,8 @@ def evidence_for(
     bytes, same map), and that DEF must bind the field to it.
     """
     membros = vinculos["membros"]
+    if member.lower().endswith(".dbf") and len(defs) > 1:
+        raise ValueError(f"DBF member {member}: the description column is read from one DEF")
     relative = Path(member).relative_to(Path(defs[0]).parent)
     evidence = []
     for def_path in defs:
@@ -296,7 +299,7 @@ def generate() -> dict[Path, str]:
         path = DICIONARIOS / f"{dataset}.yaml"
         text = path.read_text(encoding="utf-8")
         fields = {f["name"]: f for f in yaml.safe_load(text)["schema"]["fields"]}
-        defs = def_paths(spec)
+        defs = spec["def"]
         def_text = read_def(defs[0], vinculos)
         for field, member in spec["campos"].items():
             if member.lower().endswith(".dbf"):
