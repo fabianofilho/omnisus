@@ -19,10 +19,20 @@ on the three zips, writes it with the repository's DEF and CNV parsers.
 - Each CNV has the same SHA-256 in the three packages, and so the same parsed map.
   `map_sha256` hashes that map (`cnv_map`) as canonical JSON, the parser's output
   before the dictionary writes it as `x-decode`.
-- These are the bytes packaged in `src/omnisus/data/dicionarios/sources/cnv/sih_199201_199712/`
-  (`vinculos.json` records the same SHA-256).
+- These are the bytes of the members `sih_199201_199712/*.CNV` of `vinculos.json`, which
+  records the same SHA-256. `MORTES.CNV` and `VINCPREV.CNV` are packaged in that folder;
+  the other five have the bytes of `TAB_SIH.zip`'s `CNV/` members and are stored once,
+  under `sih/CNV/` (`mesmo_que`).
 
 So one map per field serves 1992-01 to 2007-12, and the `/field/codes` claims of
-`sih_aih_reduzida_1992_2007` cite the three packages. `gerar_decode_cnv.py` writes one
-source per claim; the entries for the second and third package were added by hand, and
-the script keeps a claim whose map has not changed.
+`sih_aih_reduzida_1992_2007` cite the three packages. `vinculos.json` lists the three
+`RD.DEF` as the dataset's `def`; `gerar_decode_cnv.py` verifies, in each package's own
+`RD.DEF`, the line that binds the field to a CNV with the same SHA-256, and writes one
+evidence entry per package. The two later `RD.DEF` are packaged next to the first:
+
+| Member | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `sih_199801_200307/RD.DEF` (from `TAB_SIH_199801-200307.zip`) | 27,540 | `d8c6626e72926e82d4bcccf232bc4b5cba7aa4d62aa3def6b3541c06d945f6c2` |
+| `sih_200308_200712/RD.DEF` (from `TAB_SIH_200308-200712.zip`) | 27,462 | `e9831cc53c65ba90ac327a30dc6e64b40137d78b6fe7e295d55d0fab030d227d` |
+
+The CNV of those packages are not packaged again: their members say `mesmo_que`.

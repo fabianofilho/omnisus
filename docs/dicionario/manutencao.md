@@ -106,6 +106,20 @@ campo) guarda só os códigos com esse número de caracteres: `MOTERRO.dbf` tem 
 caracteres com texto em CP850, que o gerador recusaria pelo byte C1, e os arquivos ER só
 publicam a de 6.
 
+Um arquivo publicado byte a byte em mais de um pacote (ou duas vezes no mesmo) fica
+empacotado uma vez só. Os outros membros de `membros` não têm arquivo e dizem
+`"mesmo_que": "<chave do membro empacotado>"`; cada um guarda sua `fonte`, seu `membro` e
+seu `sha256`, e o gerador lê os bytes do membro nomeado e confere o hash contra o
+`sha256` próprio. O membro nomeado não pode ter `mesmo_que`.
+
+Quando vários pacotes publicam os mesmos vínculos, `def` é uma lista de DEF, um por
+pacote, o primeiro sendo o que já servia de base (é o caso de
+`sih_aih_reduzida_1992_2007`, com os três `RD.DEF` das eras). Para cada DEF da lista o
+gerador procura o membro na mesma posição relativa à pasta do DEF, exige o mesmo
+`sha256` do membro de `campos`, confere que aquele DEF liga o campo a ele na posição 1
+e escreve uma evidência por pacote, na ordem da lista; `checked_at` é a data de coleta
+mais recente entre essas fontes.
+
 Rodar de novo não muda nada quando os vínculos e os membros empacotados não
 mudaram; em revisão, usar `--check`, que falha se algum dicionário mudaria. Um
 arquivo TabWin republicado entra no registro com um novo id e novos membros —
