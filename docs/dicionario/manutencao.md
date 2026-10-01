@@ -106,6 +106,21 @@ campo) guarda só os códigos com esse número de caracteres: `MOTERRO.dbf` tem 
 caracteres com texto em CP850, que o gerador recusaria pelo byte C1, e os arquivos ER só
 publicam a de 6.
 
+Um arquivo publicado byte a byte em mais de um pacote (ou duas vezes no mesmo) fica
+empacotado uma vez só. Os outros membros de `membros` não têm arquivo e dizem
+`"mesmo_que": "<chave do membro empacotado>"`; cada um guarda sua `fonte`, seu `membro` e
+seu `sha256`, e o gerador lê os bytes do membro nomeado e confere o hash contra o
+`sha256` próprio. O membro nomeado não pode ter `mesmo_que`.
+
+`def` é sempre uma lista de DEF. Quando vários pacotes publicam os mesmos vínculos, a
+lista tem um DEF por pacote, o primeiro sendo o que já servia de base (é o caso de
+`sih_aih_reduzida_1992_2007`, com os três `RD.DEF` das eras); um campo ligado a DBF aceita
+um DEF só, porque a coluna de descrição é lida de um DEF. Para cada DEF da lista o
+gerador procura o membro na mesma posição relativa à pasta do DEF, exige o mesmo
+`sha256` do membro de `campos`, confere que aquele DEF liga o campo a ele na posição 1
+e escreve uma evidência por pacote, na ordem da lista; `checked_at` é a data de coleta
+mais recente entre essas fontes.
+
 Rodar de novo não muda nada quando os vínculos e os membros empacotados não
 mudaram; em revisão, usar `--check`, que falha se algum dicionário mudaria. Um
 arquivo TabWin republicado entra no registro com um novo id e novos membros —
@@ -117,7 +132,11 @@ O gerador só escreve campo sem claim `/field/codes`; o mapa anterior que discor
 fica no issue `cnv-difere-do-mapa-anterior`. Uma claim de códigos já existente nunca
 é descartada: se o método não é `cnv-parse` (por exemplo, rótulos lidos de uma página),
 o gerador para e nomeia dataset, campo, método e evidência; se é `cnv-parse` e o CNV
-dá o mesmo mapa, nada muda; se o mapa difere, ele para e lista os códigos que mudaram.
+dá o mesmo mapa, só `evidence` e `checked_at` podem mudar: o gerador é dono dos dois e
+reescreve uma edição à mão (as outras chaves da claim ficam), então `--check` falha
+nela. Essa reescrita muda o conteúdo do dicionário e por isso pede subir a `x-version`
+e rodar `scripts/metadados/travar_versoes.py` (o teste da trava cobra); se o mapa
+difere, ele para e lista os códigos que mudaram.
 Nos dois casos de parada, a mudança é revista e escrita à mão.
 Um `conflicting` de `cnv-parse` cujo mapa anterior não tinha fonte também se resolve à
 mão: a claim passa a `verified_in_source` e o issue `cnv-difere-do-mapa-anterior` passa a

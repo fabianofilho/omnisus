@@ -6,13 +6,17 @@ ou, sem ele, o primeiro campo; o rótulo é a coluna que o DEF nomeia. `largura`
 dataset a declara para o campo, guarda só os códigos com esse número de caracteres.
 
 Entrada: `src/omnisus/data/dicionarios/sources/cnv/vinculos.json`, que nomeia, por
-dataset, o DEF e o CNV de cada campo, e os membros empacotados com o SHA-256 lido do
-arquivo oficial. Para cada campo o script confere o hash do membro, confere que o DEF
-liga o campo àquele CNV na posição 1, escreve o mapa do CNV e uma claim
-`/field/codes` com `method: cnv-parse`. Um mapa anterior sem claim de códigos que
+dataset, o DEF e o CNV de cada campo, e os membros com o SHA-256 lido do arquivo
+oficial. Um membro com `mesmo_que` não tem arquivo: seus bytes são os do membro que ele
+nomeia, conferidos contra o seu próprio SHA-256. `def` é a lista dos DEF, um por pacote
+que publica os mesmos vínculos (um campo ligado a DBF aceita um DEF só). Para cada campo o script confere o hash do
+membro, confere que cada DEF liga o campo, na posição 1, ao membro de mesmo caminho
+relativo e mesmo SHA-256, escreve o mapa do CNV e uma claim `/field/codes` com
+`method: cnv-parse` e uma evidência por DEF. Um mapa anterior sem claim de códigos que
 discorda vira claim `conflicting` e um issue com o rótulo anterior de cada código. Uma
 claim de códigos existente nunca é substituída: de outro método, ou `cnv-parse` com mapa
-diferente, o script para e pede revisão. Uma linha de DEF fora
+diferente, o script para e pede revisão; com o mesmo mapa, só a evidência e o
+`checked_at` são reescritos, se diferem dos gerados. Uma linha de DEF fora
 do layout só é ignorada se `linhas_fora_do_layout` a lista com o texto exato. Rodar de novo não muda
 nada; `--check` falha se algum dicionário mudaria.
 """
@@ -58,10 +62,23 @@ def _str(dumper: yaml.SafeDumper, value: str) -> yaml.ScalarNode:
 _Dumper.add_representer(str, _str)
 
 
-def read_member(path: str, membros: dict[str, Any]) -> str:
-    raw = (CNV / path).read_bytes()
+def _member_bytes(path: str, membros: dict[str, Any]) -> bytes:
+    """The bytes of a member, which must hash to its own `sha256`.
+
+    A member with `mesmo_que` has no packaged file: its bytes are read from the file of
+    the member it names, which must have a file of its own.
+    """
+    stored = membros[path].get("mesmo_que", path)
+    if "mesmo_que" in membros[stored]:
+        raise ValueError(f"{path}: mesmo_que names {stored}, which has no file of its own")
+    raw = (CNV / stored).read_bytes()
     if hashlib.sha256(raw).hexdigest() != membros[path]["sha256"]:
         raise ValueError(f"{path}: bytes differ from the archived member")
+    return raw
+
+
+def read_member(path: str, membros: dict[str, Any]) -> str:
+    raw = _member_bytes(path, membros)
     if any(0x80 <= byte <= 0x9F for byte in raw):
         raise CnvFormatError(f"{path}: C1 byte; not latin-1 text")
     return raw.decode("latin-1")
@@ -76,9 +93,7 @@ def read_dbf_labels(
     MOTERRO.dbf holds a 4-character series whose text is CP850, and ER publishes only
     the 6-character one.
     """
-    raw = (CNV / path).read_bytes()
-    if hashlib.sha256(raw).hexdigest() != membros[path]["sha256"]:
-        raise ValueError(f"{path}: bytes differ from the archived member")
+    raw = _member_bytes(path, membros)
     labels = dbf_lookup_map(raw, field.upper(), column)
     if width is not None:
         labels = {code: label for code, label in labels.items() if len(code) == width}
@@ -142,14 +157,16 @@ def regenerate(
     dataset: str,
     definition: dict[str, Any],
     decode: dict[str, str],
-    evidence: dict[str, Any],
+    evidence: list[dict[str, Any]],
     checked_at: str,
     method: str = METHOD,
 ) -> dict[str, Any]:
-    """The field with the table's map, or the field itself if its map of `method` is current.
+    """The field with the table's map, or the field itself if its claim of `method` is current.
 
-    Only a field with no `/field/codes` claim is written. An existing claim of another
-    method, or a claim of `method` whose map differs from `decode`, raises for review.
+    A field with no `/field/codes` claim gets the map and a new claim. An existing claim
+    of another method, or a claim of `method` whose map differs from `decode`, raises for
+    review. A claim of `method` with the same map keeps every key except `evidence` and
+    `checked_at`, which the generator owns: a hand edit of them is rewritten.
     """
     where = f"{dataset}.{definition['name']}"
     meta = definition.get("x-metadata", {})
@@ -171,7 +188,11 @@ def regenerate(
                 f"{where}: the table's map differs from the {method} map in codes {changed}; "
                 "review the republished table and update the field by hand"
             )
-        return definition
+        if (current["evidence"], current["checked_at"]) == (evidence, checked_at):
+            return definition
+        rewritten = {**current, "evidence": evidence, "checked_at": checked_at}
+        claims = [rewritten if c is current else c for c in claims]
+        return {**definition, "x-metadata": {**meta, "claims": claims}}
     digest = hashlib.sha256(
         canonical_json(resolved_codes({**definition, "x-decode": decode}))
     ).hexdigest()
@@ -185,7 +206,7 @@ def regenerate(
             "checked_at": checked_at,
             "method": method,
             "reviewer": REVIEWER,
-            "evidence": [evidence],
+            "evidence": evidence,
             "note": f"Mapa do {table}; o mapa anterior está no issue {ISSUE}."
             if disagree
             else f"Mapa do {table}.",
@@ -235,6 +256,39 @@ def replace_field(text: str, name: str, definition: dict[str, Any]) -> str:
     return "".join(lines[:start]) + block + "".join(lines[end:])
 
 
+def evidence_for(
+    defs: list[str], field: str, member: str, vinculos: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """One evidence entry per DEF in `defs`, in that order, for `field` bound to `member`.
+
+    `member` sits under the folder of the first DEF. For each other DEF the member at the
+    same place under its own folder must be in `membros` with the same SHA-256 (same
+    bytes, same map), and that DEF must bind the field to it.
+    """
+    membros = vinculos["membros"]
+    if member.lower().endswith(".dbf") and len(defs) > 1:
+        raise ValueError(f"DBF member {member}: the description column is read from one DEF")
+    relative = Path(member).relative_to(Path(defs[0]).parent)
+    evidence = []
+    for def_path in defs:
+        key = (Path(def_path).parent / relative).as_posix()
+        if key not in membros or membros[key]["sha256"] != membros[member]["sha256"]:
+            raise ValueError(f"{def_path}: {key} is not a member with the bytes of {member}")
+        text = read_def(def_path, vinculos)
+        if key.lower().endswith(".dbf"):
+            line = lookup_for(def_path, text, field, key)[0]
+        else:
+            line = binding_for(def_path, text, field, key)
+        evidence.append(
+            {
+                "source_id": membros[key]["fonte"],
+                "pages": [],
+                "locator": f"{line}; {membros[key]['membro']}",
+            }
+        )
+    return evidence
+
+
 def generate() -> dict[Path, str]:
     """New text of every dictionary the bindings touch."""
     vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
@@ -245,27 +299,21 @@ def generate() -> dict[Path, str]:
         path = DICIONARIOS / f"{dataset}.yaml"
         text = path.read_text(encoding="utf-8")
         fields = {f["name"]: f for f in yaml.safe_load(text)["schema"]["fields"]}
-        def_text = read_def(spec["def"], vinculos)
+        defs = spec["def"]
+        def_text = read_def(defs[0], vinculos)
         for field, member in spec["campos"].items():
-            source = registry[membros[member]["fonte"]]
             if member.lower().endswith(".dbf"):
-                line, column = lookup_for(spec["def"], def_text, field, member)
+                _, column = lookup_for(defs[0], def_text, field, member)
                 width = spec.get("largura", {}).get(field)
                 labels = read_dbf_labels(member, membros, field, column, width)
                 method = DBF_METHOD
             else:
-                line = binding_for(spec["def"], def_text, field, member)
                 labels = cnv_map(parse_cnv(read_member(member, membros)))
                 method = METHOD
+            evidence = evidence_for(defs, field, member, vinculos)
+            checked_at = max(registry[e["source_id"]]["retrieved_on"] for e in evidence)
             decode = dict(sorted(labels.items()))
-            evidence = {
-                "source_id": source["id"],
-                "pages": [],
-                "locator": f"{line}; {membros[member]['membro']}",
-            }
-            new = regenerate(
-                dataset, fields[field], decode, evidence, source["retrieved_on"], method
-            )
+            new = regenerate(dataset, fields[field], decode, evidence, checked_at, method)
             if new is not fields[field]:
                 text = replace_field(text, field, new)
         out[path] = text
