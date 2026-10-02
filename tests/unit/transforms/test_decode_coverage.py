@@ -259,8 +259,12 @@ def _range_keys(dataset: str) -> dict[str, frozenset[str]]:
     """Field -> the codes its CNV (vinculos.json) labels only through a range.
 
     Each CNV is read as gerar_decode_cnv.py reads it: a `mesmo_que` member from the copy
-    it names, and only if the bytes hash to the member's own sha256.
+    it names, and only if the bytes hash to the member's own sha256. DOINF, DOMAT and
+    DOEXT are not in vinculos.json: gerar_subconjuntos_sim.py gives each of their fields
+    the sim_obitos definition, CNV map included, so they take sim_obitos' CNVs.
     """
+    if dataset in ("sim_obitos_infantis", "sim_obitos_maternos", "sim_obitos_externos"):
+        dataset = "sim_obitos"
     campos = VINCULOS["datasets"].get(dataset, {}).get("campos", {})
     read_member = _gerar_decode_cnv().read_member
     return {
@@ -268,6 +272,19 @@ def _range_keys(dataset: str) -> dict[str, frozenset[str]]:
         for field, member in campos.items()
         if not member.lower().endswith(".dbf")
     }
+
+
+@pytest.mark.parametrize("dataset", sorted({dataset for dataset, _ in REMAINING}))
+def test_range_keys_reads_the_cnv_of_every_field_mapped_from_one(dataset):
+    """A field whose x-decode has a `cnv-parse` claim has its CNV read by `_range_keys`,
+    or the test below could not see the values only a range of that CNV labels."""
+    parsed = {
+        field["name"]
+        for field in load_dicionario(dataset).fields
+        for claim in field.get("x-metadata", {}).get("claims", [])
+        if claim["method"] == "cnv-parse"
+    }
+    assert parsed <= _range_keys(dataset).keys()
 
 
 @pytest.mark.parametrize(("dataset", "fixture"), sorted(REMAINING))
