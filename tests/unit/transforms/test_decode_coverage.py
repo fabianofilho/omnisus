@@ -184,7 +184,10 @@ REMAINING = {
 
 @cache
 def _read(dataset: str, path: Path) -> pl.DataFrame:
-    """Each (dataset, fixture) is read once per process: many cases share a fixture."""
+    """Each (dataset, fixture) is read once per process: many cases share a fixture.
+
+    Every case gets the same frame object, so no case may change it in place.
+    """
     return dbc_bytes_to_lazyframe(path.read_bytes(), dataset=dataset).collect()
 
 
