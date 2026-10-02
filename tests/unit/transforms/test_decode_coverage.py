@@ -213,6 +213,9 @@ RANGE_ONLY = {
         ("st_mot_blo", "00", 20),
         ("vincprev", "0", 30),
     ],
+    # RD 1992-2007: INSTRU.CNV 0-9 "Ignorado/não se aplica", VINCPREV.CNV 0-9 "Não
+    # classificado". RDRR9412 and RDRR9709 hold only codes a CNV line names.
+    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2004_07_excerpt"): [("instru", "0", 90)],
     ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2007_12_mini"): [
         ("instru", "0", 1488),
         ("vincprev", "0", 1496),
