@@ -13,7 +13,10 @@ not depend on:
 - 260 files, all dated 2013-10-31 on the server, 11,124,112 records.
 - One file per month from 1992-01 to 2007-12 (192 months, 269,854 records): `RDRR`, or
   `RDAP` in the 17 months the server lists no `RDRR` (1995-07 to 1996-01, 1997-05,
-  1997-06, 1997-10, 1997-11, 1999-12 and 2000-01 to 2000-05).
+  1997-06, 1997-10, 1997-11, 1999-12 and 2000-01 to 2000-05). The directory's `RD` lines,
+  captured on 2026-10-02 in `tests/fixtures/listings/sihsus_199201_200712_dados_rd.txt.gz`
+  (row in `tests/fixtures/FIXTURES.md`), have no `RDRR` in exactly these months and list
+  every file read with the size and time recorded here.
 - 19 distinct descriptor lists (layouts), numbered by the first month that has them. Each
   covers one run of consecutive months.
 - At each of the 34 months on either side of a layout change, `RDSP` and `RDMG` have the
