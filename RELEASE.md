@@ -33,6 +33,11 @@ checks the tag against `Cargo.toml` and publishes only artifacts that passed
 the complete matrix. `v<version>` continues to identify the main package. Raise
 the main package's `omnisus-dbf` lower bound and `uv.lock` only after the new
 native version is on PyPI; an unpublished dependency must not break installs.
+`omnisus` accepts exactly one `API_VERSION` and caps `omnisus-dbf` below its next
+minor (`<0.3`). Change `API_VERSION` only in a new minor of `omnisus-dbf`, and only
+after an `omnisus` that accepts it and caps the following minor is on PyPI. Published
+`omnisus` 0.2.0 has no cap, so an `omnisus-dbf` 0.2.x with another `API_VERSION`
+would break fresh installs of it.
 
 ## Main Python package
 
@@ -50,23 +55,39 @@ site reads the version at build time. Validate the candidate wheel outside the
 checkout, including public metadata, packaged evidence and analytical
 projections, before release.
 
-After the release is authorized, tag that reviewed commit with `v<version>` and
-push the specific branch/tag. `release.yml` checks the tag, builds wheel/sdist
-once and retains them with checksums as the `distribution` workflow artifact.
-The same wheel passes the binary-only installation matrix on Python 3.12–3.14,
-Linux, macOS and Windows; only then does the `publish` job upload it to PyPI.
-That job runs when repository variable `PUBLISH_TO_PYPI` equals `true`, through
-a Trusted Publisher (project `omnisus`, owner `raphaelfh`, repository
-`omnisus`, workflow `release.yml`, environment `pypi`). No token is stored in
-this repo. The notebooks pin a version that exists only after this job, so tag
-right after merging the release.
+The notebooks pin a version that must already be on PyPI when `main` gets it,
+so the tag comes before the merge:
 
-Attach the same artifacts to the GitHub release:
+1. Open the release PR: `_version.py`, the CHANGELOG (`## Unreleased` becomes
+   `## v<version> — <date>`), the notebooks' pins and `uv.lock`.
+2. When its CI is green and the release is authorized, tag the PR's head commit
+   and push only the tag:
 
-```bash
-gh run download <run-id> -n distribution -D dist
-gh release create v<version> dist/*.whl dist/*.tar.gz dist/SHA256SUMS
-```
+   ```bash
+   git tag -a v<version> -m "omnisus <version>" <head-sha>
+   git push origin v<version>
+   ```
+
+   `release.yml` checks the tag against `_version.py`, builds wheel and sdist once
+   (the `distribution` artifact, with checksums), installs that wheel binary-only
+   on Python 3.12–3.14 on Linux, macOS and Windows, and only then runs `publish`.
+3. Approve the `pypi` environment in the run. `publish` uploads through a Trusted
+   Publisher (project `omnisus`, owner `raphaelfh`, repository `omnisus`, workflow
+   `release.yml`, environment `pypi`) when repository variable `PUBLISH_TO_PYPI`
+   equals `true`. No token is stored in this repo.
+4. Check that `uv pip install omnisus==<version>` resolves.
+5. Merge the PR with a merge commit, not a squash, so the tagged commit is on
+   `main`. If the PR changes after tagging and nothing was published, delete the
+   tag (`git push origin :v<version>`) and tag again.
+6. Create the GitHub release with the CHANGELOG section as notes and the same
+   artifacts:
+
+   ```bash
+   gh run download <run-id> -n distribution -D /tmp/omnisus-v<version>
+   gh release create v<version> --title v<version> \
+     --notes-file <(awk '/^## v<version>/{f=1;next} /^## v/{f=0} f' CHANGELOG.md) \
+     /tmp/omnisus-v<version>/*
+   ```
 
 ## Supported Python
 

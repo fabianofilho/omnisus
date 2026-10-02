@@ -61,7 +61,7 @@ def test_skip_same_and_changed_version(tmp_path):
         result = _publish(lake, tmp_path)
         assert result.run_id == "run-1"
         assert _publish(lake, tmp_path, policy="skip_same") is None
-        with pytest.raises(ValueError, match=r"different|version"):
+        with pytest.raises(ValueError, match="the server file differs from the one imported"):
             _publish(lake, tmp_path, value=2, policy="skip_same")
         assert lake.connect().execute("SELECT v FROM lake.t").fetchall() == [(1,)]
         assert len(lake.publications(run_id="run-1")) == 1
@@ -430,7 +430,7 @@ def test_delete_scope_on_a_yearly_table(tmp_path):
 def test_parser_version_change_is_not_skip_same(tmp_path):
     with Lake.local(f"ducklake:{tmp_path}/v.ducklake") as lake:
         _publish(lake, tmp_path)
-        with pytest.raises(ValueError, match="version"):
+        with pytest.raises(ValueError, match="same file, imported by another parser version"):
             lake.publish_scope(
                 "t",
                 tmp_path / "SP-1-1.parquet",

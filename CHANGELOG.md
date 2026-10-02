@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Packaging
+
+- `omnisus-dbf` is capped below its next minor (`>=0.2.0,<0.3`): omnisus accepts one
+  `API_VERSION`, and only a new minor of `omnisus-dbf` may change it.
+- Releases tag the release PR's head and publish before merging, so `main` never pins
+  a version PyPI does not have yet (RELEASE.md).
+
+### Messages
+
+- When `skip_same` refuses a scope already in the lake, the reason says whether the
+  server file changed or the same file was imported by another parser version (another
+  omnisus release or dictionary), and `load` says to run the same call again with
+  `policy='replace'`.
+
 ### Install with uv
 
 - README, the researcher guide and getting-started install with `uv add omnisus` or
@@ -29,6 +43,10 @@
   importing both kinds into one lake table fails until #40 is decided.
 
 ## v0.2.0 — 2026-10-01
+
+**Upgrading from 0.1.0:** #19 changed how a publication's parser version is computed, so
+`load` refuses every scope a 0.1.0 lake already holds. Run each `load` once with
+`policy="replace"`; later calls download nothing again.
 
 ### Rust decoder by default
 
