@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Docs site
+
+- The site is deployed by release tags (`v*`), not by every push to `main`, so it
+  describes the omnisus installed from PyPI. Pull requests still build it.
+
 ### Packaging
 
 - `omnisus-dbf` is capped below its next minor (`>=0.2.0,<0.3`): omnisus accepts one
