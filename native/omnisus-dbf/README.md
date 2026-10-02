@@ -2,8 +2,8 @@
 
 Optional DBF → Arrow reader and DBC decompressor for `omnisus`.
 The main package keeps its Python build backend and does not require Rust.
-This package is not on PyPI. Each `omnisus` release attaches its wheels (see the
-main README), or build one locally:
+`omnisus` installs it from PyPI on Linux x86_64, macOS and Windows x86_64. To build
+one locally:
 
 ```sh
 python -m pip install maturin==1.12.6

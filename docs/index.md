@@ -4,7 +4,7 @@ Importa bases públicas de saúde do Brasil (DATASUS, IBGE, CNES) para um lake
 [DuckLake](https://ducklake.select), no seu computador, no Google Drive ou na nuvem, com
 a procedência necessária para citar cada resultado.
 
-!!! warning "Trabalho em construção (v0.1)"
+!!! warning "Trabalho em construção"
     A API ainda pode mudar entre versões menores, e nem todo dicionário foi conferido
     contra o documento oficial. Antes de publicar um número, confira as contagens com o
     DATASUS e os rótulos com a fonte ([como conferir](dicionario/index.md)). Um rótulo

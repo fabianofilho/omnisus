@@ -1,5 +1,53 @@
 # Changelog
 
+## v0.2.0 — 2026-10-01
+
+### Rust decoder by default
+
+- `omnisus` depends on `omnisus-dbf` 0.2.0, now on PyPI, on Linux x86_64, macOS
+  (arm64, x86_64) and Windows x86_64 (#38). The `auto` backend then reads DBF and
+  decompresses DBC in Rust; other platforms keep the Python decoders, and no install
+  needs a Rust toolchain. `OMNISUS_DBF_BACKEND=python` and `OMNISUS_DBC_BACKEND=python`
+  still select Python. The `--find-links` install is gone.
+- A `dbf-v*` tag publishes `omnisus-dbf` to PyPI after the full native matrix passes
+  (#37).
+
+### On PyPI
+
+- `omnisus` is published to PyPI: `pip install omnisus`. The Colab notebook and the
+  PEP 723 header of every marimo notebook install `omnisus==0.2.0` from PyPI instead
+  of a git commit.
+
+### Import alias (breaking for copied code)
+
+- Docs, notebooks and examples use `import omnisus as sus` instead of `odb` (#21).
+  Only the alias in examples changed; the API names are the same.
+
+### SIH dictionaries
+
+- RD: `regct` gets the `REGCT.CNV` map, conflicts between the CNVs and the older
+  map are resolved in favour of the CNV (#5); `tpdisec1`–`tpdisec9` get
+  `TP_DIAGSEC.CNV` (#14); `diagsec1`–`diagsec9` link to `aux_cid10` (#22).
+- RD and RJ: `nacional`, `contracep1`, `contracep2` and RJ `st_mot_blo` get the
+  TAB_SIH maps (#20).
+- `sih_aih_reduzida_1992_2007` gets the maps of `TAB_SIH_199201-199712.zip`, checked
+  against the three packages of the era (#23, #36).
+- Each identical CNV is stored once, and the evidence of the three RD eras is
+  generated instead of written by hand (#36).
+
+### Dictionary versions
+
+- `src/omnisus/data/dicionarios/versoes.json` locks each dictionary's `x-version`
+  to its content; a changed dictionary needs a higher version (#35).
+- A publication's `parser_version` hashes only what the import reads from the
+  dictionary, so editing a label or a claim no longer forces `replace` on scopes
+  already imported (#19).
+
+### Docs and notebooks
+
+- README and site for researchers, Colab notebook, generated dataset arguments (#4);
+  notebooks use only the public API (#16); leaner `AGENTS.md` (#15).
+
 ## v0.1.0 — 2026-09-25
 
 First release of `omnisus` in this repository. It continues the `omnisus-db` package

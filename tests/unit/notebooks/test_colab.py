@@ -1,4 +1,4 @@
-"""The Colab notebook installs this version and calls only the public API."""
+"""The Colab notebook installs this version from PyPI and calls only the public API."""
 
 from __future__ import annotations
 
@@ -18,9 +18,9 @@ def _code() -> list[str]:
     return ["".join(c["source"]) for c in notebook["cells"] if c["cell_type"] == "code"]
 
 
-def test_installs_the_tag_of_this_version():
+def test_installs_this_version_from_pypi():
     install = _code()[0]
-    assert f'"omnisus @ git+https://github.com/raphaelfh/omnisus@v{sus.__version__}"' in install
+    assert f"%pip install -q omnisus=={sus.__version__}" in install.splitlines()
 
 
 def test_cells_are_python_that_uses_only_public_names():

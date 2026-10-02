@@ -31,7 +31,7 @@ faz o caminho inteiro com o SIM de Roraima: instalar, baixar, rotular, conferir 
 No navegador, sem instalar nada: a badge **Open in molab** de cada notebook.
 DuckDB, FTP e o lake local não rodam em `/wasm`.
 
-No seu computador, com o commit fixado no cabeçalho PEP 723 de cada notebook:
+No seu computador, com a versão do PyPI fixada no cabeçalho PEP 723 de cada notebook:
 
 ```bash
 uvx marimo edit --sandbox notebooks/sim_obitos.py
