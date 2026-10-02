@@ -30,8 +30,9 @@ dependencies = [
     # TIMESTAMPTZ columns that expire_snapshots and cleanup_files return.
     "tzdata>=2026.3; sys_platform == 'win32'",
     # Rust DBF reader and DBC decompressor, on the platforms with a published
-    # wheel; elsewhere the Python decoders run (ADR 0001).
-    "omnisus-dbf>=0.2.0; (sys_platform == 'linux' and platform_machine == 'x86_64') or sys_platform == 'darwin' or (sys_platform == 'win32' and platform_machine == 'AMD64')",
+    # wheel; elsewhere the Python decoders run (ADR 0001). omnisus accepts one
+    # API_VERSION, and only a new minor of omnisus-dbf may change it (RELEASE.md).
+    "omnisus-dbf>=0.2.0,<0.3; (sys_platform == 'linux' and platform_machine == 'x86_64') or sys_platform == 'darwin' or (sys_platform == 'win32' and platform_machine == 'AMD64')",
 ]
 
 [project.optional-dependencies]

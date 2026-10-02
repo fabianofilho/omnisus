@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Packaging
+
+- `omnisus-dbf` is capped below its next minor (`>=0.2.0,<0.3`): omnisus accepts one
+  `API_VERSION`, and only a new minor of `omnisus-dbf` may change it.
+- Releases tag the release PR's head and publish before merging, so `main` never pins
+  a version PyPI does not have yet (RELEASE.md).
+
 ### Messages
 
 - When `skip_same` refuses a scope already in the lake, the reason says whether the
