@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Messages
+
+- When `skip_same` refuses a scope already in the lake, the reason says whether the
+  server file changed or the same file was imported by another parser version (another
+  omnisus release or dictionary), and `load` says to run the same call again with
+  `policy='replace'`.
+
 ### SIH
 
 - `sih_aih_reduzida_1992_2007` declares the 14 fields that the older RD layouts publish
@@ -13,6 +20,10 @@
   importing both kinds into one lake table fails until #40 is decided.
 
 ## v0.2.0 — 2026-10-01
+
+**Upgrading from 0.1.0:** #19 changed how a publication's parser version is computed, so
+`load` refuses every scope a 0.1.0 lake already holds. Run each `load` once with
+`policy="replace"`; later calls download nothing again.
 
 ### Rust decoder by default
 
