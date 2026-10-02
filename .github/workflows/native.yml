@@ -214,3 +214,32 @@ jobs:
           name: native-sdist
           path: dist/sdist/*.tar.gz
           if-no-files-found: error
+
+  publish:
+    # Only a dbf-v* tag publishes, after every wheel and the sdist passed above.
+    # PyPI Trusted Publisher: project omnisus-dbf, owner raphaelfh, repository
+    # omnisus, workflow native.yml, environment pypi-dbf (RELEASE.md).
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/dbf-v') && vars.PUBLISH_DBF_TO_PYPI == 'true'
+    needs: [rust, wheels, sdist]
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi-dbf
+      url: https://pypi.org/p/omnisus-dbf
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check tag against the Cargo.toml version
+        run: |
+          packaged=$(sed -n 's/^version = "\(.*\)"$/\1/p' native/omnisus-dbf/Cargo.toml | head -1)
+          test "$packaged" = "${GITHUB_REF_NAME#dbf-v}"
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: native-*
+          path: dist/
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          attestations: true
