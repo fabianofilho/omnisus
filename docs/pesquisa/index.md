@@ -45,15 +45,20 @@ Escolha onde rodar. Os três caminhos usam a mesma biblioteca e chegam à mesma 
     ```
 
     Rode a partir da raiz do repositório (ou defina `OMNISUS_DATA_DIR`) para todos os
-    notebooks usarem o mesmo lake. Para usar o código do checkout em vez da versão
-    fixada: `uv sync --locked --extra notebooks` e
-    `uv run --locked --extra notebooks marimo edit notebooks/sim_obitos.py`.
+    notebooks usarem o mesmo lake. O código do repositório ainda não publicado é para
+    quem contribui ([Como contribuir](../contributing.md)): ele se identifica como a
+    última versão publicada, então não o use num resultado que você vai citar.
 
 === "Python ou Jupyter"
 
     ```bash
-    pip install "omnisus @ git+https://github.com/raphaelfh/omnisus"
+    uv add omnisus          # num projeto uv (crie com `uv init`)
+    uv pip install omnisus  # num ambiente virtual já criado (`uv venv`)
     ```
+
+    Sem uv, `pip install omnisus`. Para fixar a versão que você vai citar:
+    `uv add omnisus==0.2.0`, por exemplo; veja
+    [Reprodutibilidade](reprodutibilidade.md#fixar-o-ambiente).
 
     ```python
     import omnisus as sus
@@ -88,7 +93,10 @@ e os municípios e o que ainda está em aberto.
 ## As seis etapas
 
 Todo notebook de `notebooks/` segue as mesmas etapas, com as mesmas funções da
-biblioteca, `import omnisus as sus` e nada mais. Troque `BASE`, `UF`, `ANO` (e `MES`)
+biblioteca, `import omnisus as sus`. Só dois importam algo além disso: `medicamentos.py`
+lê a API de estoque do Hórus, que é consultada e nunca publicada no lake, e
+`ibge_populacao.py` lê os anos aceitos, que são constantes do pacote porque o IBGE não
+tem listagem de servidor. Troque `BASE`, `UF`, `ANO` (e `MES`)
 na célula de parâmetros para outra base ou outro recorte. Rede e escrita só correm com
 `EXECUTAR = True`, ou com `-- --executar true` na exportação.
 

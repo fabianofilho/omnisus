@@ -37,10 +37,25 @@ def test_packaged_members_are_the_archived_bytes():
         for p in Path(str(CNV)).rglob("*")
         if p.is_file() and p.name != "vinculos.json"
     )
-    assert packaged == sorted(vinculos["membros"])
-    for path, entry in vinculos["membros"].items():
-        assert hashlib.sha256((CNV / path).read_bytes()).hexdigest() == entry["sha256"], path
+    membros = vinculos["membros"]
+    assert packaged == sorted(k for k, e in membros.items() if "mesmo_que" not in e)
+    for path, entry in membros.items():
+        # A `mesmo_que` member has no file: the copy it names holds its bytes.
+        stored = entry.get("mesmo_que", path)
+        assert "mesmo_que" not in membros[stored], path
+        assert hashlib.sha256((CNV / stored).read_bytes()).hexdigest() == entry["sha256"], path
         assert registry[entry["fonte"]]["authority"] == "official"
+
+
+def test_no_two_packaged_files_share_a_sha256():
+    """A CNV published byte for byte in two packages (or twice in one) is stored once;
+    the other members say `mesmo_que` (issue #28)."""
+    by_sha: dict[str, list[str]] = {}
+    for p in Path(str(CNV)).rglob("*"):
+        if p.is_file() and p.name != "vinculos.json":
+            digest = hashlib.sha256(p.read_bytes()).hexdigest()
+            by_sha.setdefault(digest, []).append(p.relative_to(Path(str(CNV))).as_posix())
+    assert [sorted(paths) for paths in by_sha.values() if len(paths) > 1] == []
 
 
 def test_a_def_binds_one_field_to_several_tables():

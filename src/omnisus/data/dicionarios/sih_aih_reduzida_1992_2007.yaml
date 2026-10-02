@@ -2,16 +2,23 @@ name: sih_aih_reduzida_1992_2007
 title: SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.0
+x-version: 1.2.0
 x-source-format: dbc
 x-partitions:
 - _source_ano
 x-evidence:
-  physical_schema: sih_rd_rr_2007_12_mini.dbc, 75 fields; observed 2026-09-22
+  physical_schema: >-
+    89 fields: the union of the 19 DBF layouts of the files read on 2026-10-01, one RR file
+    a month from 1992-01 to 2007-12 (AP where RR is missing) and SP and MG in the months a
+    layout changes (evidence/2026-10-01-rd-1992-2007-layouts/). Each is in
+    sih_rd_rr_1994_12_mini.dbc, sih_rd_rr_1997_09_mini.dbc, sih_rd_rr_2004_07_excerpt.dbc or
+    sih_rd_rr_2007_12_mini.dbc. num_proc, insc_pn and seq_aih5 are C in some layouts and N
+    in others; they keep the type of sih_rd_rr_2007_12_mini.dbc until #40 decides.
   semantic_status: >-
     Physical inventory; individual semantic fields not audited. The code maps of ident,
-    sexo, morte, natureza, gestao, instru and vincprev come from the CNV that RD.DEF binds
-    in the three era packages, byte-identical (evidence/2026-09-29-tab-sih-rd-eras/).
+    sexo, morte, natureza, gestao, semiplen, instru and vincprev come from the CNV that
+    RD.DEF binds in the three era packages, byte-identical
+    (evidence/2026-09-29-tab-sih-rd-eras/).
   dictionary_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Doc/
   source_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Dados/RDRR0712.dbc
 schema:
@@ -459,4 +466,64 @@ schema:
   - name: cid_asso
     type: string
   - name: cid_morte
+    type: string
+  - name: uti_total
+    type: integer
+  - name: us_sh
+    type: number
+  - name: us_sp
+    type: number
+  - name: us_sadt
+    type: number
+  - name: us_ortp
+    type: number
+  - name: us_sangue
+    type: number
+  - name: cod_arq
+    type: string
+  - name: cont
+    type: integer
+  - name: us_rn
+    type: number
+  - name: val_sang
+    type: number
+  - name: semiplen
+    type: string
+    x-decode:
+      '0': Estadual
+      '1': Municipal plena assist
+      '2': Estadual plena
+      '3': Não definida
+      '4': Não definida
+      '5': Não definida
+      '6': Não definida
+      '7': Não definida
+      '8': Não definida
+      '9': Não definida
+      E: Estadual plena
+      M: Municipal plena assist
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 1f7afbd8ec687eb01947ff6759a9a6d7af201a75af70f9a19f7a41d576aca7d7
+        status: verified_in_source
+        checked_at: '2026-09-29'
+        method: cnv-parse
+        reviewer: scripts/metadados/gerar_decode_cnv.py
+        evidence:
+        - source_id: sih-tab-b433310785e0
+          pages: []
+          locator: 'RD.DEF: XGestão (95-97), SEMIPLEN, 1, GESTAO.CNV; GESTAO.CNV'
+        - source_id: sih-tab-171271844c06
+          pages: []
+          locator: 'RD.DEF: XGestão (95-97), SEMIPLEN, 1, GESTAO.CNV; GESTAO.CNV'
+        - source_id: sih-tab-80582969071f
+          pages: []
+          locator: 'RD.DEF: XGestão (95-97), SEMIPLEN, 1, GESTAO.CNV; GESTAO.CNV'
+        note: Mapa do CNV.
+  - name: diag_sec
+    type: string
+  - name: cgc_mant
+    type: string
+  - name: cod_seg
     type: string

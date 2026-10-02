@@ -46,7 +46,8 @@ def test_every_hand_map_a_def_binds_is_generated_or_excused(monkeypatch):
     for dataset, spec in vinculos["datasets"].items():
         bound = {
             b.field.lower()
-            for b in parse_def(gerar.read_def(spec["def"], vinculos))
+            for def_path in spec["def"]
+            for b in parse_def(gerar.read_def(def_path, vinculos))
             if b.start in (1, None)
         }
         doc = yaml.safe_load(
@@ -179,12 +180,16 @@ def _marca_uti(gerar: ModuleType) -> tuple[dict[str, Any], dict[str, str]]:
 
 
 def _regenerate(gerar: ModuleType, field: dict[str, Any], decode: dict[str, str]) -> Any:
-    evidence = {"source_id": "sih-tab-f05b32f32908", "pages": [], "locator": "x"}
-    return gerar.regenerate("sih_aih_reduzida", field, decode, evidence, "2026-09-21")
+    """Regenerate with the committed claim's own evidence and checked_at."""
+    (claim,) = [c for c in field["x-metadata"]["claims"] if c["target"] == "/field/codes"]
+    return gerar.regenerate(
+        "sih_aih_reduzida", field, decode, claim["evidence"], claim["checked_at"]
+    )
 
 
 def test_an_unchanged_cnv_parse_map_is_left_as_is(monkeypatch):
-    """Same CNV map over a cnv-parse claim: the field, its claim and its issue stay put."""
+    """Same CNV map and evidence over a cnv-parse claim: the field, its claim and its
+    issue stay put."""
     gerar = _load(monkeypatch)
     field, decode = _marca_uti(gerar)
     assert _regenerate(gerar, field, decode) is field
@@ -247,3 +252,156 @@ def test_replace_field_on_the_last_field_keeps_what_follows(monkeypatch, path):
     after = yaml.safe_load(gerar.replace_field(text, last["name"], changed))
     doc["schema"]["fields"][-1] = changed
     assert after == doc
+
+
+def test_a_mesmo_que_member_is_read_from_the_stored_copy(monkeypatch):
+    """TAB_SIH_199201-199712.zip publishes IDENT.CNV with the bytes of TAB_SIH.zip's
+    CNV/IDENT.CNV: no second file is packaged, and reading the 1992 member returns the
+    stored copy's text, checked against the 1992 member's own SHA-256 (issue #28)."""
+    gerar = _load(monkeypatch)
+    membros = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))["membros"]
+    entry = membros["sih_199201_199712/IDENT.CNV"]
+    assert entry["mesmo_que"] == "sih/CNV/IDENT.CNV"
+    assert not (CNV / "sih_199201_199712/IDENT.CNV").exists()
+    assert gerar.read_member("sih_199201_199712/IDENT.CNV", membros) == gerar.read_member(
+        "sih/CNV/IDENT.CNV", membros
+    )
+
+
+def test_a_mesmo_que_member_whose_sha256_differs_from_the_copy_is_refused(monkeypatch):
+    """MORTES.CNV of TAB_SIH_199201-199712.zip is not the bytes of TAB_SIH.zip's
+    CNV/MORTES.CNV. Pointing the first at the second must fail on the hash, not decode
+    the newer table as if it were the old one."""
+    gerar = _load(monkeypatch)
+    membros = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))["membros"]
+    membros["sih_199201_199712/MORTES.CNV"]["mesmo_que"] = "sih/CNV/MORTES.CNV"
+    with pytest.raises(ValueError, match=r"sih_199201_199712/MORTES\.CNV: bytes differ"):
+        gerar.read_member("sih_199201_199712/MORTES.CNV", membros)
+
+
+RD_ERAS = ["ident", "sexo", "morte", "natureza", "gestao", "instru", "vincprev"]
+
+
+def test_the_rd_era_claims_are_the_generator_output(monkeypatch, tmp_path):
+    """Each of the three era packages (TAB_SIH_199201-199712, 199801-200307, 200308-200712)
+    binds these fields in its own RD.DEF to the same CNV bytes. Dropping the committed
+    claim and map and generating again gives the committed field: one evidence entry per
+    package, in the order of `def`, and checked_at the latest retrieval (issue #28)."""
+    gerar = _load(monkeypatch)
+    dicionarios = ROOT / "src/omnisus/data/dicionarios"
+    for path in dicionarios.glob("*.yaml"):
+        (tmp_path / path.name).write_text(path.read_text("utf-8"), encoding="utf-8")
+    target = tmp_path / "sih_aih_reduzida_1992_2007.yaml"
+    text = target.read_text("utf-8")
+    committed = {f["name"]: f for f in yaml.safe_load(text)["schema"]["fields"]}
+    for name in RD_ERAS:
+        field = dict(committed[name])
+        del field["x-decode"]
+        meta = field["x-metadata"]
+        claims = [c for c in meta["claims"] if c["target"] != "/field/codes"]
+        field["x-metadata"] = {**meta, "claims": claims}
+        text = gerar.replace_field(text, name, field)
+    target.write_text(text, encoding="utf-8")
+    monkeypatch.setattr(gerar, "DICIONARIOS", tmp_path)
+    generated = yaml.safe_load(gerar.generate()[target])["schema"]["fields"]
+    for field in generated:
+        if field["name"] in RD_ERAS:
+            assert field == committed[field["name"]], field["name"]
+            (claim,) = field["x-metadata"]["claims"]
+            assert [e["source_id"] for e in claim["evidence"]] == [
+                "sih-tab-b433310785e0",
+                "sih-tab-171271844c06",
+                "sih-tab-80582969071f",
+            ]
+
+
+def test_a_def_in_the_list_that_does_not_bind_the_field_is_refused(monkeypatch):
+    """RD2008.DEF binds TPDISEC1 to CNV/TP_DIAGSEC.CNV; RJ2008.DEF, in the same package
+    folder, binds no field to that table. Listing RJ2008.DEF as a second DEF for the field
+    must fail instead of citing a package that does not bind it."""
+    gerar = _load(monkeypatch)
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    defs = ["sih/RD2008.DEF", "sih/RJ2008.DEF"]
+    with pytest.raises(ValueError, match=r"sih/RJ2008\.DEF does not bind tpdisec1"):
+        gerar.evidence_for(defs, "tpdisec1", "sih/CNV/TP_DIAGSEC.CNV", vinculos)
+
+
+def test_a_mesmo_que_chain_is_refused(monkeypatch):
+    """sih_199201_199712/IDENT.CNV has no file of its own; a member that names it must
+    name the stored copy instead, so a reader never follows a chain."""
+    gerar = _load(monkeypatch)
+    membros = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))["membros"]
+    membros["sih_199801_200307/IDENT.CNV"]["mesmo_que"] = "sih_199201_199712/IDENT.CNV"
+    with pytest.raises(ValueError, match="has no file of its own"):
+        gerar.read_member("sih_199801_200307/IDENT.CNV", membros)
+
+
+def test_a_def_in_the_list_without_the_member_is_refused(monkeypatch):
+    """TAB_SIH_199801-200307.zip publishes MORTES.CNV; without its member in `membros`
+    the generator cannot check that it holds the bytes of the 1992 MORTES.CNV, and
+    refuses to cite that package."""
+    gerar = _load(monkeypatch)
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    del vinculos["membros"]["sih_199801_200307/MORTES.CNV"]
+    defs = vinculos["datasets"]["sih_aih_reduzida_1992_2007"]["def"]
+    with pytest.raises(ValueError, match=r"sih_199801_200307/MORTES\.CNV is not a member"):
+        gerar.evidence_for(defs, "morte", "sih_199201_199712/MORTES.CNV", vinculos)
+
+
+def test_every_dataset_lists_its_defs():
+    """`def` has one shape: a list of DEF members, one per package publishing the
+    bindings (AGENTS.md rule 5: one mechanism, not a string or a list)."""
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    for dataset, spec in vinculos["datasets"].items():
+        assert isinstance(spec["def"], list) and spec["def"], dataset
+        assert all(d in vinculos["membros"] for d in spec["def"]), dataset
+
+
+def test_a_def_in_the_list_whose_member_has_other_bytes_is_refused(monkeypatch):
+    """MORTES.CNV of TAB_SIH.zip (sih/CNV/MORTES.CNV) is not the bytes of the 1992
+    MORTES.CNV. If the 1998 package's member recorded those bytes, its RD.DEF would
+    bind MORTE to a different map: the generator must refuse to cite it."""
+    gerar = _load(monkeypatch)
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    membros = vinculos["membros"]
+    other = membros["sih/CNV/MORTES.CNV"]["sha256"]
+    assert other != membros["sih_199201_199712/MORTES.CNV"]["sha256"]
+    membros["sih_199801_200307/MORTES.CNV"]["sha256"] = other
+    defs = vinculos["datasets"]["sih_aih_reduzida_1992_2007"]["def"]
+    with pytest.raises(ValueError, match=r"sih_199801_200307/MORTES\.CNV is not a member"):
+        gerar.evidence_for(defs, "morte", "sih_199201_199712/MORTES.CNV", vinculos)
+
+
+def test_a_hand_edited_evidence_of_a_current_claim_is_rewritten(monkeypatch, tmp_path):
+    """The generator owns the evidence and checked_at of its own claims: a hand edit of
+    the locator or date of sih_aih_reduzida.marca_uti (same map) comes back as generated,
+    so `--check` fails on it (issue #28: hand-written evidence went unnoticed)."""
+    gerar = _load(monkeypatch)
+    dicionarios = ROOT / "src/omnisus/data/dicionarios"
+    for path in dicionarios.glob("*.yaml"):
+        (tmp_path / path.name).write_text(path.read_text("utf-8"), encoding="utf-8")
+    target = tmp_path / "sih_aih_reduzida.yaml"
+    text = target.read_text("utf-8")
+    committed = next(
+        f for f in yaml.safe_load(text)["schema"]["fields"] if f["name"] == "marca_uti"
+    )
+    edited = json.loads(json.dumps(committed))
+    (claim,) = [c for c in edited["x-metadata"]["claims"] if c["target"] == "/field/codes"]
+    claim["evidence"][0]["locator"] = "escrito à mão"
+    claim["checked_at"] = "2026-01-01"
+    target.write_text(gerar.replace_field(text, "marca_uti", edited), encoding="utf-8")
+    monkeypatch.setattr(gerar, "DICIONARIOS", tmp_path)
+    generated = yaml.safe_load(gerar.generate()[target])["schema"]["fields"]
+    assert next(f for f in generated if f["name"] == "marca_uti") == committed
+
+
+def test_a_dbf_field_with_several_defs_is_refused(monkeypatch):
+    """Motivo_de_Erro.DEF relates CO_ERRO to DBF/MOTERRO.dbf and names the description
+    column. No dataset lists two DEFs for a DBF field, so the test lists the real
+    Motivo_de_Erro.DEF twice: the generator reads the column from one DEF only, and
+    must refuse rather than cite DEFs whose column it never read."""
+    gerar = _load(monkeypatch)
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    defs = ["sih/Motivo_de_Erro.DEF", "sih/Motivo_de_Erro.DEF"]
+    with pytest.raises(ValueError, match=r"DBF member .* one DEF"):
+        gerar.evidence_for(defs, "co_erro", "sih/DBF/MOTERRO.dbf", vinculos)

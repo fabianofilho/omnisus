@@ -29,9 +29,14 @@ jobs:
           if-no-files-found: error
 
   native:
-    # The optional Rust wheels, built and tested at the tagged commit; attached to
-    # the GitHub release next to the main wheel (RELEASE.md).
+    # The Rust wheels, built and tested at the tagged commit. Only a dbf-v* tag
+    # publishes them (RELEASE.md), but GitHub checks the permissions of native.yml's
+    # publish job when it loads this run, so the caller must grant them.
     uses: ./.github/workflows/native.yml
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
 
   gate:
     needs: build
@@ -57,8 +62,7 @@ jobs:
           uv run --python .gate --no-project python -c "import omnisus as o, polars as pl; assert o.describe_dataset('sim_obitos')['schema_version'] == '1.0.0'; assert o.label('sim_obitos', pl.DataFrame({'sexo': ['1']}))['sexo_rotulo'][0] == 'Masculino'; print(o.__version__)"
 
   publish:
-    # Wheel artifacts are the current distribution channel. The repository
-    # owner must explicitly opt into PyPI and configure its Trusted Publisher.
+    # PyPI is the distribution channel (RELEASE.md): Trusted Publisher, no token.
     if: vars.PUBLISH_TO_PYPI == 'true'
     needs: gate
     runs-on: ubuntu-latest

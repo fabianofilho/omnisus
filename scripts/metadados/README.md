@@ -10,6 +10,7 @@ biblioteca, `sus.describe_dataset` devolve os mesmos metadados.
 | `scripts/metadados/gerar_decode_cnv.py` | Escreve o `x-decode` dos campos que uma tabela CNV do TabWin decodifica |
 | `scripts/metadados/gerar_sinan.py` | Copia os campos de `sinan_bloco_comum.yaml` para os dicionários SINAN |
 | `scripts/metadados/gerar_subconjuntos_sim.py` | Escreve em DOINF, DOMAT e DOEXT a definição de `sim_obitos` de cada campo comum |
+| `scripts/metadados/travar_versoes.py` | Registra em `versoes.json` o SHA-256 do conteúdo de cada `x-version` e para se o conteúdo mudou sem trocar a versão |
 | `docs/dicionario/` | Documentação, contrato público e exemplos históricos identificados |
 | `src/omnisus/data/dicionarios/` | Dicionários usados pela biblioteca |
 | `evidence/` | Evidências das auditorias, com SHA-256 |
