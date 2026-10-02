@@ -16,11 +16,15 @@ Drive or in the cloud), with the provenance needed to cite it. Documentation: <h
 
 ## Instalação
 
-Python 3.12 ou mais novo:
+Python 3.12 ou mais novo, com o [uv](https://docs.astral.sh/uv/):
 
 ```bash
-pip install omnisus
+uv add omnisus          # num projeto uv
+uv pip install omnisus  # num ambiente virtual já criado
 ```
+
+No Colab, `!uv pip install -q omnisus`. Sem uv, `pip install omnisus`. Para atualizar,
+`uv pip install -U omnisus`, ou `uv sync --upgrade-package omnisus` num projeto.
 
 Em Linux x86_64, macOS (arm64/x86_64) e Windows x86_64 isso instala também o
 decodificador Rust `omnisus-dbf`. Nas demais plataformas, o Python

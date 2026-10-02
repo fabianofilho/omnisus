@@ -37,18 +37,18 @@ No seu computador, com a versão do PyPI fixada no cabeçalho PEP 723 de cada no
 uvx marimo edit --sandbox notebooks/sim_obitos.py
 ```
 
-A partir de um checkout, com o código local (rode da **raiz do repositório** para
-todos os notebooks usarem o mesmo lake):
+Para contribuir, com o código de `main` ainda não publicado (rode da **raiz do
+repositório** para todos os notebooks usarem o mesmo lake):
 
 ```bash
 uv sync --locked --extra notebooks
 uv run --locked --extra notebooks marimo edit notebooks/sim_obitos.py
 ```
 
-Para executar as etapas sem interface:
+Para executar as etapas sem interface, com a versão fixada:
 
 ```bash
-uv run --locked --extra notebooks marimo export html notebooks/sim_obitos.py \
+uvx marimo export html --sandbox notebooks/sim_obitos.py \
   -o /tmp/sim_obitos.html -- --executar true
 ```
 

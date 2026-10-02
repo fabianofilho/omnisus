@@ -14,6 +14,29 @@
 - Releases tag the release PR's head and publish before merging, so `main` never pins
   a version PyPI does not have yet (RELEASE.md).
 
+### Messages
+
+- When `skip_same` refuses a scope already in the lake, the reason says whether the
+  server file changed or the same file was imported by another parser version (another
+  omnisus release or dictionary), and `load` says to run the same call again with
+  `policy='replace'`.
+
+### Install with uv
+
+- README, the researcher guide and getting-started install with `uv add omnisus` or
+  `uv pip install omnisus`, say how to upgrade, and keep `pip install omnisus` as the
+  fallback. The Colab notebook runs `!uv pip install -q omnisus==<version>`; Colab ships
+  uv and sets `UV_SYSTEM_PYTHON`.
+- Notebook instructions open the PyPI version pinned in each notebook
+  (`uvx marimo edit --sandbox`, `uvx marimo export html --sandbox`); the checkout path
+  is for contributors.
+- The reproducibility guide adds "Fixar o ambiente" (`uv.lock` or `uv pip freeze`) and
+  says that `cite` prints the running omnisus version and today's date unless
+  `accessed=` is given.
+- `omnisus-dbf` metadata: SPDX license `MIT`, project URLs and author; its README builds
+  with `uv build` and drops stale release notes. These reach PyPI with the next
+  `dbf-v*` release.
+
 ### SIH
 
 - `sih_aih_reduzida_1992_2007` declares the 14 fields that the older RD layouts publish
@@ -25,6 +48,10 @@
   importing both kinds into one lake table fails until #40 is decided.
 
 ## v0.2.0 — 2026-10-01
+
+**Upgrading from 0.1.0:** #19 changed how a publication's parser version is computed, so
+`load` refuses every scope a 0.1.0 lake already holds. Run each `load` once with
+`policy="replace"`; later calls download nothing again.
 
 ### Rust decoder by default
 
