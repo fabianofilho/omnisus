@@ -69,7 +69,8 @@ def test_load_works_inside_a_running_event_loop(served, tmp_path: Path) -> None:
 
 
 def test_load_names_the_failure_and_replace_rewrites(served, monkeypatch, tmp_path: Path) -> None:
-    """The same file imported under another dictionary version: skip_same refuses."""
+    """The same file imported by another parser version (another omnisus release or
+    dictionary): skip_same refuses, says the file is the same, and says what to run."""
     target = f"ducklake:{tmp_path}/lake.ducklake"
     sus.load("sim_obitos", years=[2023], ufs=["RR"], target=target)
     monkeypatch.setattr(
@@ -77,11 +78,34 @@ def test_load_names_the_failure_and_replace_rewrites(served, monkeypatch, tmp_pa
         lambda dictionary_hash: "dbc-staging-v1:outra-versao",
     )
 
-    with pytest.raises(RuntimeError, match=r"RR_2023.*policy='replace'"):
+    with pytest.raises(RuntimeError) as failure:
         sus.load("sim_obitos", years=[2023], ufs=["RR"], target=target)
+    message = str(failure.value)
+    assert "RR_2023: same file, imported by another parser version" in message
+    assert "run this load again with policy='replace'" in message
 
     dados = sus.load("sim_obitos", years=[2023], ufs=["RR"], target=target, policy="replace")
     assert dados.height == ROWS
+
+
+def test_load_says_when_datasus_published_another_file(
+    monkeypatch, dbc_fixture, tmp_path: Path
+) -> None:
+    """RR 2023 imported from one real file, then the server lists another (as when
+    DATASUS republishes a year): skip_same refuses and says the file changed."""
+    target = f"ducklake:{tmp_path}/lake.ducklake"
+    fake_datasus.serve(
+        monkeypatch, "sim_obitos", {RR_2023: dbc_fixture("sim_rr_2023_mini").read_bytes()}
+    )
+    sus.load("sim_obitos", years=[2023], ufs=["RR"], target=target)
+    fake_datasus.serve(
+        monkeypatch, "sim_obitos", {RR_2023: dbc_fixture("sim_rr_2022_mini").read_bytes()}
+    )
+
+    with pytest.raises(
+        RuntimeError, match=r"RR_2023: the server file differs from the one imported"
+    ):
+        sus.load("sim_obitos", years=[2023], ufs=["RR"], target=target)
 
 
 def test_load_raises_when_nothing_is_published(served, tmp_path: Path) -> None:
