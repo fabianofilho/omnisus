@@ -1,6 +1,6 @@
 # Release procedure
 
-## Optional native package
+## Native package
 
 `native/omnisus-dbf` provides the Rust DBF reader and DBC decompressor. It
 builds independently of the main Hatchling package. Its version has one home
@@ -21,19 +21,18 @@ does not publish packages; the release step below attaches its wheels. Every
 native-only installation must use binary dependencies and pass outside the
 checkout.
 
-`omnisus` does not depend on this package: it decodes DBF and DBC in pure
-Python without it. A `dbf-v<version>` tag publishes the native wheels and sdist
-to PyPI from `native.yml` once repository variable `PUBLISH_DBF_TO_PYPI` equals
-`true` and its Trusted Publisher exists (project `omnisus-dbf`, owner
-`raphaelfh`, repository `omnisus`, workflow `native.yml`, environment
-`pypi-dbf`); the job checks the tag against `Cargo.toml` and publishes only
-artifacts that passed the complete matrix. Use
-`dbf-v<version>` for the native package; `v<version>` continues to identify
-the main package. Only after the native version is available in the index
-should the main package add a `native` extra and update `uv.lock`; an
-unpublished dependency must not break base installs. Until then, install the
-locally built wheel directly. The main wheel stays `py3-none-any` and Python
-decoding remains available.
+`omnisus` depends on `omnisus-dbf` from PyPI on the platforms with a wheel
+(Linux x86_64, macOS, Windows x86_64) and decodes DBF and DBC in pure Python
+elsewhere. The main wheel stays `py3-none-any`.
+
+A `dbf-v<version>` tag publishes the native wheels and sdist to PyPI from
+`native.yml` once repository variable `PUBLISH_DBF_TO_PYPI` equals `true` and
+its Trusted Publisher exists (project `omnisus-dbf`, owner `raphaelfh`,
+repository `omnisus`, workflow `native.yml`, environment `pypi-dbf`); the job
+checks the tag against `Cargo.toml` and publishes only artifacts that passed
+the complete matrix. `v<version>` continues to identify the main package. Raise
+the main package's `omnisus-dbf` lower bound and `uv.lock` only after the new
+native version is on PyPI; an unpublished dependency must not break installs.
 
 ## Main Python package
 

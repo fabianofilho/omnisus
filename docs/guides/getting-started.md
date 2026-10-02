@@ -11,15 +11,10 @@ Windows) and checks that the built wheel installs on 3.12, 3.13 and 3.14.
 python -m pip install "omnisus @ git+https://github.com/raphaelfh/omnisus"
 ```
 
-### Optional Rust decoder
+### Rust decoder
 
-Each release attaches native wheels of `omnisus-dbf` for Linux x86_64, macOS (arm64,
-x86_64) and Windows x86_64:
-
-```bash
-python -m pip install omnisus omnisus-dbf \
-  --find-links https://github.com/raphaelfh/omnisus/releases/expanded_assets/v0.1.0
-```
+On Linux x86_64, macOS (arm64, x86_64) and Windows x86_64, `omnisus` installs
+`omnisus-dbf` from PyPI as a dependency. Other platforms use the Python decoders.
 
 DBF decoding and DBC decompression default to `auto`: Rust when installed, otherwise
 Python. `OMNISUS_DBF_BACKEND` and `OMNISUS_DBC_BACKEND` take `rust`, `python` or

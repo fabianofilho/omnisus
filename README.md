@@ -22,15 +22,9 @@ Python 3.12 ou mais novo:
 pip install "omnisus @ git+https://github.com/raphaelfh/omnisus"
 ```
 
-Com o decodificador Rust opcional (Linux x86_64, macOS arm64/x86_64, Windows x86_64),
-instale os dois pacotes a partir da página da release:
-
-```bash
-pip install omnisus omnisus-dbf \
-  --find-links https://github.com/raphaelfh/omnisus/releases/expanded_assets/v0.1.0
-```
-
-Sem ele, o Python decodifica os mesmos arquivos.
+Em Linux x86_64, macOS (arm64/x86_64) e Windows x86_64 isso instala também o
+decodificador Rust `omnisus-dbf`, do PyPI. Nas demais plataformas, o Python
+decodifica os mesmos arquivos.
 
 ## Início rápido
 
