@@ -66,3 +66,11 @@ Each has the same type in every layout that has it. Of the 89 fields, only `NUM_
 The `RD.DEF` of the three era packages (`evidence/2026-09-29-tab-sih-rd-eras/`) binds
 `SEMIPLEN` ("Gestão (95-97)") to `GESTAO.CNV` at position 1 and `DIAG_SEC` to CID-9
 tables; none of them names the other twelve columns.
+
+The fixtures `tests/fixtures/dbc/sih_rd_rr_1994_12_mini.dbc`, `sih_rd_rr_1997_09_mini.dbc`
+and `sih_rd_rr_2007_12_mini.dbc` are `RDRR9412`, `RDRR9709` and `RDRR0712`, with the SHA-256
+of their rows here (layouts 3, 7 and 19). `sih_rd_rr_2004_07_excerpt.dbc` is records 481 to
+571 (0-based) of `RDRR0407` (layout 15) under that file's header: the longest run of records
+with no CPF in `CPF_AUT` or `GESTOR_CPF`. Together they hold every field of the 19 layouts.
+`tests/unit/transforms/test_sih_rd_1992_2007_fields.py` reads `census.csv` to check that,
+and that the dictionary declares exactly these 89 fields.
