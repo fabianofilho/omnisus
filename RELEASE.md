@@ -22,8 +22,12 @@ native-only installation must use binary dependencies and pass outside the
 checkout.
 
 `omnisus` does not depend on this package: it decodes DBF and DBC in pure
-Python without it. Before a native PyPI release, configure its own Trusted
-Publisher and promote the artifacts that passed the complete matrix. Use
+Python without it. A `dbf-v<version>` tag publishes the native wheels and sdist
+to PyPI from `native.yml` once repository variable `PUBLISH_DBF_TO_PYPI` equals
+`true` and its Trusted Publisher exists (project `omnisus-dbf`, owner
+`raphaelfh`, repository `omnisus`, workflow `native.yml`, environment
+`pypi-dbf`); the job checks the tag against `Cargo.toml` and publishes only
+artifacts that passed the complete matrix. Use
 `dbf-v<version>` for the native package; `v<version>` continues to identify
 the main package. Only after the native version is available in the index
 should the main package add a `native` extra and update `uv.lock`; an
