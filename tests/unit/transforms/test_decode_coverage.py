@@ -300,6 +300,11 @@ def test_values_labelled_only_by_a_range_are_recorded(dbc_fixture, dataset, fixt
     assert sorted(found) == sorted(RANGE_ONLY.get((dataset, fixture), []))
 
 
+def test_range_only_names_only_fixtures_of_remaining():
+    """The test above runs over REMAINING, so an entry for any other key is never checked."""
+    assert RANGE_ONLY.keys() - REMAINING.keys() == set()
+
+
 def test_every_x_decode_key_is_a_string():
     """Pins the invariant that keeps ``decode_coverage`` and ``_lookup_decode`` agreeing.
 
