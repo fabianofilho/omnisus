@@ -1,7 +1,7 @@
 # 0001 — Rust DBF Crate Decision
 
 **Date:** 2026-05-02
-**Status:** Implemented — optional package `native/omnisus-dbf`
+**Status:** Implemented — package `native/omnisus-dbf`, a default dependency since October 2026
 
 This ADR records the May 2026 measurements and roadmap decision. Its benchmark
 numbers and proposed v0.2.0 work are historical, not current performance
@@ -9,6 +9,14 @@ guarantees or a release commitment. A separate optional extension is now impleme
 in `native/omnisus-dbf`; Python remains available. See
 [Architecture](../architecture.md) for the implemented pipeline and the
 [validation report](https://github.com/raphaelfh/omnisus/blob/main/evidence/rust-dbf-validation.md) for measured results.
+
+## October 2026: default dependency
+
+`omnisus-dbf` 0.2.0 is on PyPI with abi3 wheels for Linux x86_64, macOS arm64/x86_64
+and Windows x86_64, each tested on CPython 3.12–3.14 by `native.yml`. `omnisus`
+depends on it on those platforms through an environment marker, so no install needs
+a Rust toolchain; other platforms keep the Python decoders. The `auto` backend
+picks Rust when the module is installed.
 
 ## September 2026 implementation
 
