@@ -52,13 +52,13 @@ O que cada desfecho quer dizer:
   nada é baixado. Um arquivo listado que responde 550 no download termina em `failed`
   com o código `fetch_failed`, e vale tentar de novo
   (`src/omnisus/sources/datasus_ftp/_runner.py`, docstring de `run_scopes`).
-- `failed` com o motivo *the server file differs from the one imported (DATASUS
-  republished it)*: o escopo já está no lake com outro arquivo
-  (`src/omnisus/lake/publication.py`). Não é um erro de rede: veja
-  [Quando o DATASUS revisa](#quando-o-datasus-revisa).
-- `failed` com o motivo *same file, imported by another parser version (another omnisus
-  release or dictionary)*: o arquivo é o mesmo, mas o escopo foi importado por outra
-  versão do omnisus ou do dicionário (`src/omnisus/lake/publication.py`). Veja
+- `failed` porque o escopo já está no lake com outro arquivo ou foi importado por outra
+  versão do omnisus ou do dicionário (`src/omnisus/lake/publication.py`). Não é um erro
+  de rede. Até a 0.2.0 o motivo é um só, *different source/parser version exists;
+  request replace explicitly*. Nas versões seguintes ele diz qual dos dois casos é:
+  *the server file differs from the one imported (DATASUS republished it)*, veja
+  [Quando o DATASUS revisa](#quando-o-datasus-revisa); ou *same file, imported by
+  another parser version (another omnisus release or dictionary)*, veja
   [Depois de atualizar o omnisus](#depois-de-atualizar-o-omnisus).
 - `failed` com *legacy or unmanaged rows in scope*: há linhas sem manifesto nesse escopo
   (`src/omnisus/lake/publication.py`), gravadas por um importador antigo ou por SQL
@@ -125,9 +125,10 @@ não expire um snapshot que um trabalho seu cita.
 A versão do parser gravada em cada publicação depende do que a importação lê do
 dicionário (`src/omnisus/sources/datasus_ftp/_runner.py`, `parser_version`). A 0.2.0
 mudou esse cálculo (#19), então todo escopo importado pela 0.1.0 é recusado por
-`skip_same`, o padrão de `load`, com o motivo *same file, imported by another parser
-version*. Rode o mesmo `load` uma vez com `policy="replace"` para cada escopo antigo;
-as chamadas seguintes voltam a não baixar nada:
+`skip_same`, o padrão de `load`. Na 0.2.0 o motivo é *different source/parser version
+exists*; nas versões seguintes, *same file, imported by another parser version*. Rode o
+mesmo `load` uma vez com `policy="replace"` para cada escopo antigo; as chamadas
+seguintes voltam a não baixar nada:
 
 ```python
 dados = sus.load("sim_obitos", years=[2023], ufs=["RR"], policy="replace")
