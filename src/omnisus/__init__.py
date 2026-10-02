@@ -282,8 +282,8 @@ def load(
         target: DuckLake target; ``None`` (default) is ``data/raw/omnisus.ducklake``
             under the working directory, or under ``$OMNISUS_DATA_DIR``.
         policy: ``"skip_same"`` (default) reuses scopes already imported from the
-            same file; ``"replace"`` rewrites scopes imported from another file or
-            dictionary version; ``"append"`` and ``"error_if_exists"`` as in
+            same file; ``"replace"`` rewrites scopes imported from another file, omnisus
+            release or dictionary version; ``"append"`` and ``"error_if_exists"`` as in
             :func:`import_dataset`.
 
     Returns:
@@ -316,8 +316,8 @@ def load(
     if report.failed:
         reasons = "; ".join(f"{o.scope}: {o.reason}" for o in report.failed)
         raise RuntimeError(
-            f"{d.name} import failed ({reasons}). A scope already imported from "
-            "another file or parser version is rewritten with policy='replace'."
+            f"{d.name} import failed ({reasons}). To rewrite a scope already in the "
+            "lake, run this load again with policy='replace'."
         )
     rows = _read_with_harmonised(d, scopes, target)
     if rows.is_empty():

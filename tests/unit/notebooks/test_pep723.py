@@ -1,4 +1,4 @@
-"""Notebooks carry PEP 723 metadata so sandbox/molab can install omnisus from GitHub."""
+"""Notebooks carry PEP 723 metadata so sandbox/molab install this omnisus version from PyPI."""
 
 from __future__ import annotations
 
@@ -6,9 +6,9 @@ import re
 import tomllib
 from pathlib import Path
 
+import omnisus as sus
+
 NOTEBOOKS = Path(__file__).resolve().parents[3] / "notebooks"
-REPOSITORIO = "https://github.com/raphaelfh/omnisus.git"
-_SHA1 = re.compile(r"^[0-9a-f]{40}$")
 
 # PEP 723: a comment block that starts with `# /// script` and ends with `# ///`.
 _BLOCO = re.compile(r"(?m)^# /// script\n((?:#(?: |$).*\n)*)# ///")
@@ -38,7 +38,8 @@ def _metadados(caminho: Path) -> dict:
     return tomllib.loads("\n".join(linhas) + "\n")
 
 
-def test_every_notebook_declares_the_github_package():
+def test_every_notebook_pins_this_version_from_pypi():
+    """A release bumps every notebook to the version it publishes."""
     caminhos = _notebooks()
     assert caminhos, "no notebooks found"
     for caminho in caminhos:
@@ -46,19 +47,8 @@ def test_every_notebook_declares_the_github_package():
         assert meta["requires-python"] == ">=3.12"
         nomes = {re.split(r"[<>=!~;\[ ]", dep, maxsplit=1)[0] for dep in meta["dependencies"]}
         assert {"marimo", "omnisus", "polars"} <= nomes
-        fonte = meta["tool"]["uv"]["sources"]["omnisus"]
-        assert fonte["git"] == REPOSITORIO
-        assert set(fonte) == {"git", "rev"}
-        assert _SHA1.match(fonte["rev"]), f"{caminho.name}: rev must be a commit SHA"
-
-
-def test_every_notebook_pins_the_same_commit():
-    """One rev for all notebooks, so a release bumps them together."""
-    revs = {
-        caminho.name: _metadados(caminho)["tool"]["uv"]["sources"]["omnisus"]["rev"]
-        for caminho in _notebooks()
-    }
-    assert len(set(revs.values())) == 1, revs
+        assert f"omnisus=={sus.__version__}" in meta["dependencies"], caminho.name
+        assert "tool" not in meta, f"{caminho.name}: omnisus comes from PyPI, not a git source"
 
 
 def test_every_notebook_pins_marimo_like_the_notebooks_extra():

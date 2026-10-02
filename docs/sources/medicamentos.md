@@ -255,8 +255,10 @@ dispensação.
 ### Notebook
 
 ```bash
-uv run --locked --extra notebooks marimo edit notebooks/medicamentos.py
+uvx marimo edit --sandbox notebooks/medicamentos.py
 ```
+
+A partir de um clone do repositório; o uv instala a versão do omnisus fixada no notebook.
 
 O notebook tem três partes: A, a APAC de Roraima, janeiro de 2024, nas seis etapas do
 guia (o que a APAC registra, descobrir, baixar e ler, conferir, analisar, citar e

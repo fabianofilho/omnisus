@@ -83,11 +83,12 @@ families and decimal changes fail before insertion. The staging parser also
 rejects incompatible values before Arrow inference can erase information.
 Previously coerced values require an explicit source rebuild to recover.
 
-### Optional native package
+### Native package
 
 `native/omnisus-dbf` builds a separate `omnisus_dbf` Python extension using
 PyO3 and Arrow, providing both the DBF reader and the DBC decompressor. The main
-package keeps its pure-Python wheel. Set `OMNISUS_DBF_BACKEND=rust` to require
+package keeps its pure-Python wheel and depends on `omnisus-dbf` from PyPI on the
+platforms with a published wheel (Linux x86_64, macOS, Windows x86_64). Set `OMNISUS_DBF_BACKEND=rust` to require
 native DBF decoding, `python` to use dbfread2, or `auto` to use Rust when
 installed and the DBF metadata is supported. `OMNISUS_DBC_BACKEND` selects the
 DBC backend the same way (`rust`, `python` or `auto`). The default for both is

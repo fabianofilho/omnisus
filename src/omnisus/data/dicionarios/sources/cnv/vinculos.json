@@ -248,7 +248,8 @@
     "sia/CNV/FINANC.CNV": {
       "fonte": "sia-tab-e5812b51d802",
       "membro": "CNV/FINANC.CNV",
-      "sha256": "2bb82d161efc13ea8781afe2e757758ab81c58f62320f2b558e19b196ba4a4c9"
+      "sha256": "2bb82d161efc13ea8781afe2e757758ab81c58f62320f2b558e19b196ba4a4c9",
+      "mesmo_que": "sih/CNV/FINANC.CNV"
     },
     "sia/CNV/FL_IDADE.CNV": {
       "fonte": "sia-tab-e5812b51d802",
@@ -268,12 +269,14 @@
     "sia/CNV/HCV.CNV": {
       "fonte": "sia-tab-e5812b51d802",
       "membro": "CNV/HCV.CNV",
-      "sha256": "79e07340642df4286c20a6f50dadbf4958950de1e32a3ca923237a312661c4a9"
+      "sha256": "79e07340642df4286c20a6f50dadbf4958950de1e32a3ca923237a312661c4a9",
+      "mesmo_que": "sia/CNV/HBSAG.CNV"
     },
     "sia/CNV/HIV.CNV": {
       "fonte": "sia-tab-e5812b51d802",
       "membro": "CNV/HIV.CNV",
-      "sha256": "79e07340642df4286c20a6f50dadbf4958950de1e32a3ca923237a312661c4a9"
+      "sha256": "79e07340642df4286c20a6f50dadbf4958950de1e32a3ca923237a312661c4a9",
+      "mesmo_que": "sia/CNV/HBSAG.CNV"
     },
     "sia/CNV/INDICA.cnv": {
       "fonte": "sia-tab-e5812b51d802",
@@ -333,7 +336,8 @@
     "sia/CNV/SIT_RUA.CNV": {
       "fonte": "sia-tab-e5812b51d802",
       "membro": "CNV/SIT_RUA.CNV",
-      "sha256": "da7f026713ae0669d626ae4661cbd33af72df9a7e76337dc0e1cba7f0d41b615"
+      "sha256": "da7f026713ae0669d626ae4661cbd33af72df9a7e76337dc0e1cba7f0d41b615",
+      "mesmo_que": "sia/CNV/ACES_VASC.CNV"
     },
     "sia/CNV/TP_APAC.CNV": {
       "fonte": "sia-tab-e5812b51d802",
@@ -368,7 +372,8 @@
     "sia/CNV/ULTRA_AB.CNV": {
       "fonte": "sia-tab-e5812b51d802",
       "membro": "CNV/ULTRA_AB.CNV",
-      "sha256": "da7f026713ae0669d626ae4661cbd33af72df9a7e76337dc0e1cba7f0d41b615"
+      "sha256": "da7f026713ae0669d626ae4661cbd33af72df9a7e76337dc0e1cba7f0d41b615",
+      "mesmo_que": "sia/CNV/ACES_VASC.CNV"
     },
     "sia/CNV/destino.cnv": {
       "fonte": "sia-tab-e5812b51d802",
@@ -538,17 +543,20 @@
     "sih_199201_199712/GESTAO.CNV": {
       "fonte": "sih-tab-b433310785e0",
       "membro": "GESTAO.CNV",
-      "sha256": "c8d5e054def7ff4552507263aa77f9c4332ee86198a7479130fef1cd9e946c0e"
+      "sha256": "c8d5e054def7ff4552507263aa77f9c4332ee86198a7479130fef1cd9e946c0e",
+      "mesmo_que": "sih/CNV/GESTAO.CNV"
     },
     "sih_199201_199712/IDENT.CNV": {
       "fonte": "sih-tab-b433310785e0",
       "membro": "IDENT.CNV",
-      "sha256": "85fe489e20e61abff994fc22d836ca208d7e9fee947bb5dbc76193d883c53828"
+      "sha256": "85fe489e20e61abff994fc22d836ca208d7e9fee947bb5dbc76193d883c53828",
+      "mesmo_que": "sih/CNV/IDENT.CNV"
     },
     "sih_199201_199712/INSTRU.CNV": {
       "fonte": "sih-tab-b433310785e0",
       "membro": "INSTRU.CNV",
-      "sha256": "ecdd8359a9fe8a07f77e250e758de9d8a0ac88901527f87d5f7271916a11ab04"
+      "sha256": "ecdd8359a9fe8a07f77e250e758de9d8a0ac88901527f87d5f7271916a11ab04",
+      "mesmo_que": "sih/CNV/INSTRU.CNV"
     },
     "sih_199201_199712/MORTES.CNV": {
       "fonte": "sih-tab-b433310785e0",
@@ -558,7 +566,8 @@
     "sih_199201_199712/NATUREZA.CNV": {
       "fonte": "sih-tab-b433310785e0",
       "membro": "NATUREZA.CNV",
-      "sha256": "837f2978a3703a15e97f4c451c2dcd2885a96e666998d6bce43b0d220ad41935"
+      "sha256": "837f2978a3703a15e97f4c451c2dcd2885a96e666998d6bce43b0d220ad41935",
+      "mesmo_que": "sih/CNV/NATUREZA.CNV"
     },
     "sih_199201_199712/RD.DEF": {
       "fonte": "sih-tab-b433310785e0",
@@ -568,12 +577,107 @@
     "sih_199201_199712/SEXO.CNV": {
       "fonte": "sih-tab-b433310785e0",
       "membro": "SEXO.CNV",
-      "sha256": "003e1b250d26b987867b9d0c1d155c42e340c4a62bffdcd4db85c7c41e60691e"
+      "sha256": "003e1b250d26b987867b9d0c1d155c42e340c4a62bffdcd4db85c7c41e60691e",
+      "mesmo_que": "sih/CNV/SEXO.CNV"
     },
     "sih_199201_199712/VINCPREV.CNV": {
       "fonte": "sih-tab-b433310785e0",
       "membro": "VINCPREV.CNV",
       "sha256": "b6afc5eace583f2c122c74bdc1ab0ebdaf43a4b7d057a94d44eeb3a7c8817f29"
+    },
+    "sih_199801_200307/GESTAO.CNV": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "GESTAO.CNV",
+      "sha256": "c8d5e054def7ff4552507263aa77f9c4332ee86198a7479130fef1cd9e946c0e",
+      "mesmo_que": "sih/CNV/GESTAO.CNV"
+    },
+    "sih_199801_200307/IDENT.CNV": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "IDENT.CNV",
+      "sha256": "85fe489e20e61abff994fc22d836ca208d7e9fee947bb5dbc76193d883c53828",
+      "mesmo_que": "sih/CNV/IDENT.CNV"
+    },
+    "sih_199801_200307/INSTRU.CNV": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "INSTRU.CNV",
+      "sha256": "ecdd8359a9fe8a07f77e250e758de9d8a0ac88901527f87d5f7271916a11ab04",
+      "mesmo_que": "sih/CNV/INSTRU.CNV"
+    },
+    "sih_199801_200307/MORTES.CNV": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "MORTES.CNV",
+      "sha256": "f2cb9e690a4d1557d9044b8c9dace13e64a35ef69741091c08e1e0b64d984f30",
+      "mesmo_que": "sih_199201_199712/MORTES.CNV"
+    },
+    "sih_199801_200307/NATUREZA.CNV": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "NATUREZA.CNV",
+      "sha256": "837f2978a3703a15e97f4c451c2dcd2885a96e666998d6bce43b0d220ad41935",
+      "mesmo_que": "sih/CNV/NATUREZA.CNV"
+    },
+    "sih_199801_200307/RD.DEF": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "RD.DEF",
+      "sha256": "d8c6626e72926e82d4bcccf232bc4b5cba7aa4d62aa3def6b3541c06d945f6c2"
+    },
+    "sih_199801_200307/SEXO.CNV": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "SEXO.CNV",
+      "sha256": "003e1b250d26b987867b9d0c1d155c42e340c4a62bffdcd4db85c7c41e60691e",
+      "mesmo_que": "sih/CNV/SEXO.CNV"
+    },
+    "sih_199801_200307/VINCPREV.CNV": {
+      "fonte": "sih-tab-171271844c06",
+      "membro": "VINCPREV.CNV",
+      "sha256": "b6afc5eace583f2c122c74bdc1ab0ebdaf43a4b7d057a94d44eeb3a7c8817f29",
+      "mesmo_que": "sih_199201_199712/VINCPREV.CNV"
+    },
+    "sih_200308_200712/GESTAO.CNV": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "GESTAO.CNV",
+      "sha256": "c8d5e054def7ff4552507263aa77f9c4332ee86198a7479130fef1cd9e946c0e",
+      "mesmo_que": "sih/CNV/GESTAO.CNV"
+    },
+    "sih_200308_200712/IDENT.CNV": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "IDENT.CNV",
+      "sha256": "85fe489e20e61abff994fc22d836ca208d7e9fee947bb5dbc76193d883c53828",
+      "mesmo_que": "sih/CNV/IDENT.CNV"
+    },
+    "sih_200308_200712/INSTRU.CNV": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "INSTRU.CNV",
+      "sha256": "ecdd8359a9fe8a07f77e250e758de9d8a0ac88901527f87d5f7271916a11ab04",
+      "mesmo_que": "sih/CNV/INSTRU.CNV"
+    },
+    "sih_200308_200712/MORTES.CNV": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "MORTES.CNV",
+      "sha256": "f2cb9e690a4d1557d9044b8c9dace13e64a35ef69741091c08e1e0b64d984f30",
+      "mesmo_que": "sih_199201_199712/MORTES.CNV"
+    },
+    "sih_200308_200712/NATUREZA.CNV": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "NATUREZA.CNV",
+      "sha256": "837f2978a3703a15e97f4c451c2dcd2885a96e666998d6bce43b0d220ad41935",
+      "mesmo_que": "sih/CNV/NATUREZA.CNV"
+    },
+    "sih_200308_200712/RD.DEF": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "RD.DEF",
+      "sha256": "e9831cc53c65ba90ac327a30dc6e64b40137d78b6fe7e295d55d0fab030d227d"
+    },
+    "sih_200308_200712/SEXO.CNV": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "SEXO.CNV",
+      "sha256": "003e1b250d26b987867b9d0c1d155c42e340c4a62bffdcd4db85c7c41e60691e",
+      "mesmo_que": "sih/CNV/SEXO.CNV"
+    },
+    "sih_200308_200712/VINCPREV.CNV": {
+      "fonte": "sih-tab-80582969071f",
+      "membro": "VINCPREV.CNV",
+      "sha256": "b6afc5eace583f2c122c74bdc1ab0ebdaf43a4b7d057a94d44eeb3a7c8817f29",
+      "mesmo_que": "sih_199201_199712/VINCPREV.CNV"
     },
     "sim/ACIDTRAB.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
@@ -598,7 +702,8 @@
     "sim/CIRURGIA.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
       "membro": "OBITOS_CID10_TAB/tabdo/CIRURGIA.CNV",
-      "sha256": "420390e92f0ddad0066d757131f36f3d8af2b00dba9a80001b6ac8e55708f655"
+      "sha256": "420390e92f0ddad0066d757131f36f3d8af2b00dba9a80001b6ac8e55708f655",
+      "mesmo_que": "sim/ASSMEDIC.CNV"
     },
     "sim/CODIFICA1.cnv": {
       "fonte": "sim-tab-bb1c9f02668e",
@@ -623,7 +728,8 @@
     "sim/EXAME.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
       "membro": "OBITOS_CID10_TAB/tabdo/EXAME.CNV",
-      "sha256": "420390e92f0ddad0066d757131f36f3d8af2b00dba9a80001b6ac8e55708f655"
+      "sha256": "420390e92f0ddad0066d757131f36f3d8af2b00dba9a80001b6ac8e55708f655",
+      "mesmo_que": "sim/ASSMEDIC.CNV"
     },
     "sim/FONTEINV.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
@@ -658,7 +764,8 @@
     "sim/NECROPS.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
       "membro": "OBITOS_CID10_TAB/tabdo/NECROPS.CNV",
-      "sha256": "420390e92f0ddad0066d757131f36f3d8af2b00dba9a80001b6ac8e55708f655"
+      "sha256": "420390e92f0ddad0066d757131f36f3d8af2b00dba9a80001b6ac8e55708f655",
+      "mesmo_que": "sim/ASSMEDIC.CNV"
     },
     "sim/OBITOFE1.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
@@ -777,118 +884,120 @@
     },
     "sinasc/ANOMAL.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/ANOMAL.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/ANOMAL.CNV",
       "sha256": "2e720af3ac565ad05422b16998728a1f56e631d8150b1004cc2d7bd1f7cb5fd7"
     },
     "sinasc/CONSULT.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/CONSULT.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/CONSULT.CNV",
       "sha256": "38d78c686e57c63d4a0e95751b8e364667b809095562922b689a99d2aaf08ae2"
     },
     "sinasc/ESC2010.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/ESC2010.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/ESC2010.CNV",
       "sha256": "0b82a5ead976ac14fe6408bef953add4d8f42618093539341206107501682da9"
     },
     "sinasc/ESCAGR1.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/ESCAGR1.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/ESCAGR1.CNV",
       "sha256": "1e993689d360f75bcd218684e28fdd418ad02cdadcea675a4a89bc075d014969"
     },
     "sinasc/ESTCIV.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/ESTCIV.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/ESTCIV.CNV",
       "sha256": "cddba1932c183a94518230812f55d1a4a0b21f8f9134c1cd148639bd28fcb2e3"
     },
     "sinasc/GRAVIDEZ.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/GRAVIDEZ.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/GRAVIDEZ.CNV",
       "sha256": "5ea976ed92d40999ca32add74ebce62b13edc5899704fa746d204d857962df99"
     },
     "sinasc/INSTRUC.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/INSTRUC.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/INSTRUC.CNV",
       "sha256": "8831ed35b790f136381dd3ed6ab0c9c56473cb91e4d43622c5ed60a19f697b04"
     },
     "sinasc/KOTELCHUCK.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/KOTELCHUCK.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/KOTELCHUCK.CNV",
       "sha256": "2ac2e33488f32c544995856409ecc0b68677e698c78fd0f28b7ce4876f1ae6a9"
     },
     "sinasc/LOCOCOR.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/LOCOCOR.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/LOCOCOR.CNV",
       "sha256": "291037c19f61afaf383cf9830b915f3ef7f2d8b749f0cec933b6b3ab4610ca3b"
     },
     "sinasc/NASCIDO.def": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/NASCIDO.def",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/NASCIDO.def",
       "sha256": "488e0a5a00091ad56788165481278a380afd0231e9ca5956a4e84e6c1da434d5"
     },
     "sinasc/ORIGEM.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/ORIGEM.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/ORIGEM.CNV",
       "sha256": "0241652f7fb56fff10511efcb93f20e91a5591011fb005c12e690b1ef8e2cd55"
     },
     "sinasc/PARAPRE.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/PARAPRE.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/PARAPRE.CNV",
       "sha256": "f31f03e66401b3abced983cb4be05eddb18bc23928732d4df0f99aa0a73dd9eb"
     },
     "sinasc/PARTO.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/PARTO.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/PARTO.CNV",
       "sha256": "1b9f7b49b39c152c0e6a12021bc24e2867d215b8148a4f9601b5149a15ead0ac"
     },
     "sinasc/RACA.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/RACA.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/RACA.CNV",
       "sha256": "17ce55700fd1eef66887495197e3fb6d83b63457b057f36534ed6242ecf616df"
     },
     "sinasc/ROBSON.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/ROBSON.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/ROBSON.CNV",
       "sha256": "aad138b03d3a4ede752408d95939139feca22fdeea60d577af5e01a24707c5a2"
     },
     "sinasc/SEMANAS.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/SEMANAS.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/SEMANAS.CNV",
       "sha256": "0ac7331a18d3a1c54fe82cf3805d4a6bb49633a286bf7b70e3b9fe8446100474"
     },
     "sinasc/SEXO.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/SEXO.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/SEXO.CNV",
       "sha256": "3f1999e18a941268a8d675ec5b93516f1501c189ba3513fc97a321404f0b338f"
     },
     "sinasc/STPARTO.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/STPARTO.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/STPARTO.CNV",
       "sha256": "87f09293db88ccefca5f97b64a76914cd10016144f91a5c86fcff7850c8710bf"
     },
     "sinasc/TPASSIST.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/TPASSIST.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/TPASSIST.CNV",
       "sha256": "6fa9e3b067c6046d5d0cd9846db16fe7bd8f769b59814aa70217cb6ee2183939"
     },
     "sinasc/TPFUNC.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/TPFUNC.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/TPFUNC.CNV",
       "sha256": "767363aa236bf50e3c1bfd2b340a24691f853e48ee1fceb64b694f606823c116"
     },
     "sinasc/TPMETODO.CNV": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/TPMETODO.CNV",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/TPMETODO.CNV",
       "sha256": "0bf34c2911ffa6aab42a3981409934e3b4de95d597b52beec848a6316b7daecd"
     },
     "sinasc/idanomal.cnv": {
       "fonte": "sinasc-tab-de43d0c99630",
-      "membro": "Arquivos Auxiliares para Tabulação a partir de 1996/idanomal.cnv",
+      "membro": "Arquivos Auxiliares para Tabula\u00e7\u00e3o a partir de 1996/idanomal.cnv",
       "sha256": "983e76f848ddc24885b6b01d48d0bd0602ebe35ad9862bbd7b5fca32d1e538e1"
     }
   },
   "datasets": {
     "sih_aih_reduzida": {
-      "def": "sih/RD2008.DEF",
+      "def": [
+        "sih/RD2008.DEF"
+      ],
       "campos": {
         "car_int": "sih/CNV/CARATEND.CNV",
         "cobranca": "sih/CNV/SAIDAPERM.CNV",
@@ -927,14 +1036,18 @@
       }
     },
     "cnes_estabelecimentos": {
-      "def": "cnes/Estabelecimento.def",
+      "def": [
+        "cnes/Estabelecimento.def"
+      ],
       "campos": {
         "tp_unid": "cnes/CNV/TP_ESTAB.CNV",
         "turno_at": "cnes/CNV/TurnosAt.CNV"
       }
     },
     "sia_apac_cirurgia_bariatrica": {
-      "def": "sia/APAC_Pos_Cirurgia_Bariatica.def",
+      "def": [
+        "sia/APAC_Pos_Cirurgia_Bariatica.def"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -952,7 +1065,9 @@
       }
     },
     "sia_apac_laudos_diversos": {
-      "def": "sia/APAC_Laudos_Diversos.DEF",
+      "def": [
+        "sia/APAC_Laudos_Diversos.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -970,7 +1085,9 @@
       }
     },
     "sia_apac_medicamentos": {
-      "def": "sia/APAC_Medicamentos.DEF",
+      "def": [
+        "sia/APAC_Medicamentos.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -990,7 +1107,9 @@
       }
     },
     "sia_apac_quimioterapia": {
-      "def": "sia/APAC_Quimioterapia.DEF",
+      "def": [
+        "sia/APAC_Quimioterapia.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -1008,7 +1127,9 @@
       }
     },
     "sia_apac_tratamento_dialitico": {
-      "def": "sia/APAC_Tratamento_Dialitico.DEF",
+      "def": [
+        "sia/APAC_Tratamento_Dialitico.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
@@ -1026,7 +1147,9 @@
       }
     },
     "sia_psicossocial": {
-      "def": "sia/RAAS_Psicossocial.def",
+      "def": [
+        "sia/RAAS_Psicossocial.def"
+      ],
       "campos": {
         "cob_esf": "sia/CNV/COBERTURA.CNV",
         "loc_realiz": "sia/CNV/LOC_REALIZ.CNV",
@@ -1035,11 +1158,13 @@
         "sit_rua": "sia/CNV/SIT_RUA.CNV"
       },
       "sem_cnv": {
-        "tp_droga": "TP_DROGA.CNV lista códigos posicionais ('  O', ' CO', 'A O'); PSRR2401 traz 'O', 'CO' e 'AO'."
+        "tp_droga": "TP_DROGA.CNV lista c\u00f3digos posicionais ('  O', ' CO', 'A O'); PSRR2401 traz 'O', 'CO' e 'AO'."
       }
     },
     "sim_obitos": {
-      "def": "sim/Obito_1996_CID10.def",
+      "def": [
+        "sim/Obito_1996_CID10.def"
+      ],
       "campos": {
         "acidtrab": "sim/ACIDTRAB.CNV",
         "atestante": "sim/ATESTANT.CNV",
@@ -1070,29 +1195,33 @@
         "tppos": "sim/INVESTIG.CNV"
       },
       "sem_cnv": {
-        "sexo": "Códigos verificados na Estrutura do SIM 2025, p. 2 (claim verified_in_source); SEXO.CNV rotula só M, F e I.",
-        "tpobitocor": "Obito_1996_CID10.def cita invest_mod_SN.CNV, ausente de OBITOS_CID10_TAB.zip. Códigos verificados na Estrutura do SIM 2025, p. 7 (claim verified_in_source).",
+        "sexo": "C\u00f3digos verificados na Estrutura do SIM 2025, p. 2 (claim verified_in_source); SEXO.CNV rotula s\u00f3 M, F e I.",
+        "tpobitocor": "Obito_1996_CID10.def cita invest_mod_SN.CNV, ausente de OBITOS_CID10_TAB.zip. C\u00f3digos verificados na Estrutura do SIM 2025, p. 7 (claim verified_in_source).",
         "esc2010": "Obito_1996_CID10.def cita ESCCICLO.CNV, ausente de OBITOS_CID10_TAB.zip.",
         "escmae2010": "Obito_1996_CID10.def cita ESCCICLO.CNV, ausente de OBITOS_CID10_TAB.zip.",
         "codificado": "Obito_1996_CID10.def cita CODIFICADO.CNV, ausente de OBITOS_CID10_TAB.zip."
       }
     },
     "sinan_chagas": {
-      "def": "sinan/ChagasNET.def",
+      "def": [
+        "sinan/ChagasNET.def"
+      ],
       "campos": {},
       "sem_cnv": {
-        "classi_fin": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "criterio": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_escol_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_gestant": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_raca": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_sexo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "doenca_tra": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "evolucao": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas"
+        "classi_fin": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "criterio": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_escol_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_gestant": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_raca": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_sexo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "doenca_tra": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "evolucao": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas"
       }
     },
     "sinan_hanseniase": {
-      "def": "sinan/HansNET.def",
+      "def": [
+        "sinan/HansNET.def"
+      ],
       "campos": {
         "aval_atu_n": "sinan/AvaliaN.cnv",
         "avalia_n": "sinan/AvaliaN.cnv",
@@ -1100,15 +1229,17 @@
         "tpalta_n": "sinan/SAIDAhans.cnv"
       },
       "sem_cnv": {
-        "cs_escol_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_gestant": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_raca": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_sexo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "migrado_w": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas"
+        "cs_escol_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_gestant": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_raca": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_sexo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "migrado_w": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas"
       }
     },
     "sinasc_nascidos_vivos": {
-      "def": "sinasc/NASCIDO.def",
+      "def": [
+        "sinasc/NASCIDO.def"
+      ],
       "campos": {
         "consultas": "sinasc/CONSULT.CNV",
         "escmae": "sinasc/INSTRUC.CNV",
@@ -1134,55 +1265,59 @@
         "tprobson": "sinasc/ROBSON.CNV"
       },
       "sem_cnv": {
-        "stdnepidem": "DNNOVA.CNV escreve o código na coluna 60, fora do layout do manual TabWin (códigos a partir da coluna 61)."
+        "stdnepidem": "DNNOVA.CNV escreve o c\u00f3digo na coluna 60, fora do layout do manual TabWin (c\u00f3digos a partir da coluna 61)."
       }
     },
     "sinan_tuberculose": {
-      "def": "sinan/TuberculNET5_0.def",
+      "def": [
+        "sinan/TuberculNET5_0.def"
+      ],
       "campos": {},
       "sem_cnv": {
-        "agravaids": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "agravalcoo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "agravdiabe": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "agravdoenc": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "agravdroga": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "agravoutra": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "agravtabac": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "ant_retro": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bac_apos_6": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bacilosc_1": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bacilosc_2": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bacilosc_3": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bacilosc_4": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bacilosc_5": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bacilosc_6": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "bacilosc_e": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "benef_gov": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_escol_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_gestant": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_raca": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cs_sexo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "cultura_es": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "extrapu1_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "forma": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "histopatol": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "hiv": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "migrado_w": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "pop_imig": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "pop_liber": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "pop_rua": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "pop_saude": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "raiox_tora": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "situa_ence": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "test_molec": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "test_sensi": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "transf": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "tratamento": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas",
-        "tratsup_at": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das páginas"
+        "agravaids": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "agravalcoo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "agravdiabe": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "agravdoenc": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "agravdroga": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "agravoutra": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "agravtabac": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "ant_retro": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bac_apos_6": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bacilosc_1": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bacilosc_2": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bacilosc_3": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bacilosc_4": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bacilosc_5": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bacilosc_6": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "bacilosc_e": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "benef_gov": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_escol_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_gestant": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_raca": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cs_sexo": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "cultura_es": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "extrapu1_n": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "forma": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "histopatol": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "hiv": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "migrado_w": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "pop_imig": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "pop_liber": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "pop_rua": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "pop_saude": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "raiox_tora": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "situa_ence": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "test_molec": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "test_sensi": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "transf": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "tratamento": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas",
+        "tratsup_at": "mapa do bloco SINAN (scripts/metadados/sinan_bloco_comum.yaml), lido das p\u00e1ginas"
       }
     },
     "sia_producao_ambulatorial": {
-      "def": "sia/Producao_Ambulatorial.DEF",
+      "def": [
+        "sia/Producao_Ambulatorial.DEF"
+      ],
       "campos": {
         "pa_alta": "sia/CNV/ALTA.CNV",
         "pa_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1204,7 +1339,9 @@
       }
     },
     "sih_aih_rejeitada": {
-      "def": "sih/RJ2008.DEF",
+      "def": [
+        "sih/RJ2008.DEF"
+      ],
       "campos": {
         "car_int": "sih/CNV/CARATEND.CNV",
         "cobranca": "sih/CNV/SAIDAPERM.CNV",
@@ -1233,13 +1370,17 @@
       }
     },
     "sih_servicos_profissionais": {
-      "def": "sih/SP2008.DEF",
+      "def": [
+        "sih/SP2008.DEF"
+      ],
       "campos": {
         "in_tp_val": "sih/CNV/TP_VAL.CNV"
       }
     },
     "cnes_dados_complementares": {
-      "def": "cnes/DadosComplementares.def",
+      "def": [
+        "cnes/DadosComplementares.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "clientel": "cnes/CNV/Flux_Cli.CNV",
@@ -1251,7 +1392,9 @@
       }
     },
     "cnes_equipamentos": {
-      "def": "cnes/Equipamento.def",
+      "def": [
+        "cnes/Equipamento.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "ind_sus": "cnes/CNV/IND_SUS.CNV",
@@ -1261,7 +1404,9 @@
       }
     },
     "cnes_equipes": {
-      "def": "cnes/Equipes.def",
+      "def": [
+        "cnes/Equipes.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "motdesat": "cnes/CNV/motdesat.cnv",
@@ -1275,7 +1420,9 @@
       }
     },
     "cnes_estabelecimentos_ensino": {
-      "def": "cnes/Estabel_Ensino.def",
+      "def": [
+        "cnes/Estabel_Ensino.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1287,7 +1434,9 @@
       }
     },
     "cnes_estabelecimentos_filantropicos": {
-      "def": "cnes/Estabel_Filantropico.def",
+      "def": [
+        "cnes/Estabel_Filantropico.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1299,7 +1448,9 @@
       }
     },
     "cnes_gestao_metas": {
-      "def": "cnes/Gestao_de_Metas.def",
+      "def": [
+        "cnes/Gestao_de_Metas.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1310,7 +1461,9 @@
       }
     },
     "cnes_habilitacoes": {
-      "def": "cnes/Habilitacao.def",
+      "def": [
+        "cnes/Habilitacao.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1321,7 +1474,9 @@
       }
     },
     "cnes_incentivos": {
-      "def": "cnes/Incentivos.def",
+      "def": [
+        "cnes/Incentivos.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "niv_dep": "cnes/CNV/NIVELDEP.CNV",
@@ -1332,7 +1487,9 @@
       }
     },
     "cnes_leitos": {
-      "def": "cnes/Leitos_Especialidade.def",
+      "def": [
+        "cnes/Leitos_Especialidade.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "codleito": "cnes/CNV/Esp_leit.CNV",
@@ -1343,7 +1500,9 @@
       }
     },
     "cnes_regras_contratuais": {
-      "def": "cnes/Regras_Contratuais.def",
+      "def": [
+        "cnes/Regras_Contratuais.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "tp_unid": "cnes/CNV/TP_ESTAB.CNV",
@@ -1352,7 +1511,9 @@
       }
     },
     "cnes_servicos_especializados": {
-      "def": "cnes/Servico_Especializado_200803_.def",
+      "def": [
+        "cnes/Servico_Especializado_200803_.def"
+      ],
       "campos": {
         "atividad": "cnes/CNV/Ativ_Ens.CNV",
         "caracter": "cnes/CNV/Srv_Caract.CNV",
@@ -1362,7 +1523,9 @@
       }
     },
     "sim_obitos_fetais": {
-      "def": "sim/Obito_1996_CID10.def",
+      "def": [
+        "sim/Obito_1996_CID10.def"
+      ],
       "campos": {
         "atestante": "sim/ATESTANT.CNV",
         "escmae": "sim/INSTRUC.CNV",
@@ -1384,11 +1547,13 @@
         "versaoscb": "sim/VERSCB.CNV"
       },
       "sem_cnv": {
-        "sexo": "SEXO.CNV rotula só com as letras M, F e I; sim_obitos também não usa este CNV."
+        "sexo": "SEXO.CNV rotula s\u00f3 com as letras M, F e I; sim_obitos tamb\u00e9m n\u00e3o usa este CNV."
       }
     },
     "sim_obitos_cid9": {
-      "def": "sim/Obito_1979_95_CID-09.DEF",
+      "def": [
+        "sim/Obito_1979_95_CID-09.DEF"
+      ],
       "campos": {
         "assistmed": "sim/ASSMEDIC.CNV",
         "estcivil": "sim/ESTCIV.CNV",
@@ -1398,11 +1563,13 @@
         "tipobito": "sim/TIPOBITO.CNV"
       },
       "sem_cnv": {
-        "sexo": "SEXO.CNV rotula só com as letras M, F e I; sim_obitos também não usa este CNV."
+        "sexo": "SEXO.CNV rotula s\u00f3 com as letras M, F e I; sim_obitos tamb\u00e9m n\u00e3o usa este CNV."
       }
     },
     "sia_apac_acompanhamento_bariatrica": {
-      "def": "sia/APAC_Cirurgia_Bariatica.DEF",
+      "def": [
+        "sia/APAC_Cirurgia_Bariatica.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1422,7 +1589,9 @@
       }
     },
     "sia_apac_fistula_arteriovenosa": {
-      "def": "sia/APAC_Confeccao_de_Fistula.DEF",
+      "def": [
+        "sia/APAC_Confeccao_de_Fistula.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1445,7 +1614,9 @@
       }
     },
     "sia_apac_nefrologia": {
-      "def": "sia/APAC_Nefrologia.DEF",
+      "def": [
+        "sia/APAC_Nefrologia.DEF"
+      ],
       "campos": {
         "an_acevas": "sia/CNV/ACES_VASC.CNV",
         "an_cncdo": "sia/CNV/CNCDO.CNV",
@@ -1472,7 +1643,9 @@
       }
     },
     "sia_apac_radioterapia": {
-      "def": "sia/APAC_Radioterapia.DEF",
+      "def": [
+        "sia/APAC_Radioterapia.DEF"
+      ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
         "ap_catend": "sia/CNV/CARAT_AT.CNV",
@@ -1498,7 +1671,9 @@
       }
     },
     "sia_atencao_domiciliar": {
-      "def": "sia/Atencao_Domiciliar.def",
+      "def": [
+        "sia/Atencao_Domiciliar.def"
+      ],
       "campos": {
         "catend": "sia/CNV/CARAT_AT.CNV",
         "cob_esf": "sia/CNV/COBERTURA.CNV",
@@ -1512,7 +1687,9 @@
       }
     },
     "sih_aih_rejeitada_erro": {
-      "def": "sih/Motivo_de_Erro.DEF",
+      "def": [
+        "sih/Motivo_de_Erro.DEF"
+      ],
       "campos": {
         "co_erro": "sih/DBF/MOTERRO.dbf"
       },
@@ -1521,13 +1698,18 @@
       }
     },
     "sih_aih_reduzida_1992_2007": {
-      "def": "sih_199201_199712/RD.DEF",
+      "def": [
+        "sih_199201_199712/RD.DEF",
+        "sih_199801_200307/RD.DEF",
+        "sih_200308_200712/RD.DEF"
+      ],
       "campos": {
         "gestao": "sih_199201_199712/GESTAO.CNV",
         "ident": "sih_199201_199712/IDENT.CNV",
         "instru": "sih_199201_199712/INSTRU.CNV",
         "morte": "sih_199201_199712/MORTES.CNV",
         "natureza": "sih_199201_199712/NATUREZA.CNV",
+        "semiplen": "sih_199201_199712/GESTAO.CNV",
         "sexo": "sih_199201_199712/SEXO.CNV",
         "vincprev": "sih_199201_199712/VINCPREV.CNV"
       }
@@ -1543,20 +1725,20 @@
     {
       "membro": "cnes/Servico_Especializado_200803_.def",
       "linha": 56,
-      "texto": "LRegião/Unidade da Federação  CODUFMUN,1 , CNV\\br_regiaouf.cnv",
-      "motivo": "vírgula faltando entre descrição e campo; codufmun não tem x-decode"
+      "texto": "LRegi\u00e3o/Unidade da Federa\u00e7\u00e3o  CODUFMUN,1 , CNV\\br_regiaouf.cnv",
+      "motivo": "v\u00edrgula faltando entre descri\u00e7\u00e3o e campo; codufmun n\u00e3o tem x-decode"
     },
     {
       "membro": "cnes/Servico_Especializado_200803_.def",
       "linha": 81,
-      "texto": "SMunicípio de extrema pobreza CODUFMUN,1 , CNV\\br_extrpobrez.cnv",
-      "motivo": "vírgula faltando entre descrição e campo; codufmun não tem x-decode"
+      "texto": "SMunic\u00edpio de extrema pobreza CODUFMUN,1 , CNV\\br_extrpobrez.cnv",
+      "motivo": "v\u00edrgula faltando entre descri\u00e7\u00e3o e campo; codufmun n\u00e3o tem x-decode"
     },
     {
       "membro": "sia/APAC_Radioterapia.DEF",
       "linha": 330,
-      "texto": "CDivisão Admistrativa Atend.       AP_UFMUN , 1,  CNV/BR_DIVADM.CNV",
-      "motivo": "vírgula faltando entre descrição e campo; as linhas L e S de AP_UFMUN estão bem formadas; ap_ufmun não tem x-decode"
+      "texto": "CDivis\u00e3o Admistrativa Atend.       AP_UFMUN , 1,  CNV/BR_DIVADM.CNV",
+      "motivo": "v\u00edrgula faltando entre descri\u00e7\u00e3o e campo; as linhas L e S de AP_UFMUN est\u00e3o bem formadas; ap_ufmun n\u00e3o tem x-decode"
     }
   ]
 }

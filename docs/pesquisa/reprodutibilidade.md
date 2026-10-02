@@ -52,10 +52,14 @@ O que cada desfecho quer dizer:
   nada é baixado. Um arquivo listado que responde 550 no download termina em `failed`
   com o código `fetch_failed`, e vale tentar de novo
   (`src/omnisus/sources/datasus_ftp/_runner.py`, docstring de `run_scopes`).
-- `failed` com o motivo *different source/parser version exists; request replace
-  explicitly*: o escopo já está no lake com outro arquivo ou outra versão do parser
-  (`src/omnisus/lake/publication.py`). Não é um erro de rede: veja
-  [Quando o DATASUS revisa](#quando-o-datasus-revisa).
+- `failed` porque o escopo já está no lake com outro arquivo ou foi importado por outra
+  versão do omnisus ou do dicionário (`src/omnisus/lake/publication.py`). Não é um erro
+  de rede. Até a 0.2.0 o motivo é um só, *different source/parser version exists;
+  request replace explicitly*. Nas versões seguintes ele diz qual dos dois casos é:
+  *the server file differs from the one imported (DATASUS republished it)*, veja
+  [Quando o DATASUS revisa](#quando-o-datasus-revisa); ou *same file, imported by
+  another parser version (another omnisus release or dictionary)*, veja
+  [Depois de atualizar o omnisus](#depois-de-atualizar-o-omnisus).
 - `failed` com *legacy or unmanaged rows in scope*: há linhas sem manifesto nesse escopo
   (`src/omnisus/lake/publication.py`), gravadas por um importador antigo ou por SQL
   direto.
@@ -116,6 +120,20 @@ Cuidado deste guia: `lake.expire_snapshots` remove histórico antigo
 ([reprocessing and maintenance](../guides/reprocessing-and-maintenance.md#compact-expire-history-and-clean-files));
 não expire um snapshot que um trabalho seu cita.
 
+## Depois de atualizar o omnisus
+
+A versão do parser gravada em cada publicação depende do que a importação lê do
+dicionário (`src/omnisus/sources/datasus_ftp/_runner.py`, `parser_version`). A 0.2.0
+mudou esse cálculo (#19), então todo escopo importado pela 0.1.0 é recusado por
+`skip_same`, o padrão de `load`. Na 0.2.0 o motivo é *different source/parser version
+exists*; nas versões seguintes, *same file, imported by another parser version*. Rode o
+mesmo `load` uma vez com `policy="replace"` para cada escopo antigo; as chamadas
+seguintes voltam a não baixar nada:
+
+```python
+dados = sus.load("sim_obitos", years=[2023], ufs=["RR"], policy="replace")
+```
+
 ## Quando o DATASUS revisa
 
 Quando o DATASUS move um ano do diretório preliminar para o final, nada muda no lake
@@ -165,6 +183,22 @@ passa a falhar (`src/omnisus/sources/ibge/importers/pop.py`, `import_pop_year`).
 notebook da população consulta esse manifesto e não importa uma edição que já está lá
 (`notebooks/ibge_populacao.py`).
 
+## Fixar o ambiente
+
+A citação nomeia a versão do omnisus, mas o resultado também depende de DuckDB, polars,
+pyarrow e do decodificador `omnisus-dbf`. Num projeto, `uv add omnisus==0.2.0` (ou a
+versão que você usou) grava todas essas versões exatas no `uv.lock`: guarde-o com a
+análise, e `uv sync --locked` refaz o mesmo ambiente. Sem projeto, como no Colab, grave a
+lista ao lado da citação:
+
+```bash
+uv pip freeze > requisitos.txt
+```
+
+`uv pip install -r requisitos.txt` refaz o ambiente. Um checkout do repositório roda
+código ainda não publicado que se identifica como a última versão: cite resultados de
+uma versão instalada do PyPI.
+
 ## Como citar
 
 Use `sus.cite` no lake que você leu. O texto segue o modelo abaixo; os notebooks
@@ -188,13 +222,17 @@ Onde encontrar cada valor:
 
 - `<dataset>`, `<source_uri>`, `<source_sha256>` e `<run_id>`: na publicação, em
   `publications()`; o nome do arquivo é o fim de `source_uri`.
-- `<AAAA-MM-DD>`: sugestão deste guia, a data de `published_at`.
-- `<versão>`: `sus.__version__`.
+- `<AAAA-MM-DD>`: `sus.cite` escreve a data de hoje, a menos que você passe
+  `accessed=`. Sugestão deste guia: a data de `published_at`, com
+  `accessed=date.fromisoformat(publicacao["published_at"][:10])`.
+- `<versão>`: o omnisus que gera a citação (`sus.__version__`). O lake não grava a versão
+  que importou cada escopo; por isso, gere a citação na mesma sessão que importou, como
+  fazem os notebooks, ou corrija a versão à mão.
 - `<snapshot_id>`: o snapshot em que você leu os dados.
 
-Nos notebooks, a citação e o próprio notebook bastam para refazer o resultado: o
-código diz o recorte e cada tabela, e a citação diz os arquivos, a versão e o
-`snapshot_id`.
+Nos notebooks, a citação, o próprio notebook e o `uv.lock` (ou `requisitos.txt`)
+bastam para refazer o resultado: o código diz o recorte e cada tabela, a citação diz os
+arquivos, a versão e o `snapshot_id`, e a lista diz as versões das bibliotecas.
 
 Para a população do IBGE, sugestão deste guia: troque o arquivo pelo `url`, o
 `source_sha256` pelo `sha256`, a data pela de `collected_at` e a execução pelo

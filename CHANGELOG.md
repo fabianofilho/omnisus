@@ -1,10 +1,110 @@
 # Changelog
 
+## v0.2.1 — 2026-10-02
+
+**Upgrading from 0.2.0:** no parser version changed, so a 0.2.0 lake keeps every
+scope; `load` downloads nothing again.
+
+### Docs site
+
+- The site is deployed by release tags (`v*`), not by every push to `main`, so it
+  describes the omnisus installed from PyPI. Pull requests still build it.
+
+### Packaging
+
+- `omnisus-dbf` is capped below its next minor (`>=0.2.0,<0.3`): omnisus accepts one
+  `API_VERSION`, and only a new minor of `omnisus-dbf` may change it.
+- Releases tag the release PR's head and publish before merging, so `main` never pins
+  a version PyPI does not have yet (RELEASE.md).
+
+### Messages
+
+- When `skip_same` refuses a scope already in the lake, the reason says whether the
+  server file changed or the same file was imported by another parser version (another
+  omnisus release or dictionary), and `load` says to run the same call again with
+  `policy='replace'`.
+
+### Install with uv
+
+- README, the researcher guide and getting-started install with `uv add omnisus` or
+  `uv pip install omnisus`, say how to upgrade, and keep `pip install omnisus` as the
+  fallback. The Colab notebook runs `!uv pip install -q omnisus==<version>`; Colab ships
+  uv and sets `UV_SYSTEM_PYTHON`.
+- Notebook instructions open the PyPI version pinned in each notebook
+  (`uvx marimo edit --sandbox`, `uvx marimo export html --sandbox`); the checkout path
+  is for contributors.
+- The reproducibility guide adds "Fixar o ambiente" (`uv.lock` or `uv pip freeze`) and
+  says that `cite` prints the running omnisus version and today's date unless
+  `accessed=` is given.
+- `omnisus-dbf` metadata: SPDX license `MIT`, project URLs and author; its README builds
+  with `uv build` and drops stale release notes. These reach PyPI with the next
+  `dbf-v*` release.
+
+### SIH
+
+- `sih_aih_reduzida_1992_2007` declares the 14 fields that the older RD layouts publish
+  and the 2007 file lacked: `uti_total`, `us_sh`, `us_sp`, `us_sadt`, `us_ortp`,
+  `us_sangue`, `us_rn`, `cod_arq`, `cont`, `semiplen` (labelled from `GESTAO.CNV`),
+  `diag_sec`, `val_sang`, `cgc_mant` and `cod_seg` (#30). A census of one file per
+  month finds 19 DBF layouts in 1992-2007 (`evidence/2026-10-01-rd-1992-2007-layouts/`).
+  `num_proc`, `insc_pn` and `seq_aih5` change between numeric and text across months;
+  importing both kinds into one lake table fails until #40 is decided.
+
+## v0.2.0 — 2026-10-01
+
+**Upgrading from 0.1.0:** #19 changed how a publication's parser version is computed, so
+`load` refuses every scope a 0.1.0 lake already holds. Run each `load` once with
+`policy="replace"`; later calls download nothing again.
+
+### Rust decoder by default
+
+- `omnisus` depends on `omnisus-dbf` 0.2.0, now on PyPI, on Linux x86_64, macOS
+  (arm64, x86_64) and Windows x86_64 (#38). The `auto` backend then reads DBF and
+  decompresses DBC in Rust; other platforms keep the Python decoders, and no install
+  needs a Rust toolchain. `OMNISUS_DBF_BACKEND=python` and `OMNISUS_DBC_BACKEND=python`
+  still select Python. The `--find-links` install is gone.
+- A `dbf-v*` tag publishes `omnisus-dbf` to PyPI after the full native matrix passes
+  (#37).
+
+### On PyPI
+
+- `omnisus` is published to PyPI: `pip install omnisus`. The Colab notebook and the
+  PEP 723 header of every marimo notebook install `omnisus==0.2.0` from PyPI instead
+  of a git commit.
+
+### Import alias (breaking for copied code)
+
+- Docs, notebooks and examples use `import omnisus as sus` instead of `odb` (#21).
+  Only the alias in examples changed; the API names are the same.
+
+### SIH dictionaries
+
+- RD: `regct` gets the `REGCT.CNV` map, conflicts between the CNVs and the older
+  map are resolved in favour of the CNV (#5); `tpdisec1`–`tpdisec9` get
+  `TP_DIAGSEC.CNV` (#14); `diagsec1`–`diagsec9` link to `aux_cid10` (#22).
+- RD and RJ: `nacional`, `contracep1`, `contracep2` and RJ `st_mot_blo` get the
+  TAB_SIH maps (#20).
+- `sih_aih_reduzida_1992_2007` gets the maps of `TAB_SIH_199201-199712.zip`, checked
+  against the three packages of the era (#23, #36).
+- Each identical CNV is stored once, and the evidence of the three RD eras is
+  generated instead of written by hand (#36).
+
+### Dictionary versions
+
+- `src/omnisus/data/dicionarios/versoes.json` locks each dictionary's `x-version`
+  to its content; a changed dictionary needs a higher version (#35).
+- A publication's `parser_version` hashes only what the import reads from the
+  dictionary, so editing a label or a claim no longer forces `replace` on scopes
+  already imported (#19).
+
+### Docs and notebooks
+
+- README and site for researchers, Colab notebook, generated dataset arguments (#4);
+  notebooks use only the public API (#16); leaner `AGENTS.md` (#15).
+
 ## v0.1.0 — 2026-09-25
 
-First release of `omnisus` in this repository. It continues the `omnisus-db` package
-(last release v0.3.2, in the repository's earlier history, which is not carried over).
-The sections below say what the package does and what changed since `omnisus-db` v0.3.2.
+First release of `omnisus`.
 
 ### What the package does
 

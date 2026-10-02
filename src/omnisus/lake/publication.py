@@ -307,7 +307,15 @@ def publish_scope(
     if previous and policy == "skip_same":
         if all(r[0] == source_sha256 and r[1] == parser_version for r in previous):
             return None
-        raise ValueError("different source/parser version exists; request replace explicitly")
+        if all(r[0] == source_sha256 for r in previous):
+            raise ValueError(
+                "same file, imported by another parser version (another omnisus release "
+                "or dictionary); request replace explicitly"
+            )
+        raise ValueError(
+            "the server file differs from the one imported (DATASUS republished it); "
+            "request replace explicitly"
+        )
     # Schema compatibility is checked before deleting. All mutations and the
     # durable publication ID then share the caller's managed transaction.
     lake._ensure_table(table, str(staging), partition_by)
