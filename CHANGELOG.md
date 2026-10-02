@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+### SIH
+
+- `sih_aih_reduzida_1992_2007` declares the 14 fields that the older RD layouts publish
+  and the 2007 file lacked: `uti_total`, `us_sh`, `us_sp`, `us_sadt`, `us_ortp`,
+  `us_sangue`, `us_rn`, `cod_arq`, `cont`, `semiplen` (labelled from `GESTAO.CNV`),
+  `diag_sec`, `val_sang`, `cgc_mant` and `cod_seg` (#30). A census of one file per
+  month finds 19 DBF layouts in 1992-2007 (`evidence/2026-10-01-rd-1992-2007-layouts/`).
+  `num_proc`, `insc_pn` and `seq_aih5` change between numeric and text across months;
+  importing both kinds into one lake table fails until #40 is decided.
+
 ## v0.2.0 — 2026-10-01
 
 ### Rust decoder by default
