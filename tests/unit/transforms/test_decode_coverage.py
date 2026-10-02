@@ -166,7 +166,9 @@ REMAINING = {
         ("tpresginfo", "", 115),
     ],
     ("sim_obitos_cid9", "sim_cid9_rr_1995_mini"): [],
+    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1994_12_mini"): [],
     ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini"): [],
+    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2004_07_excerpt"): [],
     ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2007_12_mini"): [],
     # SIA families of Informe Técnico SIASUS 2019-07, same rule; AMP has no DEF.
     ("sia_apac_acompanhamento_bariatrica", "sia_ab_se_2025_07_mini"): [],
@@ -328,6 +330,9 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
             "vincprev",
             {"0": "Não classificado"},
         ),
+        # The three RD.DEF bind SEMIPLEN ("Gestão (95-97)") to GESTAO.CNV at position 1.
+        # It exists from 1995-01 to 1997-12; RDRR9709 holds only 0.
+        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "semiplen", {"0": "Estadual"}),
         # RD2008.DEF and RJ2008.DEF bind NACIONAL to NACION3D.CNV and CONTRACEP1-2 to
         # CONTRAC.CNV; RJ2008.DEF binds ST_MOT_BLO to MOTBLOQUEIO.CNV. CONTRAC and
         # MOTBLOQUEIO open with a fallback range (00-99).
