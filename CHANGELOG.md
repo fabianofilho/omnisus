@@ -12,6 +12,12 @@
 - A `dbf-v*` tag publishes `omnisus-dbf` to PyPI after the full native matrix passes
   (#37).
 
+### On PyPI
+
+- `omnisus` is published to PyPI: `pip install omnisus`. The Colab notebook and the
+  PEP 723 header of every marimo notebook install `omnisus==0.2.0` from PyPI instead
+  of a git commit.
+
 ### Import alias (breaking for copied code)
 
 - Docs, notebooks and examples use `import omnisus as sus` instead of `odb` (#21).

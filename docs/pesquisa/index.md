@@ -52,7 +52,7 @@ Escolha onde rodar. Os três caminhos usam a mesma biblioteca e chegam à mesma 
 === "Python ou Jupyter"
 
     ```bash
-    pip install "omnisus @ git+https://github.com/raphaelfh/omnisus"
+    pip install omnisus
     ```
 
     ```python

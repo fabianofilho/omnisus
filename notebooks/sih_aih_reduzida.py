@@ -2,12 +2,9 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #     "marimo>=0.25.0,<0.26",
-#     "omnisus",
+#     "omnisus==0.2.0",
 #     "polars>=1.44.2,<2.0",
 # ]
-#
-# [tool.uv.sources]
-# omnisus = { git = "https://github.com/raphaelfh/omnisus.git", rev = "6df1890e81cbb250306d5d98294b49b73c391a7a" }
 # ///
 
 """SIH · AIH reduzida: do arquivo do DATASUS a uma tabela citável, em seis etapas."""

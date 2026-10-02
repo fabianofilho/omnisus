@@ -16,8 +16,8 @@ One abi3 wheel per platform (Linux x86_64, Windows x86_64, macOS arm64/x86_64)
 serves CPython 3.12 and later; it is smoke-tested on 3.12, 3.13 and 3.14. The
 `native.yml` workflow produces tested artifacts on pull requests and main pushes
 that change native-related paths (listed in its triggers), on manual dispatch and on
-`dbf-v*` tags, and `release.yml` runs it for every `v*` tag. It
-does not publish packages; the release step below attaches its wheels. Every
+`dbf-v*` tags, and `release.yml` runs it for every `v*` tag to test the native
+wheels at the tagged commit. Only a `dbf-v*` tag publishes them (below). Every
 native-only installation must use binary dependencies and pass outside the
 checkout.
 
@@ -36,41 +36,37 @@ native version is on PyPI; an unpublished dependency must not break installs.
 
 ## Main Python package
 
-The distribution channel is a wheel built from a version tag. **The package is
-not published to PyPI, by decision.** Preparing a local artifact does not publish
-it or authorize a tag/push.
+A `v<version>` tag publishes `omnisus` to PyPI. Preparing a local artifact does
+not publish it or authorize a tag/push.
 
 ```bash
 uv build --wheel --sdist --out-dir dist
 ```
 
 The version has one home, `src/omnisus/_version.py`. Update the changelog and
-lockfile with it, and the tag that `notebooks/colab.ipynb` installs (a test checks
-it). The docs site reads the version at build time. Validate the candidate wheel outside the checkout, including
-public metadata, packaged evidence and analytical projections, before release.
+lockfile with it, and the `omnisus==<version>` pin that `notebooks/colab.ipynb`
+and the PEP 723 header of every notebook install (tests check both). The docs
+site reads the version at build time. Validate the candidate wheel outside the
+checkout, including public metadata, packaged evidence and analytical
+projections, before release.
 
 After the release is authorized, tag that reviewed commit with `v<version>` and
 push the specific branch/tag. `release.yml` checks the tag, builds wheel/sdist
 once and retains them with checksums as the `distribution` workflow artifact.
 The same wheel passes the binary-only installation matrix on Python 3.12–3.14,
-Linux, macOS and Windows. Consumers install the identified wheel and record its
-SHA-256; they should not depend on editable neighboring checkouts.
+Linux, macOS and Windows; only then does the `publish` job upload it to PyPI.
+That job runs when repository variable `PUBLISH_TO_PYPI` equals `true`, through
+a Trusted Publisher (project `omnisus`, owner `raphaelfh`, repository
+`omnisus`, workflow `release.yml`, environment `pypi`). No token is stored in
+this repo. The notebooks pin a version that exists only after this job, so tag
+right after merging the release.
 
-The same run builds the four native wheels (`native-wheel-*` artifacts). Attach them
-to the GitHub release with the main wheel, so that `--find-links` on the release page
-finds both packages:
+Attach the same artifacts to the GitHub release:
 
 ```bash
 gh run download <run-id> -n distribution -D dist
-gh run download <run-id> -p 'native-wheel-*' -D dist/native
-gh release create v<version> dist/*.whl dist/*.tar.gz dist/SHA256SUMS dist/native/*/*.whl
+gh release create v<version> dist/*.whl dist/*.tar.gz dist/SHA256SUMS
 ```
-
-The PyPI job is skipped unless repository variable `PUBLISH_TO_PYPI` equals
-`true`. Changing that channel requires the account owner's decision and a
-configured Trusted Publisher (project `omnisus`, owner `raphaelfh`, repository
-`omnisus`, workflow `release.yml`, environment `pypi`). A missing publisher is
-not an expected failing release step anymore. No token is stored in this repo.
 
 ## Supported Python
 

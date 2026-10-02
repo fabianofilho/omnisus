@@ -19,11 +19,11 @@ Drive or in the cloud), with the provenance needed to cite it. Documentation: <h
 Python 3.12 ou mais novo:
 
 ```bash
-pip install "omnisus @ git+https://github.com/raphaelfh/omnisus"
+pip install omnisus
 ```
 
 Em Linux x86_64, macOS (arm64/x86_64) e Windows x86_64 isso instala também o
-decodificador Rust `omnisus-dbf`, do PyPI. Nas demais plataformas, o Python
+decodificador Rust `omnisus-dbf`. Nas demais plataformas, o Python
 decodifica os mesmos arquivos.
 
 ## Início rápido

@@ -8,7 +8,7 @@ Python 3.12 or newer is required. CI runs the test suite on Python 3.13 (Linux a
 Windows) and checks that the built wheel installs on 3.12, 3.13 and 3.14.
 
 ```bash
-python -m pip install "omnisus @ git+https://github.com/raphaelfh/omnisus"
+python -m pip install omnisus
 ```
 
 ### Rust decoder

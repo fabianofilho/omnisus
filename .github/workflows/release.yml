@@ -29,8 +29,8 @@ jobs:
           if-no-files-found: error
 
   native:
-    # The optional Rust wheels, built and tested at the tagged commit; attached to
-    # the GitHub release next to the main wheel (RELEASE.md).
+    # The Rust wheels, built and tested at the tagged commit. Only a dbf-v* tag
+    # publishes them (RELEASE.md).
     uses: ./.github/workflows/native.yml
 
   gate:
