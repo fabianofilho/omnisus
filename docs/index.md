@@ -22,8 +22,9 @@ sus.check_columns("sim_obitos", dados)                               # vazios, c
 
 - **Baixa** os arquivos DBC do FTP do DATASUS, a população do IBGE e os nomes de
   estabelecimentos da API do CNES.
-- **Decodifica** DBC e DBF em lotes gravados em disco, em Rust quando o decodificador
-  opcional está instalado e em Python nos outros casos.
+- **Decodifica** DBC e DBF em lotes gravados em disco: em Rust (`omnisus-dbf`, instalado
+  junto em Linux x86_64, macOS e Windows x86_64) e em Python nas demais plataformas ou
+  com `OMNISUS_DBF_BACKEND=python` e `OMNISUS_DBC_BACKEND=python`.
 - **Guarda** Parquet num catálogo DuckLake (SQLite ou PostgreSQL). Cada recorte importado
   fica registrado com os arquivos de origem e o SHA-256 de cada um.
 - **Rotula** códigos e confere colunas com dicionários em que cada afirmação cita um

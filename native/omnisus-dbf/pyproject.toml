@@ -8,7 +8,9 @@ dynamic = ["version"]
 requires-python = ">=3.12"
 description = "Optional DBF to Arrow reader and DBC decompressor for omnisus"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Raphael Federicci", email = "rfh.federicci@gmail.com" }]
 dependencies = ["pyarrow>=25.0.1"]
 classifiers = [
     "Programming Language :: Python :: 3.12",
@@ -16,6 +18,11 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Rust",
 ]
+
+[project.urls]
+Homepage = "https://github.com/raphaelfh/omnisus/tree/main/native/omnisus-dbf"
+Repository = "https://github.com/raphaelfh/omnisus"
+Issues = "https://github.com/raphaelfh/omnisus/issues"
 
 [tool.maturin]
 python-source = "python"

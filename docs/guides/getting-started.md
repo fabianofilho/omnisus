@@ -7,9 +7,16 @@ Install the package, choose where the lake lives, import a scope and query it.
 Python 3.12 or newer is required. CI runs the test suite on Python 3.13 (Linux and
 Windows) and checks that the built wheel installs on 3.12, 3.13 and 3.14.
 
+With [uv](https://docs.astral.sh/uv/):
+
 ```bash
-python -m pip install omnisus
+uv add omnisus          # in a uv project
+uv pip install omnisus  # in an existing virtual environment
 ```
+
+On Colab, `!uv pip install -q omnisus`; Colab ships uv. Without uv, `pip install
+omnisus`. To upgrade, `uv pip install -U omnisus`, or `uv sync --upgrade-package omnisus`
+in a project.
 
 ### Rust decoder
 
@@ -23,7 +30,9 @@ corrupt files always fail.
 
 ### From a checkout
 
-For development, notebooks and documentation, use the committed lock:
+Notebooks do not need a checkout: `uvx marimo edit --sandbox notebooks/<name>.py`
+installs the omnisus version pinned in the notebook. For development and
+documentation, use the committed lock:
 
 ```bash
 git clone https://github.com/raphaelfh/omnisus.git
@@ -56,6 +65,8 @@ ocupações and países).
 Deleting a Colab runtime erases `/content`. Put the lake on Drive and it stays:
 
 ```python
+!uv pip install -q omnisus
+
 from google.colab import drive
 drive.mount("/content/drive")
 
