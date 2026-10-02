@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #     "marimo>=0.25.0,<0.26",
-#     "omnisus==0.2.0",
+#     "omnisus==0.2.1",
 #     "polars>=1.44.2,<2.0",
 # ]
 # ///
