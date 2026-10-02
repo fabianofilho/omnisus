@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 from collections import Counter
 from functools import cache
 from importlib.resources import files
 from pathlib import Path
+from types import ModuleType
 
 import duckdb
 import polars as pl
@@ -236,13 +238,29 @@ def test_every_mini_fixture_has_only_the_recorded_gaps(dbc_fixture, dataset, fix
     assert sorted(found) == sorted(REMAINING[(dataset, fixture)])
 
 
+@cache
+def _gerar_decode_cnv() -> ModuleType:
+    """The generator, loaded as tests/unit/scripts load it, for its ``read_member``."""
+    script = Path(__file__).resolve().parents[3] / "scripts/metadados/gerar_decode_cnv.py"
+    spec = importlib.util.spec_from_file_location("gerar_decode_cnv", script)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def _range_keys(dataset: str) -> dict[str, frozenset[str]]:
-    """Field -> the codes its CNV (vinculos.json) labels only through a range."""
+    """Field -> the codes its CNV (vinculos.json) labels only through a range.
+
+    Each CNV is read as gerar_decode_cnv.py reads it: a `mesmo_que` member from the copy
+    it names, and only if the bytes hash to the member's own sha256.
+    """
     campos = VINCULOS["datasets"].get(dataset, {}).get("campos", {})
+    read_member = _gerar_decode_cnv().read_member
     return {
-        field: range_keys(parse_cnv((CNV / member).read_bytes().decode("latin-1")))
+        field: range_keys(parse_cnv(read_member(member, VINCULOS["membros"])))
         for field, member in campos.items()
-        if member.lower().endswith(".cnv")
+        if not member.lower().endswith(".dbf")
     }
 
 
