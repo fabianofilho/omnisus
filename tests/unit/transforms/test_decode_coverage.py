@@ -289,12 +289,13 @@ def test_range_keys_reads_the_cnv_of_every_field_mapped_from_one(dataset):
 
 @pytest.mark.parametrize(("dataset", "fixture"), sorted(REMAINING))
 def test_values_labelled_only_by_a_range_are_recorded(dbc_fixture, dataset, fixture):
+    """Values are compared as text, as decode_coverage compares them: `morte` is Int64."""
     frame = _read(dataset, dbc_fixture(fixture))
     found = [
         (field, value, rows)
         for field, keys in _range_keys(dataset).items()
         if field in frame.columns
-        for value, rows in Counter(frame[field].to_list()).items()
+        for value, rows in Counter(frame[field].cast(pl.String).to_list()).items()
         if value in keys
     ]
     assert sorted(found) == sorted(RANGE_ONLY.get((dataset, fixture), []))
