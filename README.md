@@ -8,7 +8,7 @@ a procedência necessária para citar cada resultado.
 Drive or in the cloud), with the provenance needed to cite it. Documentation: <https://raphaelfh.github.io/omnisus/>.*
 
 > [!WARNING]
-> **Trabalho em construção (v0.1).** A API ainda pode mudar entre versões menores, e
+> **Trabalho em construção.** A API ainda pode mudar entre versões menores, e
 > nem todo dicionário foi conferido contra o documento oficial. Antes de publicar um
 > número, confira as contagens, as colunas e os rótulos (veja
 > [Confira antes de usar](#confira-antes-de-usar)). Um rótulo errado é um bug:
@@ -56,7 +56,7 @@ Para ir além:
 
 - [Guia do pesquisador](https://raphaelfh.github.io/omnisus/pesquisa/): qual base
   responde a cada pergunta, o que um registro representa e como citar.
-- [Notebooks](notebooks/README.md): um por base, com as mesmas seis etapas, que abrem no
+- [Notebooks](https://github.com/raphaelfh/omnisus/blob/main/notebooks/README.md): um por base, com as mesmas seis etapas, que abrem no
   navegador pelo molab.
 - [Getting Started](https://raphaelfh.github.io/omnisus/guides/getting-started/):
   onde fica o lake, Colab, linha de comando e lakes na nuvem.
@@ -92,17 +92,17 @@ Para ir além:
 | --- | --- |
 | Arquivo de origem de cada linha importada | `reader.publications()` e `sus.cite(reader)` num `sus.LakeReader()`: caminho no servidor, SHA-256, `snapshot_id` |
 | Diretório do FTP de cada base | [Bases e argumentos](https://raphaelfh.github.io/omnisus/datasets/) |
-| Dicionários (de-para de códigos, descrições, tipos) | [`src/omnisus/data/dicionarios/<base>.yaml`](src/omnisus/data/dicionarios/), campo `x-decode` |
-| Documentos oficiais citados (PDF, TabWin), com URL e SHA-256 | [`src/omnisus/data/dicionarios/sources/registry.json`](src/omnisus/data/dicionarios/sources/registry.json) |
-| Tabelas CNV do TabWin de onde saem muitos rótulos | [`src/omnisus/data/dicionarios/sources/cnv/`](src/omnisus/data/dicionarios/sources/cnv/) |
-| Auditorias que sustentam as regras (contagens, hashes, reprodução) | [`evidence/`](evidence/) |
+| Dicionários (de-para de códigos, descrições, tipos) | [`src/omnisus/data/dicionarios/<base>.yaml`](https://github.com/raphaelfh/omnisus/tree/main/src/omnisus/data/dicionarios), campo `x-decode` |
+| Documentos oficiais citados (PDF, TabWin), com URL e SHA-256 | [`src/omnisus/data/dicionarios/sources/registry.json`](https://github.com/raphaelfh/omnisus/blob/main/src/omnisus/data/dicionarios/sources/registry.json) |
+| Tabelas CNV do TabWin de onde saem muitos rótulos | [`src/omnisus/data/dicionarios/sources/cnv/`](https://github.com/raphaelfh/omnisus/tree/main/src/omnisus/data/dicionarios/sources/cnv) |
+| Auditorias que sustentam as regras (contagens, hashes, reprodução) | [`evidence/`](https://github.com/raphaelfh/omnisus/tree/main/evidence) |
 
 O [dicionário de dados](https://raphaelfh.github.io/omnisus/dicionario/) explica como
 ler esses arquivos e como conferir um rótulo.
 
 ## Como contribuir
 
-Leia o [CONTRIBUTING.md](CONTRIBUTING.md). Em resumo: todo fato no código ou na
+Leia o [CONTRIBUTING.md](https://github.com/raphaelfh/omnisus/blob/main/CONTRIBUTING.md). Em resumo: todo fato no código ou na
 documentação vem do servidor do DATASUS ou de um arquivo com SHA-256 registrado, todo
 teste roda sobre trechos de arquivos reais, e o repositório é público. Um rótulo
 errado, uma base que falta ou uma contagem que não bate com o DATASUS são boas
@@ -110,4 +110,4 @@ primeiras issues.
 
 ## Licença
 
-[MIT](LICENSE).
+[MIT](https://github.com/raphaelfh/omnisus/blob/main/LICENSE).

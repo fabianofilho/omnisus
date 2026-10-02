@@ -20,7 +20,7 @@ def _code() -> list[str]:
 
 def test_installs_this_version_from_pypi():
     install = _code()[0]
-    assert f"%pip install -q omnisus=={sus.__version__}" in install
+    assert f"%pip install -q omnisus=={sus.__version__}" in install.splitlines()
 
 
 def test_cells_are_python_that_uses_only_public_names():

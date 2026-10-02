@@ -20,7 +20,7 @@ on:
   pull_request:
     paths: *native_paths
   workflow_dispatch:
-  # release.yml calls it so a v* tag run carries the native wheels to attach.
+  # release.yml calls it so a v* tag run tests the native wheels at that commit.
   workflow_call:
 
 permissions:
