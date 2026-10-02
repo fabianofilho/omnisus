@@ -51,7 +51,9 @@ uv build --wheel --sdist --out-dir dist
 The version has one home, `src/omnisus/_version.py`. Update the changelog and
 lockfile with it, and the `omnisus==<version>` pin that `notebooks/colab.ipynb`
 and the PEP 723 header of every notebook install (tests check both). The docs
-site reads the version at build time. Validate the candidate wheel outside the
+site reads the version at build time and is deployed only by a `v*` tag
+(`docs.yml`), so it describes the release on PyPI; the `github-pages`
+environment allows `v*` tags. Validate the candidate wheel outside the
 checkout, including public metadata, packaged evidence and analytical
 projections, before release.
 
