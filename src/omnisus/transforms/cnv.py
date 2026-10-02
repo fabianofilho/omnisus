@@ -241,6 +241,7 @@ def range_keys(lines: list[CnvLine]) -> frozenset[str]:
     A range can reserve every code of the width for one label, as SIH SEXO.CNV does
     with ``Ignorado 0-9``: a published code it labels is not one the table names.
     :func:`parse_cnv` leaves each code on the last line that lists it, so a code a
-    later line lists by itself is not a range key.
+    later line lists by itself is not a range key. A range code is digits only, so it
+    is a :func:`cnv_map` key as written.
     """
-    return frozenset(code.rstrip(" ") for line in lines for code in line.ranged)
+    return frozenset(code for line in lines for code in line.ranged)
