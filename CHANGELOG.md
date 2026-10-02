@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## v0.2.1 — 2026-10-02
+
+**Upgrading from 0.2.0:** no parser version changed, so a 0.2.0 lake keeps every
+scope; `load` downloads nothing again.
 
 ### Docs site
 
