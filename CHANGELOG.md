@@ -50,9 +50,7 @@
 
 ## v0.1.0 — 2026-09-25
 
-First release of `omnisus` in this repository. It continues the `omnisus-db` package
-(last release v0.3.2, in the repository's earlier history, which is not carried over).
-The sections below say what the package does and what changed since `omnisus-db` v0.3.2.
+First release of `omnisus`.
 
 ### What the package does
 
