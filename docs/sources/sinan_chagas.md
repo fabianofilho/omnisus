@@ -269,8 +269,10 @@ classificação final do caso.
 ### Notebook
 
 ```bash
-uv run --locked --extra notebooks marimo edit notebooks/sinan.py
+uvx marimo edit --sandbox notebooks/sinan.py
 ```
+
+A partir de um clone do repositório; o uv instala a versão do omnisus fixada no notebook.
 
 Abrir ou exportar o notebook não usa rede nem grava nada. Interromper uma célula não
 cancela a thread do importador; espere a conclusão antes de reabrir o mesmo destino.

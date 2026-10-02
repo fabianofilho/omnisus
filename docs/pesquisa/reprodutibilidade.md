@@ -165,6 +165,22 @@ passa a falhar (`src/omnisus/sources/ibge/importers/pop.py`, `import_pop_year`).
 notebook da população consulta esse manifesto e não importa uma edição que já está lá
 (`notebooks/ibge_populacao.py`).
 
+## Fixar o ambiente
+
+A citação nomeia a versão do omnisus, mas o resultado também depende de DuckDB, polars,
+pyarrow e do decodificador `omnisus-dbf`. Num projeto, `uv add omnisus==0.2.0` (ou a
+versão que você usou) grava todas essas versões exatas no `uv.lock`: guarde-o com a
+análise, e `uv sync --locked` refaz o mesmo ambiente. Sem projeto, como no Colab, grave a
+lista ao lado da citação:
+
+```bash
+uv pip freeze > requisitos.txt
+```
+
+`uv pip install -r requisitos.txt` refaz o ambiente. Um checkout do repositório roda
+código ainda não publicado que se identifica como a última versão: cite resultados de
+uma versão instalada do PyPI.
+
 ## Como citar
 
 Use `sus.cite` no lake que você leu. O texto segue o modelo abaixo; os notebooks
@@ -188,13 +204,17 @@ Onde encontrar cada valor:
 
 - `<dataset>`, `<source_uri>`, `<source_sha256>` e `<run_id>`: na publicação, em
   `publications()`; o nome do arquivo é o fim de `source_uri`.
-- `<AAAA-MM-DD>`: sugestão deste guia, a data de `published_at`.
-- `<versão>`: `sus.__version__`.
+- `<AAAA-MM-DD>`: `sus.cite` escreve a data de hoje, a menos que você passe
+  `accessed=`. Sugestão deste guia: a data de `published_at`, com
+  `accessed=date.fromisoformat(publicacao["published_at"][:10])`.
+- `<versão>`: o omnisus que gera a citação (`sus.__version__`). O lake não grava a versão
+  que importou cada escopo; por isso, gere a citação na mesma sessão que importou, como
+  fazem os notebooks, ou corrija a versão à mão.
 - `<snapshot_id>`: o snapshot em que você leu os dados.
 
-Nos notebooks, a citação e o próprio notebook bastam para refazer o resultado: o
-código diz o recorte e cada tabela, e a citação diz os arquivos, a versão e o
-`snapshot_id`.
+Nos notebooks, a citação, o próprio notebook e o `uv.lock` (ou `requisitos.txt`)
+bastam para refazer o resultado: o código diz o recorte e cada tabela, a citação diz os
+arquivos, a versão e o `snapshot_id`, e a lista diz as versões das bibliotecas.
 
 Para a população do IBGE, sugestão deste guia: troque o arquivo pelo `url`, o
 `source_sha256` pelo `sha256`, a data pela de `collected_at` e a execução pelo

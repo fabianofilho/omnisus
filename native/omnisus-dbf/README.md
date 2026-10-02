@@ -1,14 +1,16 @@
 # omnisus-dbf
 
-Optional DBF → Arrow reader and DBC decompressor for `omnisus`.
-The main package keeps its Python build backend and does not require Rust.
-`omnisus` installs it from PyPI on Linux x86_64, macOS and Windows x86_64. To build
-one locally:
+Optional DBF → Arrow reader and DBC decompressor for
+[`omnisus`](https://github.com/raphaelfh/omnisus). `omnisus` installs it from PyPI on
+Linux x86_64, macOS and Windows x86_64 (`uv pip install omnisus`); installing a wheel
+does not require Rust. Elsewhere, or with `OMNISUS_DBF_BACKEND=python` and
+`OMNISUS_DBC_BACKEND=python`, omnisus decodes in Python.
+
+To build a wheel from a checkout of the repository (needs Rust):
 
 ```sh
-python -m pip install maturin==1.12.6
-maturin build --release --locked --manifest-path native/omnisus-dbf/Cargo.toml
-python -m pip install native/omnisus-dbf/target/wheels/omnisus_dbf-*.whl
+uv build native/omnisus-dbf --wheel --out-dir dist/native -C build-args=--locked
+uv pip install dist/native/omnisus_dbf-*.whl
 ```
 
 ```python
@@ -71,7 +73,7 @@ Sources: [Arrow bridge](https://docs.rs/arrow-pyarrow/59.2.0/arrow_pyarrow/),
 cargo test --locked --manifest-path native/omnisus-dbf/Cargo.toml
 cargo clippy --locked --all-targets --manifest-path native/omnisus-dbf/Cargo.toml -- -D warnings
 cargo fmt --manifest-path native/omnisus-dbf/Cargo.toml -- --check
-python -m pytest native/omnisus-dbf/tests/test_bindings.py
+uv run pytest native/omnisus-dbf/tests/test_bindings.py
 ```
 
 Default Cargo features enable Python linking for Rust tests. `extension-module`
@@ -81,8 +83,6 @@ Wheels use the stable ABI (abi3, CPython 3.12 and later) on Linux x86_64, Window
 x86_64 and macOS arm64/x86_64. Free-threaded CPython is not supported.
 
 The package version has one source, Cargo.toml; API_VERSION is independent.
-Future native release tags use `dbf-v*`. Build/test wheels and sdist first, then
-publish those same artifacts only through a separately authorized release.
-Do not add a root-package dependency extra until the native version exists in
-the package index. Building an sdist requires Rust; installing a supported wheel
-does not.
+A `dbf-v<version>` tag publishes the tested wheels and sdist to PyPI
+([RELEASE.md](https://github.com/raphaelfh/omnisus/blob/main/RELEASE.md)).
+Building an sdist requires Rust; installing a supported wheel does not.
