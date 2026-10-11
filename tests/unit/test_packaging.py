@@ -22,6 +22,14 @@ def test_marimo_is_only_an_optional_extra():
     assert "marimo" in _names(project["optional-dependencies"]["notebooks"])
 
 
+def test_ipykernel_is_only_the_colab_extra():
+    # A library-only install (a server reading the lake) must not pull the Jupyter
+    # kernel and its ~25 dependencies (#100).
+    project = PYPROJECT["project"]
+    assert "ipykernel" not in _names(project["dependencies"])
+    assert "ipykernel" in _names(project["optional-dependencies"]["colab"])
+
+
 def test_dev_installs_the_notebooks_extra():
     # CI syncs only --extra dev, and tests/unit/notebooks imports marimo.
     assert "omnisus[notebooks]" in PYPROJECT["project"]["optional-dependencies"]["dev"]

@@ -21,7 +21,7 @@ def _code() -> list[str]:
 def test_installs_this_version_from_pypi_with_uv():
     """Colab ships uv and sets UV_SYSTEM_PYTHON, so `uv pip install` reaches the kernel."""
     install = _code()[0]
-    assert f"!uv pip install -q omnisus=={sus.__version__}" in install.splitlines()
+    assert f'!uv pip install -q "omnisus[colab]=={sus.__version__}"' in install.splitlines()
 
 
 def test_cells_are_python_that_uses_only_public_names():

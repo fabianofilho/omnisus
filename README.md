@@ -23,7 +23,8 @@ uv add omnisus          # num projeto uv
 uv pip install omnisus  # num ambiente virtual já criado
 ```
 
-No Colab, `!uv pip install -q omnisus`. Sem uv, `pip install omnisus`. Para atualizar,
+No Colab, `!uv pip install -q "omnisus[colab]"`; o extra `colab` traz o kernel do
+Jupyter, que a instalação base não instala. Sem uv, `pip install omnisus`. Para atualizar,
 `uv pip install -U omnisus`, ou `uv sync --upgrade-package omnisus` num projeto.
 
 Em Linux x86_64, macOS (arm64/x86_64) e Windows x86_64 isso instala também o

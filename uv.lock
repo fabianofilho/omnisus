@@ -1584,7 +1584,6 @@ dependencies = [
     { name = "dbfread2" },
     { name = "duckdb" },
     { name = "httpx" },
-    { name = "ipykernel" },
     { name = "omnisus-dbf", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux') or (platform_machine == 'AMD64' and sys_platform == 'win32') or sys_platform == 'darwin'" },
     { name = "polars" },
     { name = "pyarrow" },
@@ -1596,6 +1595,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+colab = [
+    { name = "ipykernel" },
+]
 dev = [
     { name = "frictionless" },
     { name = "hypothesis" },
@@ -1632,7 +1634,7 @@ requires-dist = [
     { name = "frictionless", marker = "extra == 'dev'", specifier = ">=5.19.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.168.0" },
-    { name = "ipykernel", specifier = ">=7.4.0" },
+    { name = "ipykernel", marker = "extra == 'colab'", specifier = ">=7.4.0" },
     { name = "marimo", marker = "extra == 'dev'", specifier = ">=0.25.0,<0.26" },
     { name = "marimo", marker = "extra == 'notebooks'", specifier = ">=0.25.0,<0.26" },
     { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1,<2.0" },
@@ -1660,7 +1662,7 @@ requires-dist = [
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.12.20260906" },
     { name = "tzdata", marker = "sys_platform == 'win32'", specifier = ">=2026.3" },
 ]
-provides-extras = ["dev", "docs", "notebooks", "postgres"]
+provides-extras = ["colab", "dev", "docs", "notebooks", "postgres"]
 
 [[package]]
 name = "omnisus-dbf"

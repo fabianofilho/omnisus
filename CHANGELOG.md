@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Packaging
+
+- `ipykernel` leaves the required dependencies, where 0.2.3 put it without a changelog
+  entry, for the new `colab` extra: a library-only install (a server reading the lake with
+  `LakeReader`) no longer pulls the Jupyter kernel and its ~25 dependencies. The Colab
+  notebook installs `"omnisus[colab]==<version>"`; `uv pip install "omnisus[colab]"` does
+  the same elsewhere (#100).
+
 ## v0.2.3 — 2026-10-08
 
 **Upgrading from 0.2.2:** no parser version changed (the import still reads the same

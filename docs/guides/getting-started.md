@@ -14,7 +14,8 @@ uv add omnisus          # in a uv project
 uv pip install omnisus  # in an existing virtual environment
 ```
 
-On Colab, `!uv pip install -q omnisus`; Colab ships uv. Without uv, `pip install
+On Colab, `!uv pip install -q "omnisus[colab]"`; Colab ships uv, and the `colab` extra
+adds the Jupyter kernel, which the base install leaves out. Without uv, `pip install
 omnisus`. To upgrade, `uv pip install -U omnisus`, or `uv sync --upgrade-package omnisus`
 in a project.
 
@@ -66,7 +67,7 @@ ocupações and países).
 Deleting a Colab runtime erases `/content`. Put the lake on Drive and it stays:
 
 ```python
-!uv pip install -q omnisus
+!uv pip install -q "omnisus[colab]"
 
 from google.colab import drive
 drive.mount("/content/drive")
