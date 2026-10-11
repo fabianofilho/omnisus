@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Dictionaries
+
+- The CID-10 fields of `sia_producao_ambulatorial`, `sia_apac_quimioterapia` and
+  `sia_apac_radioterapia` (20 fields) declare a reference to `aux_cid10`, so
+  `reference_join_sql` works for them. `0000` is "CID NAO INFORMADO" in `S_CID.DBF` of
+  `TAB_SIA.zip` and finds no row. The census of the CID field widths and of the values
+  without a row is in `evidence/2026-10-07-sia-cid-widths/` (#82).
+
 ### Packaging
 
 - `ipykernel` leaves the required dependencies, where 0.2.3 put it without a changelog

@@ -61,6 +61,12 @@ que não resolve (`tests/unit/test_references.py`).
   SINASC (`Q248Q659Q789`) não são um código só e não declaram referência.
 - **`0000` no SIH.** `diag_secun`, `cid_asso` e `cid_morte` gravam `0000` quando não há
   causa; não é um código CID-10.
+- **`0000` no SIA.** Os campos de CID do PA (`pa_cidpri`, `pa_cidsec`, `pa_cidcas`), da
+  APAC de quimioterapia e da de radioterapia gravam `0000` quando não há CID. O
+  `DBF/S_CID.DBF` do `TAB_SIA.zip` o rotula "CID NAO INFORMADO"; não é um código CID-10 e
+  fica sem rótulo no lake. A mesma tabela chama de "CID não identificado" alguns códigos
+  de 4 caracteres que a CID-10 não tem e que o PA publica, como `N182` e `N185`
+  (`evidence/2026-10-07-sia-cid-widths/values.csv`).
 - **Descrições abreviadas.** `aux_cid10.descricao` é o texto de `CID10.DBF`, que
   abrevia (`Form aguda doenc de Chagas s/compr cardiaco`).
 

@@ -285,3 +285,15 @@ usam a codificação `latin-1`, porque o CNS cifrado usa bytes que o `cp1252` n�
 (comentário inicial dos sete dicionários detalhados neste perfil). O parser aplica o dicionário e preserva os
 campos não listados; por isso as colunas físicas da tabela podem ser mais numerosas que
 as do dicionário.
+
+Os campos de CID-10 de `sia_producao_ambulatorial` (`pa_cidpri`, `pa_cidsec`,
+`pa_cidcas`), `sia_apac_quimioterapia` (`ap_cid*`, `aq_cid10`, `aq_cidini1-3`) e
+`sia_apac_radioterapia` (`ap_cid*`, `ar_cid10`, `ar_cidini1-3`, `ar_cidtr1-3`) declaram
+referência a `aux_cid10.codigo`, como os do SIH; `sus.reference_join_sql` dá o nome da
+doença. Os DEFs do `TAB_SIA.zip` relacionam esses campos a `DBF/S_CID.DBF`. Eles são
+C(4) em todo arquivo do censo em `evidence/2026-10-07-sia-cid-widths/` (PA de RR e AQ e
+AR de AL, um arquivo por mês de 2008-01 a 2026-07). O `0000` quer dizer CID não
+informado (ver [Vocabulários](vocabularios.md)). `sia_producao_ambulatorial_1994_2007`
+ainda não declara a referência: de 1999-07 a 2007-12 o PA grava `0` de um caractere
+para CID não informado e categorias de três caracteres completadas com zero (`C610`),
+que a `aux_cid10` não tem.
