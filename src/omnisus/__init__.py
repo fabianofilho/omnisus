@@ -10,8 +10,9 @@ import polars as pl
 
 from omnisus._loop import run_sync
 from omnisus._version import __version__
-from omnisus.lake import CatalogAttachError, Lake, LakeReader
+from omnisus.lake import CatalogAttachError, CommitOutcomeUnknown, Lake, LakeReader
 from omnisus.lake.catalog import set_lake_dir
+from omnisus.lake.locking import WriterBusyError
 from omnisus.lake.publication import DeletionResult, ImportPolicy, scope_filter
 from omnisus.lake.sql import qualified, quote_identifier
 from omnisus.metadata import describe_dataset
@@ -53,6 +54,7 @@ from omnisus.sources.datasus_ftp.inventory import (
     list_sources,
 )
 from omnisus.sources.datasus_ftp.inventory import crawl as _crawl
+from omnisus.sources.ibge.products import CENSUS_YEARS, ESTIMATE_UNAVAILABLE_YEARS
 from omnisus.transforms.analytics import (
     AnalyticalProjection,
     DerivedColumn,
@@ -427,9 +429,10 @@ def import_ibge_populacao(
     ``Lake.publications()``. Reconcile an interrupted run through that manifest.
 
     Args:
-        years: Years, e.g. ``[2022]``. Censuses exist for 2010 and 2022; an estimate
-            is importable only as the aggregate's latest edition, and years without a
-            verified territorial universe are refused.
+        years: Years, e.g. ``[2022]``. Censuses exist for the years in
+            :data:`CENSUS_YEARS`; an estimate is importable only as the aggregate's
+            latest edition, never for :data:`ESTIMATE_UNAVAILABLE_YEARS`, and years
+            without a verified territorial universe are refused.
         census: Required, with no default, so nobody gets an estimate thinking it is
             the census. ``True`` imports the census; ``False`` the latest estimate.
         target: DuckLake target; ``None`` (default) is ``data/raw/omnisus.ducklake``
@@ -635,9 +638,12 @@ def _files_differ(recorded: Sequence[Mapping[str, object]], listed: Sequence[Ftp
 
 __all__ = [
     "ALL_UFS",
+    "CENSUS_YEARS",
+    "ESTIMATE_UNAVAILABLE_YEARS",
     "AnalyticalProjection",
     "CatalogAttachError",
     "Citation",
+    "CommitOutcomeUnknown",
     "Dataset",
     "DeletionResult",
     "DerivedColumn",
@@ -655,6 +661,7 @@ __all__ = [
     "ScopeOutcome",
     "SourceContext",
     "UnavailableField",
+    "WriterBusyError",
     "__version__",
     "analytical_projection",
     "available",

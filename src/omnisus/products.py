@@ -1,7 +1,7 @@
 """Every importer family except SIGTAP, stated once: the FTP registry, IBGE and CNES master.
 
-Facts, not forms. Year rules for IBGE stay in ``sources.ibge.products``
-(``CENSUS_YEARS``, ``ESTIMATE_UNAVAILABLE_YEARS``); an estimate is importable
+Facts, not forms. Year rules for IBGE are ``omnisus.CENSUS_YEARS`` and
+``omnisus.ESTIMATE_UNAVAILABLE_YEARS``; an estimate is importable
 only as its latest edition, checked live at import, so there is no floor year.
 """
 
@@ -25,7 +25,12 @@ class Product:
     """One importer family and what it supports."""
 
     name: str
-    """Registry key or importer name: ``sim_obitos``, ``ibge_populacao``, ``cnes_master``."""
+    """Registry key or importer name: ``sim_obitos``, ``ibge_populacao``, ``cnes_master``.
+
+    It is also the relation the importer writes in the lake: query
+    ``FROM lake.<name>``. Whether that relation is a table or a view
+    (``ibge_populacao`` is a view) is the catalog's to say, in
+    ``information_schema.tables.table_type``."""
 
     dataset: Dataset | None
     """The FTP registry row, or ``None`` for IBGE and CNES master."""

@@ -12,10 +12,10 @@ _CENSUS_REFERENCE_SOURCES = {
     2022: "https://www.ibge.gov.br/Estatisticas/Sociais/Populacao/"
     "22827-censo-demografico-2022.html?edicao=41815",
 }
-# Census editions with a verified municipal population product, ascending.
 CENSUS_YEARS: tuple[int, ...] = tuple(sorted(_CENSUS_REFERENCE_SOURCES))
-# Years without an estimate edition; census years are never substituted.
+"""Census editions with a verified municipal population product, ascending."""
 ESTIMATE_UNAVAILABLE_YEARS: tuple[int, ...] = (2007, 2010, 2022, 2023)
+"""Years without an estimate edition; census years are never substituted."""
 
 
 @dataclass(frozen=True)

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### API
+
+- `WriterBusyError`, `CommitOutcomeUnknown`, `CENSUS_YEARS` and
+  `ESTIMATE_UNAVAILABLE_YEARS` are exported from `omnisus`, so a caller that imports
+  only `omnisus.__all__` can catch the writer's errors and build the IBGE year selector.
+  `Product.name` documents that it is also the relation the importer writes in the lake
+  (#102).
+
 ### Packaging
 
 - `ipykernel` leaves the required dependencies, where 0.2.3 put it without a changelog
