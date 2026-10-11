@@ -83,7 +83,7 @@ class Lake(Session):
         Raises:
             ValueError: ``target`` does not start with ``ducklake:``.
             WriterBusyError: another handle already has this lake open for writing
-                (``omnisus.lake.locking.WriterBusyError``).
+                (``omnisus.WriterBusyError``).
             CatalogAttachError: DuckDB could not attach the catalog.
 
         Examples:

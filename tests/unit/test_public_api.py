@@ -394,3 +394,22 @@ def test_outdated_lists_the_single_directory_row_too(tmp_path, monkeypatch) -> N
     monkeypatch.setattr("omnisus.sources.datasus_ftp.inventory._blocking_list", fake)
     with Lake.local(f"ducklake:{tmp_path}/l.ducklake") as lake:
         assert sus.outdated("sia_bpa_individualizado", lake=lake) == []
+
+
+def test_writer_errors_and_ibge_years_are_public() -> None:
+    """A caller that imports only ``omnisus`` can catch the writer's errors and build
+    the IBGE year selector (#102)."""
+    from omnisus.lake._transactions import CommitOutcomeUnknown
+    from omnisus.lake.locking import WriterBusyError
+    from omnisus.sources.ibge import products
+
+    assert sus.WriterBusyError is WriterBusyError
+    assert sus.CommitOutcomeUnknown is CommitOutcomeUnknown
+    assert sus.CENSUS_YEARS is products.CENSUS_YEARS
+    assert sus.ESTIMATE_UNAVAILABLE_YEARS is products.ESTIMATE_UNAVAILABLE_YEARS
+    assert {
+        "CENSUS_YEARS",
+        "CommitOutcomeUnknown",
+        "ESTIMATE_UNAVAILABLE_YEARS",
+        "WriterBusyError",
+    } <= set(sus.__all__)
