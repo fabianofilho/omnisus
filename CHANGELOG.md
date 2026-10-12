@@ -10,6 +10,15 @@
   `Product.name` documents that it is also the relation the importer writes in the lake
   (#102).
 
+### Dictionaries
+
+- `etnia` of `sih_aih_reduzida` and `sih_aih_rejeitada` takes its labels from
+  `CNV/etnia.cnv` of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` and `RJ2008.DEF` bind
+  to `ETNIA`. The table names `0001`-`0264` and opens with the range `0000-9999`, "NÃO
+  INFORMADO", expanded as decided in #7: every other 4-digit code, `0000` included, takes
+  that label only through the range, and the open issue `etnia-nao-informado-pela-faixa`
+  on the field says so. Each dictionary grows by about 310 KB.
+
 ### Packaging
 
 - `ipykernel` leaves the required dependencies, where 0.2.3 put it without a changelog
