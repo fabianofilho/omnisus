@@ -566,8 +566,11 @@ class _DriveFalso:
 
     raiz: Path
     argumentos: list[dict]
+    sem_acesso = False
 
     def __init__(self, **argumentos):
+        if self.sem_acesso:
+            raise PermissionError("acesso negado")
         type(self).argumentos.append(argumentos)
         self.base = self.raiz / argumentos.get("root_file_id", "")
 
@@ -576,8 +579,14 @@ class _DriveFalso:
         shutil.copytree(self.base / caminho, destino)
 
 
-def _no_drive(monkeypatch, tmp_path, raiz: Path, pasta_no_drive: str) -> tuple[str, dict]:
-    """Choose *Google Drive*, write `pasta_no_drive` and click *Copiar do Drive*."""
+CONEXAO = {"use_listings_cache": False, "skip_instance_cache": True}  # molab's snippet
+
+
+def _no_drive(
+    monkeypatch, tmp_path, raiz: Path, pasta_drive: str, *, conectar: bool = True
+) -> tuple[str, dict]:
+    """Choose *Google Drive*, click *Conectar ao Google Drive*, write `pasta_drive` and
+    click *Copiar do Drive*."""
     (tmp_path / "tmp").mkdir()
     monkeypatch.setattr(tempfile, "tempdir", str(tmp_path / "tmp"))
     monkeypatch.setattr(_DriveFalso, "raiz", raiz, raising=False)
@@ -587,7 +596,8 @@ def _no_drive(monkeypatch, tmp_path, raiz: Path, pasta_no_drive: str) -> tuple[s
     widgets = {
         "origem": SimpleNamespace(value="drive"),
         "pasta": SimpleNamespace(value=str(tmp_path / "nao_usada")),
-        "drive": SimpleNamespace(value=pasta_no_drive),
+        "conectar": SimpleNamespace(value=conectar),
+        "pasta_drive": SimpleNamespace(value=pasta_drive),
         "copiar": SimpleNamespace(value=True),
         "executar": False,
     }
@@ -602,11 +612,22 @@ def test_a_lake_in_google_drive_is_copied_to_the_session_and_read(
 
     texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name)
 
-    assert _DriveFalso.argumentos == [{}]  # My Drive
+    assert _DriveFalso.argumentos == [CONEXAO]  # one connection, to My Drive
+    assert "Conectado ao Google Drive" in texto
     assert definidos["diretorio"].is_relative_to(tmp_path / "tmp")
     assert definidos["totais"] == {"sim_obitos": REGISTROS}
     assert SHA256 in definidos["citacoes"]["sim_obitos"]
     assert "Lake copiado" in texto
+
+
+def test_copiar_waits_for_the_connection(importado, monkeypatch, tmp_path):
+    pasta, _, _ = importado
+
+    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name, conectar=False)
+
+    assert _DriveFalso.argumentos == []
+    assert "Lake copiado" not in texto
+    assert "totais" not in definidos
 
 
 def test_a_drive_folder_link_is_read_as_the_root(importado, monkeypatch, tmp_path):
@@ -616,17 +637,28 @@ def test_a_drive_folder_link_is_read_as_the_root(importado, monkeypatch, tmp_pat
 
     _, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, link)
 
-    assert _DriveFalso.argumentos == [{"root_file_id": pasta.name}]
+    assert _DriveFalso.argumentos == [CONEXAO, {"root_file_id": pasta.name, **CONEXAO}]
     assert definidos["totais"] == {"sim_obitos": REGISTROS}
 
 
-def test_a_drive_that_does_not_answer_becomes_a_message(importado, monkeypatch, tmp_path):
+def test_a_drive_without_access_becomes_a_message(importado, monkeypatch, tmp_path):
+    pasta, _, _ = importado
+    monkeypatch.setattr(_DriveFalso, "sem_acesso", True)
+
+    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name)
+
+    assert "Não deu para conectar ao Google Drive (PermissionError: acesso negado)" in texto
+    assert "Add remote storage" in texto
+    assert "totais" not in definidos
+
+
+def test_a_folder_missing_from_the_drive_becomes_a_message(importado, monkeypatch, tmp_path):
     pasta, _, _ = importado
 
-    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent / "nao_existe", "lake")
+    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, "nao_existe")
 
-    assert "Não deu para copiar do Google Drive" in texto
-    assert "Add remote storage" in texto
+    assert "Não deu para copiar" in texto
+    assert "nao_existe" in texto
     assert "totais" not in definidos
 
 
