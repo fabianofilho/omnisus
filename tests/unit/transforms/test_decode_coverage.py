@@ -468,7 +468,8 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
             {"01": "DUPLICIDADE", "62": "PERMANÊNCIA A MENOR INJUSTIFICADA"},
         ),
         # RD2008.DEF and RJ2008.DEF bind ETNIA to etnia.cnv, which lists 0001-0264 and
-        # opens with 0000-9999 "NÃO INFORMADO". 0238's label fills column 60.
+        # opens with 0000-9999 "NÃO INFORMADO". 0238's label fills columns 10-59 and is
+        # cut there.
         (
             "sih_aih_reduzida",
             "sih_rr_2024_01_mini",
@@ -643,10 +644,23 @@ def test_etnia_codes_outside_the_list_take_the_range_label_and_the_field_says_so
     listed = {f"{n:04d}" for n in range(1, 265)}
     assert len(decode) == 10_000
     assert {decode[code] for code in decode.keys() - listed} == {"NÃO INFORMADO"}
+    assert "NÃO INFORMADO" not in {decode[code] for code in listed}
     issues = field["x-metadata"]["issues"]
     (entry,) = [i for i in issues if i["id"] == "etnia-nao-informado-pela-faixa"]
     assert entry["status"] == "open"
     assert "'0000'" in entry["description"] and "0001-0264" in entry["description"]
+
+
+@pytest.mark.parametrize("dataset", ["sih_aih_reduzida", "sih_aih_rejeitada"])
+def test_etnia_labels_with_a_soft_hyphen_are_named_by_an_open_issue(dataset):
+    """etnia.cnv writes byte 0xAD in 15 labels, which latin-1 reads as U+00AD (soft hyphen):
+    the labels stay as published, and the field says a text search misses them."""
+    field = load_dicionario(dataset).field_def("etnia")
+    soft = sorted(code for code, label in field["x-decode"].items() if "\u00ad" in label)
+    assert len(soft) == 15
+    (entry,) = [i for i in field["x-metadata"]["issues"] if i["id"] == "etnia-hifen-suave"]
+    assert entry["status"] == "open"
+    assert all(f"'{code}'" in entry["description"] for code in soft)
 
 
 def test_cobranca_labels_come_from_saidaperm():

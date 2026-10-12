@@ -11533,6 +11533,15 @@ schema:
           todo código de 4 dígitos fora de 0001-0264, inclusive ''0000'', recebe "NÃO
           INFORMADO" só pela faixa, publicado ou não. RR 2024-01: ''0000'' em 27 das 30
           AIHs.'
+      - id: etnia-hifen-suave
+        status: open
+        description: 'etnia.cnv (TAB_SIH, f05b32f32908) escreve o byte 0xAD em 15 rótulos, que o
+          latin-1 lê como U+00AD (hífen suave), invisível na tela: ''0001'', ''0011'',
+          ''0016'', ''0032'', ''0099'', ''0128'', ''0161'', ''0171'', ''0186'',
+          ''0204'', ''0226'', ''0231'', ''0255'', ''0256'', ''0257''. Os rótulos ficam
+          como publicados, e uma busca por texto não os encontra: "XIRIANA" não acha o
+          rótulo de ''0256'' nem o de ''0257'' (gravado XI, U+00AD, RIANA). RR 2024-01:
+          1 das 3 AIHs com raca_cor 05.'
   - name: st_situac
     type: string
     x-decode:

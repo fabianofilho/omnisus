@@ -17,12 +17,14 @@
 
 ### Dictionaries
 
-- `etnia` of `sih_aih_reduzida` and `sih_aih_rejeitada` takes its labels from
-  `CNV/etnia.cnv` of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` and `RJ2008.DEF` bind
-  to `ETNIA`. The table names `0001`-`0264` and opens with the range `0000-9999`, "NÃO
-  INFORMADO", expanded as decided in #7: every other 4-digit code, `0000` included, takes
-  that label only through the range, and the open issue `etnia-nao-informado-pela-faixa`
-  on the field says so. Each dictionary grows by about 310 KB.
+- `etnia` of `sih_aih_reduzida` (2.14.0) and `sih_aih_rejeitada` (1.3.0) takes its labels
+  from `CNV/etnia.cnv` of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` and `RJ2008.DEF`
+  bind to `ETNIA`. The table names `0001`-`0264` and opens with the range `0000-9999`,
+  "NÃO INFORMADO", expanded as decided in #7: every other 4-digit code, `0000` included,
+  takes that label only through the range (issue `etnia-nao-informado-pela-faixa`). In
+  the fixtures `0000` marks a non-indigenous patient (`raca_cor` 01-04), a trap now in
+  the SIH page. 15 labels hold U+00AD, a soft hyphen, and a text search misses them
+  (issue `etnia-hifen-suave`). The RD dictionary grows by 314 KB and the RJ one by 294 KB.
 
 ### Packaging
 
