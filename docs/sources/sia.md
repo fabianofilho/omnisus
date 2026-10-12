@@ -294,6 +294,8 @@ doença. Os DEFs do `TAB_SIA.zip` relacionam esses campos a `DBF/S_CID.DBF`. Ele
 C(4) em todo arquivo do censo em `evidence/2026-10-07-sia-cid-widths/` (PA de RR e AQ e
 AR de AL, um arquivo por mês de 2008-01 a 2026-07). O `0000` quer dizer CID não
 informado (ver [Vocabulários](vocabularios.md)). `sia_producao_ambulatorial_1994_2007`
-ainda não declara a referência: de 1999-07 a 2007-12 o PA grava `0` de um caractere
-para CID não informado e categorias de três caracteres completadas com zero (`C610`),
-que a `aux_cid10` não tem.
+ainda não declara a referência; a decisão está pendente na
+[issue #82](https://github.com/raphaelfh/omnisus/issues/82). De 1999-07 a 2007-12 o PA
+grava `0` de um caractere, que o S_CID rotula "CID NÃO IDENTIFICADO", `0000` ("CID NAO
+INFORMADO", 132.431 vezes em `pa_cidpri`) e categorias de três caracteres completadas
+com zero (`C610`), que não estão na `aux_cid10`.

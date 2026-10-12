@@ -50,6 +50,10 @@ UNRESOLVED: dict[tuple[str, str, int, str], list[tuple[str, str, int]]] = {
         ("ap_cidcas", "0000", 39),
         ("ap_cidsec", "0000", 39),
     ],
+    ("sia_apac_radioterapia", "sia_ar_sp_2022_12_excerpt", 2022, "SP"): [
+        ("ap_cidcas", "0000", 1),
+        ("ap_cidsec", "0000", 1),
+    ],
 }
 
 
@@ -145,20 +149,11 @@ def test_secondary_diagnoses_declare_the_cid10_reference(con, dbc_fixture):
         ano=2024,
         uf="RR",
     ).collect()
-    con.register("d", frame.to_arrow())
-    counted = {}
-    for field in fields:
-        assert field in frame.columns, f"{field} missing from RDRR2401"
-        join = sus.reference_join_sql("sih_aih_reduzida", field, alias="d")
-        counted[field] = con.execute(
-            f"SELECT count(*) FILTER (WHERE d.\"{field}\" <> ''), count(ref_{field}.codigo) "
-            f"FROM d {join}"
-        ).fetchone()
-    con.unregister("d")
     # (filled, resolved); diagsec3-8 are blank in every row of the file.
-    assert counted == {"diagsec1": (622, 622), "diagsec2": (15, 15)} | {
-        f"diagsec{n}": (0, 0) for n in range(3, 9)
-    }
+    assert _filled_and_resolved(con, frame, "sih_aih_reduzida", fields) == {
+        "diagsec1": (622, 622),
+        "diagsec2": (15, 15),
+    } | {f"diagsec{n}": (0, 0) for n in range(3, 9)}
 
 
 # (dataset, fixture, ano, uf) -> {field: (filled, resolved)} on the real fixture (#82).
@@ -193,6 +188,19 @@ SIA_CID = {
         "ar_cidtr2": (0, 0),
         "ar_cidtr3": (0, 0),
     },
+    # ARSP2212: the only fixture where ar_cid10 is filled.
+    ("sia_apac_radioterapia", "sia_ar_sp_2022_12_excerpt", 2022, "SP"): {
+        "ap_cidpri": (1, 1),
+        "ap_cidsec": (1, 0),
+        "ap_cidcas": (1, 0),
+        "ar_cid10": (1, 1),
+        "ar_cidini1": (0, 0),
+        "ar_cidini2": (0, 0),
+        "ar_cidini3": (0, 0),
+        "ar_cidtr1": (1, 1),
+        "ar_cidtr2": (0, 0),
+        "ar_cidtr3": (0, 0),
+    },
 }
 
 
@@ -203,20 +211,31 @@ def test_sia_cid_fields_declare_the_cid10_reference(con, dbc_fixture, dataset, f
     here because UNRESOLVED skips a field without foreignKeys."""
     expected = SIA_CID[(dataset, fixture, ano, uf)]
     assert set(referenced_fields(dataset)) == set(expected)
+    dictionary = load_dicionario(dataset)
+    assert {f: dictionary.field_def(f)["foreignKeys"] for f in expected} == {
+        f: [{"fields": f, "reference": {"resource": "aux_cid10", "fields": "codigo"}}]
+        for f in expected
+    }
     frame = dbc_bytes_to_lazyframe(
         dbc_fixture(fixture).read_bytes(), dataset=dataset, ano=ano, uf=uf
     ).collect()
+    assert _filled_and_resolved(con, frame, dataset, expected) == expected
+
+
+def _filled_and_resolved(con, frame, dataset, fields):
+    """Field -> (filled, resolved): the field's rows that are not blank, and those whose
+    reference_join_sql finds a row."""
     con.register("d", frame.to_arrow())
     counted = {}
-    for field in expected:
-        assert field in frame.columns, f"{field} missing from {fixture}"
+    for field in fields:
+        assert field in frame.columns, f"{field} missing from the fixture"
         join = sus.reference_join_sql(dataset, field, alias="d")
         counted[field] = con.execute(
             f"SELECT count(*) FILTER (WHERE d.\"{field}\" <> ''), count(ref_{field}.codigo) "
             f"FROM d {join}"
         ).fetchone()
     con.unregister("d")
-    assert counted == expected
+    return counted
 
 
 def test_occupation_joins_cbo2002_from_2006_only(con, dbc_fixture):

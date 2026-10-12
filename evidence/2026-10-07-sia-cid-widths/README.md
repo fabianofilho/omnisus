@@ -42,10 +42,15 @@ No CID field changes width. Before 1999-07 the PA has no CID field.
         TAB_SIA.zip evidence/2026-10-07-sia-cid-widths/values.csv
 
 `TAB_SIA.zip` is the registered archive (`sia-tab-e5812b51d802`); the script checks its
-SHA-256. Its member `DBF/S_CID.DBF` (SHA-256
+SHA-256, and the SHA-256 of every cached file against `census.csv`. Its member
+`DBF/S_CID.DBF` (SHA-256
 `75c21da77e39144bfcb570dc5c4354882a404372d8d52f67cbd2f9d8beceab5c`, 14,705 records, key
-`CD_COD` C(4)) is read in place and not packaged. Its text is CP850 read as latin-1, so
-"NÃO" shows as "NÇO".
+`CD_COD` C(4)) is read in place and not packaged. `values.py` reads its text as latin-1,
+so "NÃO" shows as "NÇO": the byte `0xC7` is "Ã" in CP850 and "Ç" in latin-1.
+
+On 2026-10-12 the script was run again against `aux_cid10` 2.1.0 (`aux_cid10.parquet`
+SHA-256 `4eb308b01474e26309912e6cbe8952f5ef391dc5f860b35d6765ed029ba045cf`), and
+`values.csv` came out byte for byte the same.
 
 - **2008 on.** Apart from `0000` ("CID NAO INFORMADO" in S_CID), only the PA has values
   without a row: `N182`, `N185` (S_CID: "CID NÃO IDENTIFICADO"), `N184` (not in S_CID),
