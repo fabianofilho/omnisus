@@ -33,7 +33,10 @@ def _load(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
 
 
 def _bloco() -> dict:
-    return yaml.safe_load((ROOT / "scripts/metadados/sinan_bloco_comum.yaml").read_text("utf-8"))
+    return yaml.load(
+        (ROOT / "scripts/metadados/sinan_bloco_comum.yaml").read_text("utf-8"),
+        Loader=yaml.CSafeLoader,
+    )
 
 
 def _membros(gerar: ModuleType) -> dict:
@@ -71,7 +74,7 @@ def test_declared_types_follow_the_real_dbf_descriptor(dataset, fixture):
             break
         name = dbf[offset : offset + 11].split(b"\0")[0].decode("latin-1").lower()
         physical[name] = TYPES[chr(dbf[offset + 11])]
-    doc = yaml.safe_load((DICIONARIOS / f"{dataset}.yaml").read_text("utf-8"))
+    doc = yaml.load((DICIONARIOS / f"{dataset}.yaml").read_text("utf-8"), Loader=yaml.CSafeLoader)
     declared = {f["name"]: f["type"] for f in doc["schema"]["fields"]}
     assert declared == physical
 

@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 from omnisus._version import __version__
 from omnisus.lake import Lake, LakeReader
 from omnisus.lake.publication import ImportPolicy
-from omnisus.lake.sql import qualified, quote_identifier
+from omnisus.lake.sql import at_version, qualified, quote_identifier
 from omnisus.sources._base import ImportReport, ScopeKey
 from omnisus.sources.datasus_ftp._runner import (
     DEFAULT_BATCH_SIZE,
@@ -183,7 +183,12 @@ def municipality_join_key_sql(column: str, *, digits: int = 6) -> str:
 
 
 def reference_join_sql(
-    dataset: str, field: str, *, alias: str = "d", lake_alias: str = "lake"
+    dataset: str,
+    field: str,
+    *,
+    alias: str = "d",
+    lake_alias: str = "lake",
+    snapshot_id: int | None = None,
 ) -> str:
     """The ``LEFT JOIN`` from a coded field to the vocabulary its dictionary declares.
 
@@ -197,18 +202,27 @@ def reference_join_sql(
             ``"ocup"`` (CBO).
         alias: Alias of the dataset table in your query (default ``"d"``).
         lake_alias: Alias the lake is attached as (default ``"lake"``).
+        snapshot_id: Read the vocabulary as it was at this snapshot
+            (``AT (VERSION => N)``); it wins over ``LakeReader(snapshot_id=...)``.
+            ``None`` (default) reads the attach's snapshot. Pinning the dataset table
+            is up to your ``FROM``: ``FROM lake.sim_obitos AS d AT (VERSION => N)``.
+            A vocabulary the lake did not have at ``N`` makes DuckDB raise when the
+            query runs.
 
     Returns:
         SQL text; the vocabulary is aliased ``ref_<field>``.
 
     Raises:
-        ValueError: the field declares no reference, or more than one.
+        ValueError: the field declares no reference, or more than one; or
+            ``snapshot_id`` is not a non-negative ``int``.
         FileNotFoundError: ``dataset`` has no packaged dictionary.
 
     Examples:
         >>> import omnisus as sus
         >>> sus.reference_join_sql("sim_obitos", "causabas")
         'LEFT JOIN "lake"."aux_cid10" AS "ref_causabas" ON d."causabas" = "ref_causabas"."codigo"'
+        >>> sus.reference_join_sql("sim_obitos", "causabas", snapshot_id=7)
+        'LEFT JOIN "lake"."aux_cid10" AS "ref_causabas" AT (VERSION => 7) ON d."causabas" = "ref_causabas"."codigo"'
     """
     definition = load_dicionario(dataset).field_def(field) or {}
     keys = definition.get("foreignKeys", [])
@@ -217,7 +231,8 @@ def reference_join_sql(
     reference = keys[0]["reference"]
     ref = quote_identifier(f"ref_{field}")
     sql = (
-        f"LEFT JOIN {qualified(lake_alias, reference['resource'])} AS {ref} "
+        f"LEFT JOIN {qualified(lake_alias, reference['resource'])} AS {ref}"
+        f"{at_version(snapshot_id)} "
         f"ON {alias}.{quote_identifier(field)} = {ref}.{quote_identifier(reference['fields'])}"
     )
     rule = keys[0].get("x-join-rule")

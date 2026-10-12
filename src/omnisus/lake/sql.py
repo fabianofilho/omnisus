@@ -15,3 +15,15 @@ def quote_literal(value: str) -> str:
 
 def qualified(catalog: str, table: str) -> str:
     return f"{quote_identifier(catalog)}.{quote_identifier(table)}"
+
+
+def at_version(snapshot_id: int | None) -> str:
+    """The time-travel clause, to follow a relation and its alias: ``AS "x" AT (...)``.
+
+    ``""`` for ``None``: the relation is read at the attach's snapshot.
+    """
+    if snapshot_id is None:
+        return ""
+    if type(snapshot_id) is not int or snapshot_id < 0:
+        raise ValueError("snapshot_id must be a non-negative int")
+    return f" AT (VERSION => {snapshot_id})"

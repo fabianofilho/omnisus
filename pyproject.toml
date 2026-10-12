@@ -49,6 +49,8 @@ dev = [
     "respx>=0.23.1",
     # Validates every packaged dictionary (tests/unit/transforms/test_frictionless_schemas.py).
     "frictionless>=5.19.0",
+    # Reads back the dictionary workbook notebooks/explorar.py writes (test_explorar.py).
+    "fastexcel>=0.21.0",
     "ruff>=0.16.6",
     "mypy>=2.3.1",
     "types-PyYAML>=6.0.12.20260906",
@@ -66,9 +68,11 @@ colab = [
     "ipykernel>=7.4.0",
 ]
 notebooks = [
-    "marimo>=0.25.0,<0.26",
+    "marimo>=0.25.1,<0.26",
     # marimo parses mo.sql cells with sqlglot; no library code imports it.
     "sqlglot>=30.18.0",
+    # notebooks/explorar.py writes each dataset's dictionary as a two-sheet workbook.
+    "xlsxwriter>=3.2.9",
 ]
 
 [project.scripts]

@@ -9,6 +9,11 @@
   only `omnisus.__all__` can catch the writer's errors and build the IBGE year selector.
   `Product.name` documents that it is also the relation the importer writes in the lake
   (#102).
+- `publications()` and `reference_join_sql()` take `snapshot_id: int | None = None`:
+  one attach reads the manifest and the `aux_*` vocabulary at snapshot `N` with
+  `AT (VERSION => N)`, which wins over `LakeReader(snapshot_id=...)`. A snapshot from
+  before the first import returns `[]`. `None` keeps the SQL and the rows of 0.2.3. The
+  data table is pinned by the caller's `FROM` (#101).
 
 ### Dictionaries
 
@@ -26,6 +31,31 @@
   `LakeReader`) no longer pulls the Jupyter kernel and its ~25 dependencies. The Colab
   notebook installs `"omnisus[colab]==<version>"`; `uv pip install "omnisus[colab]"` does
   the same elsewhere (#100).
+
+### Vocabularies
+
+- `aux_cid10` (2.1.0) gains `bloco` and `bloco_descricao`: the CID-10 group of each code
+  (`B50-B64`, "Doencas devidas a protozoários"), from `CID10-grup_d.cnv` in
+  `SIM/CID10/TAB/OBITOS_CID10_TAB.zip`, the grouping the SIM DEF binds to `CAUSABAS`.
+  Each block lies in one chapter. `O93` and `O930`–`O939`, a Brazilian extension, are in
+  no group and have no block. `evidence/2026-10-11-blocos-cid10/` compares the groups
+  with the WHO ICD-10 2019 and CBCD 2008 lists. Run `omnisus lake update-auxiliares` (or
+  `Lake.bootstrap_auxiliares()`) to load the new columns (#103).
+
+### Performance
+
+- The age rule's SQL trims the 29 whitespace characters with one constant,
+  `decode(unhex('…'))`, instead of 29 `chr()` calls joined by `||` in every trim.
+  DuckDB binds the expressions again on every query, so a `load` with an age rule and an
+  audit of `validar_fonte.py` plan in a fraction of the time (one SIM audit: 6 s to
+  0.5 s). Values are the same; audit evidence written from now on records the new SQL
+  text, older evidence keeps the `chr()` form.
+- `describe_datasets()` reads the packaged dictionaries instead of calling
+  `describe_dataset()` for each dataset (about 0.4 s to 3 ms per call). The table is the
+  same; the consistency checks of `describe_dataset()` still run when it is called, and
+  the tests call it for every dataset.
+- Staging maps each batch's columns by name once, instead of rebuilding the list of
+  column names for every field.
 
 ## v0.2.3 — 2026-10-08
 

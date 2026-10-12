@@ -81,7 +81,7 @@ def test_profile_links_datasets_page_to_a_section(perfil):
 def test_every_bases_notebook_has_a_profile():
     notebooks = {
         p.stem for p in (ROOT / "notebooks").glob("*.py") if not p.name.startswith("_")
-    } - {"linkage", "bases"}
+    } - {"linkage", "bases", "explorar"}
     assert set(PERFIS.values()) == notebooks
 
 

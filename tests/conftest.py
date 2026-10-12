@@ -7,9 +7,26 @@ import json
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
+import duckdb
 import pytest
 
 from omnisus.sources.datasus_ftp.native import API_VERSION
+
+# DuckDB checks the signature of the ducklake and sqlite_scanner binaries (35-36 MB each)
+# on every LOAD into a new instance, and omnisus opens one instance per Lake and
+# LakeReader, so the check is most of the time of each attach. The tests load the same
+# signed binaries that INSTALL fetched, so they skip it; production code still runs it.
+_duckdb_connect = duckdb.connect
+
+
+def _connect_without_signature_check(
+    database=":memory:", read_only=False, config=None
+) -> duckdb.DuckDBPyConnection:
+    config = {"allow_unsigned_extensions": True, **(config or {})}
+    return _duckdb_connect(database=database, read_only=read_only, config=config)
+
+
+duckdb.connect = _connect_without_signature_check
 
 
 def pytest_addoption(parser):

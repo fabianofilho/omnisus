@@ -103,7 +103,8 @@ is already running. Importing `cnes_estabelecimentos` by any function refreshes 
 
 The bootstrap tables (`aux_uf`, `aux_municipios`, `aux_cid10`, `aux_ocupacoes`,
 `aux_paises`) come from DATASUS's `SIM/CID10/TABELAS`; the CBO 2002 codes in
-`aux_ocupacoes` come from `CBO2002.CNV` in `SIM/CID10/TAB/OBITOS_CID10_TAB.zip`. Each
+`aux_ocupacoes` and the CID-10 blocks of `aux_cid10` (`bloco`, `bloco_descricao`) come
+from `CBO2002.CNV` and `CID10-grup_d.cnv` in `SIM/CID10/TAB/OBITOS_CID10_TAB.zip`. Each
 file is hashed in the source registry. Nothing joins at import: `reference_join_sql` writes the `LEFT JOIN` a
 field's dictionary declares. See [vocabularies](sources/vocabularios.md).
 
@@ -159,6 +160,24 @@ with sus.LakeReader() as reader:
 
 with sus.LakeReader(snapshot_id=latest) as reader:
     ...  # every statement here sees exactly that snapshot
+```
+
+`LakeReader(snapshot_id=N)` is enough when one session reads one snapshot. When one
+attach serves many snapshots (opening another attach costs a round trip to a
+PostgreSQL catalog), pin each query instead: `reader.publications(snapshot_id=N)` and
+`reference_join_sql(..., snapshot_id=N)` read the manifest and the vocabulary at `N`,
+whatever snapshot the attach is pinned to. The data table is pinned by the query you
+write, with the alias before `AT`:
+
+```python
+with sus.LakeReader() as reader:
+    n = sus.latest_snapshot_id(reader)
+    fontes = reader.publications(snapshot_id=n)
+    join = sus.reference_join_sql("sim_obitos", "causabas", snapshot_id=n)
+    df = reader.connect().sql(
+        f"SELECT ref_causabas.capitulo, count(*) AS obitos "
+        f"FROM lake.sim_obitos AS d AT (VERSION => {n}) {join} GROUP BY ALL"
+    ).pl()
 ```
 
 ```python

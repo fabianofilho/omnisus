@@ -70,9 +70,8 @@ Escolha onde rodar. Os três caminhos usam a mesma biblioteca e chegam à mesma 
     sus.check_columns("sim_obitos", dados)
     ```
 
-Abrir um notebook marimo não baixa nem grava nada: rede e escrita ficam atrás de
-`EXECUTAR = False` até você mudar a constante. No Colab, cada célula roda quando você
-a executa.
+Abrir um notebook marimo não baixa nem grava nada até você pedir. No Colab, nada roda
+até você executar a célula.
 
 ## Qual base responde minha pergunta?
 
@@ -102,7 +101,7 @@ e os municípios e o que ainda está em aberto.
 
 ## As seis etapas
 
-Todo notebook de `notebooks/` segue as mesmas etapas, com as mesmas funções da
+Os notebooks de cada base seguem as mesmas etapas, com as mesmas funções da
 biblioteca, `import omnisus as sus`. Só dois importam algo além disso: `medicamentos.py`
 lê a API de estoque do Hórus, que é consultada e nunca publicada no lake, e
 `ibge_populacao.py` lê os anos aceitos, que são constantes do pacote porque o IBGE não
@@ -148,6 +147,14 @@ O lake é um só porque uma taxa precisa de duas bases: óbitos por 100 mil habi
 lê `sim_obitos` e `ibge_populacao`
 (`notebooks/ibge_populacao.py`, tabela `obitos_por_100_mil`). Veja
 [Indicadores](indicadores.md).
+
+Para ver o que já está no lake, o notebook
+[explorar.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/explorar.py)
+[![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/explorar.py)
+mostra as linhas dos escopos que você escolher, o dicionário de cada base, o perfil de
+uma coluna e a citação. Ele abre também um lake copiado do Google Drive e, pelo botão
+*Importar*, importa vários anos, UFs e meses de uma vez, com um relatório do que houve
+com cada escopo.
 
 ## Cuidados gerais
 

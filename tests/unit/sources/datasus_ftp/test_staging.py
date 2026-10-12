@@ -41,6 +41,18 @@ def test_incompatible_families_rejected_without_publishing(monkeypatch, tmp_path
     assert list(tmp_path.iterdir()) == [target]
 
 
+def test_names_that_collide_once_lowercased_are_refused(monkeypatch, tmp_path):
+    # Synthetic records: no fixture has colliding names. Staging aligns batches by
+    # column name, so a collision that got through would keep only one column.
+    records(monkeypatch, [{"X": 1, "x": 2}])
+    target = tmp_path / "output.parquet"
+    target.write_bytes(b"previous")
+    with pytest.raises(ValueError, match="collide"):
+        dbc_bytes_to_parquet(b"x", target, dataset="sim_obitos")
+    assert target.read_bytes() == b"previous"
+    assert list(tmp_path.iterdir()) == [target]
+
+
 def test_legacy_parser_rejects_lossy_batches(monkeypatch):
     records(monkeypatch, [{"X": 2**60 + 1}, {"X": 1.5}], 1)
     with pytest.raises((TypeError, ValueError)):

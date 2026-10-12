@@ -76,6 +76,39 @@ def test_cid10_is_complete_with_chapters(lake: Lake) -> None:
     assert one(lake, "SELECT count(DISTINCT capitulo) FROM lake.aux_cid10") == (22,)
 
 
+def test_cid10_blocks_come_from_the_tabwin_groups(lake: Lake) -> None:
+    """Blocks of CID10-grup_d.cnv (OBITOS_CID10_TAB.zip), the grouping the SIM DEF binds
+    to CAUSABAS; comparison with the WHO and CBCD lists in evidence/2026-10-11-blocos-cid10."""
+    assert one(
+        lake, "SELECT bloco, bloco_descricao FROM lake.aux_cid10 WHERE codigo = 'B571'"
+    ) == ("B50-B64", "Doencas devidas a protozoários")
+    # A range may cross letters: TabWin compares the first three characters.
+    assert one(lake, "SELECT bloco, capitulo FROM lake.aux_cid10 WHERE codigo = 'Y05'") == (
+        "X85-Y09",
+        20,
+    )
+    # Every block lies in one chapter, and 241 of the 243 blocks hold a code
+    # (U92-U92 and U99-U99 hold none in CID10.DBF).
+    assert (
+        lake.connect()
+        .execute(
+            "SELECT bloco FROM lake.aux_cid10 WHERE bloco IS NOT NULL "
+            "GROUP BY bloco HAVING count(DISTINCT capitulo) > 1"
+        )
+        .fetchall()
+        == []
+    )
+    assert one(lake, "SELECT count(DISTINCT bloco) FROM lake.aux_cid10") == (241,)
+    # O93, a Brazilian extension, is in no group: the CNV goes from O85-O92 to O94-O99.
+    assert lake.connect().execute(
+        "SELECT codigo FROM lake.aux_cid10 WHERE bloco IS NULL ORDER BY codigo"
+    ).fetchall() == [("O93",)] + [(f"O93{n}",) for n in range(10)]
+    assert one(
+        lake,
+        "SELECT count(*) FROM lake.aux_cid10 WHERE (bloco IS NULL) <> (bloco_descricao IS NULL)",
+    ) == (0,)
+
+
 def test_occupations_keep_both_schemes(lake: Lake) -> None:
     assert one(
         lake,

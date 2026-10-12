@@ -27,12 +27,12 @@ SUBCONJUNTOS = ("sim_obitos_infantis", "sim_obitos_maternos", "sim_obitos_extern
 def generate() -> dict[Path, str]:
     """New text of each subset dictionary, with sim_obitos' definition of every shared field."""
     do_text = (DICIONARIOS / "sim_obitos.yaml").read_text(encoding="utf-8")
-    do = {f["name"]: f for f in yaml.safe_load(do_text)["schema"]["fields"]}
+    do = {f["name"]: f for f in yaml.load(do_text, Loader=yaml.CSafeLoader)["schema"]["fields"]}
     out = {}
     for dataset in SUBCONJUNTOS:
         path = DICIONARIOS / f"{dataset}.yaml"
         text = path.read_text(encoding="utf-8")
-        for field in yaml.safe_load(text)["schema"]["fields"]:
+        for field in yaml.load(text, Loader=yaml.CSafeLoader)["schema"]["fields"]:
             name = field["name"]
             if name not in do:
                 raise ValueError(f"{dataset}.{name} is not a sim_obitos field")

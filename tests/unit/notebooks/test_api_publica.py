@@ -18,7 +18,26 @@ NOTEBOOKS = Path(__file__).resolve().parents[3] / "notebooks"
 TODOS = sorted(p for p in NOTEBOOKS.glob("*.py") if not p.name.startswith("_"))
 
 # Modules a notebook may import besides omnisus.
-BIBLIOTECAS = {"json", "marimo", "polars", "pathlib"}
+# `os`: explorar.py reads $OMNISUS_DATA_DIR, the lake folder `sus.load` uses, which has
+# no public getter.
+# `shutil`, `tempfile`: explorar.py shows the free disk where an import writes.
+# `datetime`: explorar.py offers the years of a dataset up to the current one.
+# `io`, `xlsxwriter`: explorar.py writes each dataset's dictionary as a two-sheet workbook.
+# `gdrive_fsspec`, `re`: explorar.py copies a lake from Google Drive, by path or folder link.
+BIBLIOTECAS = {
+    "datetime",
+    "gdrive_fsspec",
+    "io",
+    "json",
+    "marimo",
+    "os",
+    "polars",
+    "pathlib",
+    "re",
+    "shutil",
+    "tempfile",
+    "xlsxwriter",
+}
 
 # A name with no public door yet, by notebook. Each one says why.
 EXCECOES = {
@@ -28,6 +47,9 @@ EXCECOES = {
     "ibge_populacao.py": {
         "omnisus.sources.ibge.products": {"CENSUS_YEARS", "ESTIMATE_UNAVAILABLE_YEARS"}
     },
+    # An import refused because another writer (process or handle) holds the lake raises
+    # this class. `sus.WriterBusyError` (#111) is not in the omnisus 0.2.3 the notebook pins.
+    "explorar.py": {"omnisus.lake.locking": {"WriterBusyError"}},
 }
 
 
@@ -60,7 +82,12 @@ def test_every_odb_name_is_public(caminho):
             assert node.attr in sus.__all__, (caminho.name, node.attr)
 
 
-@pytest.mark.parametrize("caminho", TODOS, ids=lambda p: p.name)
+# explorar.py is left out: its lake may hold more rows than memory, so it imports with
+# `sus.import_dataset`, reads with SQL and cites only the chosen scopes' publications
+# (`test_explorar.py`).
+@pytest.mark.parametrize(
+    "caminho", [p for p in TODOS if p.stem != "explorar"], ids=lambda p: p.name
+)
 def test_rows_come_from_load_and_the_citation_from_cite(caminho):
     """One mechanism per step: `sus.load` reads, `sus.cite` cites."""
     texto = caminho.read_text(encoding="utf-8")
