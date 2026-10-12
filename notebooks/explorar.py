@@ -30,6 +30,7 @@ def _():
     import marimo as mo
     import polars as pl
     import xlsxwriter
+    import gdrive_fsspec
 
     import omnisus as sus
     from omnisus.lake.locking import WriterBusyError
