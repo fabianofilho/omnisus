@@ -18,6 +18,7 @@ def load_fixture(dataset: str, fixture: str, scope: ScopeKey, lake_dir: Path) ->
     """Serve ``fixture`` as ``scope`` of ``dataset`` and return ``sus.load``'s DataFrame."""
     payload = (DBC / f"{fixture}.dbc").read_bytes()
     with pytest.MonkeyPatch.context() as patch:
+        fake_datasus.block_ftp_listing(patch)
         fake_datasus.serve(patch, dataset, {scope: payload})
         return sus.load(
             dataset,

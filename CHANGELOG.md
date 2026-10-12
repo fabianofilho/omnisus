@@ -33,6 +33,21 @@
   with the WHO ICD-10 2019 and CBCD 2008 lists. Run `omnisus lake update-auxiliares` (or
   `Lake.bootstrap_auxiliares()`) to load the new columns (#103).
 
+### Performance
+
+- The age rule's SQL trims the 29 whitespace characters with one constant,
+  `decode(unhex('…'))`, instead of 29 `chr()` calls joined by `||` in every trim.
+  DuckDB binds the expressions again on every query, so a `load` with an age rule and an
+  audit of `validar_fonte.py` plan in a fraction of the time (one SIM audit: 6 s to
+  0.5 s). Values are the same; audit evidence written from now on records the new SQL
+  text, older evidence keeps the `chr()` form.
+- `describe_datasets()` reads the packaged dictionaries instead of calling
+  `describe_dataset()` for each dataset (about 0.4 s to 3 ms per call). The table is the
+  same; the consistency checks of `describe_dataset()` still run when it is called, and
+  the tests call it for every dataset.
+- Staging maps each batch's columns by name once, instead of rebuilding the list of
+  column names for every field.
+
 ## v0.2.3 — 2026-10-08
 
 **Upgrading from 0.2.2:** no parser version changed (the import still reads the same

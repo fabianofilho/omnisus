@@ -139,8 +139,9 @@ def _edited_dictionary(tmp_path: Path, dataset: str, edit) -> Path:
 
     import yaml
 
-    raw = yaml.safe_load(
-        (files("omnisus.data.dicionarios") / f"{dataset}.yaml").read_text("utf-8")
+    raw = yaml.load(
+        (files("omnisus.data.dicionarios") / f"{dataset}.yaml").read_text("utf-8"),
+        Loader=yaml.CSafeLoader,
     )
     edit(raw)
     path = tmp_path / f"{dataset}.yaml"

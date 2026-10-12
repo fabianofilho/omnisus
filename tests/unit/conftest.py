@@ -18,10 +18,9 @@ from __future__ import annotations
 
 import pytest
 
+from tests.support.fake_datasus import block_ftp_listing
+
 
 @pytest.fixture(autouse=True)
 def _block_ftp_listing(monkeypatch: pytest.MonkeyPatch) -> None:
-    def _refuse(path: str, timeout_seconds: float) -> list[str]:
-        raise AssertionError(f"network: unit test attempted to LIST {path!r} over FTP")
-
-    monkeypatch.setattr("omnisus.sources.datasus_ftp.inventory._blocking_list", _refuse)
+    block_ftp_listing(monkeypatch)

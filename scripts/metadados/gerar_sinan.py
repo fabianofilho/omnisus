@@ -98,7 +98,7 @@ def definition_for(
 
 def generate() -> dict[Path, str]:
     """New text of every SINAN dictionary."""
-    bloco = yaml.safe_load(BLOCO.read_text(encoding="utf-8"))
+    bloco = yaml.load(BLOCO.read_text(encoding="utf-8"), Loader=yaml.CSafeLoader)
     unknown = set(bloco["agravo"]) - {p.stem for p in DICIONARIOS.glob("sinan_*.yaml")}
     if unknown:
         raise ValueError(f"agravo names no dictionary: {sorted(unknown)}")
@@ -108,7 +108,9 @@ def generate() -> dict[Path, str]:
     for path in sorted(DICIONARIOS.glob("sinan_*.yaml")):
         dataset = path.stem
         text = path.read_text(encoding="utf-8")
-        fields = {f["name"]: f for f in yaml.safe_load(text)["schema"]["fields"]}
+        fields = {
+            f["name"]: f for f in yaml.load(text, Loader=yaml.CSafeLoader)["schema"]["fields"]
+        }
         seen |= set(fields)
         by_cnv = set(vinculos["datasets"].get(dataset, {}).get("campos", {}))
         missing = sorted({e["name"] for e in bloco["agravo"].get(dataset, [])} - set(fields))

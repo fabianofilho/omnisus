@@ -11,7 +11,6 @@ vocabulary republished between s1 and s2).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 
 import duckdb
 import pytest
@@ -19,6 +18,7 @@ import pytest
 import omnisus as sus
 from omnisus.sources._base import ScopeKey
 from tests.support import fake_datasus
+from tests.support.lake_rows import DBC
 
 RR_2023 = ScopeKey(uf="RR", ano=2023)
 REWRITTEN = "rótulo reescrito em s2"
@@ -34,35 +34,39 @@ class PinnedLake:
     label_s1: str
 
 
-@pytest.fixture
-def lake(tmp_path: Path, monkeypatch, dbc_fixture) -> PinnedLake:
-    target = f"ducklake:{tmp_path}/pin.ducklake"
-    with sus.Lake.local(target) as writer:
-        s0 = sus.latest_snapshot_id(writer)
-        writer.bootstrap_auxiliares()
-    fake_datasus.serve(
-        monkeypatch, "sim_obitos", {RR_2023: dbc_fixture("sim_rr_2023_mini").read_bytes()}
-    )
-    sus.import_dataset("sim_obitos", scopes=[RR_2023], target=target, run_id="r1")
-    with sus.Lake.local(target) as writer:
-        s1 = sus.latest_snapshot_id(writer)
-        code, label = (
-            writer.connect()
-            .execute(
-                "SELECT d.causabas, r.descricao FROM lake.sim_obitos d "
-                "JOIN lake.aux_cid10 r ON d.causabas = r.codigo "
-                "GROUP BY ALL ORDER BY count(*) DESC, d.causabas LIMIT 1"
+@pytest.fixture(scope="module")
+def lake(tmp_path_factory: pytest.TempPathFactory) -> PinnedLake:
+    """Built once for the module: every test only reads it, through ``LakeReader``."""
+    target = f"ducklake:{tmp_path_factory.mktemp('pin')}/pin.ducklake"
+    with pytest.MonkeyPatch.context() as patch:
+        # The conftest guard is per test and not active while a module fixture sets up.
+        fake_datasus.block_ftp_listing(patch)
+        with sus.Lake.local(target) as writer:
+            s0 = sus.latest_snapshot_id(writer)
+            writer.bootstrap_auxiliares()
+        fake_datasus.serve(
+            patch, "sim_obitos", {RR_2023: (DBC / "sim_rr_2023_mini.dbc").read_bytes()}
+        )
+        sus.import_dataset("sim_obitos", scopes=[RR_2023], target=target, run_id="r1")
+        with sus.Lake.local(target) as writer:
+            s1 = sus.latest_snapshot_id(writer)
+            code, label = (
+                writer.connect()
+                .execute(
+                    "SELECT d.causabas, r.descricao FROM lake.sim_obitos d "
+                    "JOIN lake.aux_cid10 r ON d.causabas = r.codigo "
+                    "GROUP BY ALL ORDER BY count(*) DESC, d.causabas LIMIT 1"
+                )
+                .fetchone()
             )
-            .fetchone()
+        sus.import_dataset(
+            "sim_obitos", scopes=[RR_2023], target=target, policy="replace", run_id="r2"
         )
-    sus.import_dataset(
-        "sim_obitos", scopes=[RR_2023], target=target, policy="replace", run_id="r2"
-    )
-    with sus.Lake.local(target) as writer:
-        writer.connect().execute(
-            "UPDATE lake.aux_cid10 SET descricao = ? WHERE codigo = ?", [REWRITTEN, code]
-        )
-        s2 = sus.latest_snapshot_id(writer)
+        with sus.Lake.local(target) as writer:
+            writer.connect().execute(
+                "UPDATE lake.aux_cid10 SET descricao = ? WHERE codigo = ?", [REWRITTEN, code]
+            )
+            s2 = sus.latest_snapshot_id(writer)
     return PinnedLake(target, s0, s1, s2, code, label)
 
 

@@ -66,7 +66,7 @@ def generate(dicionarios: Path = DICIONARIOS, lock_path: Path = LOCK) -> str:
     if unknown:
         raise ValueError(f"versoes.json names dictionaries without a YAML: {unknown}")
     for name, path in paths.items():
-        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        raw = yaml.load(path.read_text(encoding="utf-8"), Loader=yaml.CSafeLoader)
         if "x-version" not in raw:
             raise ValueError(f"{path.name} has no x-version")
         version, sha = str(raw["x-version"]), digest(raw)

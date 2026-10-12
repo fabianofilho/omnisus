@@ -107,7 +107,7 @@ def append_validated_sources(yaml_path: Path, entries: Sequence[dict]) -> int:
     checked to differ from the original by those entries only.
     """
     text = yaml_path.read_text(encoding="utf-8")
-    before = yaml.safe_load(text)
+    before = yaml.load(text, Loader=yaml.CSafeLoader)
     known = before["x-analytics"]["validated_sources"]
     vistas = {_identidade(entry) for entry in known}
     new = []
@@ -128,7 +128,7 @@ def append_validated_sources(yaml_path: Path, entries: Sequence[dict]) -> int:
         end += 1
     lines[end:end] = [line for entry in new for line in _entry_lines(entry)]
     new_text = "".join(lines)
-    after = yaml.safe_load(new_text)
+    after = yaml.load(new_text, Loader=yaml.CSafeLoader)
     added = after["x-analytics"]["validated_sources"][len(known) :]
     del after["x-analytics"]["validated_sources"][len(known) :]
     if added != new or after != before:
@@ -385,12 +385,8 @@ def main(
         return 1
 
     yaml_path = dictionaries / f"{d.name}.yaml"
-    validadas = {
-        _identidade(entry)
-        for entry in yaml.safe_load(yaml_path.read_text(encoding="utf-8"))["x-analytics"][
-            "validated_sources"
-        ]
-    }
+    dicionario = yaml.load(yaml_path.read_text(encoding="utf-8"), Loader=yaml.CSafeLoader)
+    validadas = {_identidade(entry) for entry in dicionario["x-analytics"]["validated_sources"]}
     metadados = sus.describe_dataset(d.name)
     metadata_hash = metadados["metadata_hash"]
     downloads.mkdir(parents=True, exist_ok=True)

@@ -298,7 +298,9 @@ def generate() -> dict[Path, str]:
     for dataset, spec in vinculos["datasets"].items():
         path = DICIONARIOS / f"{dataset}.yaml"
         text = path.read_text(encoding="utf-8")
-        fields = {f["name"]: f for f in yaml.safe_load(text)["schema"]["fields"]}
+        fields = {
+            f["name"]: f for f in yaml.load(text, Loader=yaml.CSafeLoader)["schema"]["fields"]
+        }
         defs = spec["def"]
         def_text = read_def(defs[0], vinculos)
         for field, member in spec["campos"].items():

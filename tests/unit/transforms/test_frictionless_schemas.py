@@ -20,7 +20,7 @@ from frictionless import Schema as FrictionlessSchema
 
 def _load_schema(dataset: str) -> FrictionlessSchema:
     yaml_path = files("omnisus.data.dicionarios") / f"{dataset}.yaml"
-    raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+    raw = yaml.load(yaml_path.read_text(encoding="utf-8"), Loader=yaml.CSafeLoader)
     return FrictionlessSchema.from_descriptor(raw["schema"])
 
 
