@@ -47,6 +47,10 @@
   the tests call it for every dataset.
 - Staging maps each batch's columns by name once, instead of rebuilding the list of
   column names for every field.
+- `load_dicionario()` parses with libyaml (`yaml.CSafeLoader`) when PyYAML was built
+  with it, as its wheels are, and with the pure-Python loader otherwise. The first load
+  of `sih_aih_reduzida` in a process drops from about 0.7 s to 0.1 s, and a cold
+  `describe_datasets()` from about 2.5 s to 0.4 s. The parsed dictionaries are the same.
 
 ## v0.2.3 — 2026-10-08
 

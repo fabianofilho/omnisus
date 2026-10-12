@@ -118,7 +118,9 @@ def load_dicionario(name_or_path: str | Path) -> Dicionario:
         if not yaml_path.is_file():
             raise FileNotFoundError(f"dicionario not found: {name_or_path}")
         text = yaml_path.read_text(encoding="utf-8")
-    raw = yaml.safe_load(text)
+    # libyaml when PyYAML was built with it, as its wheels are: sih_aih_reduzida, the
+    # largest dictionary, parses in about 0.1 s instead of 0.7 s.
+    raw = yaml.load(text, Loader=getattr(yaml, "CSafeLoader", yaml.SafeLoader))
     schema = raw.get("schema", {})
     return Dicionario(
         name=raw["name"],
