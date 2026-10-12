@@ -572,14 +572,20 @@ class _DriveFalso:
         if self.sem_acesso:
             raise PermissionError("acesso negado")
         type(self).argumentos.append(argumentos)
-        self.base = self.raiz / argumentos.get("root_file_id", "")
+        self.base = self.raiz / (argumentos["root_file_id"] or "")
 
     def get(self, caminho: str, destino: str, recursive: bool) -> None:
         assert recursive
         shutil.copytree(self.base / caminho, destino)
 
 
-CONEXAO = {"use_listings_cache": False, "skip_instance_cache": True}  # molab's snippet
+# What molab writes in "Add remote storage": its server is remote, so the Google login
+# goes through a link and a code instead of a local web server.
+CONEXAO = {
+    "use_listings_cache": False,
+    "skip_instance_cache": True,
+    "auth_kwargs": {"use_local_webserver": False},
+}
 
 
 def _no_drive(
@@ -612,7 +618,7 @@ def test_a_lake_in_google_drive_is_copied_to_the_session_and_read(
 
     texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name)
 
-    assert _DriveFalso.argumentos == [CONEXAO]  # one connection, to My Drive
+    assert _DriveFalso.argumentos == [{"root_file_id": None, **CONEXAO}]  # My Drive
     assert "Conectado ao Google Drive" in texto
     assert definidos["diretorio"].is_relative_to(tmp_path / "tmp")
     assert definidos["totais"] == {"sim_obitos": REGISTROS}
@@ -637,7 +643,10 @@ def test_a_drive_folder_link_is_read_as_the_root(importado, monkeypatch, tmp_pat
 
     _, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, link)
 
-    assert _DriveFalso.argumentos == [CONEXAO, {"root_file_id": pasta.name, **CONEXAO}]
+    assert _DriveFalso.argumentos == [
+        {"root_file_id": None, **CONEXAO},
+        {"root_file_id": pasta.name, **CONEXAO},
+    ]
     assert definidos["totais"] == {"sim_obitos": REGISTROS}
 
 

@@ -141,11 +141,21 @@ def _(mo):
 def _(conectar, mo):
     mo.stop(not conectar.value)
     # Importado só no clique: quem não usa o Drive não precisa do pacote (o molab já o tem).
-    from gdrive_fsspec import GoogleDriveFileSystem
+    from gdrive_fsspec import GoogleDriveFileSystem as _Drive
+
+    def drive_em(pasta_id=None):
+        """O Drive como o molab o abre em *Add remote storage*: o servidor é remoto, então
+        o login do Google vai por um link e um código. `pasta_id` faz de uma pasta a raiz."""
+        return _Drive(
+            root_file_id=pasta_id,
+            use_listings_cache=False,
+            skip_instance_cache=True,
+            auth_kwargs={"use_local_webserver": False},
+        )
 
     try:
-        # Na primeira vez abre o login do Google; depois o token fica guardado.
-        drive = GoogleDriveFileSystem(use_listings_cache=False, skip_instance_cache=True)
+        # Na primeira vez pede o login do Google; depois o token fica guardado.
+        drive = drive_em()
     except Exception as e:
         mo.stop(
             True,
@@ -159,22 +169,16 @@ def _(conectar, mo):
             ),
         )
     mo.md("Conectado ao Google Drive. Escreva a pasta do lake e clique em *Copiar do Drive*.")
-    return GoogleDriveFileSystem, drive
+    return drive, drive_em
 
 
 @app.cell
-def _(GoogleDriveFileSystem, copiar, diretorio, drive, mo, mudar_versao, pasta_drive, re, shutil):
+def _(copiar, diretorio, drive, drive_em, mo, mudar_versao, pasta_drive, re, shutil):
     mo.stop(not copiar.value)
     mo.stop(not pasta_drive.value.strip(), mo.md("Escreva o caminho ou o link da pasta no Drive."))
     # Um link faz da pasta a raiz (alcança uma pasta compartilhada); um caminho parte de Meu Drive.
     _link = re.search(r"/folders/([\w-]+)", pasta_drive.value)
-    _origem = (
-        GoogleDriveFileSystem(
-            root_file_id=_link[1], use_listings_cache=False, skip_instance_cache=True
-        )
-        if _link
-        else drive
-    )
+    _origem = drive_em(_link[1]) if _link else drive
     try:
         with mo.status.spinner(title="Copiando o lake do Google Drive"):
             shutil.rmtree(diretorio, ignore_errors=True)  # a cópia anterior, nunca o original
