@@ -4,6 +4,12 @@
 
 ### API
 
+- `read(dataset, years=..., ufs=..., months=...)` returns the rows `load` returns for
+  the same arguments, harmonised categories included, from what the lake already has,
+  without connecting to DATASUS: it works while the server is down, when `load` raises
+  `FtpUnavailable`. It warns naming the requested scopes the lake lacks and raises
+  `LookupError` when it has none of them. `read(table)` without `years` is unchanged
+  (#92).
 - `WriterBusyError`, `CommitOutcomeUnknown`, `CENSUS_YEARS` and
   `ESTIMATE_UNAVAILABLE_YEARS` are exported from `omnisus`, so a caller that imports
   only `omnisus.__all__` can catch the writer's errors and build the IBGE year selector.
