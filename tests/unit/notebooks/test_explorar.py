@@ -16,6 +16,7 @@ import io
 import os
 import shutil
 import sys
+import tempfile
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -557,6 +558,76 @@ def test_reads_the_lake_after_its_folder_moved(monkeypatch, tmp_path):
     # It only reads there: an import goes to the folder where the lake was created.
     assert "pasta onde foi criado" in depois["parada"]
     assert depois["relatorio"]["situacao"].to_list() == ["não tentado"]
+
+
+class _DriveFalso:
+    """Stands in for `gdrive_fsspec.GoogleDriveFileSystem` (molab has the package; CI
+    does not): *My Drive* is a local folder, and a folder ID names a folder in it."""
+
+    raiz: Path
+    argumentos: list[dict]
+
+    def __init__(self, **argumentos):
+        type(self).argumentos.append(argumentos)
+        self.base = self.raiz / argumentos.get("root_file_id", "")
+
+    def get(self, caminho: str, destino: str, recursive: bool) -> None:
+        assert recursive
+        shutil.copytree(self.base / caminho, destino)
+
+
+def _no_drive(monkeypatch, tmp_path, raiz: Path, pasta_no_drive: str) -> tuple[str, dict]:
+    """Choose *Google Drive*, write `pasta_no_drive` and click *Copiar do Drive*."""
+    (tmp_path / "tmp").mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path / "tmp"))
+    monkeypatch.setattr(_DriveFalso, "raiz", raiz, raising=False)
+    monkeypatch.setattr(_DriveFalso, "argumentos", [], raising=False)
+    modulo = SimpleNamespace(GoogleDriveFileSystem=_DriveFalso)
+    monkeypatch.setitem(sys.modules, "gdrive_fsspec", modulo)
+    widgets = {
+        "origem": SimpleNamespace(value="drive"),
+        "pasta": SimpleNamespace(value=str(tmp_path / "nao_usada")),
+        "drive": SimpleNamespace(value=pasta_no_drive),
+        "copiar": SimpleNamespace(value=True),
+        "executar": False,
+    }
+    return _executar(monkeypatch, defs=widgets)
+
+
+def test_a_lake_in_google_drive_is_copied_to_the_session_and_read(
+    importado, monkeypatch, tmp_path
+):
+    """molab does not mount the Drive and DuckLake reads only local files."""
+    pasta, _, _ = importado
+
+    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name)
+
+    assert _DriveFalso.argumentos == [{}]  # My Drive
+    assert definidos["diretorio"].is_relative_to(tmp_path / "tmp")
+    assert definidos["totais"] == {"sim_obitos": REGISTROS}
+    assert SHA256 in definidos["citacoes"]["sim_obitos"]
+    assert "Lake copiado" in texto
+
+
+def test_a_drive_folder_link_is_read_as_the_root(importado, monkeypatch, tmp_path):
+    """A link also reaches a folder shared with you, which has no path in My Drive."""
+    pasta, _, _ = importado
+    link = f"https://drive.google.com/drive/folders/{pasta.name}?usp=sharing"
+
+    _, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, link)
+
+    assert _DriveFalso.argumentos == [{"root_file_id": pasta.name}]
+    assert definidos["totais"] == {"sim_obitos": REGISTROS}
+
+
+def test_a_drive_that_does_not_answer_becomes_a_message(importado, monkeypatch, tmp_path):
+    pasta, _, _ = importado
+
+    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent / "nao_existe", "lake")
+
+    assert "Não deu para copiar do Google Drive" in texto
+    assert "Add remote storage" in texto
+    assert "totais" not in definidos
 
 
 def test_a_reader_holding_the_catalog_stops_the_import_with_a_message(monkeypatch, tmp_path):

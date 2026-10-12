@@ -22,6 +22,7 @@ def _():
     import io
     import json
     import os
+    import re
     import shutil
     import tempfile
     from datetime import date
@@ -30,12 +31,11 @@ def _():
     import marimo as mo
     import polars as pl
     import xlsxwriter
-    import gdrive_fsspec
 
     import omnisus as sus
     from omnisus.lake.locking import WriterBusyError
 
-    return Path, WriterBusyError, date, io, json, mo, os, pl, shutil, sus, tempfile, xlsxwriter
+    return Path, WriterBusyError, date, io, json, mo, os, pl, re, shutil, sus, tempfile, xlsxwriter
 
 
 @app.cell
@@ -59,13 +59,17 @@ def _(mo):
     você escolheu. Os códigos ficam como o DATASUS publicou; o rótulo vem do
     dicionário, ao lado (`sexo_rotulo`).
 
-    **Onde está o lake.** Indique a pasta que tem `omnisus-catalog.sqlite` e
-    `omnisus.ducklake/`:
+    **Onde está o lake.** O lake é uma pasta com `omnisus-catalog.sqlite` e
+    `omnisus.ducklake/`. Escolha onde ela está:
 
-    - neste computador, a pasta onde `sus.load` grava: `$OMNISUS_DATA_DIR`, se
-      definida, ou `data/raw`, relativa à pasta em que você abriu o marimo;
-    - no Google Drive, a pasta do lake sincronizada no computador ou, no molab (que não
-      monta o Drive), uma cópia da pasta no disco do notebook.
+    - *Pasta neste computador*: o caminho da pasta. Começa onde `sus.load` grava:
+      `$OMNISUS_DATA_DIR`, se definida, ou `data/raw`, relativa à pasta em que você
+      abriu o marimo. Uma pasta do Google Drive sincronizada no computador também serve.
+    - *Google Drive*: o caminho da pasta em *Meu Drive* (o Colab cria o lake em
+      `omnisus`) ou o link da pasta, que serve também para uma pasta compartilhada com
+      você. *Copiar do Drive* copia o lake para o disco da sessão, porque o molab não
+      monta o Drive e o DuckLake só lê arquivos do disco. Na primeira vez, conecte o
+      Drive no molab em *Files → Add remote storage → Google Drive*.
 
     O catálogo guarda a pasta em que o lake foi criado (no Colab,
     `/content/drive/MyDrive/omnisus`); este notebook lê os dados da pasta indicada,
@@ -82,18 +86,42 @@ def _(mo):
 def _(Path, mo, os):
     # Onde `sus.load` grava, resolvido como a biblioteca resolve: um `~` literal não é a home.
     _padrao = Path(os.environ.get("OMNISUS_DATA_DIR") or "data/raw").resolve()
+    origem = mo.ui.radio(
+        {"Pasta neste computador": "pasta", "Google Drive": "drive"},
+        value="Pasta neste computador",
+        label="Onde está o lake",
+        inline=True,
+    )
     pasta = mo.ui.text(
         value=mo.cli_args().get("lake") or str(_padrao), label="Pasta do lake", full_width=True
     )
+    drive = mo.ui.text(
+        value="omnisus",
+        label="Pasta no Google Drive: caminho em *Meu Drive* ou link da pasta",
+        full_width=True,
+    )
+    copiar = mo.ui.run_button(label="Copiar do Drive")
     # Só `true` liga: o marimo converte true/false em booleano, e `no` seria um texto não vazio.
     executar = mo.cli_args().get("executar") is True
-    pasta
-    return executar, pasta
+    return copiar, drive, executar, origem, pasta
 
 
 @app.cell
-def _(Path, pasta):
-    diretorio = Path(pasta.value).expanduser().resolve()
+def _(copiar, drive, mo, origem, pasta):
+    mo.vstack(
+        [origem, pasta if origem.value == "pasta" else mo.hstack([drive, copiar], widths=[1, 0])]
+    )
+    return
+
+
+@app.cell
+def _(Path, drive, origem, pasta, re, tempfile):
+    if origem.value == "drive":
+        # O lake do Drive é lido de uma cópia no disco da sessão, uma pasta por pasta do Drive.
+        _nome = re.sub(r"\W+", "_", drive.value.strip("/"))
+        diretorio = Path(tempfile.gettempdir()).resolve() / "omnisus-drive" / _nome
+    else:
+        diretorio = Path(pasta.value).expanduser().resolve()
     alvo = f"ducklake:{diretorio / 'omnisus.ducklake'}"
     return alvo, diretorio
 
@@ -138,33 +166,40 @@ def _(mo):
     ultima, guardar_ultima = mo.state(None)
     return guardar_ultima, mudar_versao, ultima, versao
 
-@app.cell
-def _(mo):
-    drive = mo.ui.text(
-        label="Pasta do lake no Google Drive (molab)", placeholder="omnisus", full_width=True
-    )
-    copiar = mo.ui.run_button(label="Copiar para a Pasta do lake")
-    mo.hstack([drive, copiar], justify="start")
-    return copiar, drive
-
 
 @app.cell
-def _(copiar, diretorio, drive, mo, mudar_versao):
+def _(copiar, diretorio, drive, mo, mudar_versao, re, shutil):
     mo.stop(not copiar.value)
-    mo.stop(
-        (diretorio / "omnisus-catalog.sqlite").exists(),
-        mo.md(f"`{diretorio}` já tem um lake; indique em *Pasta do lake* uma pasta vazia."),
-    )
-    # O molab não monta o Drive, e o DuckLake só lê arquivos do disco: copia a pasta inteira.
+    mo.stop(not drive.value.strip(), mo.md("Escreva o caminho ou o link da pasta no Drive."))
+    # Importado só no clique: quem não usa o Drive não precisa do pacote (o molab já o tem).
     from gdrive_fsspec import GoogleDriveFileSystem as _Drive
 
-    with mo.status.spinner(title=f"Copiando `{drive.value}` do Google Drive"):
-        _Drive().get(f"{drive.value.strip('/')}/", f"{diretorio}/", recursive=True)
+    # O link faz da pasta a raiz; um caminho é lido a partir de Meu Drive.
+    _link = re.search(r"/folders/([\w-]+)", drive.value)
+    try:
+        _drive = _Drive(root_file_id=_link[1]) if _link else _Drive()
+        with mo.status.spinner(title="Copiando o lake do Google Drive"):
+            shutil.rmtree(diretorio, ignore_errors=True)  # a cópia anterior, nunca o original
+            _drive.get("" if _link else drive.value.strip("/"), str(diretorio), recursive=True)
+    except Exception as e:
+        mo.stop(
+            True,
+            mo.callout(
+                mo.md(
+                    f"Não deu para copiar do Google Drive ({type(e).__name__}: {e}). No molab, "
+                    "conecte o Drive em *Files → Add remote storage → Google Drive* e clique "
+                    "de novo."
+                ),
+                kind="danger",
+            ),
+        )
     mudar_versao(lambda v: v + 1)  # reabre o lake, como depois de uma importação
     mo.md(
         f"Lake copiado para `{diretorio}`. Dá para explorar e citar; para importar, use o "
-        "lake na pasta onde foi criado (#87)."
+        "lake na pasta onde ele foi criado (#87)."
     )
+    return
+
 
 @app.cell
 def _(mo, sus):
