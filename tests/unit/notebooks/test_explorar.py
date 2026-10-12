@@ -18,6 +18,7 @@ import shutil
 import sys
 import zipfile
 from pathlib import Path
+from types import SimpleNamespace
 
 import duckdb
 import polars as pl
@@ -562,6 +563,18 @@ def test_a_reader_holding_the_catalog_stops_the_import_with_a_message(monkeypatc
 
     assert "outro programa está lendo este lake" in definidos["parada"]
     assert definidos["relatorio"]["situacao"].to_list() == ["não tentado"]
+
+
+def test_an_empty_row_limit_asks_for_one_instead_of_failing(importado, monkeypatch):
+    """Clearing the *Linhas na tabela* field leaves the number widget without a value."""
+    pasta, _, _ = importado
+    vazio = {"linhas": SimpleNamespace(value=None), "rotulos": SimpleNamespace(value=True)}
+
+    texto, definidos = _executar(monkeypatch, "--lake", str(pasta), defs=vazio)
+
+    assert "Indique quantas linhas a tabela mostra." in texto
+    assert "amostras" not in definidos
+    assert definidos["totais"] == {"sim_obitos": REGISTROS}  # the rest of the page stays
 
 
 def test_the_last_report_stays_while_the_widgets_change(importado, monkeypatch):

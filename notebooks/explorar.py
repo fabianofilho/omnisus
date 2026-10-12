@@ -590,7 +590,10 @@ def _(mo):
 
 
 @app.cell
-def _(colunas, con, filtros, linhas, projecoes):
+def _(colunas, con, filtros, linhas, mo, projecoes):
+    # Apagar o número deixa o campo sem valor.
+    mo.stop(linhas.value is None, mo.md("Indique quantas linhas a tabela mostra."))
+
     brutas = {}
     for _base, (_onde, _parametros) in filtros.items():
         _selecao = ", ".join(f'"{c}"' for c in colunas.value[_base]) or "NULL AS sem_colunas"
