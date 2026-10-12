@@ -13,12 +13,12 @@ from omnisus.lake.sql import quote_literal
 
 _INTEGER_MAX = 2_147_483_647
 # Match Python's whitespace stripping in DuckDB, including padded DBF strings.
-# chr() keeps generated SQL free of literal line/control characters, so saving
-# or formatting an audit query cannot silently alter the trimming semantics.
-_SQL_WHITESPACE = " || ".join(
-    f"chr({ord(char)})"
-    for char in " \t\n\r\v\f\x1c\x1d\x1e\x1f\x85\xa0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000"
-)
+_WHITESPACE = " \t\n\r\v\f\x1c\x1d\x1e\x1f\x85\xa0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000"
+# One constant, not 29 chr() calls joined by ||: the age expressions trim in every
+# condition and DuckDB binds each copy again on every query that reads them.
+# Hex keeps the SQL ASCII, free of literal line/control characters, so saving or
+# formatting an audit query cannot silently alter the trimming semantics.
+_SQL_WHITESPACE = f"decode(unhex('{_WHITESPACE.encode().hex()}'))"
 _LABELS = {
     "minute": ("minuto", "minutos"),
     "hour": ("hora", "horas"),

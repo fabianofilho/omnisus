@@ -93,7 +93,9 @@ def workspace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
 
 def _validated(dictionaries: Path, dataset: str) -> list[dict]:
-    raw = yaml.safe_load((dictionaries / f"{dataset}.yaml").read_text(encoding="utf-8"))
+    raw = yaml.load(
+        (dictionaries / f"{dataset}.yaml").read_text(encoding="utf-8"), Loader=yaml.CSafeLoader
+    )
     return raw["x-analytics"]["validated_sources"]
 
 
@@ -164,7 +166,7 @@ def test_every_status_column_reconciles_with_the_rows_of_its_scope(workspace) ->
 def test_accept_appends_every_accepted_scope_in_one_edit(workspace) -> None:
     module, paths, _calls = workspace
     yaml_path = paths["dictionaries"] / "sim_obitos.yaml"
-    before = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+    before = yaml.load(yaml_path.read_text(encoding="utf-8"), Loader=yaml.CSafeLoader)
 
     code = module.main(
         ["sim_obitos", "--ufs", "AC,AL", "--inicio", "2022", "--fim", "2022", "--accept"],
@@ -172,7 +174,7 @@ def test_accept_appends_every_accepted_scope_in_one_edit(workspace) -> None:
     )
 
     assert code == 0
-    after = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+    after = yaml.load(yaml_path.read_text(encoding="utf-8"), Loader=yaml.CSafeLoader)
     added = after["x-analytics"]["validated_sources"][-2:]
     del after["x-analytics"]["validated_sources"][-2:]
     sha = _sha("sim_rr_2022_mini")

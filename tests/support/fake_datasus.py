@@ -1,4 +1,7 @@
-"""One fake DATASUS server for runner-level tests: listing and downloads from given bytes."""
+"""One fake DATASUS server for runner-level tests: listing and downloads from given bytes.
+
+``block_ftp_listing`` is the other side: no listing reaches the real server.
+"""
 
 from __future__ import annotations
 
@@ -51,3 +54,16 @@ def serve(
     )
     monkeypatch.setattr("omnisus.sources.datasus_ftp._runner.fetch_dbc_bytes", fetch)
     return fetched
+
+
+def block_ftp_listing(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Make every DATASUS-FTP listing fail loudly instead of reaching the server.
+
+    ``tests/unit/conftest.py`` applies it to every unit test. A module-scoped fixture
+    is set up before that function-scoped guard, so one that imports applies it itself.
+    """
+
+    def _refuse(path: str, timeout_seconds: float) -> list[str]:
+        raise AssertionError(f"network: unit test attempted to LIST {path!r} over FTP")
+
+    monkeypatch.setattr("omnisus.sources.datasus_ftp.inventory._blocking_list", _refuse)

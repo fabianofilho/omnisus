@@ -1,5 +1,6 @@
 """Structured age semantics and actual DuckDB parity, independent of a lake."""
 
+import sys
 from collections import Counter
 from dataclasses import FrozenInstanceError
 from pathlib import Path
@@ -106,6 +107,8 @@ def test_sih_requires_declared_unit_and_domain(unit, raw, years, status):
     assert (age.years_completed, age.status) == (years, status)
 
 
+# Every character str.strip() removes (the scalar path), taken from Python, not from age.py.
+PYTHON_WHITESPACE = "".join(filter(str.isspace, map(chr, range(sys.maxunicode + 1))))
 RAW_CASES = [
     None,
     "",
@@ -127,6 +130,8 @@ RAW_CASES = [
     "\t401\n",
     "\u00a0401\u00a0",
     "\u2003401\u3000",
+    # Synthetic: padded with every PYTHON_WHITESPACE character, so SQL must trim each one.
+    PYTHON_WHITESPACE + "401" + PYTHON_WHITESPACE,
     "1",
     "0035",
     "-35",

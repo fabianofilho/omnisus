@@ -111,7 +111,9 @@ class Session:
             for sid, when, changes in rows
         ]
 
-    def publications(self, *, run_id: str | None = None) -> list[dict]:
+    def publications(
+        self, *, run_id: str | None = None, snapshot_id: int | None = None
+    ) -> list[dict]:
         """What was imported: one row per published scope, with its source files.
 
         Readable even after an import whose commit outcome was unknown, which is
@@ -119,6 +121,11 @@ class Session:
 
         Args:
             run_id: Only this run's publications; ``None`` (default) returns all.
+            snapshot_id: Read the publications as they were at this snapshot, through
+                this same attach; it wins over ``LakeReader(snapshot_id=...)``.
+                ``None`` (default) reads the attach's snapshot. A snapshot from before
+                the first import returns ``[]``; one the lake never had raises
+                ``duckdb.InvalidInputException``.
 
         Returns:
             Dicts with ``dataset``, ``scope`` (a :class:`~omnisus.ScopeKey`),
@@ -133,10 +140,12 @@ class Session:
             >>> with sus.LakeReader() as lake:  # doctest: +SKIP
             ...     [p["scope"] for p in lake.publications() if p["dataset"] == "sim_obitos"]
             [ScopeKey(uf='RR', ano=2023, mes=None)]
+            >>> with sus.LakeReader() as lake:  # doctest: +SKIP
+            ...     rows = lake.publications(snapshot_id=sus.latest_snapshot_id(lake))
         """
         from omnisus.lake.publication import publications
 
-        return publications(self, run_id=run_id)
+        return publications(self, run_id=run_id, snapshot_id=snapshot_id)
 
     def attempts(self, *, run_id: str | None = None) -> list[dict]:
         """Failed import attempts whose data was rolled back.

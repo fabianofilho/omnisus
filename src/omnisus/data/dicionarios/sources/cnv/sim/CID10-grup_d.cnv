@@ -1,0 +1,244 @@
+243 3 L
+      1  A00-A09 Doencas infecciosas intestinais            A00-A09
+      2  A15-A19 Tuberculose                                A15-A19
+      3  A20-A28 Algumas doencas bacterianas zoonóticas     A20-A28
+      4  A30-A49 Outras doencas bacterianas                 A30-A49
+      5  A50-A64 Infeccoes de tran predominantemente sexual A50-A64
+      6  A65-A69 Outras doencas por espiroquetas            A65-A69
+      7  A70-A74 Outras doencas causadas por clamidias      A70-A74
+      8  A75-A79 Rickettsioses                              A75-A79
+      9  A80-A89 Infec virais do sistema nervoso central    A80-A89
+     10  A90-A99 Febres arbovirus/febres hemorragicas virai A90-A99
+     11  B00-B09 Infec virais caract p/lesoes pele/mucosas  B00-B09
+     12  B15-B19 Hepatite viral                             B15-B19
+     13  B20-B24 Doenca virus imunodeficiência humana [HIV] B20-B24
+     14  B25-B34 Outras doencas por virus                   B25-B34
+     15  B35-B49 Micoses                                    B35-B49
+     16  B50-B64 Doencas devidas a protozoários             B50-B64
+     17  B65-B83 Helmintiases                               B65-B83
+     18  B85-B89 Pediculose, acariase e outras infestacoes  B85-B89
+     19  B90-B94 Seq doencas infecciosas e parasitarias     B90-B94
+     20  B95-B98 Ag infec bacter/virais/outr agentes infecc B95-B98
+     21  B99-B99 Outras doencas infecciosas                 B99-B99
+     22  C00-C14 Neop malig do lábio, cavid oral e faringe  C00-C14
+     23  C15-C26 Neoplasias malignas dos órgaos digestivos  C15-C26
+     24  C30-C39 Neopl malig ap respirat/orgaos intratorac  C30-C39
+     25  C40-C41 Neopl malig ossos/cartilagens artic        C40-C41
+     26  C43-C44 Melanoma/outras Neop malignas da pele      C43-C44
+     27  C45-C49 Neopl malig do tecido mesotelial/moles     C45-C49
+     28  C50-C50 Neoplasias malignas da mama                C50-C50
+     29  C51-C58 Neop malignas órgaos genitais femininos    C51-C58
+     30  C60-C63 Neop malignas órgaos genitais masculinos   C60-C63
+     31  C64-C68 Neoplasias malignas do trato urinário      C64-C68
+     32  C69-C72 Neopl malig olhos encEf outr part SNC      C69-C72
+     33  C73-C75 Neopl malig tireo/out glandulas endocrinas C73-C75
+     34  C76-C80 Neopl malig local mal def, secund/local NE C76-C80
+     35  C81-C96 Neopl malig tec linfát hematop/correlatos  C81-C96
+     36  C97-C97 Neopl malig local mult indep (prim)        C97-C97
+     37  D00-D09 Neoplasias [tumores] in situ               D00-D09
+     38  D10-D36 Neoplasias [tumores] benignas(os)          D10-D36
+     39  D37-D48 Neopl de comportamento incerto ou desc     D37-D48
+     40  D50-D53 Anemias nutricionais                       D50-D53
+     41  D55-D59 Anemias hemoliticas                        D55-D59
+     42  D60-D64 Anemias aplásticas e outras anemias        D60-D64
+     43  D65-D69 Defeitos coagul,purpura,outr afecc hemor   D65-D69
+     44  D70-D77 Out doencas sangue/órgaos hematopoeticos   D70-D77
+     45  D80-D89 Alguns transt comprom  mecanismo imunitár  D80-D89
+     46  E00-E07 Transtornos da glandula tireóide           E00-E07
+     47  E10-E14 Diabetes mellitus                          E10-E14
+     48  E15-E16 Outr transt regul glicose e secr pancr int E15-E16
+     49  E20-E35 Transtornos de outras glandulas endócrinas E20-E35
+     50  E40-E46 Desnutricao                                E40-E46
+     51  E50-E64 Outras deficiências nutricionais           E50-E64
+     52  E65-E68 Obesida/outras formas de hiperalimentacao  E65-E68
+     53  E70-E90 Disturbios metabólicos                     E70-E90
+     54  F00-F09 Transt mentais organicos, incl sintomático F00-F09
+     55  F10-F19 Transt ment/comport dev uso subs psicoativ F10-F19
+     56  F20-F29 Esquizofrenia, transt esquizot/delirantes  F20-F29
+     57  F30-F39 Transtornos do humor [afetivos]            F30-F39
+     58  F40-F48 Transt neurót, rel stress e somatoformes   F40-F48
+     59  F50-F59 Sindr comport assoc disf fisiológ/fat fisi F50-F59
+     60  F60-F69 Transt personalidade/comport adulto        F60-F69
+     61  F70-F79 Retardo mental                             F70-F79
+     62  F80-F89 Transtornos do desenvolvimento psicológico F80-F89
+     63  F90-F98 Transt compor/emoc aparec dur infanc adole F90-F98
+     64  F99-F99 Transtorno mental nao especificado         F99-F99
+     65  G00-G09 Doencas Inflamatorias do SNC               G00-G09
+     66  G10-G14 Atrofias sistêm q afetam princ o SNC       G10-G14
+     67  G20-G26 Doencas extrapiramidais/transt movimentos  G20-G26
+     68  G30-G32 Out doencas degenerativas sistema nervoso  G30-G32
+     69  G35-G37 Doe desmielinizantes SNC                   G35-G37
+     70  G40-G47 Transtornos episódicos e paroxisticos      G40-G47
+     71  G50-G59 Transt nervos, raizes e plexos nervosos    G50-G59
+     72  G60-G64 Polineurop/outr transt sist nerv periferic G60-G64
+     73  G70-G73 Doencas da juncao mioneural e dos musculos G70-G73
+     74  G80-G83 Paralisia cerebral/Out sind paraliticas    G80-G83
+     75  G90-G99 Outros transtornos do sistema nervoso      G90-G99
+     76  H00-H06 Transt pálpebra, aparelho lacrimal/órbita  H00-H06
+     77  H10-H13 Transtornos da conjuntiva                  H10-H13
+     78  H15-H22 Transt esclerótica,córnea,iris/corpo cilia H15-H22
+     79  H25-H28 Transtornos do cristalino                  H25-H28
+     80  H30-H36 Transtornos da coróide e da retina         H30-H36
+     81  H40-H42 Glaucoma                                   H40-H42
+     82  H43-H45 Transt do humor vitreo e do globo ocular   H43-H45
+     83  H46-H48 Transt do nervo óptico e das vias ópticas  H46-H48
+     84  H49-H52 Transt musc ocul, mov binoc, acomod/refrac H49-H52
+     85  H53-H54 Transtornos visuais e cegueira             H53-H54
+     86  H55-H59 Outros transtornos do olho e anexos        H55-H59
+     87  H60-H62 Doencas do ouvido externo                  H60-H62
+     88  H65-H75 Doencas do ouvido medio e da mastóide      H65-H75
+     89  H80-H83 Doencas do ouvido interno                  H80-H83
+     90  H90-H95 Outros transtornos do ouvido               H90-H95
+     91  I00-I02 Febre reumática aguda                      I00-I02
+     92  I05-I09 Doencas reumáticas crônicas do coracao     I05-I09
+     93  I10-I15 Doencas hipertensivas                      I10-I15
+     94  I20-I25 Doencas isquêmicas do coracao              I20-I25
+     95  I26-I28 Doe cardiaca pulmonar/circulacao pulmonar  I26-I28
+     96  I30-I52 Outras formas de doenca do coracao         I30-I52
+     97  I60-I69 Doencas cerebrovasculares                  I60-I69
+     98  I70-I79 Doe das arterias, das arteriolas/capilares I70-I79
+     99  I80-I89 Doe veias, vasos/ganglios linfáticos, NCOP I80-I89
+    100  I95-I99 Out transt/NE aparelho circulatório        I95-I99
+    101  J00-J06 Infec agudas das vias aereas superiores    J00-J06
+    102  J09-J18 Influenza [gripe] e pneumonia              J09-J18
+    103  J20-J22 Out infec agudas vias aereas inferiores    J20-J22
+    104  J30-J39 Outras doencas das vias aereas superiores  J30-J39
+    105  J40-J47 Doe crônicas das vias aereas inferiores    J40-J47
+    106  J60-J70 Doe pulmonares devidas a agentes externos  J60-J70
+    107  J80-J84 Out Doe respirat afetam princ intersticio  J80-J84
+    108  J85-J86 Afec necróticas/supurat vias aereas infer  J85-J86
+    109  J90-J94 Outras doencas da pleura                   J90-J94
+    110  J95-J99 Outras doencas do aparelho respiratório    J95-J99
+    111  K00-K14 Doe cavidade oral,gland salivares/maxilar  K00-K14
+    112  K20-K31 Doencas esôfago, estômago/duodeno          K20-K31
+    113  K35-K38 Doencas do apêndice                        K35-K38
+    114  K40-K46 Hernias                                    K40-K46
+    115  K50-K52 Enterites e colites nao-infecciosas        K50-K52
+    116  K55-K64 Outras doencas dos intestinos              K55-K64
+    117  K65-K67 Doencas do peritônio                       K65-K67
+    118  K70-K77 Doencas do figado                          K70-K77
+    119  K80-K87 Transt vesicula biliar, vias biliar/pancr  K80-K87
+    120  K90-K93 Outras doencas do aparelho digestivo       K90-K93
+    121  L00-L08 Infeccoes da pele e do tecido subcutaneo   L00-L08
+    122  L10-L14 Afeccoes bolhosas                          L10-L14
+    123  L20-L30 Dermatite e eczema                         L20-L30
+    124  L40-L45 Afeccoes pápulo-descamativas               L40-L45
+    125  L50-L54 Urticária e eritema                        L50-L54
+    126  L55-L59 Transt pele/tecido subcut relac c/radiacao L55-L59
+    127  L60-L75 Afeccoes dos anexos da pele                L60-L75
+    128  L80-L99 Out afeccoes pele/tecido subcutaneo        L80-L99
+    129  M00-M25 Artropatias                                M00-M25
+    130  M30-M36 Doencas sistêmicas do tecido conjuntivo    M30-M36
+    131  M40-M54 Dorsopatias                                M40-M54
+    132  M60-M79 Transtornos dos tecidos moles              M60-M79
+    133  M80-M94 Osteopatias e condropatias                 M80-M94
+    134  M95-M99 Outr transt sist osteomusc/tecido conjunti M95-M99
+    135  N00-N08 Doencas glomerulares                       N00-N08
+    136  N10-N16 Doencas renais tubulo-intersticiais        N10-N16
+    137  N17-N19 Insuficiência renal                        N17-N19
+    138  N20-N23 Calculose renal                            N20-N23
+    139  N25-N29 Outros transtornos do rim e do ureter      N25-N29
+    140  N30-N39 Outras doencas do aparelho urinário        N30-N39
+    141  N40-N51 Doencas dos órgaos genitais masculinos     N40-N51
+    142  N60-N64 Doencas da mama                            N60-N64
+    143  N70-N77 Doe Inf órgaos pelvicos femininos          N70-N77
+    144  N80-N98 Transt nao-Inf trato genital feminino      N80-N98
+    145  N99-N99 Out Transt do aparelho geniturinário       N99-N99
+    146  O00-O08 Gravidez que termina em aborto             O00-O08
+    147  O10-O16 Edem prot/transt hipert gravid parto puerp O10-O16
+    148  O20-O29 Out Transt maternos relac predom gravidez  O20-O29
+    149  O30-O48 Assist mae mot feto cavid amniót/prob part O30-O48
+    150  O60-O75 Complicacoes trabalho parto/parto          O60-O75
+    151  O80-O84 Parto                                      O80-O84
+    152  O85-O92 Complicacoes rel predom com o puerperio    O85-O92
+    153  O94-O99 Outras afeccoes obstetricas NCOP           O94-O99
+    154  P00-P04 Fet RN afet fat mat/compl grav, trab parto P00-P04
+    155  P05-P08 Transt relac c duracao gestacao/cresc fet  P05-P08
+    156  P10-P15 Traumatismo de parto                       P10-P15
+    157  P20-P29 Transt respirat/cardiova especif perinatal P20-P29
+    158  P35-P39 Infeccoes especificas do periodo perinatal P35-P39
+    159  P50-P61 Transt hemorrág/hematológ feto/RN          P50-P61
+    160  P70-P74 Transt endócr/metaból trans espec fet/RN   P70-P74
+    161  P75-P78 Transt aparelho digestivo feto ou RN       P75-P78
+    162  P80-P83 Afecc comprom tegument/reg term fet/RN     P80-P83
+    163  P90-P96 Out Transt originados no periodo perinatal P90-P96
+    164  Q00-Q07 Malformacoes congênitas do sistema nervoso Q00-Q07
+    165  Q10-Q18 Malform congên olho, ouvido,face/pescoco   Q10-Q18
+    166  Q20-Q28 Malformacoes congênitas ap circulatorio    Q20-Q28
+    167  Q30-Q34 Malformacoes congênitas ap respiratorio    Q30-Q34
+    168  Q35-Q37 Fenda labial e fenda palatina              Q35-Q37
+    169  Q38-Q45 Out malformacoes congênitas ap digestivo   Q38-Q45
+    170  Q50-Q56 Malformacoes congênitas órgaos genitais    Q50-Q56
+    171  Q60-Q64 Malformacoes congênitas aparelho urinário  Q60-Q64
+    172  Q65-Q79 Malform/deform congênit sist osteomuscular Q65-Q79
+    173  Q80-Q89 Outras malformacoes congênitas             Q80-Q89
+    174  Q90-Q99 Anomalias cromossômicas NCOP               Q90-Q99
+    175  R00-R09 Sint/sinais relat ap circulat/respirat     R00-R09
+    176  R10-R19 Sintom/sinais relat ao ap digest/abdome    R10-R19
+    177  R20-R23 Sintom/sinais relat pele/tecido subcutaneo R20-R23
+    178  R25-R29 Sint/sinais relat sist nervoso/osteomusc   R25-R29
+    179  R30-R39 Sintomas/sinais relativos ao ap urinário   R30-R39
+    180  R40-R46 Sint/sinais rel cogn percep est emoc/comp  R40-R46
+    181  R47-R49 Sintomas e sinais relativos à fala e à voz R47-R49
+    182  R50-R69 Sintomas e sinais gerais                   R50-R69
+    183  R70-R79 Achados anormais exames sangue, sem diag   R70-R79
+    184  R80-R82 Achados anormais exames urina, sem diag    R80-R82
+    185  R83-R89 Achad an exa/out liq, subs/tec corp s/diag R83-R89
+    186  R90-R94 Achad an exam diag imag estud fun, s/diag  R90-R94
+    187  R95-R99 Causas mal definidas/desc mortalidade      R95-R99
+    188  S00-S09 Traumatismos da cabeca                     S00-S09
+    189  S10-S19 Traumatismos do pescoco                    S10-S19
+    190  S20-S29 Traumatismos do tórax                      S20-S29
+    191  S30-S39 Traumat abdome, dorso, coluna lombar/pelve S30-S39
+    192  S40-S49 Traumatismos do ombro e do braco           S40-S49
+    193  S50-S59 Traumatismos do cotovelo e do antebraco    S50-S59
+    194  S60-S69 Traumatismos do punho e da mao             S60-S69
+    195  S70-S79 Traumatismos do quadril e da coxa          S70-S79
+    196  S80-S89 Traumatismos do joelho e da perna          S80-S89
+    197  S90-S99 Traumatismos do tornozelo e do pe          S90-S99
+    198  T00-T07 Traumat envolvendo multiplas regioes corpo T00-T07
+    199  T08-T14 Traum local NE tronco membro out reg corpo T08-T14
+    200  T15-T19 Efeito penetr corpo estranho  orif natural T15-T19
+    201  T20-T32 Queimaduras e corrosoes                    T20-T32
+    202  T33-T35 Geladuras [frostbite]                      T33-T35
+    203  T36-T50 Intox por drogas, medic/subst biológicas   T36-T50
+    204  T51-T65 Efeitos tóx subst orig predo nao-medicinal T51-T65
+    205  T66-T78 Out efeitos causas externas/os nao espec   T66-T78
+    206  T79-T79 Algumas complicacoes precoces traumatismos T79-T79
+    207  T80-T88 Compl cuidados medicos/cirurgicos, NCOP    T80-T88
+    208  T90-T98 Seq traum, intox/outr conseq causas extern T90-T98
+    209  U04-U12 Desig prov novas Doe etiologia incerta     U04-U12
+    210  U80-U89 Ag bacterianos resistentes a antibióticos  U80-U89
+    211  U92-U92 Reincidência de Covid-19, confirmada       U92-U92
+    212  U99-U99 CID 10ª Revisao nao disponivel             U99-U99
+    213  V01-V99 Acidentes de transporte                    V01-V99
+    214  W00-W19 Quedas                                     W00-W19
+    215  W20-W49 Exposicao a forcas mecanicas inanimadas    W20-W49
+    216  W50-W64 Exposicao a forcas mecanicas animadas      W50-W64
+    217  W65-W74 Afogamento e submersao acidentais          W65-W74
+    218  W75-W84 Outros riscos acidentais à respiracao      W75-W84
+    219  W85-W99 Expos corr elet, radia/temp press extr amb W85-W99
+    220  X00-X09 Exposicao à fumaca, ao fogo e às chamas    X00-X09
+    221  X10-X19 Cont  fonte calor ou substancias quentes   X10-X19
+    222  X20-X29 Contato com animais e plantas venenosos    X20-X29
+    223  X30-X39 Exposicao às forcas da natureza            X30-X39
+    224  X40-X49 Envenen acidental/exposicao subst nocivas  X40-X49
+    225  X50-X57 Excesso de esforcos, viagens e privacoes   X50-X57
+    226  X58-X59 Exposicao acidental a outr fatores/NE      X58-X59
+    227  X60-X84 Lesoes autoprovocadas intencionalmente     X60-X84
+    228  X85-Y09 Agressoes                                  X85-Y09
+    229  Y10-Y34 Eventos (fatos) cuja intencao e indet      Y10-Y34
+    230  Y35-Y36 Intervencoes legais e operacoes de guerra  Y35-Y36
+    231  Y40-Y59 Ef advers drog, medic/subst biol fin terap Y40-Y59
+    232  Y60-Y69 Acid ocorr pac prest cuid medicos/cirurg   Y60-Y69
+    233  Y70-Y82 Incid adv atos diagn terap assoc disp medi Y70-Y82
+    234  Y83-Y84 Reac an compl tard proc cir med s/men acid Y83-Y84
+    235  Y85-Y89 Seq causas externas morbidade/mortalidad   Y85-Y89
+    236  Y90-Y98 Fat supl relac causas morbid/mortalid COP  Y90-Y98
+    237  Z00-Z13 Pes contato serv saude p/exame/investiga   Z00-Z13
+    238  Z20-Z29 Pes c/riscos potenc saude relac Doe transm Z20-Z29
+    239  Z30-Z39 Pes cont serv saude circunst relac reprod  Z30-Z39
+    240  Z40-Z54 Pes contato serv saude proced/cuid espec   Z40-Z54
+    241  Z55-Z65 Pes c/risc pot saude relac circ socio psic Z55-Z65
+    242  Z70-Z76 Pes contato com serv saude Out circunst    Z70-Z76
+    243  Z80-Z99 Pess risc pot saud hist fam pes afec infl  Z80-Z99

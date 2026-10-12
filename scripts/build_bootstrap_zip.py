@@ -3,8 +3,9 @@
     uv run python scripts/build_bootstrap_zip.py
 
 Every source is a file of ``SIM/CID10/TABELAS`` registered in
-``sources/registry.json``, plus the packaged ``sources/cnv/sim/CBO2002.CNV``. Each
-download must match its registered SHA-256, else the build stops. The zip carries one
+``sources/registry.json``, plus the packaged ``sources/cnv/sim/CBO2002.CNV`` and
+``sources/cnv/sim/CID10-grup_d.cnv``. Each download, and each packaged member, must
+match its registered SHA-256, else the build stops. The zip carries one
 Parquet file per table and ``manifest.json`` (table -> rows and sources).
 """
 
@@ -98,19 +99,77 @@ def aux_municipios(rows: list[dict[str, Any]]) -> pl.DataFrame:
     )
 
 
-def aux_cid10(rows: list[dict[str, Any]], chapters: list[dict[str, Any]]) -> pl.DataFrame:
+def _member(path: str) -> tuple[bytes, dict[str, str]]:
+    """A packaged CNV after checking it against vinculos.json, with its manifest source."""
+    raw = (CNV / path).read_bytes()
+    member = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))["membros"][path]
+    if hashlib.sha256(raw).hexdigest() != member["sha256"]:
+        raise SystemExit(f"{path} differs from vinculos.json")
+    archive = next(s for s in sources_registry()["sources"] if s["id"] == member["fonte"])
+    source = {
+        "url": archive["url"],
+        "sha256": archive["sha256"],
+        "member": member["membro"],
+        "member_sha256": member["sha256"],
+    }
+    return raw, source
+
+
+def _in_range(code: str, first_last: str) -> bool:
+    """Whether a CID-10 code's category lies in ``A00-B99``: its first three characters,
+    compared as text, as CIDCAP10 and the TabWin CNV write their ranges."""
+    first, last = first_last.split("-")
+    return first <= code[:3] <= last
+
+
+def cid10_blocks() -> tuple[list[tuple[str, str]], dict[str, str]]:
+    """(range, description) of each line of CID10-grup_d.cnv, the CID-10 groups the SIM
+    DEF binds to CAUSABAS (``xCausa(AGRUP*)``). The TabWin layout (TabWin.pdf p. 90):
+    description in columns 10-59, codes from column 61; each description repeats the
+    range first, as CID10.DESCR repeats the code."""
+    raw, source = _member("sim/CID10-grup_d.cnv")
+    header, *lines = [line for line in raw.decode("cp1252").splitlines() if line.strip()]
+    blocks = []
+    for line in lines:
+        first_last, label = line[60:].strip(), line[9:59].strip()
+        if not label.startswith(first_last + " "):
+            raise SystemExit(f"CID10-grup_d.cnv: {line!r} does not repeat its range")
+        blocks.append((first_last, label[len(first_last) :].strip()))
+    if len(blocks) != int(header.split()[0]):
+        raise SystemExit(
+            f"CID10-grup_d.cnv declares {header.split()[0]} groups, has {len(blocks)}"
+        )
+    return blocks, source
+
+
+def aux_cid10(
+    rows: list[dict[str, Any]],
+    chapters: list[dict[str, Any]],
+    blocks: list[tuple[str, str]],
+) -> pl.DataFrame:
     def display(code: str) -> str:
         return code if len(code) == 3 else f"{code[:3]}.{code[3:]}"
 
     def chapter(code: str) -> int:
-        found = [
-            n
-            for n, c in enumerate(chapters, start=1)
-            if c["CAUSAS"][:3] <= code[:3] <= c["CAUSAS"][4:7]
-        ]
+        found = [n for n, c in enumerate(chapters, start=1) if _in_range(code, c["CAUSAS"])]
         if len(found) != 1:
             raise SystemExit(f"CID-10 {code} falls in chapters {found}")
         return found[0]
+
+    def block(code: str) -> tuple[str, str] | tuple[None, None]:
+        """The code's group; none for a code no group covers (O93, a Brazilian extension)."""
+        found = [b for b in blocks if _in_range(code, b[0])]
+        if len(found) > 1:
+            raise SystemExit(f"CID-10 {code} falls in groups {found}")
+        return found[0] if found else (None, None)
+
+    in_chapters: dict[str, set[int]] = {}
+    for r in rows:
+        first_last = block(r["CID10"])[0]
+        if first_last is not None:
+            in_chapters.setdefault(first_last, set()).add(chapter(r["CID10"]))
+    if spanning := {b: c for b, c in in_chapters.items() if len(c) > 1}:
+        raise SystemExit(f"CID-10 groups span chapters: {spanning}")
 
     for r in rows:
         if not r["DESCR"].startswith(display(r["CID10"])):
@@ -121,19 +180,15 @@ def aux_cid10(rows: list[dict[str, Any]], chapters: list[dict[str, Any]]) -> pl.
             "descricao": [r["DESCR"][len(display(r["CID10"])) :].strip() for r in rows],
             "capitulo": [chapter(r["CID10"]) for r in rows],
             "capitulo_descricao": [chapters[chapter(r["CID10"]) - 1]["DESCRICAO"] for r in rows],
+            "bloco": [block(r["CID10"])[0] for r in rows],
+            "bloco_descricao": [block(r["CID10"])[1] for r in rows],
         },
         schema_overrides={"capitulo": pl.Int32},
     )
 
 
 def aux_ocupacoes(tabocup: list[dict[str, Any]]) -> tuple[pl.DataFrame, dict[str, str]]:
-    raw = (CNV / "sim" / "CBO2002.CNV").read_bytes()
-    member = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))["membros"][
-        "sim/CBO2002.CNV"
-    ]
-    if hashlib.sha256(raw).hexdigest() != member["sha256"]:
-        raise SystemExit("CBO2002.CNV differs from vinculos.json")
-    archive = next(s for s in sources_registry()["sources"] if s["id"] == member["fonte"])
+    raw, source = _member("sim/CBO2002.CNV")
     cbo = {k: v for k, v in cnv_map(parse_cnv(raw.decode("cp1252"))).items() if k}
     frame = pl.DataFrame(
         {
@@ -142,12 +197,6 @@ def aux_ocupacoes(tabocup: list[dict[str, Any]]) -> tuple[pl.DataFrame, dict[str
             "descricao": list(cbo.values()) + [r["DESCRICAO"] for r in tabocup],
         }
     )
-    source = {
-        "url": archive["url"],
-        "sha256": archive["sha256"],
-        "member": member["membro"],
-        "member_sha256": member["sha256"],
-    }
     return frame, source
 
 
@@ -163,11 +212,12 @@ def main() -> None:
         into = Path(tmp)
         read = {name: download(name, into) for name in ENCODING}
     ocupacoes, cbo_source = aux_ocupacoes(read["TABOCUP.DBF"][0])
+    blocks, blocks_source = cid10_blocks()
     tables = {
         "aux_uf": (aux_uf(read["TABUF.DBF"][0]), ["TABUF.DBF"]),
         "aux_municipios": (aux_municipios(read["CADMUN.DBF"][0]), ["CADMUN.DBF"]),
         "aux_cid10": (
-            aux_cid10(read["CID10.DBF"][0], read["CIDCAP10.DBF"][0]),
+            aux_cid10(read["CID10.DBF"][0], read["CIDCAP10.DBF"][0], blocks),
             ["CID10.DBF", "CIDCAP10.DBF"],
         ),
         "aux_ocupacoes": (ocupacoes, ["TABOCUP.DBF"]),
@@ -191,6 +241,8 @@ def main() -> None:
             sources = [read[n][1] for n in names]
             if table == "aux_ocupacoes":
                 sources.append(cbo_source)
+            if table == "aux_cid10":
+                sources.append(blocks_source)
             manifest[table] = {"rows": frame.height, "sources": sources}
             print(f"  {table}: {frame.height} rows")
         zf.writestr(

@@ -226,10 +226,14 @@ def dbc_bytes_to_parquet(
                 # time, so memory stays bounded by a record batch.
                 with pa.OSFile(str(root / f"{number}.arrow"), "rb") as source:
                     table = pa.ipc.open_file(source).read_all()
+                    # column_names builds a new list on each access, so testing it per
+                    # field is quadratic in the column count. spool keeps names unique,
+                    # so the dict loses no column.
+                    columns = dict(zip(table.column_names, table.columns, strict=True))
                     aligned = pa.Table.from_arrays(
                         [
-                            table[field.name].cast(field.type, safe=True)
-                            if field.name in table.column_names
+                            columns[field.name].cast(field.type, safe=True)
+                            if field.name in columns
                             else pa.nulls(len(table), type=field.type)
                             for field in schema
                         ],

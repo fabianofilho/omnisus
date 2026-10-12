@@ -50,8 +50,9 @@ def test_every_hand_map_a_def_binds_is_generated_or_excused(monkeypatch):
             for b in parse_def(gerar.read_def(def_path, vinculos))
             if b.start in (1, None)
         }
-        doc = yaml.safe_load(
-            (ROOT / "src/omnisus/data/dicionarios" / f"{dataset}.yaml").read_text("utf-8")
+        doc = yaml.load(
+            (ROOT / "src/omnisus/data/dicionarios" / f"{dataset}.yaml").read_text("utf-8"),
+            Loader=yaml.CSafeLoader,
         )
         hand = {f["name"] for f in doc["schema"]["fields"] if f.get("x-decode")} & bound
         listed = set(spec["campos"]) | set(spec.get("sem_cnv", {}))
@@ -171,8 +172,9 @@ def _marca_uti(gerar: ModuleType) -> tuple[dict[str, Any], dict[str, str]]:
     from omnisus.transforms.cnv import cnv_map, parse_cnv
 
     vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
-    doc = yaml.safe_load(
-        (ROOT / "src/omnisus/data/dicionarios/sih_aih_reduzida.yaml").read_text("utf-8")
+    doc = yaml.load(
+        (ROOT / "src/omnisus/data/dicionarios/sih_aih_reduzida.yaml").read_text("utf-8"),
+        Loader=yaml.CSafeLoader,
     )
     field = next(f for f in doc["schema"]["fields"] if f["name"] == "marca_uti")
     text = gerar.read_member("sih/CNV/MARCAUTI.CNV", vinculos["membros"])
@@ -231,8 +233,16 @@ def test_replace_field_keeps_the_entry_indentation(monkeypatch):
         text, "nu_lesoes", {"name": "nu_lesoes", "type": "integer", "label": "x"}
     )
     assert "  - name: nu_lesoes\n    type: integer\n    label: x\n  - name: formaclini\n" in new
-    before = [f for f in yaml.safe_load(text)["schema"]["fields"] if f["name"] != "nu_lesoes"]
-    after = [f for f in yaml.safe_load(new)["schema"]["fields"] if f["name"] != "nu_lesoes"]
+    before = [
+        f
+        for f in yaml.load(text, Loader=yaml.CSafeLoader)["schema"]["fields"]
+        if f["name"] != "nu_lesoes"
+    ]
+    after = [
+        f
+        for f in yaml.load(new, Loader=yaml.CSafeLoader)["schema"]["fields"]
+        if f["name"] != "nu_lesoes"
+    ]
     assert after == before
     with pytest.raises(ValueError, match="nu_lesao: 0 field entries"):
         gerar.replace_field(text, "nu_lesao", {"name": "nu_lesao"})
@@ -246,10 +256,10 @@ def test_replace_field_on_the_last_field_keeps_what_follows(monkeypatch, path):
     keys after the list (primaryKey, x-analytics, ...) survive (pendência 5)."""
     gerar = _load(monkeypatch)
     text = path.read_text(encoding="utf-8")
-    doc = yaml.safe_load(text)
+    doc = yaml.load(text, Loader=yaml.CSafeLoader)
     last = doc["schema"]["fields"][-1]
     changed = dict(last, description="replaced by the test")
-    after = yaml.safe_load(gerar.replace_field(text, last["name"], changed))
+    after = yaml.load(gerar.replace_field(text, last["name"], changed), Loader=yaml.CSafeLoader)
     doc["schema"]["fields"][-1] = changed
     assert after == doc
 
@@ -293,7 +303,9 @@ def test_the_rd_era_claims_are_the_generator_output(monkeypatch, tmp_path):
         (tmp_path / path.name).write_text(path.read_text("utf-8"), encoding="utf-8")
     target = tmp_path / "sih_aih_reduzida_1992_2007.yaml"
     text = target.read_text("utf-8")
-    committed = {f["name"]: f for f in yaml.safe_load(text)["schema"]["fields"]}
+    committed = {
+        f["name"]: f for f in yaml.load(text, Loader=yaml.CSafeLoader)["schema"]["fields"]
+    }
     for name in RD_ERAS:
         field = dict(committed[name])
         del field["x-decode"]
@@ -303,7 +315,7 @@ def test_the_rd_era_claims_are_the_generator_output(monkeypatch, tmp_path):
         text = gerar.replace_field(text, name, field)
     target.write_text(text, encoding="utf-8")
     monkeypatch.setattr(gerar, "DICIONARIOS", tmp_path)
-    generated = yaml.safe_load(gerar.generate()[target])["schema"]["fields"]
+    generated = yaml.load(gerar.generate()[target], Loader=yaml.CSafeLoader)["schema"]["fields"]
     for field in generated:
         if field["name"] in RD_ERAS:
             assert field == committed[field["name"]], field["name"]
@@ -383,7 +395,9 @@ def test_a_hand_edited_evidence_of_a_current_claim_is_rewritten(monkeypatch, tmp
     target = tmp_path / "sih_aih_reduzida.yaml"
     text = target.read_text("utf-8")
     committed = next(
-        f for f in yaml.safe_load(text)["schema"]["fields"] if f["name"] == "marca_uti"
+        f
+        for f in yaml.load(text, Loader=yaml.CSafeLoader)["schema"]["fields"]
+        if f["name"] == "marca_uti"
     )
     edited = json.loads(json.dumps(committed))
     (claim,) = [c for c in edited["x-metadata"]["claims"] if c["target"] == "/field/codes"]
@@ -391,7 +405,7 @@ def test_a_hand_edited_evidence_of_a_current_claim_is_rewritten(monkeypatch, tmp
     claim["checked_at"] = "2026-01-01"
     target.write_text(gerar.replace_field(text, "marca_uti", edited), encoding="utf-8")
     monkeypatch.setattr(gerar, "DICIONARIOS", tmp_path)
-    generated = yaml.safe_load(gerar.generate()[target])["schema"]["fields"]
+    generated = yaml.load(gerar.generate()[target], Loader=yaml.CSafeLoader)["schema"]["fields"]
     assert next(f for f in generated if f["name"] == "marca_uti") == committed
 
 

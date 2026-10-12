@@ -10,7 +10,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal, get_args
 from uuid import uuid4
 
-from omnisus.lake.sql import qualified, quote_identifier, quote_literal
+import duckdb
+
+from omnisus.lake.sql import at_version, qualified, quote_identifier, quote_literal
 from omnisus.sources._base import ScopeKey
 
 if TYPE_CHECKING:
@@ -82,20 +84,27 @@ def _ensure_manifest(lake: "Lake") -> str:
     return manifest
 
 
-def publications(session: "Session", *, run_id: str | None = None) -> list[dict]:
-    if MANIFEST not in session.tables():
-        return []
-    sql = f"SELECT * FROM {qualified(session.alias, MANIFEST)}"
-    args = []
+def _select(session: "Session", sql: str, args: list[object]) -> list[dict] | None:
+    """The rows, or ``None`` when a table the query reads does not exist at that snapshot."""
+    try:
+        return session.connect().execute(sql, args).to_arrow_table().to_pylist()
+    except duckdb.CatalogException:
+        return None
+
+
+def publications(
+    session: "Session", *, run_id: str | None = None, snapshot_id: int | None = None
+) -> list[dict]:
+    at = at_version(snapshot_id)
+    manifest = qualified(session.alias, MANIFEST) + at
+    sql = f"SELECT * FROM {manifest}"
+    args: list[object] = []
     if run_id is not None:
         sql += " WHERE run_id = ?"
         args.append(run_id)
-    rows = (
-        session.connect()
-        .execute(sql + " ORDER BY published_at, publication_id", args)
-        .to_arrow_table()
-        .to_pylist()
-    )
+    rows = _select(session, sql + " ORDER BY published_at, publication_id", args)
+    if rows is None:
+        return []
     # Local import: the lake package stays registry-free at module import time.
     from omnisus.sources.datasus_ftp.datasets import release_from_uri
 
@@ -104,22 +113,17 @@ def publications(session: "Session", *, run_id: str | None = None) -> list[dict]
         row["scope"] = scope_from_fields(dimensions) if isinstance(dimensions, dict) else None
         row["release"] = release_from_uri(row["dataset"], row.get("source_uri"))
     by_publication: dict[str, list[dict]] = {}
-    if SOURCES in session.tables():
-        sources_sql = f"SELECT * FROM {qualified(session.alias, SOURCES)}"
-        sources_args: list[object] = []
-        if run_id is not None:
-            sources_sql += (
-                " WHERE publication_id IN "
-                f"(SELECT publication_id FROM {qualified(session.alias, MANIFEST)} WHERE run_id = ?)"
-            )
-            sources_args.append(run_id)
-        for source in (
-            session.connect()
-            .execute(sources_sql + " ORDER BY publication_id, ordinal", sources_args)
-            .to_arrow_table()
-            .to_pylist()
-        ):
-            by_publication.setdefault(source.pop("publication_id"), []).append(source)
+    sources_sql = f"SELECT * FROM {qualified(session.alias, SOURCES)}{at}"
+    sources_args: list[object] = []
+    if run_id is not None:
+        sources_sql += (
+            f" WHERE publication_id IN (SELECT publication_id FROM {manifest} WHERE run_id = ?)"
+        )
+        sources_args.append(run_id)
+    for source in (
+        _select(session, sources_sql + " ORDER BY publication_id, ordinal", sources_args) or []
+    ):
+        by_publication.setdefault(source.pop("publication_id"), []).append(source)
     for row in rows:
         row["sources"] = by_publication.get(row["publication_id"]) or (
             [

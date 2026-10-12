@@ -699,6 +699,11 @@
       "membro": "OBITOS_CID10_TAB/tabdo/CBO2002.CNV",
       "sha256": "bcb30b0f8a098b2fbcaf1e3a36188b5fb08adfe390f90d9b64edf2e4c2a30cd6"
     },
+    "sim/CID10-grup_d.cnv": {
+      "fonte": "sim-tab-bb1c9f02668e",
+      "membro": "OBITOS_CID10_TAB/tabdo/CID10-grup_d.cnv",
+      "sha256": "d105cf090e7f8e62250555c7a35c6bc2c16f8180779a30c60e63583d1b01f960"
+    },
     "sim/CIRURGIA.CNV": {
       "fonte": "sim-tab-bb1c9f02668e",
       "membro": "OBITOS_CID10_TAB/tabdo/CIRURGIA.CNV",

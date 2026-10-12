@@ -97,7 +97,9 @@ def audit(target: str, snapshot_id: int, out: Path) -> None:
             table = qualified(reader.alias, dataset)
             resource = files("omnisus.data.dicionarios").joinpath(f"{dataset}.yaml")
             raw = resource.read_bytes()
-            declared = {f["name"] for f in yaml.safe_load(raw)["schema"]["fields"]}
+            declared = {
+                f["name"] for f in yaml.load(raw, Loader=yaml.CSafeLoader)["schema"]["fields"]
+            }
             schema = query(f"{dataset}.schema", f"DESCRIBE SELECT * FROM {table}")
             observed = {row["column_name"] for row in schema}
             result = {
