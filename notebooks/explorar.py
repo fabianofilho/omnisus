@@ -137,6 +137,33 @@ def _(mo):
     ultima, guardar_ultima = mo.state(None)
     return guardar_ultima, mudar_versao, ultima, versao
 
+@app.cell
+def _(mo):
+    drive = mo.ui.text(
+        label="Pasta do lake no Google Drive (molab)", placeholder="omnisus", full_width=True
+    )
+    copiar = mo.ui.run_button(label="Copiar para a Pasta do lake")
+    mo.hstack([drive, copiar], justify="start")
+    return copiar, drive
+
+
+@app.cell
+def _(copiar, diretorio, drive, mo, mudar_versao):
+    mo.stop(not copiar.value)
+    mo.stop(
+        (diretorio / "omnisus-catalog.sqlite").exists(),
+        mo.md(f"`{diretorio}` já tem um lake; indique em *Pasta do lake* uma pasta vazia."),
+    )
+    # O molab não monta o Drive, e o DuckLake só lê arquivos do disco: copia a pasta inteira.
+    from gdrive_fsspec import GoogleDriveFileSystem as _Drive
+
+    with mo.status.spinner(title=f"Copiando `{drive.value}` do Google Drive"):
+        _Drive().get(f"{drive.value.strip('/')}/", f"{diretorio}/", recursive=True)
+    mudar_versao(lambda v: v + 1)  # reabre o lake, como depois de uma importação
+    mo.md(
+        f"Lake copiado para `{diretorio}`. Dá para explorar e citar; para importar, use o "
+        "lake na pasta onde foi criado (#87)."
+    )
 
 @app.cell
 def _(mo, sus):
