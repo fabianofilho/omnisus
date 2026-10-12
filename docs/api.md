@@ -161,6 +161,24 @@ with sus.LakeReader(snapshot_id=latest) as reader:
     ...  # every statement here sees exactly that snapshot
 ```
 
+`LakeReader(snapshot_id=N)` is enough when one session reads one snapshot. When one
+attach serves many snapshots (opening another attach costs a round trip to a
+PostgreSQL catalog), pin each query instead: `reader.publications(snapshot_id=N)` and
+`reference_join_sql(..., snapshot_id=N)` read the manifest and the vocabulary at `N`,
+whatever snapshot the attach is pinned to. The data table is pinned by the query you
+write, with the alias before `AT`:
+
+```python
+with sus.LakeReader() as reader:
+    n = sus.latest_snapshot_id(reader)
+    fontes = reader.publications(snapshot_id=n)
+    join = sus.reference_join_sql("sim_obitos", "causabas", snapshot_id=n)
+    df = reader.connect().sql(
+        f"SELECT ref_causabas.capitulo, count(*) AS obitos "
+        f"FROM lake.sim_obitos AS d AT (VERSION => {n}) {join} GROUP BY ALL"
+    ).pl()
+```
+
 ```python
 import omnisus as sus
 import polars as pl

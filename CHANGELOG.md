@@ -9,6 +9,11 @@
   only `omnisus.__all__` can catch the writer's errors and build the IBGE year selector.
   `Product.name` documents that it is also the relation the importer writes in the lake
   (#102).
+- `publications()` and `reference_join_sql()` take `snapshot_id: int | None = None`:
+  one attach reads the manifest and the `aux_*` vocabulary at snapshot `N` with
+  `AT (VERSION => N)`, which wins over `LakeReader(snapshot_id=...)`. A snapshot from
+  before the first import returns `[]`. `None` keeps the SQL and the rows of 0.2.3. The
+  data table is pinned by the caller's `FROM` (#101).
 
 ### Packaging
 
