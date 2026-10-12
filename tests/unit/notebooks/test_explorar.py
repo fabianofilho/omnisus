@@ -512,6 +512,15 @@ def test_the_row_limit_caps_the_table_but_not_the_counts(importado, monkeypatch)
     assert "Meses" not in texto
 
 
+def test_todas_as_linhas_shows_every_row_whatever_the_row_limit(importado, monkeypatch):
+    pasta, _, _ = importado
+
+    definidos = _rodar(monkeypatch, "--lake", str(pasta), "--linhas", "100", "--todas", "true")
+
+    assert definidos["todas"].value
+    assert definidos["amostras"]["sim_obitos"].height == REGISTROS
+
+
 def test_without_lake_it_opens_the_folder_sus_load_writes_to(importado, monkeypatch, tmp_path):
     """$OMNISUS_DATA_DIR, else data/raw under the working directory, as `data_dir()` says."""
     pasta, _, _ = importado
@@ -566,15 +575,26 @@ def test_a_reader_holding_the_catalog_stops_the_import_with_a_message(monkeypatc
 
 
 def test_an_empty_row_limit_asks_for_one_instead_of_failing(importado, monkeypatch):
-    """Clearing the *Linhas na tabela* field leaves the number widget without a value."""
+    """Clearing the *Linhas na tabela* field leaves the number widget without a value;
+    with *Todas as linhas* on, the number does not count."""
     pasta, _, _ = importado
-    vazio = {"linhas": SimpleNamespace(value=None), "rotulos": SimpleNamespace(value=True)}
 
-    texto, definidos = _executar(monkeypatch, "--lake", str(pasta), defs=vazio)
+    def _widgets(todas):
+        return {
+            "linhas": SimpleNamespace(value=None),
+            "todas": SimpleNamespace(value=todas),
+            "rotulos": SimpleNamespace(value=True),
+        }
+
+    texto, definidos = _executar(monkeypatch, "--lake", str(pasta), defs=_widgets(False))
 
     assert "Indique quantas linhas a tabela mostra." in texto
     assert "amostras" not in definidos
     assert definidos["totais"] == {"sim_obitos": REGISTROS}  # the rest of the page stays
+
+    _, definidos = _executar(monkeypatch, "--lake", str(pasta), defs=_widgets(True))
+
+    assert definidos["amostras"]["sim_obitos"].height == REGISTROS
 
 
 def test_the_last_report_stays_while_the_widgets_change(importado, monkeypatch):

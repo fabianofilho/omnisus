@@ -554,9 +554,12 @@ def _(mo):
 
     Uma aba por base. A contagem é de todos os escopos escolhidos; a tabela mostra até
     *Linhas na tabela* delas, porque a tabela do marimo guarda na memória tudo o que
-    recebe. Para mais linhas, filtre os escopos ou tire colunas. As categorias
-    harmonizadas (`idade_anos_completos`, `sexo_categoria`...) só aparecem quando todos
-    os escopos vêm de fontes validadas (ADR 0003); a aba diz o motivo quando faltam.
+    recebe. *Todas as linhas* mostra todas, sem limite: com muitos escopos de uma base
+    grande (SIH, SIM de várias UFs e anos), isso pode ocupar gigabytes de memória e
+    demorar; para ver mais linhas com menos memória, filtre os escopos ou tire colunas.
+    As categorias harmonizadas (`idade_anos_completos`, `sexo_categoria`...) só
+    aparecem quando todos os escopos vêm de fontes validadas (ADR 0003); a aba diz o
+    motivo quando faltam.
 
     *Baixar o dicionário (XLSX)* traz uma planilha com duas abas. A aba `colunas` tem
     uma linha por coluna gravada no lake, com o tipo dela e, quando o dicionário
@@ -584,23 +587,28 @@ def _(mo):
         label="Linhas na tabela",
         debounce=True,
     )
+    # Só `true` liga, como em `--substituir`.
+    todas = mo.ui.switch(value=mo.cli_args().get("todas") is True, label="Todas as linhas")
     rotulos = mo.ui.switch(value=True, label="Rótulos do dicionário")
-    mo.hstack([linhas, rotulos], justify="start")
-    return linhas, rotulos
+    mo.hstack([linhas, todas, rotulos], justify="start")
+    return linhas, rotulos, todas
 
 
 @app.cell
-def _(colunas, con, filtros, linhas, mo, projecoes):
-    # Apagar o número deixa o campo sem valor.
-    mo.stop(linhas.value is None, mo.md("Indique quantas linhas a tabela mostra."))
+def _(colunas, con, filtros, linhas, mo, projecoes, todas):
+    # Apagar o número deixa o campo sem valor; com *Todas as linhas* ele não conta.
+    mo.stop(
+        not todas.value and linhas.value is None,
+        mo.md("Indique quantas linhas a tabela mostra."),
+    )
 
+    _limite = "" if todas.value else f" LIMIT {int(linhas.value)}"
     brutas = {}
     for _base, (_onde, _parametros) in filtros.items():
         _selecao = ", ".join(f'"{c}"' for c in colunas.value[_base]) or "NULL AS sem_colunas"
         _categorias = "".join(f', {c.expression} AS "{c.name}"' for c in projecoes[_base].columns)
         brutas[_base] = con.execute(
-            f'SELECT {_selecao}{_categorias} FROM lake."{_base}" '
-            f"WHERE {_onde} LIMIT {int(linhas.value)}",
+            f'SELECT {_selecao}{_categorias} FROM lake."{_base}" WHERE {_onde}{_limite}',
             _parametros,
         ).pl()
     return (brutas,)
