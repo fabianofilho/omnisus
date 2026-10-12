@@ -23,6 +23,16 @@
   notebook installs `"omnisus[colab]==<version>"`; `uv pip install "omnisus[colab]"` does
   the same elsewhere (#100).
 
+### Vocabularies
+
+- `aux_cid10` (2.1.0) gains `bloco` and `bloco_descricao`: the CID-10 group of each code
+  (`B50-B64`, "Doencas devidas a protozoários"), from `CID10-grup_d.cnv` in
+  `SIM/CID10/TAB/OBITOS_CID10_TAB.zip`, the grouping the SIM DEF binds to `CAUSABAS`.
+  Each block lies in one chapter. `O93` and `O930`–`O939`, a Brazilian extension, are in
+  no group and have no block. `evidence/2026-10-11-blocos-cid10/` compares the groups
+  with the WHO ICD-10 2019 and CBCD 2008 lists. Run `omnisus lake update-auxiliares` (or
+  `Lake.bootstrap_auxiliares()`) to load the new columns (#103).
+
 ## v0.2.3 — 2026-10-08
 
 **Upgrading from 0.2.2:** no parser version changed (the import still reads the same

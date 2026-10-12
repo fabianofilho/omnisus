@@ -1,5 +1,5 @@
 name: aux_cid10
-title: CID-10 completa com capítulos (DATASUS CID10 e CIDCAP10)
+title: CID-10 completa com capítulos e blocos (DATASUS CID10, CIDCAP10 e CID10-grup_d)
 profile: tabular-data-resource
 encoding: utf-8
 schema:
@@ -19,7 +19,14 @@ schema:
     - name: capitulo_descricao
       type: string
       description: "CIDCAP10.DESCRICAO"
+    - name: bloco
+      type: string
+      constraints: { pattern: "^[A-Z]\\d{2}-[A-Z]\\d{2}$" }
+      description: "Faixa do grupo de CID10-grup_d.cnv (OBITOS_CID10_TAB.zip, o agrupamento que o DEF do SIM liga a CAUSABAS) que contém os três primeiros caracteres (B50-B64). Vazio em O93 e O930 a O939, extensão brasileira que nenhum grupo cobre"
+    - name: bloco_descricao
+      type: string
+      description: "Descrição do grupo em CID10-grup_d.cnv, sem a faixa impressa no início (abreviada como publicada)"
   primaryKey: [codigo]
-x-version: "2.0.0"
+x-version: "2.1.0"
 x-source: DATASUS
 x-source-url: "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CID10.DBF"

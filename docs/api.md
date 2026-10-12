@@ -103,7 +103,8 @@ is already running. Importing `cnes_estabelecimentos` by any function refreshes 
 
 The bootstrap tables (`aux_uf`, `aux_municipios`, `aux_cid10`, `aux_ocupacoes`,
 `aux_paises`) come from DATASUS's `SIM/CID10/TABELAS`; the CBO 2002 codes in
-`aux_ocupacoes` come from `CBO2002.CNV` in `SIM/CID10/TAB/OBITOS_CID10_TAB.zip`. Each
+`aux_ocupacoes` and the CID-10 blocks of `aux_cid10` (`bloco`, `bloco_descricao`) come
+from `CBO2002.CNV` and `CID10-grup_d.cnv` in `SIM/CID10/TAB/OBITOS_CID10_TAB.zip`. Each
 file is hashed in the source registry. Nothing joins at import: `reference_join_sql` writes the `LEFT JOIN` a
 field's dictionary declares. See [vocabularies](sources/vocabularios.md).
 

@@ -9,7 +9,8 @@ origem, para você juntar aos microdados quando quiser. Nada é juntado na impor
 
 `omnisus init` (ou `omnisus lake update-auxiliares`) carrega cinco tabelas do zip
 empacotado. Todas vêm de `ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/`,
-exceto a CBO 2002, que vem de `CBO2002.CNV` em `SIM/CID10/TAB/OBITOS_CID10_TAB.zip`. O
+exceto a CBO 2002 e os blocos da CID-10, que vêm de `CBO2002.CNV` e `CID10-grup_d.cnv` em
+`SIM/CID10/TAB/OBITOS_CID10_TAB.zip`. O
 `manifest.json` do zip lista as linhas e o SHA-256 de cada fonte, e cada fonte está em
 `src/omnisus/data/dicionarios/sources/registry.json`.
 
@@ -17,7 +18,7 @@ exceto a CBO 2002, que vem de `CBO2002.CNV` em `SIM/CID10/TAB/OBITOS_CID10_TAB.z
 | --- | --- | ---: | --- |
 | `aux_uf` | `TABUF.DBF` | 27 | `codigo_ibge` (2 dígitos) |
 | `aux_municipios` | `CADMUN.DBF` | 5.652 | `codigo_ibge` (7 dígitos); `codigo_6` também é único |
-| `aux_cid10` | `CID10.DBF` + `CIDCAP10.DBF` | 14.257 | `codigo` sem ponto (`B571`) |
+| `aux_cid10` | `CID10.DBF` + `CIDCAP10.DBF` + `CID10-grup_d.cnv` | 14.257 | `codigo` sem ponto (`B571`) |
 | `aux_ocupacoes` | `CBO2002.CNV` + `TABOCUP.DBF` | 2.458 + 3.564 | `(esquema, codigo)` só em `cbo2002` |
 | `aux_paises` | `TABPAIS.DBF` | 264 | nenhuma: 3 códigos têm dois nomes |
 
