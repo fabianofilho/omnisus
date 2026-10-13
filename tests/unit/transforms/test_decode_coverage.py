@@ -638,7 +638,8 @@ def test_report_codes_without_a_fixture_still_have_an_open_issue(dataset, field,
 @pytest.mark.parametrize("dataset", ["sih_aih_reduzida", "sih_aih_rejeitada"])
 def test_etnia_codes_outside_the_list_take_the_range_label_and_the_field_says_so(dataset):
     """etnia.cnv names 0001-0264; every other 4-digit code is "NÃO INFORMADO" only through
-    0000-9999, the range #7 decided to expand, and an open issue on the field says so."""
+    0000-9999, the range #7 decided to expand, and an open issue on the field says so, and
+    says that in the fixtures '0000' marks a non-indigenous patient."""
     field = load_dicionario(dataset).field_def("etnia")
     decode = field["x-decode"]
     listed = {f"{n:04d}" for n in range(1, 265)}
@@ -649,6 +650,10 @@ def test_etnia_codes_outside_the_list_take_the_range_label_and_the_field_says_so
     (entry,) = [i for i in issues if i["id"] == "etnia-nao-informado-pela-faixa"]
     assert entry["status"] == "open"
     assert "'0000'" in entry["description"] and "0001-0264" in entry["description"]
+    # In the fixtures '0000' is a non-indigenous patient, not an unknown ethnicity.
+    assert (
+        "raca_cor 01-04" in entry["description"] and "filtre por raca_cor" in entry["description"]
+    )
 
 
 @pytest.mark.parametrize("dataset", ["sih_aih_reduzida", "sih_aih_rejeitada"])
@@ -661,6 +666,32 @@ def test_etnia_labels_with_a_soft_hyphen_are_named_by_an_open_issue(dataset):
     (entry,) = [i for i in field["x-metadata"]["issues"] if i["id"] == "etnia-hifen-suave"]
     assert entry["status"] == "open"
     assert all(f"'{code}'" in entry["description"] for code in soft)
+
+
+ETNIA_FIXTURES = [
+    ("sih_aih_reduzida", "sih_rr_2024_01_mini"),  # RR 2024-01
+    ("sih_aih_reduzida", "sih_rd_sp_2022_01_excerpt"),  # SP 2022-01
+    ("sih_aih_reduzida", "sih_rd_sp_2023_08_excerpt"),  # SP 2023-08
+    ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini"),  # RR 2024-01
+    ("sih_aih_rejeitada", "sih_rj_sp_2022_03_excerpt"),  # SP 2022-03
+    ("sih_aih_rejeitada", "sih_rj_sp_2022_07_excerpt"),  # SP 2022-07
+]
+
+
+@pytest.mark.parametrize(("dataset", "fixture"), ETNIA_FIXTURES)
+def test_etnia_0000_marks_a_non_indigenous_patient_in_every_fixture(dbc_fixture, dataset, fixture):
+    """The trap on the SIH page, on every RD and RJ fixture that has `etnia` (RR and SP):
+    each '0000' row has raca_cor 01-04, and each raca_cor 05 (Indígena) row has a code
+    etnia.cnv lists, 0001-0264, so its label is not the range's "NÃO INFORMADO"."""
+    frame = _read(dataset, dbc_fixture(fixture))
+    decode = load_dicionario(dataset).field_def("etnia")["x-decode"]
+    pairs = set(zip(frame["etnia"], frame["raca_cor"], strict=True))
+    listed = {f"{n:04d}" for n in range(1, 265)}
+    assert any(etnia == "0000" for etnia, _ in pairs)
+    assert {raca for etnia, raca in pairs if etnia == "0000"} <= {"01", "02", "03", "04"}
+    indigenous = {etnia for etnia, raca in pairs if raca == "05"}
+    assert indigenous <= listed
+    assert "NÃO INFORMADO" not in {decode[etnia] for etnia in indigenous}
 
 
 def test_cobranca_labels_come_from_saidaperm():

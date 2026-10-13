@@ -22,8 +22,9 @@
   bind to `ETNIA`. The table names `0001`-`0264` and opens with the range `0000-9999`,
   "NÃO INFORMADO", expanded as decided in #7: every other 4-digit code, `0000` included,
   takes that label only through the range (issue `etnia-nao-informado-pela-faixa`). In
-  the fixtures `0000` marks a non-indigenous patient (`raca_cor` 01-04), a trap now in
-  the SIH page. 15 labels hold U+00AD, a soft hyphen, and a text search misses them
+  the RR and SP fixtures `0000` marks a non-indigenous patient (`raca_cor` 01-04), not an
+  unknown ethnicity, as the SIH page and that issue say: count indigenous patients by
+  `raca_cor`. 15 labels hold U+00AD, a soft hyphen, and a text search misses them
   (issue `etnia-hifen-suave`). The RD dictionary grows by 314 KB and the RJ one by 294 KB.
 
 ### Packaging

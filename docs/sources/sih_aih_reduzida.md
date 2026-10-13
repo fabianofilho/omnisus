@@ -87,11 +87,12 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
 
 ## Armadilhas
 
-- Em `etnia`, o `0000` das fixtures do RD e do RJ marca AIH de paciente não indígena, e
-  não etnia desconhecida: nelas, toda linha com `0000` tem `raca_cor` de 01 a 04, e toda
-  linha com `raca_cor` 05 (indígena) tem um código de `0001` a `0264`. O `etnia.cnv` rotula o
-  `0000` "NÃO INFORMADO" só pela faixa `0000-9999`; em RR 2024-01 são 3.303 das 3.714 AIHs
-  do RD. Para contar pacientes indígenas, filtre por `raca_cor`.
+- Em `etnia`, o `0000` das fixtures do RD e do RJ (RR 2024-01 e excertos SP de 2022 e
+  2023) marca AIH de paciente não indígena, e não etnia desconhecida: nelas, toda linha
+  com `0000` tem `raca_cor` de 01 a 04, e toda linha com `raca_cor` 05 (indígena) tem um
+  código de `0001` a `0264`. O `etnia.cnv` rotula o `0000` "NÃO INFORMADO" só pela faixa
+  `0000-9999`; em RR 2024-01 são 3.303 das 3.714 AIHs do RD. Para contar pacientes
+  indígenas, filtre por `raca_cor`.
 - Há AIH de tipos diferentes em `ident` (Informe SIH 2016-03, p. 1) e um sequencial
   próprio para a AIH de longa permanência (p. 3).
 - A consulta `aih_distintas` do notebook compara o número de linhas com o número de
