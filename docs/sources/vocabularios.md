@@ -62,14 +62,19 @@ que não resolve (`tests/unit/test_references.py`).
   SINASC (`Q248Q659Q789`) não são um código só e não declaram referência.
 - **`0000` no SIH.** `diag_secun`, `cid_asso` e `cid_morte` gravam `0000` quando não há
   causa; não é um código CID-10.
-- **`0000` no SIA.** `pa_cidpri`, `pa_cidsec` e `pa_cidcas` do PA, e `ap_cidsec` e
-  `ap_cidcas` da APAC de quimioterapia e da de radioterapia, gravam `0000` quando não há
-  CID. Os outros campos de CID da AQ e da AR (`ap_cidpri`, `aq_*`, `ar_*`) ficam em
-  branco quando não são usados. O `DBF/S_CID.DBF` do `TAB_SIA.zip` rotula o `0000` "CID
-  NAO INFORMADO"; não é um código CID-10 e fica sem rótulo no lake. A mesma tabela chama
-  de "CID NÃO IDENTIFICADO" alguns códigos de 4 caracteres que o PA publica e que não
-  estão na `aux_cid10`, como `N182` e `N185`. `M881` (5 linhas) e `Q350` (3) têm rótulo
-  próprio no S_CID, mas também não têm linha na `aux_cid10` e ficam sem rótulo no lake
+- **`0000` no SIA.** O `DBF/S_CID.DBF` do `TAB_SIA.zip` rotula o `0000` "CID NAO
+  INFORMADO"; não é um código CID-10 e fica sem rótulo no lake. No censo (PA de RR, AQ e
+  AR de AL, um arquivo por mês de 2008-01 a 2026-07) ele é a maior parte dos valores
+  preenchidos: no PA, 5.384.529 de 6.871.461 em `pa_cidpri`, 6.838.396 de 6.871.461 em
+  `pa_cidsec` e 6.690.279 de 6.709.796 em `pa_cidcas`; na AQ, 708.236 de 719.061 em
+  `ap_cidsec` e 718.881 em `ap_cidcas`; na AR, 48.786 de 48.911 em `ap_cidsec` e 48.906
+  em `ap_cidcas`. Uma junção com a `aux_cid10` deixa essas linhas sem nome de doença.
+  `pa_cidcas` também fica em branco (161.665 linhas). `ap_cidpri` da AQ e da AR está
+  preenchido em toda linha do censo e não tem `0000`; os campos `aq_*` e `ar_*` ficam em
+  branco em parte das linhas e também não têm `0000`. A mesma tabela chama de "CID NÃO
+  IDENTIFICADO" alguns códigos de 4 caracteres que o PA publica e que não estão na
+  `aux_cid10`, como `N182` e `N185`. `M881` (5 linhas) e `Q350` (3) têm rótulo próprio
+  no S_CID, mas também não têm linha na `aux_cid10` e ficam sem rótulo no lake
   (`evidence/2026-10-07-sia-cid-widths/values.csv`).
 - **Descrições abreviadas.** `aux_cid10.descricao` é o texto de `CID10.DBF`, que
   abrevia (`Form aguda doenc de Chagas s/compr cardiaco`).
