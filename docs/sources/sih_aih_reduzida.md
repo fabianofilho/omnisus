@@ -125,11 +125,11 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   `DBF/CID10.DBF`). O `diagsec9` fica sem a ligação: a p. 4 dá `char (4)`, mas os 157
   arquivos RD lidos de 2014-01 a 2026-07 (um de RR ou AP por mês, mais SP e MG nos meses
   de troca de layout) publicam o campo com 1 caractere, curto demais para um código da
-  CID-10 (censo em `evidence/2026-10-06-rd-2008-layouts/`). A `aux_cid10` vem do `CID10.DBF` do SIM (ver
-  [Vocabulários](vocabularios.md)), não do `DBF/cid10.dbf` de `TAB_SIH.zip`, que o
-  repositório não empacota. O tipo de cada um, em `tpdisec1` a `tpdisec9`, vem de
-  `RD2008.DEF` → `TP_DIAGSEC.CNV`: 1 = preexistente, 2 = adquirido. O `0` que os
-  arquivos publicam não está na tabela e fica sem rótulo.
+  CID-10 (censo em `evidence/2026-10-06-rd-2008-layouts/`). A `aux_cid10` vem do
+  `CID10.DBF` do SIM (ver [Vocabulários](vocabularios.md)), não do `DBF/cid10.dbf` de
+  `TAB_SIH.zip`, que o repositório não empacota. O tipo de cada um, em `tpdisec1` a
+  `tpdisec9`, vem de `RD2008.DEF` → `TP_DIAGSEC.CNV`: 1 = preexistente, 2 = adquirido. O
+  `0` que os arquivos publicam não está na tabela e fica sem rótulo.
 - `natureza` tem conteúdo só até maio de 2012; a natureza jurídica pela CONCLA está em
   `nat_jur` (Informe SIH 2016-03, p. 2).
 - `idade` depende de `cod_idade` (Informe SIH 2016-03, p. 2). O pacote oficial
