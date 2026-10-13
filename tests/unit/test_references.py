@@ -44,6 +44,11 @@ UNRESOLVED: dict[tuple[str, str, int, str], list[tuple[str, str, int]]] = {
         ("cid_asso", "0000", 30),
         ("cid_morte", "0000", 30),
     ],
+    ("sih_aih_reduzida", "sih_rd_rr_2025_01_excerpt", 2025, "RR"): [
+        ("diag_secun", "0000", 2),
+        ("cid_asso", "0000", 2),
+        ("cid_morte", "0000", 2),
+    ],
     ("sim_obitos", "sim_rr_2023_mini", 2023, "RR"): [("codmunnatu", "150475", 1)],
     ("sinasc_nascidos_vivos", "sinasc_rr_2022_mini", 2022, "RR"): [],
     ("sia_producao_ambulatorial", "sia_pa_rr_2024_01_mini", 2024, "RR"): [

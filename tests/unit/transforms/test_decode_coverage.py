@@ -58,6 +58,12 @@ REMAINING = {
         ("tpdisec1", "0", 28),
         *[(f"tpdisec{n}", "0", 30) for n in range(2, 10)],
     ],
+    # RDRR2501 publishes etnia X389 and X401, outside the 0000-9999 range of etnia.cnv
+    # (issue etnia-x389-x401-sem-fonte); the excerpt holds the two X389 records.
+    ("sih_aih_reduzida", "sih_rd_rr_2025_01_excerpt"): [
+        ("etnia", "X389", 2),
+        *[(f"tpdisec{n}", "0", 2) for n in range(1, 10)],
+    ],
     ("sim_obitos", "sim_rr_2023_mini"): [
         ("esc2010", "", 438),
         ("escmae2010", "", 3027),
@@ -220,6 +226,13 @@ RANGE_ONLY = {
         ("instru", "0", 29),
         ("natureza", "00", 30),
         ("vincprev", "0", 30),
+    ],
+    ("sih_aih_reduzida", "sih_rd_rr_2025_01_excerpt"): [
+        ("contracep1", "00", 2),
+        ("contracep2", "00", 2),
+        ("instru", "0", 2),
+        ("natureza", "00", 2),
+        ("vincprev", "0", 2),
     ],
     ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini"): [
         ("contracep1", "00", 30),
@@ -535,6 +548,13 @@ def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field
             "fonte_orc",
             "fonte_orc-00-sem-fonte",
             {"00"},
+        ),
+        (
+            "sih_aih_reduzida",
+            "sih_rd_rr_2025_01_excerpt",
+            "etnia",
+            "etnia-x389-x401-sem-fonte",
+            {"X389"},
         ),
         (
             "sinasc_nascidos_vivos",
