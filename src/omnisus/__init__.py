@@ -274,7 +274,9 @@ def load(
     [Bases e argumentos](https://raphaelfh.github.io/omnisus/datasets/) shows them
     with the categories each dictionary defines. Otherwise it leaves the categories
     out and warns once; a dataset whose dictionary defines none gets no warning.
-    Readable labels come from :func:`label`.
+    Readable labels come from :func:`label`. Every call lists the server first and
+    raises :class:`FtpUnavailable` when it is down; :func:`read` with the same
+    arguments returns what the lake already has without it.
 
     Args:
         dataset: DATASUS FTP dataset name, e.g. ``"sim_obitos"``,
@@ -316,12 +318,7 @@ def load(
         >>> dados = sus.label("sim_obitos", dados, columns=["sexo"])  # doctest: +SKIP
     """
     d = _loadable(dataset)
-    if ufs is None and d.geography != "national":
-        raise ValueError(
-            f"{d.name} is published per UF: pass ufs=['RR', ...], or ufs=sus.ALL_UFS "
-            "for all of Brazil"
-        )
-    scopes = scopes_for(d, years=years, ufs=ufs, months=months)
+    scopes = _requested_scopes(d, years=years, ufs=ufs, months=months)
     report = import_dataset(d, scopes=scopes, target=target, policy=policy)
     if report.failed:
         reasons = "; ".join(f"{o.scope}: {o.reason}" for o in report.failed)
@@ -329,24 +326,42 @@ def load(
             f"{d.name} import failed ({reasons}). To rewrite a scope already in the "
             "lake, run this load again with policy='replace'."
         )
-    rows = _read_with_harmonised(d, scopes, target)
+    rows, _ = _read_with_harmonised(d, scopes, target)
     if rows.is_empty():
         raise LookupError(f"{d.name}: DATASUS publishes none of these scopes: {scopes}")
     return rows
 
 
+def _requested_scopes(
+    d: Dataset,
+    *,
+    years: Iterable[int],
+    ufs: Sequence[str] | None,
+    months: Iterable[int] | None,
+) -> list[ScopeKey]:
+    """The scopes :func:`load` and :func:`read` ask for; ``ufs`` is required per UF."""
+    if ufs is None and d.geography != "national":
+        raise ValueError(
+            f"{d.name} is published per UF: pass ufs=['RR', ...], or ufs=sus.ALL_UFS "
+            "for all of Brazil"
+        )
+    return scopes_for(d, years=years, ufs=ufs, months=months)
+
+
 def _read_with_harmonised(
     d: Dataset, scopes: Sequence[ScopeKey], target: str | None
-) -> pl.DataFrame:
+) -> tuple[pl.DataFrame, list[ScopeKey]]:
     """The scopes' rows plus the harmonised categories their sources allow (ADR 0003).
 
     Rows, schema and source identities come from one pinned snapshot, as
     :func:`analytical_projection` requires. A category the rule leaves out is
-    named in one warning; a dataset without rules warns nothing.
+    named in one warning; a dataset without rules, or no requested scope in the
+    lake, warns nothing. Also returns the requested scopes that have no active
+    publication in that snapshot.
     """
     with LakeReader(target) as latest:
         if d.name not in latest.tables():
-            return pl.DataFrame()
+            return pl.DataFrame(), list(scopes)
         snapshot = latest_snapshot_id(latest)
     predicates = [scope_filter(scope) for scope in scopes]
     where = " OR ".join(f"({sql})" for sql, _ in predicates)
@@ -368,8 +383,10 @@ def _read_with_harmonised(
             for column in projection.columns
         )
         rows = con.execute(f"SELECT *{derived} FROM {table} WHERE {where}", args).pl()
+    present = {source.scope for source in sources}
+    missing = [scope for scope in scopes if scope not in present]
     left_out = [u for u in projection.unavailable if u.reason != "unsupported_dataset"]
-    if left_out:
+    if left_out and sources:
         warnings.warn(
             f"{d.name}: harmonised categories left out: "
             + ", ".join(f"{u.field} ({u.reason})" for u in left_out)
@@ -378,34 +395,84 @@ def _read_with_harmonised(
             UserWarning,
             stacklevel=3,
         )
-    return rows
+    return rows, missing
 
 
-def read(table: str, *, target: str | None = None) -> pl.DataFrame:
-    """A lake table or view, whole, as a polars DataFrame.
+def read(
+    table: str | Dataset,
+    *,
+    years: Iterable[int] | None = None,
+    ufs: Sequence[str] | None = None,
+    months: Iterable[int] | None = None,
+    target: str | None = None,
+) -> pl.DataFrame:
+    """A lake table or view as a polars DataFrame, without asking the server.
 
-    For what :func:`load` does not return: the ``aux_*`` vocabularies, the
-    ``ibge_populacao`` view, or every scope of a dataset already in the lake. Codes
-    stay as published; filter and join the result in polars.
+    Without ``years``, the whole table or view: the ``aux_*`` vocabularies, the
+    ``ibge_populacao`` view, or every scope of a dataset already in the lake. With
+    ``years``, the rows :func:`load` returns for the same arguments, harmonised
+    categories included, read from what the lake already has: it never connects to
+    DATASUS, so it works while the server is down. It cannot tell whether DATASUS
+    republished a file; :func:`outdated` does, with the server up. Codes stay as
+    published; filter and join the result in polars.
 
     Args:
         table: Table or view name, e.g. ``"aux_cid10"``, ``"aux_municipios"``,
-            ``"ibge_populacao"`` or ``"sim_obitos"``; ``LakeReader().tables()`` lists them.
+            ``"ibge_populacao"`` or ``"sim_obitos"``; ``LakeReader().tables()`` lists
+            them. With ``years``, a DATASUS FTP dataset name or a :class:`Dataset`.
+        years: Years of the scopes to read, e.g. ``[2023]``; ``None`` (default) reads
+            the whole table.
+        ufs: UF abbreviations, as in :func:`load`: required for datasets published
+            per UF, ``None`` for national ones.
+        months: Months 1-12 of monthly datasets, as in :func:`load`; ``None``
+            (default) means all twelve.
         target: DuckLake target; ``None`` (default) is ``data/raw/omnisus.ducklake``
             under the working directory, or under ``$OMNISUS_DATA_DIR``.
 
     Returns:
-        Every row of the table at the lake's latest snapshot.
+        Every row of the table at the lake's latest snapshot or, with ``years``, the
+        rows of the requested scopes the lake has.
 
     Raises:
-        LookupError: the lake has no such table; the message says what imports it.
+        LookupError: the lake has no such table, or none of the requested scopes; the
+            message says what imports them.
+        ValueError: ``ufs`` or ``months`` without ``years``, or ``ufs`` missing for a
+            UF dataset or given for a national one.
+
+    Warns:
+        UserWarning: the lake lacks some requested scopes (named), or harmonised
+            categories were left out, as in :func:`load`.
 
     Examples:
         >>> import omnisus as sus
         >>> cid10 = sus.read("aux_cid10")  # doctest: +SKIP
         >>> cid10.columns  # doctest: +SKIP
         ['codigo', 'descricao', 'capitulo', 'capitulo_descricao']
+        >>> obitos = sus.read("sim_obitos", years=[2023], ufs=["RR"])  # doctest: +SKIP
+        >>> obitos.height  # doctest: +SKIP
+        3311
     """
+    if years is not None:
+        d = _loadable(table)
+        scopes = _requested_scopes(d, years=years, ufs=ufs, months=months)
+        rows, missing = _read_with_harmonised(d, scopes, target)
+        # Without the server there is no evidence of what DATASUS publishes (AGENTS.md rule 1).
+        named = ", ".join(str(scope) for scope in missing)
+        if len(missing) == len(scopes):
+            raise LookupError(
+                f"the lake has none of these {d.name} scopes: {named}. sus.load imports them."
+            )
+        if missing:
+            warnings.warn(
+                f"{d.name}: the lake does not have {named}; sus.load imports them.",
+                UserWarning,
+                stacklevel=2,
+            )
+        return rows
+    if ufs is not None or months is not None:
+        raise ValueError("ufs and months select scopes: pass years=[...] with them")
+    if isinstance(table, Dataset):
+        table = table.name
     with LakeReader(target) as reader:
         if table not in reader.tables():
             raise LookupError(
