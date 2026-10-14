@@ -23,17 +23,14 @@ TODOS = sorted(p for p in NOTEBOOKS.glob("*.py") if not p.name.startswith("_"))
 # `shutil`, `tempfile`: explorar.py shows the free disk where an import writes.
 # `datetime`: explorar.py offers the years of a dataset up to the current one.
 # `io`, `xlsxwriter`: explorar.py writes each dataset's dictionary as a two-sheet workbook.
-# `gdrive_fsspec`, `re`: explorar.py copies a lake from Google Drive, by path or folder link.
 BIBLIOTECAS = {
     "datetime",
-    "gdrive_fsspec",
     "io",
     "json",
     "marimo",
     "os",
     "polars",
     "pathlib",
-    "re",
     "shutil",
     "tempfile",
     "xlsxwriter",

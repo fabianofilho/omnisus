@@ -12,6 +12,7 @@ from omnisus.sources.datasus_ftp.fetch import (
     FtpUnavailable,
     fetch_dbc_bytes,
 )
+from tests.support import fake_ftp
 from tests.support.listings import fixture_entry
 
 SIM_DIR = "/dissemin/publicos/SIM/CID10/DORES"
@@ -197,3 +198,50 @@ def test_the_ftp_host_can_be_overridden(monkeypatch) -> None:
     assert ftp_host() == DEFAULT_FTP_HOST == "ftp.datasus.gov.br"
     monkeypatch.setenv("OMNISUS_FTP_HOST", "mirror.example.org")
     assert ftp_host() == "mirror.example.org"
+
+
+# Against `fake_ftp`, which answers as the server did
+# (evidence/2026-10-14-ftp-550-conexao-de-dados.md): `_blocking_fetch` runs as it does
+# against the server.
+DORR2022 = b"\x03" * 275221  # what matters here is the size the listing reports
+
+
+@pytest.mark.asyncio
+async def test_a_550_on_retr_of_a_file_size_still_finds_is_retried(monkeypatch) -> None:
+    """SIZE answers on the control connection: 213 means the file is there, so the 550
+    on RETR is the data connection dropping, as the server answers from molab."""
+    sent = fake_ftp.serve(
+        monkeypatch,
+        CWD=[fake_ftp.CWD_OK],
+        RETR=[fake_ftp.ABORTED, DORR2022],
+        SIZE=[len(DORR2022)],
+    )
+
+    data = await fetch_dbc_bytes(
+        fixture_entry(SIM_DIR, "DORR2022.dbc", DORR2022), backoff_seconds=0
+    )
+
+    assert data == DORR2022
+    assert sent.count("RETR") == 2
+
+
+@pytest.mark.asyncio
+async def test_a_retr_whose_data_connection_never_holds_is_unavailable(monkeypatch) -> None:
+    fake_ftp.serve(
+        monkeypatch, CWD=[fake_ftp.CWD_OK], RETR=[fake_ftp.ABORTED], SIZE=[len(DORR2022)]
+    )
+
+    with pytest.raises(FtpUnavailable) as raised:
+        await fetch_dbc_bytes(fixture_entry(SIM_DIR, "DORR2022.dbc", DORR2022), backoff_seconds=0)
+    assert "aborted by the local system" in str(raised.value.__cause__)
+
+
+@pytest.mark.asyncio
+async def test_a_550_on_retr_that_size_confirms_is_file_not_found(monkeypatch) -> None:
+    sent = fake_ftp.serve(
+        monkeypatch, CWD=[fake_ftp.CWD_OK], RETR=[fake_ftp.NOT_FOUND], SIZE=[fake_ftp.NOT_FOUND]
+    )
+
+    with pytest.raises(FtpFileNotFound, match="cannot find the file"):
+        await fetch_dbc_bytes(fixture_entry(SIM_DIR, "DORR2022.dbc", DORR2022), backoff_seconds=0)
+    assert sent.count("RETR") == 1

@@ -11,11 +11,13 @@ from unittest.mock import patch
 
 import pytest
 
+from omnisus.sources.datasus_ftp import inventory
 from omnisus.sources.datasus_ftp.inventory import (
     FtpPathNotFound,
     FtpUnavailable,
     list_dir,
 )
+from tests.support import fake_ftp
 
 PATH = "/dissemin/publicos/SIM/CID10/DORES"
 LINE = "01-31-20  02:48PM                76107 DOAC1996.dbc"
@@ -128,3 +130,43 @@ def test_trailing_slash_is_normalised_once_on_entry() -> None:
     assert len(listing.entries) == 1
     assert listing.entries[0].parent == PATH
     assert listing.entries[0].name == "DOAC1996.dbc"
+
+
+# The real `_blocking_list`, taken before `tests/unit/conftest.py` replaces it: these
+# tests run it against `fake_ftp`, which answers as the server did
+# (evidence/2026-10-14-ftp-550-conexao-de-dados.md).
+_LIST_ON_THE_CONNECTION = inventory._blocking_list
+
+
+def test_a_550_on_list_after_cwd_succeeded_is_the_data_connection_and_is_retried(
+    monkeypatch,
+) -> None:
+    """CWD answered 250, so the directory exists; the 550 is the data connection
+    dropping, as the server answers from molab."""
+    monkeypatch.setattr(inventory, "_blocking_list", _LIST_ON_THE_CONNECTION)
+    sent = fake_ftp.serve(monkeypatch, CWD=[fake_ftp.CWD_OK], LIST=[fake_ftp.ABORTED, [LINE]])
+
+    listing = list_dir(PATH, backoff_seconds=0)
+
+    assert [e.name for e in listing.entries] == ["DOAC1996.dbc"]
+    assert sent.count("LIST") == 2
+
+
+def test_a_list_whose_data_connection_never_holds_is_unavailable_not_not_found(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(inventory, "_blocking_list", _LIST_ON_THE_CONNECTION)
+    fake_ftp.serve(monkeypatch, CWD=[fake_ftp.CWD_OK], LIST=[fake_ftp.ABORTED])
+
+    with pytest.raises(FtpUnavailable) as raised:
+        list_dir(PATH, backoff_seconds=0)
+    assert "aborted by the local system" in str(raised.value.__cause__)
+
+
+def test_a_550_on_cwd_is_still_path_not_found(monkeypatch) -> None:
+    monkeypatch.setattr(inventory, "_blocking_list", _LIST_ON_THE_CONNECTION)
+    sent = fake_ftp.serve(monkeypatch, CWD=[fake_ftp.NOT_FOUND], LIST=[[LINE]])
+
+    with pytest.raises(FtpPathNotFound, match="cannot find the file"):
+        list_dir(PATH, backoff_seconds=0)
+    assert sent == ["connect", "CWD"]

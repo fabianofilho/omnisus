@@ -28,6 +28,7 @@ import structlog
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp._ftp import (
     TRANSIENT_FTP_ERRORS,
+    DataConnectionLost,
     ftp_host,
     is_missing,
 )
@@ -154,7 +155,12 @@ def _blocking_list(path: str, timeout_seconds: float) -> list[str]:
         ftp.login()  # anonymous
         ftp.voidcmd("TYPE I")
         ftp.cwd(path)
-        ftp.dir(lines.append)
+        try:
+            ftp.dir(lines.append)
+        except ftplib.error_perm as exc:
+            if is_missing(exc):  # CWD answered 250: the directory is there
+                raise DataConnectionLost(str(exc)) from exc
+            raise
     return lines
 
 
@@ -168,8 +174,8 @@ def list_dir(
     """List one remote directory. The primitive every other layer builds on.
 
     Raises:
-        FtpPathNotFound: the directory is missing or access was denied (550).
-            Terminal — never retried.
+        FtpPathNotFound: the directory is missing or access was denied (550 on
+            CWD). Terminal — never retried.
         FtpUnavailable: transient failures exhausted ``max_retries``.
 
     An existing but empty directory returns an empty :class:`Listing`; empty

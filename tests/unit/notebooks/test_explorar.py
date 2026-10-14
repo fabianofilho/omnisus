@@ -16,7 +16,6 @@ import io
 import os
 import shutil
 import sys
-import tempfile
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -540,7 +539,7 @@ def test_without_lake_it_opens_the_folder_sus_load_writes_to(importado, monkeypa
 
 
 def test_reads_the_lake_after_its_folder_moved(monkeypatch, tmp_path):
-    """As when the folder is copied from Google Drive to another computer or to molab:
+    """As when the folder is copied to another computer, or synced from Google Drive:
     the catalog records the absolute path where the lake was created."""
     fake_datasus.serve(monkeypatch, "sim_obitos", {ESCOPO: ARQUIVO.read_bytes()})
     sus.import_dataset(
@@ -558,117 +557,6 @@ def test_reads_the_lake_after_its_folder_moved(monkeypatch, tmp_path):
     # It only reads there: an import goes to the folder where the lake was created.
     assert "pasta onde foi criado" in depois["parada"]
     assert depois["relatorio"]["situacao"].to_list() == ["não tentado"]
-
-
-class _DriveFalso:
-    """Stands in for `gdrive_fsspec.GoogleDriveFileSystem` (molab has the package; CI
-    does not): *My Drive* is a local folder, and a folder ID names a folder in it."""
-
-    raiz: Path
-    argumentos: list[dict]
-    sem_acesso = False
-
-    def __init__(self, **argumentos):
-        if self.sem_acesso:
-            raise PermissionError("acesso negado")
-        type(self).argumentos.append(argumentos)
-        self.base = self.raiz / (argumentos["root_file_id"] or "")
-
-    def get(self, caminho: str, destino: str, recursive: bool) -> None:
-        assert recursive
-        shutil.copytree(self.base / caminho, destino)
-
-
-# What molab writes in "Add remote storage": its server is remote, so the Google login
-# goes through a link and a code instead of a local web server.
-CONEXAO = {
-    "use_listings_cache": False,
-    "skip_instance_cache": True,
-    "auth_kwargs": {"use_local_webserver": False},
-}
-
-
-def _no_drive(
-    monkeypatch, tmp_path, raiz: Path, pasta_drive: str, *, conectar: bool = True
-) -> tuple[str, dict]:
-    """Choose *Google Drive*, click *Conectar ao Google Drive*, write `pasta_drive` and
-    click *Copiar do Drive*."""
-    (tmp_path / "tmp").mkdir()
-    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path / "tmp"))
-    monkeypatch.setattr(_DriveFalso, "raiz", raiz, raising=False)
-    monkeypatch.setattr(_DriveFalso, "argumentos", [], raising=False)
-    modulo = SimpleNamespace(GoogleDriveFileSystem=_DriveFalso)
-    monkeypatch.setitem(sys.modules, "gdrive_fsspec", modulo)
-    widgets = {
-        "origem": SimpleNamespace(value="drive"),
-        "pasta": SimpleNamespace(value=str(tmp_path / "nao_usada")),
-        "conectar": SimpleNamespace(value=conectar),
-        "pasta_drive": SimpleNamespace(value=pasta_drive),
-        "copiar": SimpleNamespace(value=True),
-        "executar": False,
-    }
-    return _executar(monkeypatch, defs=widgets)
-
-
-def test_a_lake_in_google_drive_is_copied_to_the_session_and_read(
-    importado, monkeypatch, tmp_path
-):
-    """molab does not mount the Drive and DuckLake reads only local files."""
-    pasta, _, _ = importado
-
-    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name)
-
-    assert _DriveFalso.argumentos == [{"root_file_id": None, **CONEXAO}]  # My Drive
-    assert "Conectado ao Google Drive" in texto
-    assert definidos["diretorio"].is_relative_to(tmp_path / "tmp")
-    assert definidos["totais"] == {"sim_obitos": REGISTROS}
-    assert SHA256 in definidos["citacoes"]["sim_obitos"]
-    assert "Lake copiado" in texto
-
-
-def test_copiar_waits_for_the_connection(importado, monkeypatch, tmp_path):
-    pasta, _, _ = importado
-
-    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name, conectar=False)
-
-    assert _DriveFalso.argumentos == []
-    assert "Lake copiado" not in texto
-    assert "totais" not in definidos
-
-
-def test_a_drive_folder_link_is_read_as_the_root(importado, monkeypatch, tmp_path):
-    """A link also reaches a folder shared with you, which has no path in My Drive."""
-    pasta, _, _ = importado
-    link = f"https://drive.google.com/drive/folders/{pasta.name}?usp=sharing"
-
-    _, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, link)
-
-    assert _DriveFalso.argumentos == [
-        {"root_file_id": None, **CONEXAO},
-        {"root_file_id": pasta.name, **CONEXAO},
-    ]
-    assert definidos["totais"] == {"sim_obitos": REGISTROS}
-
-
-def test_a_drive_without_access_becomes_a_message(importado, monkeypatch, tmp_path):
-    pasta, _, _ = importado
-    monkeypatch.setattr(_DriveFalso, "sem_acesso", True)
-
-    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, pasta.name)
-
-    assert "Não deu para conectar ao Google Drive (PermissionError: acesso negado)" in texto
-    assert "Add remote storage" in texto
-    assert "totais" not in definidos
-
-
-def test_a_folder_missing_from_the_drive_becomes_a_message(importado, monkeypatch, tmp_path):
-    pasta, _, _ = importado
-
-    texto, definidos = _no_drive(monkeypatch, tmp_path, pasta.parent, "nao_existe")
-
-    assert "Não deu para copiar" in texto
-    assert "nao_existe" in texto
-    assert "totais" not in definidos
 
 
 def test_a_reader_holding_the_catalog_stops_the_import_with_a_message(monkeypatch, tmp_path):

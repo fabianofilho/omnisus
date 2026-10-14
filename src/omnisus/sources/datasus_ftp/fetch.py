@@ -14,6 +14,7 @@ import structlog
 
 from omnisus.sources.datasus_ftp._ftp import (
     TRANSIENT_FTP_ERRORS,
+    DataConnectionLost,
     ftp_host,
     is_missing,
 )
@@ -117,8 +118,8 @@ async def _download(remote_dir: str, filename: str, timeout_seconds: float) -> b
 class FtpFileNotFound(Exception):  # noqa: N818
     """A file the caller asked for is not on the server. Terminal — never retried.
 
-    Raised for a 550 on RETR and by ``import_scope`` for a scope the server
-    listing does not have; the message says which. Files are fetched only after
+    Raised for a 550 on RETR that SIZE confirms, and by ``import_scope`` for a scope
+    the server listing does not have; the message says which. Files are fetched only after
     the listing named them, so a 550 means the file vanished between LIST and
     RETR: the scope is ``failed`` and worth retrying after a fresh listing,
     never ``skipped``. Distinct from
@@ -136,6 +137,17 @@ class FtpSizeMismatch(Exception):  # noqa: N818
 
     The file changed on the server after it was listed; list again and retry.
     """
+
+
+def _still_there(ftp: ftplib.FTP, filename: str) -> bool:
+    """Whether SIZE, on the control connection alone, finds ``filename``."""
+    try:
+        ftp.size(filename)
+    except ftplib.error_perm as exc:
+        if is_missing(exc):
+            return False
+        raise
+    return True
 
 
 def _blocking_fetch(remote_dir: str, filename: str, timeout_seconds: float) -> bytes:
@@ -167,7 +179,12 @@ def _blocking_fetch(remote_dir: str, filename: str, timeout_seconds: float) -> b
             control.check()
             ftp.login()
             ftp.cwd(remote_dir)
-            ftp.retrbinary(f"RETR {filename}", write)
+            try:
+                ftp.retrbinary(f"RETR {filename}", write)
+            except ftplib.error_perm as exc:
+                if is_missing(exc) and _still_there(ftp, filename):
+                    raise DataConnectionLost(str(exc)) from exc
+                raise
             control.check()
         return buf.getvalue()
 
@@ -183,7 +200,8 @@ async def fetch_dbc_bytes(
     """Download one listed file, with exponential retry.
 
     Raises:
-        FtpFileNotFound: the server answered 550 for a file it had listed. Terminal.
+        FtpFileNotFound: the server answered 550 for a file it had listed, and SIZE
+            confirmed it is gone. Terminal.
         FtpUnavailable: transient failures exhausted ``max_retries``.
         FtpSizeMismatch: the bytes are not the listed size. Terminal.
 

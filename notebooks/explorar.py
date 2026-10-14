@@ -22,7 +22,6 @@ def _():
     import io
     import json
     import os
-    import re
     import shutil
     import tempfile
     from datetime import date
@@ -35,7 +34,7 @@ def _():
     import omnisus as sus
     from omnisus.lake.locking import WriterBusyError
 
-    return Path, WriterBusyError, date, io, json, mo, os, pl, re, shutil, sus, tempfile, xlsxwriter
+    return Path, WriterBusyError, date, io, json, mo, os, pl, shutil, sus, tempfile, xlsxwriter
 
 
 @app.cell
@@ -59,18 +58,12 @@ def _(mo):
     você escolheu. Os códigos ficam como o DATASUS publicou; o rótulo vem do
     dicionário, ao lado (`sexo_rotulo`).
 
-    **Onde está o lake.** O lake é uma pasta com `omnisus-catalog.sqlite` e
-    `omnisus.ducklake/`. Escolha onde ela está:
-
-    - *Pasta neste computador*: o caminho da pasta. Começa onde `sus.load` grava:
-      `$OMNISUS_DATA_DIR`, se definida, ou `data/raw`, relativa à pasta em que você
-      abriu o marimo. Uma pasta do Google Drive sincronizada no computador também serve.
-    - *Google Drive*: clique em *Conectar ao Google Drive* (na primeira vez abre o
-      login do Google), escreva o caminho da pasta em *Meu Drive* (o Colab cria o lake
-      em `omnisus`) ou cole o link da pasta, que serve também para uma pasta
-      compartilhada com você, e clique em *Copiar do Drive*. O lake é copiado para o
-      disco da sessão, porque o molab não monta o Drive e o DuckLake só lê arquivos do
-      disco.
+    **Onde está o lake.** Indique a pasta que tem `omnisus-catalog.sqlite` e
+    `omnisus.ducklake/`. Começa onde `sus.load` grava: `$OMNISUS_DATA_DIR`, se
+    definida, ou `data/raw`, relativa à pasta em que você abriu o marimo. Uma pasta do
+    Google Drive sincronizada no computador também serve. Para explorar o lake que o
+    Colab grava no Drive, use o
+    [notebook de exploração do Colab](https://github.com/raphaelfh/omnisus/blob/main/notebooks/explorar_colab.ipynb).
 
     O catálogo guarda a pasta em que o lake foi criado (no Colab,
     `/content/drive/MyDrive/omnisus`); este notebook lê os dados da pasta indicada,
@@ -87,42 +80,18 @@ def _(mo):
 def _(Path, mo, os):
     # Onde `sus.load` grava, resolvido como a biblioteca resolve: um `~` literal não é a home.
     _padrao = Path(os.environ.get("OMNISUS_DATA_DIR") or "data/raw").resolve()
-    origem = mo.ui.radio(
-        {"Pasta neste computador": "pasta", "Google Drive": "drive"},
-        value="Pasta neste computador",
-        label="Onde está o lake",
-        inline=True,
-    )
     pasta = mo.ui.text(
         value=mo.cli_args().get("lake") or str(_padrao), label="Pasta do lake", full_width=True
     )
-    conectar = mo.ui.run_button(label="Conectar ao Google Drive")
-    pasta_drive = mo.ui.text(
-        value="omnisus",
-        label="Pasta no Google Drive: caminho em *Meu Drive* ou link da pasta",
-        full_width=True,
-    )
-    copiar = mo.ui.run_button(label="Copiar do Drive")
     # Só `true` liga: o marimo converte true/false em booleano, e `no` seria um texto não vazio.
     executar = mo.cli_args().get("executar") is True
-    return conectar, copiar, executar, origem, pasta, pasta_drive
+    pasta
+    return executar, pasta
 
 
 @app.cell
-def _(conectar, copiar, mo, origem, pasta, pasta_drive):
-    _drive = mo.hstack([conectar, pasta_drive, copiar], widths=[0, 1, 0])
-    mo.vstack([origem, pasta if origem.value == "pasta" else _drive])
-    return
-
-
-@app.cell
-def _(Path, origem, pasta, pasta_drive, re, tempfile):
-    if origem.value == "drive":
-        # O lake do Drive é lido de uma cópia no disco da sessão, uma pasta por pasta do Drive.
-        _nome = re.sub(r"\W+", "_", pasta_drive.value.strip("/"))
-        diretorio = Path(tempfile.gettempdir()).resolve() / "omnisus-drive" / _nome
-    else:
-        diretorio = Path(pasta.value).expanduser().resolve()
+def _(Path, pasta):
+    diretorio = Path(pasta.value).expanduser().resolve()
     alvo = f"ducklake:{diretorio / 'omnisus.ducklake'}"
     return alvo, diretorio
 
@@ -135,73 +104,6 @@ def _(mo):
     # A última importação fica na tela até o próximo clique, mesmo que um widget mude.
     ultima, guardar_ultima = mo.state(None)
     return guardar_ultima, mudar_versao, ultima, versao
-
-
-@app.cell
-def _(conectar, mo):
-    mo.stop(not conectar.value)
-    # Importado só no clique: quem não usa o Drive não precisa do pacote (o molab já o tem).
-    from gdrive_fsspec import GoogleDriveFileSystem as _Drive
-
-    def drive_em(pasta_id=None):
-        """O Drive como o molab o abre em *Add remote storage*: o servidor é remoto, então
-        o login do Google vai por um link e um código. `pasta_id` faz de uma pasta a raiz."""
-        return _Drive(
-            root_file_id=pasta_id,
-            use_listings_cache=False,
-            skip_instance_cache=True,
-            auth_kwargs={"use_local_webserver": False},
-        )
-
-    try:
-        # Na primeira vez pede o login do Google; depois o token fica guardado.
-        drive = drive_em()
-    except Exception as e:
-        mo.stop(
-            True,
-            mo.callout(
-                mo.md(
-                    f"Não deu para conectar ao Google Drive ({type(e).__name__}: {e}). No "
-                    "molab, conecte também em *Files → Add remote storage → Google Drive* "
-                    "e clique de novo."
-                ),
-                kind="danger",
-            ),
-        )
-    mo.md("Conectado ao Google Drive. Escreva a pasta do lake e clique em *Copiar do Drive*.")
-    return drive, drive_em
-
-
-@app.cell
-def _(copiar, diretorio, drive, drive_em, mo, mudar_versao, pasta_drive, re, shutil):
-    mo.stop(not copiar.value)
-    mo.stop(not pasta_drive.value.strip(), mo.md("Escreva o caminho ou o link da pasta no Drive."))
-    # Um link faz da pasta a raiz (alcança uma pasta compartilhada); um caminho parte de Meu Drive.
-    _link = re.search(r"/folders/([\w-]+)", pasta_drive.value)
-    _origem = drive_em(_link[1]) if _link else drive
-    try:
-        with mo.status.spinner(title="Copiando o lake do Google Drive"):
-            shutil.rmtree(diretorio, ignore_errors=True)  # a cópia anterior, nunca o original
-            _origem.get(
-                "" if _link else pasta_drive.value.strip("/"), str(diretorio), recursive=True
-            )
-    except Exception as e:
-        mo.stop(
-            True,
-            mo.callout(
-                mo.md(
-                    f"Não deu para copiar `{pasta_drive.value}` do Google Drive "
-                    f"({type(e).__name__}: {e}). Confira o caminho ou o link."
-                ),
-                kind="danger",
-            ),
-        )
-    mudar_versao(lambda v: v + 1)  # reabre o lake, como depois de uma importação
-    mo.md(
-        f"Lake copiado para `{diretorio}`. Dá para explorar e citar; para importar, use o "
-        "lake na pasta onde ele foi criado (#87)."
-    )
-    return
 
 
 @app.cell(hide_code=True)
@@ -220,8 +122,13 @@ def _(mo):
     maiores do SIA passam de 300 MB compactados (o BPA-I de SP de outubro de 2023,
     `BISP2310.dbc`, tem 370 MB); numa máquina com pouca memória, importe-os poucos de
     cada vez. O disco cresce com o que você escolhe: a linha abaixo dos seletores
-    mostra o espaço livre. No molab, o lake importado fica no disco da sessão e some
-    quando ela termina.
+    mostra o espaço livre.
+
+    **No molab, importar quase sempre falha.** A conexão de dados do FTP do DATASUS
+    cai na maior parte das vezes a partir da rede do molab
+    ([medições](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-10-14-ftp-550-conexao-de-dados.md)), e uma importação precisa de várias seguidas. Importe no
+    computador ou no Colab, com o
+    [notebook de exploração do Colab](https://github.com/raphaelfh/omnisus/blob/main/notebooks/explorar_colab.ipynb).
 
     **Falhas.** O relatório diz o que houve com cada escopo. Clique em *Importar* de
     novo para continuar: o que já está no lake é pulado sem baixar. Se o kernel cair
@@ -512,7 +419,7 @@ def _(alvo, diretorio, mo, sus, versao):
         return "'" + str(valor).replace("'", "''") + "'"
 
     # O catálogo guarda a pasta onde o lake foi criado. Reabrir com OVERRIDE_DATA_PATH lê os
-    # Parquet desta pasta, fixa o snapshot e deixa abrir uma cópia vinda do Google Drive.
+    # Parquet desta pasta, fixa o snapshot e deixa abrir um lake que mudou de pasta.
     _catalogo = diretorio / "omnisus-catalog.sqlite"
     con = (
         leitor.connect()

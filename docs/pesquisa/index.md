@@ -33,7 +33,9 @@ Escolha onde rodar. Os três caminhos usam a mesma biblioteca e chegam à mesma 
     [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/sim_obitos.py)
 
     Use a execução em **servidor**, não em WebAssembly: DuckDB e o FTP do DATASUS não
-    rodam no navegador.
+    rodam no navegador. Mesmo no servidor, o download do DATASUS quase sempre falha no
+    molab: a conexão de dados do FTP cai na maior parte das vezes a partir da rede dele
+    ([medições](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-10-14-ftp-550-conexao-de-dados.md)). Para baixar dados, use o Colab ou o seu computador.
 
 === "marimo no seu computador"
 
@@ -152,9 +154,13 @@ Para ver o que já está no lake, o notebook
 [explorar.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/explorar.py)
 [![Open in molab](https://molab.marimo.io/molab-shield.svg)](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/explorar.py)
 mostra as linhas dos escopos que você escolher, o dicionário de cada base, o perfil de
-uma coluna e a citação. Ele abre também um lake copiado do Google Drive e, pelo botão
-*Importar*, importa vários anos, UFs e meses de uma vez, com um relatório do que houve
-com cada escopo.
+uma coluna e a citação. Pelo botão *Importar*, ele importa vários anos, UFs e meses de
+uma vez, com um relatório do que houve com cada escopo. Para o lake que o Colab grava no
+Google Drive, o notebook
+[explorar_colab.ipynb](https://github.com/raphaelfh/omnisus/blob/main/notebooks/explorar_colab.ipynb)
+[![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/raphaelfh/omnisus/blob/main/notebooks/explorar_colab.ipynb)
+faz o mesmo no Colab: importa, mostra as linhas de um recorte, o perfil de uma coluna e
+a citação.
 
 ## Cuidados gerais
 

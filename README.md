@@ -42,7 +42,8 @@ O Colab percorre a biblioteca de ponta a ponta com Roraima: baixa os óbitos de 
 AIH processadas em janeiro de 2023, confere as colunas, põe rótulos, usa idade e sexo harmonizados,
 agrupa as causas pela CID-10 em polars e em SQL, calcula óbitos por 100 mil habitantes com o censo
 do IBGE e imprime a citação, com o lake opcionalmente no seu Google Drive. O molab abre os notebooks marimo
-de cada base. Outros caminhos (marimo no seu computador, Jupyter) estão em
+de cada base, mas o download do DATASUS quase sempre falha na rede dele: para baixar
+dados, use o Colab ou o seu computador. Outros caminhos (marimo no seu computador, Jupyter) estão em
 [Comece aqui](https://raphaelfh.github.io/omnisus/pesquisa/).
 
 Em Python:

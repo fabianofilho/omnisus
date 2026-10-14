@@ -39,3 +39,15 @@ def is_missing(exc: BaseException) -> bool:
     throttled connection into a false "this dataset does not exist".
     """
     return isinstance(exc, ftplib.error_perm) and str(exc).startswith("550")
+
+
+class DataConnectionLost(ftplib.Error):
+    """A 550 on LIST or RETR for a path the control connection says exists. Transient.
+
+    DATASUS answers ``550 The network connection was aborted by the local system.``
+    when the passive data connection drops, the same code as ``550 The system cannot
+    find the file specified.`` (evidence/2026-10-14-ftp-550-conexao-de-dados.md). The
+    control connection tells them apart: CWD answered 250 before the LIST, and SIZE
+    answers 213 for a file that is there. Being an ``ftplib.Error`` and not an
+    ``error_perm``, it is retried and :func:`is_missing` is false for it.
+    """
