@@ -58,6 +58,10 @@
   `tests/unit/test_references.py` (AD of RR and SP, PS of RR and SP, AM and ATD of RR,
   AN of PA, SAD of MA); no field-width census was run for them. Their only value
   without a row there is `0000`.
+- `vinculos.json` lists in `sem_cnv`, with the reason, the SIH fields `RD2008.DEF` and
+  `RJ2008.DEF` bind to CNV members not packaged yet: `nat_jur` and `cnaer` of
+  `sih_aih_reduzida` and `sih_aih_rejeitada`, and `gestor_cod` of `sih_aih_rejeitada`
+  (#7, decision 4). No dictionary changes.
 
 ### Packaging
 

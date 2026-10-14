@@ -1049,7 +1049,9 @@
         "vincprev": "sih/CNV/VINCPREV.CNV"
       },
       "sem_cnv": {
-        "cod_idade": "IDADEBAS, IDADEPUB, IDADE18 e IDADEDET.CNV comparam 3 caracteres a partir de COD_IDADE, que tem 1."
+        "cod_idade": "IDADEBAS, IDADEPUB, IDADE18 e IDADEDET.CNV comparam 3 caracteres a partir de COD_IDADE, que tem 1.",
+        "nat_jur": "RD2008.DEF (linhas 168-173) liga NAT_JUR a NATJUR.CNV, NATJURC.CNV, ESFERAJUR.CNV e ESFERAJURC.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 5 da issue 7.",
+        "cnaer": "RD2008.DEF (linhas 222-224) liga CNAER a CNAEG.CNV e CNAE.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 2 da issue 7; as fixtures do RD trazem '000' em todas as linhas."
       }
     },
     "cnes_estabelecimentos": {
@@ -1390,6 +1392,11 @@
         "st_mot_blo": "sih/CNV/motbloqueio.cnv",
         "st_situac": "sih/CNV/sitrejeicao.cnv",
         "vincprev": "sih/CNV/VINCPREV.CNV"
+      },
+      "sem_cnv": {
+        "nat_jur": "RJ2008.DEF (linhas 170-175) liga NAT_JUR a NATJUR.CNV, NATJURC.CNV, ESFERAJUR.CNV e ESFERAJURC.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 5 da issue 7.",
+        "cnaer": "RJ2008.DEF (linhas 226-228) liga CNAER a CNAEG.CNV e CNAE.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 2 da issue 7; as fixtures do RJ trazem '000' em todas as linhas.",
+        "gestor_cod": "RJ2008.DEF (linha 489) liga GESTOR_COD a AUTORIZ.CNV, não empacotado; as fixtures do RJ trazem o campo em branco nas 32 linhas. A decisão 6 da issue 7 pede um excerto com o campo preenchido antes de ligar."
       }
     },
     "sih_servicos_profissionais": {

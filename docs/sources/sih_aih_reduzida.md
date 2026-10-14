@@ -187,6 +187,12 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   (p. 1–2). Confira nos seus dados antes de juntar com outra base.
 - Se o layout vale para arquivos processados depois de 2016-03: o documento é o informe
   desse processamento (p. 1).
+- `nat_jur` e `cnaer` (no RD e no RJ) e `gestor_cod` (no RJ) ficam sem rótulo: o DEF
+  liga cada um a tabelas do `TAB_SIH.zip` que ainda não estão empacotadas (`NATJUR.CNV`,
+  `NATJURC.CNV`, `ESFERAJUR.CNV` e `ESFERAJURC.CNV`; `CNAEG.CNV` e `CNAE.CNV`;
+  `AUTORIZ.CNV`), e a escolha do vínculo está na issue #7. O `vinculos.json` registra o
+  motivo em `sem_cnv`. Nas fixtures, `cnaer` é `000` em todas as linhas e o `gestor_cod`
+  do RJ vem em branco; o `gestor_cod` do RD é relacionado a `DBF/LIBGESTOR.DBF`.
 
 ## Como usar
 
