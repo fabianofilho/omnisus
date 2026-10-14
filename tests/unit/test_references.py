@@ -33,6 +33,13 @@ UNRESOLVED: dict[tuple[str, str, int], list[tuple[str, str, int]]] = {
         ("cid_asso", "0000", 3714),
         ("cid_morte", "0000", 3714),
     ],
+    # Layout 6 (RDRR2503 excerpt): the same three fields, and diag_princ and diagsec1-8
+    # checked on 2025 data.
+    ("sih_aih_reduzida", "sih_rd_rr_2025_03_excerpt", 2025): [
+        ("diag_secun", "0000", 30),
+        ("cid_asso", "0000", 30),
+        ("cid_morte", "0000", 30),
+    ],
     ("sim_obitos", "sim_rr_2023_mini", 2023): [("codmunnatu", "150475", 1)],
     ("sinasc_nascidos_vivos", "sinasc_rr_2022_mini", 2022): [],
 }

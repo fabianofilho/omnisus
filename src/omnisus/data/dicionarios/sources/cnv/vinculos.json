@@ -500,6 +500,11 @@
       "membro": "CNV/VINCPREV.CNV",
       "sha256": "f5a6c3ec24355fefd3c2d9f439ca0020df028c8ddcd0a2b246ad99831056f1df"
     },
+    "sih/CNV/fonterem.CNV": {
+      "fonte": "sih-tab-f05b32f32908",
+      "membro": "CNV/fonterem.CNV",
+      "sha256": "3b7ca9fd8c00a21274aba935fd94f85d02f9c1fa5cc0b0383998fe948708dc87"
+    },
     "sih/CNV/motbloqueio.cnv": {
       "fonte": "sih-tab-f05b32f32908",
       "membro": "CNV/motbloqueio.cnv",
@@ -1011,6 +1016,7 @@
         "contracep2": "sih/CNV/CONTRAC.CNV",
         "espec": "sih/CNV/LEITOS.CNV",
         "financ": "sih/CNV/FINANC.CNV",
+        "fonte_orc": "sih/CNV/fonterem.CNV",
         "gestao": "sih/CNV/GESTAO.CNV",
         "gestrisco": "sih/CNV/SIMNAO.CNV",
         "ident": "sih/CNV/IDENT.CNV",
