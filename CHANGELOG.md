@@ -54,6 +54,17 @@
   notebook installs `"omnisus[colab]==<version>"`; `uv pip install "omnisus[colab]"` does
   the same elsewhere (#100).
 
+### Dictionaries
+
+- `sih_aih_reduzida_1992_2007` (1.3.0) warns in the dictionary, not only in the docs,
+  that `diag_princ` holds CID-9 (6 digits) from 1992-01 to 1997-12 and CID-10 from
+  1998-01 to 2007-12 in the same column, so a filter such as `LIKE 'I21%'` over
+  1992–2007 misses 1992–1997: open issue `diag-princ-cid9-ate-1997`, from the layout
+  census in `evidence/2026-10-01-rd-1992-2007-layouts/` and the four RD fixtures.
+  `cid_morte` and `cid_asso` get `cid-zero-a-esquerda`: RDRR0712 writes CID-10
+  categories after a `0` (`0I64`), which do not join `aux_cid10`. Codes and labels do
+  not change.
+
 ### Vocabularies
 
 - `aux_cid10` (2.1.0) gains `bloco` and `bloco_descricao`: the CID-10 group of each code

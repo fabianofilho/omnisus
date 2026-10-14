@@ -133,6 +133,13 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   `TAB_SIH.zip`, que o repositório não empacota. O tipo de cada um, em `tpdisec1` a
   `tpdisec9`, vem de `RD2008.DEF` → `TP_DIAGSEC.CNV`: 1 = preexistente, 2 = adquirido. O
   `0` que os arquivos publicam não está na tabela e fica sem rótulo.
+- Em `sih_aih_reduzida_1992_2007`, `diag_princ` grava CID-9 (6 algarismos, `065099`) de
+  1992-01 a 1997-12 e CID-10 (`O800`) de 1998-01 a 2007-12, na mesma coluna: um filtro
+  como `LIKE 'I21%'` sobre 1992–2007 perde 1992–1997. Separe por `ano` antes de juntar à
+  `aux_cid10`. Em 2007-12, `cid_morte` e `cid_asso` gravam categorias com um `0` antes
+  (`0I64`), que não juntam. O dicionário traz as duas armadilhas como issues abertas
+  (`diag-princ-cid9-ate-1997`, `cid-zero-a-esquerda`); as evidências estão em
+  [Vocabulários](vocabularios.md#cid-9-e-cid-10-nos-sistemas-do-sus).
 - `natureza` tem conteúdo só até maio de 2012; a natureza jurídica pela CONCLA está em
   `nat_jur` (Informe SIH 2016-03, p. 2).
 - `idade` depende de `cod_idade` (Informe SIH 2016-03, p. 2). O pacote oficial

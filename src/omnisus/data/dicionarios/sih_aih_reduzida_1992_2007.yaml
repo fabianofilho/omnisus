@@ -2,7 +2,7 @@ name: sih_aih_reduzida_1992_2007
 title: SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.2.0
+x-version: 1.3.0
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -163,6 +163,23 @@ schema:
     type: string
   - name: diag_princ
     type: string
+    x-metadata:
+      issues:
+      - id: diag-princ-cid9-ate-1997
+        status: open
+        description: >-
+          A mesma coluna grava CID-9 de 1992-01 a 1997-12 e CID-10 de 1998-01 a 2007-12.
+          O censo (evidence/2026-10-01-rd-1992-2007-layouts/census.csv) dá DIAG_PRINC C6
+          em todos os arquivos até 1997-12 e C4 de 1998-01 em diante, com a troca no mesmo
+          mês em RR, SP e MG (RDRR9712 e RDRR9801, por exemplo). Nas fixtures, todo valor
+          de sih_rd_rr_1994_12_mini e sih_rd_rr_1997_09_mini tem 6 algarismos ('065099'),
+          e todo valor de sih_rd_rr_2004_07_excerpt e sih_rd_rr_2007_12_mini começa com
+          letra ('O800', 'J188', 'A09'). O RD.DEF dos três pacotes da era liga DIAG_PRINC
+          às tabelas das duas classificações (sih_199201_199712/RD.DEF: CID-10 nas linhas
+          280-341, CID-9 nas 348-393) e não separa as eras. Um filtro como LIKE 'I21%' em
+          1992-2007 perde 1992-1997, e só os códigos de 1998 em diante juntam à aux_cid10.
+          O pacote não traz tabela da CID-9 nem correspondência entre as duas: separe por
+          ano ou pelo comprimento do código.
   - name: diag_secun
     type: string
   - name: cobranca
@@ -465,8 +482,27 @@ schema:
     type: string
   - name: cid_asso
     type: string
+    x-metadata:
+      issues:
+      - id: cid-zero-a-esquerda
+        status: open
+        description: >-
+          Em sih_rd_rr_2007_12_mini (RDRR0712), cid_asso grava '0I10' (1 linha): a
+          categoria da CID-10, de 3 caracteres, com um '0' antes. O valor não junta à
+          aux_cid10, cujos códigos começam com letra; o código fica como publicado. O campo
+          existe de 2006-04 a 2007-12 (evidence/2026-10-01-rd-1992-2007-layouts/census.csv).
   - name: cid_morte
     type: string
+    x-metadata:
+      issues:
+      - id: cid-zero-a-esquerda
+        status: open
+        description: >-
+          Em sih_rd_rr_2007_12_mini (RDRR0712), cid_morte grava '0I64' (6 linhas), '0I10'
+          (3), '0B24' (2) e '0D77' (1): a categoria da CID-10, de 3 caracteres, com um '0'
+          antes. Esses valores não juntam à aux_cid10, cujos códigos começam com letra; os
+          códigos ficam como publicados. O campo existe de 2006-04 a 2007-12
+          (evidence/2026-10-01-rd-1992-2007-layouts/census.csv).
   - name: uti_total
     type: integer
   - name: us_sh

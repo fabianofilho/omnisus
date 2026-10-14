@@ -79,6 +79,60 @@ que não resolve (`tests/unit/test_references.py`).
 - **Descrições abreviadas.** `aux_cid10.descricao` é o texto de `CID10.DBF`, que
   abrevia (`Form aguda doenc de Chagas s/compr cardiaco`).
 
+## CID-9 e CID-10 nos sistemas do SUS
+
+A `aux_cid10` só serve aos meses gravados em CID-10. Um código da CID-9 tem só algarismos
+(`4109`); um da CID-10 começa com letra (`I219`). O que os arquivos mostram:
+
+| Sistema | CID-9 | CID-10 | Como aparece nos arquivos |
+| --- | --- | --- | --- |
+| SIM | `sim_obitos_cid9`, 1979–1995 | `sim_obitos`, 1996 em diante | Diretórios separados, `SIM/CID9/DORES` e `SIM/CID10/DORES`. Na CID-9, `causabas` tem 4 caracteres só de algarismos, com `X` no lugar do quarto quando o código é uma categoria (`436X`) |
+| SIH, `RD` | `sih_aih_reduzida_1992_2007`, 1992-01 a 1997-12 | a mesma linha de 1998-01 a 2007-12; `sih_aih_reduzida` de 2008-01 em diante | Mesmo diretório, `SIHSUS/199201_200712`. `DIAG_PRINC` tem 6 caracteres até 1997-12 e 4 a partir de 1998-01; `DIAG_SEC` (6, só em 1997) dá lugar a `DIAG_SECUN` (4) |
+| SIH, `RJ` e `SP` | — | `sih_aih_rejeitada` e `sih_servicos_profissionais`, 2008-01 em diante | Só há essas linhas a partir de 2008-01; nos exemplos de 2024-01, `diag_princ` e `sp_cidpri` têm letra |
+| SIA, `PA` | nenhum código no exemplo de 2007-12 | `sia_producao_ambulatorial_1994_2007` (exemplo de 2007-12) e `sia_producao_ambulatorial` | `pa_cidpri` grava `0` (um caractere) no exemplo de 2007-12 e `0000` no de 2024-01 |
+| SINASC | — | `sinasc_nascidos_vivos` (`codanomal`, exemplo de 2022) | `sinasc_1994_1995` não tem campo de CID |
+| SINAN | — | `id_agravo` nos exemplos de 2020, 2023 e 2026 | um código por arquivo (`A169`, `B571`, `A309`) |
+
+As evidências:
+
+- **SIM.** As listagens `tests/fixtures/listings/sim_cid9_dores.txt.gz` (`DOR` + UF + 79 a
+  95) e `sim_cid10_dores.txt.gz` (de `DOAC1996.dbc` em diante). No exemplo
+  `DORRR95.DBC` (`tests/fixtures/dbc/sim_cid9_rr_1995_mini.dbc`), os 967 `causabas` têm
+  4 caracteres, nenhum com letra além do `X` (236). O `Obito_1979_95_CID-09.DEF` do
+  TabWin liga `CAUSABAS` a `CAUSACAP.CNV` e `CAUSABR.CNV`
+  (`src/omnisus/data/dicionarios/sources/cnv/sim/`).
+- **SIH, a troca de 1998.** O censo `evidence/2026-10-01-rd-1992-2007-layouts/census.csv`
+  dá `DIAG_PRINC C6.0` em todos os arquivos de 1992-01 a 1997-12 e `C4.0` de 1998-01 em
+  diante, em RR, SP e MG (`RDRR9712` e `RDRR9801`, por exemplo). Nos exemplos de 1994-12
+  e 1997-09 (`sih_rd_rr_1994_12_mini.dbc`, `sih_rd_rr_1997_09_mini.dbc`), todo
+  `diag_princ` tem 6 algarismos (`065099`), e `diag_sec` grava `000000` em 784 das 794
+  linhas. Nos de 2004-07 e 2007-12, `diag_princ` tem letra em todas as linhas (`O800`).
+  Os valores de 1998 a 2003 não foram lidos aqui.
+- **SIH, o que o TabWin faz.** O `RD.DEF` dos três pacotes da era 1992–2007
+  (`sources/cnv/sih_199201_199712/`, `sih_199801_200307/`, `sih_200308_200712/`) liga
+  `DIAG_PRINC` às tabelas da CID-10 (`CID10CAP.CNV`, `CID10_3D.CNV`...) e às da CID-9
+  (`CID9_CAP.CNV`, `CID9_3D.CNV`...), `DIAG_SEC` só às da CID-9 e `DIAG_SECUN` só às da
+  CID-10. O DEF não separa as eras: quem separa é a largura do campo.
+- **SIA.** No exemplo `PARR0712.dbc` (`sia_pa_rr_2007_12_mini.dbc`), `pa_cidpri` está
+  preenchido em 15.945 linhas: 14.123 com `0` e as outras com letra (`M800`, `N180`);
+  nenhuma tem um código só de algarismos com 3 ou 4 posições. No exemplo `PARR2401.dbc`
+  (`sia_pa_rr_2024_01_mini.dbc`), 14.540 das 21.341 linhas gravam `0000`.
+- **SINASC e SINAN.** `codanomal` tem códigos `Q` no exemplo de RR de 2022
+  (`sinasc_rr_2022_mini.dbc`); o primeiro ano em que o campo aparece não foi lido aqui.
+  O SINAN está em `tests/fixtures/dbc/sinan_*.dbc`.
+
+O que isso muda na análise:
+
+- **`diag_princ` de `sih_aih_reduzida_1992_2007` mistura as duas classificações.** De
+  1992 a 1997 é CID-9 e de 1998 a 2007, CID-10, na mesma coluna. Filtre por `ano` ou
+  pelo comprimento do código antes de juntar à `aux_cid10`; o repositório não traz
+  tabela da CID-9 nem correspondência entre as duas. O dicionário diz o mesmo no issue
+  aberto `diag-princ-cid9-ate-1997` do campo.
+- **Categoria com zero à esquerda.** No exemplo do SIH de 2007-12, `cid_morte` grava
+  `0I64`, `0I10`, `0B24` e `0D77`, e `cid_asso`, `0I10`: a categoria de 3 caracteres
+  com um `0` antes, que não junta à `aux_cid10` (issue `cid-zero-a-esquerda` dos dois
+  campos).
+
 ## SIGTAP por competência
 
 Os procedimentos do SIGTAP não vêm no zip: cada competência é um arquivo do servidor, e
