@@ -63,6 +63,12 @@ jobs:
       - name: Generated docs are current
         if: matrix.checks
         run: uv run python scripts/gen_datasets_doc.py --check
+      - name: Install the DuckLake extension once
+        # Every Lake runs `INSTALL ducklake`. Under -n auto the first workers
+        # download it together, and on Windows the move over a file another
+        # worker opened fails: "Could not move file: Access is denied" (main
+        # 1d52c94, #115, #116). An installed extension is not downloaded again.
+        run: uv run -p ${{ matrix.python }} python -c "import duckdb; duckdb.connect().execute('INSTALL ducklake')"
       - name: Unit + integration tests
         # `not e2e` is what keeps DATASUS off the pull-request path. Anything
         # that touches the live server must carry BOTH markers.

@@ -184,8 +184,16 @@ def test_a_wide_table_uses_the_100_column_layout():
     assert cnv_map(lines)["07"] == "07-Pediátricos"
 
 
-def test_a_code_of_another_width_is_kept_as_written():
-    assert parse_cnv(member("cnes/CNV/TurnosAt.CNV"))[7].codes == ("  -99",)
+@pytest.mark.parametrize(
+    ("path", "index", "code"),
+    [
+        ("cnes/CNV/TurnosAt.CNV", 7, "  -99"),  # a blank side of the hyphen
+        ("cnes/CNV/TPGESTAO.CNV", 0, " -Z"),
+        ("sia/CNV/CARAT_AT.CNV", 8, "0-"),  # nothing after the hyphen
+    ],
+)
+def test_a_code_with_a_hyphen_and_a_blank_or_empty_side_is_kept_as_written(path, index, code):
+    assert code in parse_cnv(member(path))[index].codes
 
 
 def test_a_description_may_reach_column_60_when_codes_start_at_61():
@@ -203,11 +211,18 @@ def test_a_description_may_reach_column_60_when_codes_start_at_61():
     ("body", "message"),
     [
         ("      1  Colera" + " " * 45 + "A00-A09\n", "non-numeric range"),
+        # A non-digit on one side of the hyphen is enough.
+        ("      1  Misto" + " " * 46 + "1-A\n", "non-numeric range"),
+        # Digits on both sides, but a blank around the token: not a bare range.
+        ("      1  Faixa" + " " * 46 + " 1-2,3\n", "non-numeric range"),
         ("      1  Longo" + " " * 46 + "123\n", "wider than the declared 2"),
+        # The part after the hyphen is measured too, even when the part before is blank.
+        ("      1  Faixa" + " " * 46 + " -999\n", "wider than the declared 2"),
     ],
 )
 def test_codes_must_fit_the_header(body, message):
-    """Synthetic malformed tables (AGENTS.md rule 2): no packaged CNV has either defect."""
+    """Synthetic malformed tables (AGENTS.md rule 2). Of the packaged CNVs, parse_cnv
+    refuses only sim/CID10-grup_d.cnv (#113), at its first range, A00-A09."""
     with pytest.raises(CnvFormatError, match=message):
         parse_cnv("1 2\n" + body)
 

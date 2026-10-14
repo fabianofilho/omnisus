@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import yaml
 
 from omnisus.transforms.dictionaries import Dicionario, load_dicionario
 
@@ -29,6 +30,28 @@ def test_loader_caches_parsed_yaml() -> None:
     a = load_dicionario("aux_uf")
     b = load_dicionario("aux_uf")
     assert a is b  # lru_cache
+
+
+def test_a_packaged_dictionary_is_parsed_by_libyaml(monkeypatch: pytest.MonkeyPatch) -> None:
+    """libyaml reads a dictionary several times faster than PyYAML's pure-Python loader."""
+    parsed = []
+
+    class Spy(yaml.CSafeLoader):
+        def __init__(self, stream: str) -> None:
+            parsed.append(stream)
+            super().__init__(stream)
+
+    monkeypatch.setattr(yaml, "CSafeLoader", Spy)
+    load_dicionario.__wrapped__("sih_aih_rejeitada")
+    assert len(parsed) == 1
+
+
+def test_without_libyaml_a_dictionary_loads_the_same(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A PyYAML built without libyaml has no CSafeLoader; the pure-Python loader gives
+    the same dictionary."""
+    expected = load_dicionario("sih_aih_rejeitada").raw
+    monkeypatch.delattr(yaml, "CSafeLoader")
+    assert load_dicionario.__wrapped__("sih_aih_rejeitada").raw == expected
 
 
 def test_load_sim_obitos_has_expected_extensions() -> None:
