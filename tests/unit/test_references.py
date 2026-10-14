@@ -8,6 +8,7 @@ the non-blank values that find no row are listed exactly.
 from __future__ import annotations
 
 import io
+import json
 import zipfile
 from importlib.resources import files
 
@@ -21,6 +22,7 @@ from omnisus.sources.datasus_ftp.dbf_contract import _read_field_descriptors
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.dictionaries import load_dicionario
 
+CNV = files("omnisus.data.dicionarios") / "sources" / "cnv"
 BOOTSTRAP = {"aux_uf", "aux_municipios", "aux_cid10", "aux_ocupacoes", "aux_paises"}
 
 # (dataset, fixture, ano, uf) -> every (field, value, rows) that finds no reference row.
@@ -61,6 +63,36 @@ UNRESOLVED: dict[tuple[str, str, int, str], list[tuple[str, str, int]]] = {
         ("ap_cidcas", "0000", 1),
         ("ap_cidsec", "0000", 1),
     ],
+    ("sia_apac_laudos_diversos", "sia_ad_rr_2024_01_mini", 2024, "RR"): [
+        ("ap_cidcas", "0000", 667),
+        ("ap_cidsec", "0000", 661),
+    ],
+    ("sia_apac_laudos_diversos", "sia_ad_sp_2022_10_excerpt", 2022, "SP"): [
+        ("ap_cidcas", "0000", 1),
+        ("ap_cidsec", "0000", 1),
+    ],
+    ("sia_apac_laudos_diversos", "sia_ad_sp_2022_12_excerpt", 2022, "SP"): [
+        ("ap_cidcas", "0000", 2),
+        ("ap_cidpri", "0000", 2),
+        ("ap_cidsec", "0000", 2),
+    ],
+    ("sia_apac_medicamentos", "sia_am_rr_2024_01_mini", 2024, "RR"): [
+        ("ap_cidcas", "0000", 2083),
+        ("ap_cidsec", "0000", 2083),
+    ],
+    ("sia_apac_nefrologia", "sia_an_pa_2014_10_mini", 2014, "PA"): [
+        ("ap_cidcas", "0000", 2),
+        ("ap_cidsec", "0000", 2),
+    ],
+    ("sia_apac_tratamento_dialitico", "sia_atd_rr_2024_01_mini", 2024, "RR"): [
+        ("ap_cidcas", "0000", 342),
+        ("ap_cidpri", "0000", 358),
+        ("ap_cidsec", "0000", 358),
+    ],
+    ("sia_atencao_domiciliar", "sia_sad_ma_2018_10_mini", 2018, "MA"): [],
+    ("sia_psicossocial", "sia_ps_rr_2024_01_mini", 2024, "RR"): [],
+    ("sia_psicossocial", "sia_ps_sp_2022_12_a_excerpt", 2022, "SP"): [],
+    ("sia_psicossocial", "sia_ps_sp_2022_12_b_excerpt", 2022, "SP"): [],
 }
 
 
@@ -164,10 +196,12 @@ def test_secondary_diagnoses_declare_the_cid10_reference(con, dbc_fixture):
 
 
 # (dataset, fixture, ano, uf) -> {field: (filled, resolved)} on the real fixture (#82).
-# Every CID-10 field of the three datasets declares aux_cid10; fields blank in every row
-# of the fixture are listed as (0, 0) instead of being skipped. The CID fields are C(4) in
-# every file of the census in evidence/2026-10-07-sia-cid-widths (PA of RR, AQ and AR of
-# AL, 2008-01 to 2026-07).
+# Every field the dataset's DEF relates to S_CID.DBF declares aux_cid10; fields blank in
+# every row of the fixture are listed as (0, 0) instead of being skipped. The CID fields
+# of PA, AQ and AR are C(4) in every file of the census in
+# evidence/2026-10-07-sia-cid-widths (PA of RR, AQ and AR of AL, 2008-01 to 2026-07);
+# those of the other datasets are C(4) in every fixture listed here, and
+# test_a_declared_reference_fits_the_published_field checks each fixture's header.
 SIA_CID = {
     ("sia_producao_ambulatorial", "sia_pa_rr_2024_01_mini", 2024, "RR"): {
         "pa_cidpri": (21341, 6801),
@@ -208,15 +242,63 @@ SIA_CID = {
         "ar_cidtr2": (0, 0),
         "ar_cidtr3": (0, 0),
     },
+    ("sia_apac_laudos_diversos", "sia_ad_rr_2024_01_mini", 2024, "RR"): {
+        "ap_cidpri": (678, 678),
+        "ap_cidsec": (678, 17),
+        "ap_cidcas": (678, 11),
+    },
+    ("sia_apac_laudos_diversos", "sia_ad_sp_2022_10_excerpt", 2022, "SP"): {
+        "ap_cidpri": (1, 1),
+        "ap_cidsec": (1, 0),
+        "ap_cidcas": (1, 0),
+    },
+    ("sia_apac_laudos_diversos", "sia_ad_sp_2022_12_excerpt", 2022, "SP"): {
+        "ap_cidpri": (2, 0),
+        "ap_cidsec": (2, 0),
+        "ap_cidcas": (2, 0),
+    },
+    ("sia_apac_medicamentos", "sia_am_rr_2024_01_mini", 2024, "RR"): {
+        "ap_cidpri": (2083, 2083),
+        "ap_cidsec": (2083, 0),
+        "ap_cidcas": (2083, 0),
+    },
+    ("sia_apac_nefrologia", "sia_an_pa_2014_10_mini", 2014, "PA"): {
+        "ap_cidpri": (2, 2),
+        "ap_cidsec": (2, 0),
+        "ap_cidcas": (2, 0),
+    },
+    ("sia_apac_tratamento_dialitico", "sia_atd_rr_2024_01_mini", 2024, "RR"): {
+        "ap_cidpri": (358, 0),
+        "ap_cidsec": (358, 0),
+        "ap_cidcas": (358, 16),
+    },
+    ("sia_atencao_domiciliar", "sia_sad_ma_2018_10_mini", 2018, "MA"): {
+        "cidpri": (11, 11),
+        "cidassoc": (0, 0),
+        "pa_cid": (2, 2),
+    },
+    ("sia_psicossocial", "sia_ps_rr_2024_01_mini", 2024, "RR"): {
+        "cidpri": (1670, 1670),
+        "cidassoc": (9, 9),
+    },
+    ("sia_psicossocial", "sia_ps_sp_2022_12_a_excerpt", 2022, "SP"): {
+        "cidpri": (30, 30),
+        "cidassoc": (0, 0),
+    },
+    ("sia_psicossocial", "sia_ps_sp_2022_12_b_excerpt", 2022, "SP"): {
+        "cidpri": (17, 17),
+        "cidassoc": (2, 2),
+    },
 }
 
 
 @pytest.mark.parametrize(("dataset", "fixture", "ano", "uf"), sorted(SIA_CID))
 def test_sia_cid_fields_declare_the_cid10_reference(con, dbc_fixture, dataset, fixture, ano, uf):
-    """Producao_Ambulatorial.DEF, APAC_Quimioterapia.DEF and APAC_Radioterapia.DEF relate
-    these fields to DBF/S_CID.DBF (#82). Each declares aux_cid10, and the joins are counted
+    """The DEF that vinculos.json gives the dataset relates these fields, and no other, to
+    S_CID.DBF of TAB_SIA.zip (#82). Each declares aux_cid10, and the joins are counted
     here because UNRESOLVED skips a field without foreignKeys."""
     expected = SIA_CID[(dataset, fixture, ano, uf)]
+    assert s_cid_fields(dataset) == set(expected)
     assert set(referenced_fields(dataset)) == set(expected)
     dictionary = load_dicionario(dataset)
     assert {f: dictionary.field_def(f)["foreignKeys"] for f in expected} == {
@@ -227,6 +309,22 @@ def test_sia_cid_fields_declare_the_cid10_reference(con, dbc_fixture, dataset, f
         dbc_fixture(fixture).read_bytes(), dataset=dataset, ano=ano, uf=uf
     ).collect()
     assert _filled_and_resolved(con, frame, dataset, expected) == expected
+
+
+def s_cid_fields(dataset: str) -> set[str]:
+    """Fields that a line of the dataset's DEF relates to S_CID.DBF.
+
+    Not `parse_def_lookups`: Producao_Ambulatorial.DEF writes the lookup twice on one
+    line (`PA_CIDPRI, CD_DESCR, DBF/S_CID.DBF, CD_DESCR, DBF/S_CID.DBF`), a shape it
+    refuses."""
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    fields = set()
+    for member in vinculos["datasets"][dataset]["def"]:
+        for line in (CNV / member).read_bytes().decode("latin-1").splitlines():
+            parts = [part.strip() for part in line.split(",")]
+            if any(p.upper().replace("\\", "/").endswith("S_CID.DBF") for p in parts[2:]):
+                fields.add(parts[1].lower())
+    return fields
 
 
 def _filled_and_resolved(con, frame, dataset, fields):

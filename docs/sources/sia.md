@@ -318,3 +318,13 @@ ainda não declara a referência; a decisão está pendente na
 grava `0` de um caractere, que o S_CID rotula "CID NÃO IDENTIFICADO", `0000` ("CID NAO
 INFORMADO", 132.431 vezes em `pa_cidpri`) e categorias de três caracteres completadas
 com zero (`C610`), que não estão na `aux_cid10`.
+
+Também declaram referência a `aux_cid10.codigo` os campos de CID-10 de
+`sia_apac_laudos_diversos`, `sia_apac_medicamentos`, `sia_apac_nefrologia` e
+`sia_apac_tratamento_dialitico` (`ap_cidpri`, `ap_cidsec`, `ap_cidcas`),
+`sia_atencao_domiciliar` (`cidpri`, `cidassoc`, `pa_cid`) e `sia_psicossocial`
+(`cidpri`, `cidassoc`). O DEF de cada um no `TAB_SIA.zip` relaciona esses campos a
+`S_CID.DBF`. Para eles não houve censo de larguras: são C(4) nos arquivos de exemplo
+dos testes (AD de RR e SP, PS de RR e SP, AM e ATD de RR, AN do PA, SAD do MA), onde o
+único valor sem linha na `aux_cid10` é o `0000`. No ATD de RR de 2024-01, `ap_cidpri`
+é `0000` em todas as 358 linhas.

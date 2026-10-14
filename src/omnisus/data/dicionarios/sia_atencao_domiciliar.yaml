@@ -2,7 +2,7 @@ name: sia_atencao_domiciliar
 title: SIASUS — RAAS Atenção Domiciliar (SAD)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.0
+x-version: 1.2.0
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -248,8 +248,12 @@ schema:
         note: Mapa do CNV.
   - name: cidpri
     type: string
+    foreignKeys:
+      - { fields: cidpri, reference: { resource: aux_cid10, fields: codigo } }
   - name: cidassoc
     type: string
+    foreignKeys:
+      - { fields: cidassoc, reference: { resource: aux_cid10, fields: codigo } }
   - name: origem_pac
     type: string
     x-decode:
@@ -338,6 +342,8 @@ schema:
     type: string
   - name: pa_cid
     type: string
+    foreignKeys:
+      - { fields: pa_cid, reference: { resource: aux_cid10, fields: codigo } }
   - name: inicio
     type: string
   - name: fim

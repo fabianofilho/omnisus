@@ -71,13 +71,16 @@
     "1.0.0": "6e319462d7dbac4c4f242af12d8fa1ae4b4a7f7161f0d6c77c3a50f651fc7cad"
   },
   "sia_apac_laudos_diversos": {
-    "0.1.0": "d6a27960857cf8ffa591361f306849b427cc6009768de5d1782cf3a7120ad65a"
+    "0.1.0": "d6a27960857cf8ffa591361f306849b427cc6009768de5d1782cf3a7120ad65a",
+    "0.2.0": "b1081c12b500d3eaf833c72021cb71d6aee4a8e27a8ce76e6da4758fbdaff0a1"
   },
   "sia_apac_medicamentos": {
-    "0.1.0": "2c27b86eda3384558fa38a575761e7e5e28ad9bb33e2d0141354692973862028"
+    "0.1.0": "2c27b86eda3384558fa38a575761e7e5e28ad9bb33e2d0141354692973862028",
+    "0.2.0": "ff60883190fa137c11642337cab786bc47be9788380677c8f41698bc822f8256"
   },
   "sia_apac_nefrologia": {
-    "1.0.0": "cabbee1075c795fdc00c45607a09f8566e05ae84f91d4cafea16a5fcf99bfa34"
+    "1.0.0": "cabbee1075c795fdc00c45607a09f8566e05ae84f91d4cafea16a5fcf99bfa34",
+    "1.1.0": "b76feba31a7dfc1ea9a0724c8ca61c4fbc96ba7fcdfc143b902490f353c29a28"
   },
   "sia_apac_quimioterapia": {
     "0.1.0": "0043c32ea956d615b753821aa941d306c4a31c78b52ec4567d353b7bb2ee619d",
@@ -88,10 +91,12 @@
     "1.1.0": "71c7b017393cbf6c7d5eecaed2f6edf7d331236737bba44173893030ad19be93"
   },
   "sia_apac_tratamento_dialitico": {
-    "0.1.0": "3b51512577295a84cca20a912b494c6e5f2483747f5c2c844ae84151d0bda984"
+    "0.1.0": "3b51512577295a84cca20a912b494c6e5f2483747f5c2c844ae84151d0bda984",
+    "0.2.0": "df35cb799c5accfa19fb2bf4875c3a03f56cae41fd7ec3fd5b3748baab509694"
   },
   "sia_atencao_domiciliar": {
-    "1.1.0": "b86b26914d40251fb0040b1fdc0b937280a23e9c52b2c7bb3d5def0bcb21bdcd"
+    "1.1.0": "b86b26914d40251fb0040b1fdc0b937280a23e9c52b2c7bb3d5def0bcb21bdcd",
+    "1.2.0": "31856fe1acfdb72150f8083fcb1f390f96167121a7ba4722f310dce1cd6cb3cc"
   },
   "sia_bpa_individualizado": {
     "0.2.0": "98b0ac433649fce8c3ca26ebc2e5de514949af1901c892741fd88c8efe0baa3e"
@@ -104,7 +109,8 @@
     "1.0.0": "cfa71be9d235afa75eaeb04839e48fa8dff4cd71e0e25c4e164349ab1427c9dd"
   },
   "sia_psicossocial": {
-    "0.2.0": "e97045b175c9b98a379af9d4131855e762b115f0f6dc33930f73af8c345e9c58"
+    "0.2.0": "e97045b175c9b98a379af9d4131855e762b115f0f6dc33930f73af8c345e9c58",
+    "0.3.0": "efce3276c958384d0e1de8cbb93fafcb44269955495236bbd0b36b1994c272b3"
   },
   "sih_aih_reduzida": {
     "2.10.0": "cd8d8b957f2d87e25aa005ced848345a9bb7c4d94b519939afe486a44101a91d",

@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # Gerado do header DBF REAL (AMRR2401.dbf), nao do informe tecnico.
 # latin-1 obrigatorio: cifra do CNS usa 0x7B-0x84 (0x81 quebra cp1252).
 encoding: latin-1
-x-version: "0.1.0"
+x-version: "0.2.0"
 schema:
   fields:
     - name: ap_mvm
@@ -383,12 +383,18 @@ schema:
     - name: ap_cidcas
       type: string
       label: CID-10 causas associadas
+      foreignKeys:
+        - { fields: ap_cidcas, reference: { resource: aux_cid10, fields: codigo } }
     - name: ap_cidpri
       type: string
       label: CID-10 principal (sem ponto; justificativa de autorização)
+      foreignKeys:
+        - { fields: ap_cidpri, reference: { resource: aux_cid10, fields: codigo } }
     - name: ap_cidsec
       type: string
       label: CID-10 secundário
+      foreignKeys:
+        - { fields: ap_cidsec, reference: { resource: aux_cid10, fields: codigo } }
     - name: ap_etnia
       type: string
       label: Ap etnia

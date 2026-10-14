@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # Gerado do header DBF REAL (PSRR2401.dbf), nao do informe tecnico.
 # latin-1 obrigatorio: cifra do CNS usa 0x7B-0x84 (0x81 quebra cp1252).
 encoding: latin-1
-x-version: "0.2.0"
+x-version: "0.3.0"
 schema:
   fields:
     - name: cnes_exec
@@ -171,9 +171,13 @@ schema:
     - name: cidpri
       type: string
       label: CID-10 principal (sem ponto)
+      foreignKeys:
+        - { fields: cidpri, reference: { resource: aux_cid10, fields: codigo } }
     - name: cidassoc
       type: string
       label: CID-10 associado
+      foreignKeys:
+        - { fields: cidassoc, reference: { resource: aux_cid10, fields: codigo } }
     - name: origem_pac
       type: string
       label: Origem do paciente

@@ -45,6 +45,15 @@
   of the values without a row is in `evidence/2026-10-07-sia-cid-widths/`.
   `sia_producao_ambulatorial_1994_2007` does not declare the reference yet: its `0` and
   zero-padded categories (`C610`) wait for a decision in #82.
+- The CID-10 fields of six more SIA datasets declare `aux_cid10`: `sia_apac_laudos_diversos`
+  (0.2.0), `sia_apac_medicamentos` (0.2.0), `sia_apac_nefrologia` (1.1.0) and
+  `sia_apac_tratamento_dialitico` (0.2.0) (`ap_cidpri`, `ap_cidsec`, `ap_cidcas`),
+  `sia_atencao_domiciliar` (1.2.0) (`cidpri`, `cidassoc`, `pa_cid`) and
+  `sia_psicossocial` (0.3.0) (`cidpri`, `cidassoc`), 17 fields. Each is a field the
+  dataset's DEF in `TAB_SIA.zip` relates to `S_CID.DBF`, and C(4) in the fixtures of
+  `tests/unit/test_references.py` (AD of RR and SP, PS of RR and SP, AM and ATD of RR,
+  AN of PA, SAD of MA); no field-width census was run for them. Their only value
+  without a row there is `0000`.
 
 ### Packaging
 

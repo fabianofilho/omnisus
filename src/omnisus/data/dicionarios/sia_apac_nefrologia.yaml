@@ -2,7 +2,7 @@ name: sia_apac_nefrologia
 title: SIASUS — APAC de Nefrologia (AN)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.1.0
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -466,10 +466,16 @@ schema:
     type: string
   - name: ap_cidcas
     type: string
+    foreignKeys:
+      - { fields: ap_cidcas, reference: { resource: aux_cid10, fields: codigo } }
   - name: ap_cidpri
     type: string
+    foreignKeys:
+      - { fields: ap_cidpri, reference: { resource: aux_cid10, fields: codigo } }
   - name: ap_cidsec
     type: string
+    foreignKeys:
+      - { fields: ap_cidsec, reference: { resource: aux_cid10, fields: codigo } }
   - name: ap_etnia
     type: string
   - name: an_dtpdr
