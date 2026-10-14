@@ -52,6 +52,12 @@ REMAINING = {
         ("tpdisec2", "0", 3699),
         *[(f"tpdisec{n}", "0", 3714) for n in range(3, 10)],
     ],
+    # Layout 6: fonterem.CNV has no '00' (issue fonte_orc-00-sem-fonte).
+    ("sih_aih_reduzida", "sih_rd_rr_2025_03_excerpt"): [
+        ("fonte_orc", "00", 30),
+        ("tpdisec1", "0", 28),
+        *[(f"tpdisec{n}", "0", 30) for n in range(2, 10)],
+    ],
     ("sim_obitos", "sim_rr_2023_mini"): [
         ("esc2010", "", 438),
         ("escmae2010", "", 3027),
@@ -204,6 +210,13 @@ RANGE_ONLY = {
         ("instru", "0", 3665),
         ("natureza", "00", 3714),
         ("vincprev", "0", 3714),
+    ],
+    ("sih_aih_reduzida", "sih_rd_rr_2025_03_excerpt"): [
+        ("contracep1", "00", 29),
+        ("contracep2", "00", 29),
+        ("instru", "0", 29),
+        ("natureza", "00", 30),
+        ("vincprev", "0", 30),
     ],
     ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini"): [
         ("contracep1", "00", 30),
@@ -497,6 +510,13 @@ def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "homonimo", "homonimo-sem-fonte", {"2"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", "tpdisec-0-sem-fonte", {"0"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec9", "tpdisec-0-sem-fonte", {"0"}),
+        (
+            "sih_aih_reduzida",
+            "sih_rd_rr_2025_03_excerpt",
+            "fonte_orc",
+            "fonte_orc-00-sem-fonte",
+            {"00"},
+        ),
         (
             "sinasc_nascidos_vivos",
             "sinasc_rr_2022_mini",

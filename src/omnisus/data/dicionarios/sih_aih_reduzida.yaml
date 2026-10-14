@@ -2459,12 +2459,50 @@ schema:
           description: '''0'' fica sem rótulo: TP_DIAGSEC.CNV (TAB_SIH), ligado a TPDISEC9 no RD2008.DEF,
             lista só ''1'' e ''2''; o IT SIHSUS 1603 descreve TPDISEC9 sem códigos (p. 4). RR 2024-01 (RDRR2401):
             3.714 linhas com ''0'', todas com diagsec9 vazio; a coincidência não é fonte.'
+    - name: fonte_orc
+      type: string
+      x-decode:
+        '  -zz': Branco Ignorado
+        ' 1': MOD.1-SERVICO DE SAUDE - AES
+        ' 2': MOD.2-EQUIPE VOLANTES-AES
+        ' 3': CREDITO FINANC.PARC.VENCIDAS E VICENDAS
+        ' 4': CREDITO FINANCEIRO TRANSACAO TRIBUTARIA
+        '01': MOD.1-SERVICO DE SAUDE - AES
+        '02': MOD.2-EQUIPE VOLANTES-AES
+        '03': CREDITO FINANC.PARC.VENCIDAS E VICENDAS
+        '04': CREDITO FINANCEIRO TRANSACAO TRIBUTARIA
+        '1': MOD.1-SERVICO DE SAUDE - AES
+        '2': MOD.2-EQUIPE VOLANTES-AES
+        '3': CREDITO FINANC.PARC.VENCIDAS E VICENDAS
+        '4': CREDITO FINANCEIRO TRANSACAO TRIBUTARIA
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: a658bfb10749059ef36c508b24da5edca4605688d6e6ae5f4608f3bdb75e52d7
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF: XFonte Orçamentária, FONTE_ORC, 1, CNV/fonterem.CNV; CNV/fonterem.CNV'
+          note: Mapa do CNV.
+        issues:
+        - id: fonte_orc-00-sem-fonte
+          status: open
+          description: 'O RD2008.DEF (linha 274) liga FONTE_ORC ao CNV/fonterem.CNV do TAB_SIH.zip
+            (f05b32f32908), que lista 01 a 04 (também escritos ''1'' e '' 1'') e a chave
+            literal ''  -zz'', "Branco Ignorado" (#24). ''00'' não é chave da tabela e
+            fica sem rótulo. O campo entra no layout 6 do RD, de 2025-03 em diante
+            (evidence/2026-10-06-rd-2008-layouts). sih_rd_rr_2025_03_excerpt (30
+            primeiros registros de RDRR2503): ''00'' em todas as linhas.'
 
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
 x-partitions: [ano, uf, mes]
-x-version: "2.12.0"
+x-version: "2.13.0"
 
 x-analytics:
   version: 1.3.0
