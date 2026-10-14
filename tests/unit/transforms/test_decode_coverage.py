@@ -203,10 +203,12 @@ RANGE_ONLY = {
     # tiposegm.cnv: "TIPO DO SEGMENTO INVÁLIDO ,0,3-9".
     ("cnes_equipes", "cnes_ep_rr_2024_01_mini"): [("tiposegm", "9", 13)],
     # TAB_SIH: INSTRU and VINCPREV 0-9, NATUREZA 00-99 "Ignorado", CONTRAC 00-99
-    # "Ignorado/não se aplica", motbloqueio 00-99 "NÃO ESPECIFICADO".
+    # "Ignorado/não se aplica", motbloqueio 00-99 "NÃO ESPECIFICADO", etnia 0000-9999
+    # "NÃO INFORMADO".
     ("sih_aih_reduzida", "sih_rr_2024_01_mini"): [
         ("contracep1", "00", 3665),
         ("contracep2", "00", 3665),
+        ("etnia", "0000", 3303),
         ("instru", "0", 3665),
         ("natureza", "00", 3714),
         ("vincprev", "0", 3714),
@@ -214,6 +216,7 @@ RANGE_ONLY = {
     ("sih_aih_reduzida", "sih_rd_rr_2025_03_excerpt"): [
         ("contracep1", "00", 29),
         ("contracep2", "00", 29),
+        ("etnia", "0000", 28),
         ("instru", "0", 29),
         ("natureza", "00", 30),
         ("vincprev", "0", 30),
@@ -221,6 +224,7 @@ RANGE_ONLY = {
     ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini"): [
         ("contracep1", "00", 30),
         ("contracep2", "00", 30),
+        ("etnia", "0000", 27),
         ("instru", "0", 30),
         ("natureza", "00", 30),
         ("st_mot_blo", "00", 20),
@@ -477,6 +481,21 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
             "st_mot_blo",
             {"01": "DUPLICIDADE", "62": "PERMANÊNCIA A MENOR INJUSTIFICADA"},
         ),
+        # RD2008.DEF and RJ2008.DEF bind ETNIA to etnia.cnv, which lists 0001-0264 and
+        # opens with 0000-9999 "NÃO INFORMADO". 0238's label fills columns 10-59 and is
+        # cut there.
+        (
+            "sih_aih_reduzida",
+            "sih_rr_2024_01_mini",
+            "etnia",
+            {"0000": "NÃO INFORMADO", "0143": "MAKUXI (MACUXI, MACHUSI, PEMON)"},
+        ),
+        (
+            "sih_aih_rejeitada",
+            "sih_rj_rr_2024_01_mini",
+            "etnia",
+            {"0238": "WAPIXANA (UAPIXANA, VAPIDIANA, WAPISIANA, WAPISHAN"},
+        ),
         # RJ2008.DEF binds SEXO to RD's SEXO.CNV.
         (
             "sih_aih_rejeitada",
@@ -635,6 +654,66 @@ def test_report_codes_without_a_fixture_still_have_an_open_issue(dataset, field,
     issues = load_dicionario(dataset).field_def(field)["x-metadata"]["issues"]
     (entry,) = [i for i in issues if i["id"] == issue]
     assert entry["status"] == "open" and "'4'" in entry["description"]
+
+
+@pytest.mark.parametrize("dataset", ["sih_aih_reduzida", "sih_aih_rejeitada"])
+def test_etnia_codes_outside_the_list_take_the_range_label_and_the_field_says_so(dataset):
+    """etnia.cnv names 0001-0264; every other 4-digit code is "NÃO INFORMADO" only through
+    0000-9999, the range #7 decided to expand, and an open issue on the field says so, and
+    says that in the fixtures '0000' marks a non-indigenous patient."""
+    field = load_dicionario(dataset).field_def("etnia")
+    decode = field["x-decode"]
+    listed = {f"{n:04d}" for n in range(1, 265)}
+    assert len(decode) == 10_000
+    assert {decode[code] for code in decode.keys() - listed} == {"NÃO INFORMADO"}
+    assert "NÃO INFORMADO" not in {decode[code] for code in listed}
+    issues = field["x-metadata"]["issues"]
+    (entry,) = [i for i in issues if i["id"] == "etnia-nao-informado-pela-faixa"]
+    assert entry["status"] == "open"
+    assert "'0000'" in entry["description"] and "0001-0264" in entry["description"]
+    # In the fixtures '0000' is a non-indigenous patient, not an unknown ethnicity.
+    assert (
+        "raca_cor 01-04" in entry["description"] and "filtre por raca_cor" in entry["description"]
+    )
+
+
+@pytest.mark.parametrize("dataset", ["sih_aih_reduzida", "sih_aih_rejeitada"])
+def test_etnia_labels_with_a_soft_hyphen_are_named_by_an_open_issue(dataset):
+    """etnia.cnv writes byte 0xAD in 15 labels, which latin-1 reads as U+00AD (soft hyphen):
+    the labels stay as published, and the field says a text search misses them."""
+    field = load_dicionario(dataset).field_def("etnia")
+    soft = sorted(code for code, label in field["x-decode"].items() if "\u00ad" in label)
+    assert len(soft) == 15
+    (entry,) = [i for i in field["x-metadata"]["issues"] if i["id"] == "etnia-hifen-suave"]
+    assert entry["status"] == "open"
+    assert all(f"'{code}'" in entry["description"] for code in soft)
+
+
+ETNIA_FIXTURES = [
+    ("sih_aih_reduzida", "sih_rr_2024_01_mini"),  # RR 2024-01
+    ("sih_aih_reduzida", "sih_rd_sp_2022_01_excerpt"),  # SP 2022-01
+    ("sih_aih_reduzida", "sih_rd_sp_2023_08_excerpt"),  # SP 2023-08
+    ("sih_aih_reduzida", "sih_rd_rr_2025_03_excerpt"),  # RR 2025-03, layout 6
+    ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini"),  # RR 2024-01
+    ("sih_aih_rejeitada", "sih_rj_sp_2022_03_excerpt"),  # SP 2022-03
+    ("sih_aih_rejeitada", "sih_rj_sp_2022_07_excerpt"),  # SP 2022-07
+]
+
+
+@pytest.mark.parametrize(("dataset", "fixture"), ETNIA_FIXTURES)
+def test_etnia_0000_marks_a_non_indigenous_patient_in_every_fixture(dbc_fixture, dataset, fixture):
+    """The trap on the SIH page, on every RD and RJ fixture that has `etnia` (RR and SP):
+    each '0000' row has raca_cor 01-04, and each raca_cor 05 (Indígena) row has a code
+    etnia.cnv lists, 0001-0264, so its label is not the range's "NÃO INFORMADO"."""
+    frame = _read(dataset, dbc_fixture(fixture))
+    decode = load_dicionario(dataset).field_def("etnia")["x-decode"]
+    pairs = set(zip(frame["etnia"], frame["raca_cor"], strict=True))
+    listed = {f"{n:04d}" for n in range(1, 265)}
+    assert any(etnia == "0000" for etnia, _ in pairs)
+    assert {raca for etnia, raca in pairs if etnia == "0000"} <= {"01", "02", "03", "04"}
+    indigenous = {etnia for etnia, raca in pairs if raca == "05"}
+    assert indigenous <= listed
+    assert "NÃO INFORMADO" not in {decode[etnia] for etnia in indigenous}
 
 
 def test_cobranca_labels_come_from_saidaperm():
