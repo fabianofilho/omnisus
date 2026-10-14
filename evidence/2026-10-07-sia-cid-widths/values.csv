@@ -1,0 +1,52 @@
+dataset,field,filled,value,rows,s_cid_label
+sia_apac_quimioterapia,ap_cidcas,719061,0000,718881,CID NAO INFORMADO
+sia_apac_quimioterapia,ap_cidpri,719061,,0,
+sia_apac_quimioterapia,ap_cidsec,719061,0000,708236,CID NAO INFORMADO
+sia_apac_quimioterapia,aq_cid10,93924,,0,
+sia_apac_quimioterapia,aq_cidini1,441141,,0,
+sia_apac_quimioterapia,aq_cidini2,261476,,0,
+sia_apac_quimioterapia,aq_cidini3,132826,,0,
+sia_apac_radioterapia,ap_cidcas,48911,0000,48906,CID NAO INFORMADO
+sia_apac_radioterapia,ap_cidpri,48911,,0,
+sia_apac_radioterapia,ap_cidsec,48911,0000,48786,CID NAO INFORMADO
+sia_apac_radioterapia,ar_cid10,44756,,0,
+sia_apac_radioterapia,ar_cidini1,7946,,0,
+sia_apac_radioterapia,ar_cidini2,3577,,0,
+sia_apac_radioterapia,ar_cidini3,943,,0,
+sia_apac_radioterapia,ar_cidtr1,48884,,0,
+sia_apac_radioterapia,ar_cidtr2,9026,,0,
+sia_apac_radioterapia,ar_cidtr3,570,,0,
+sia_producao_ambulatorial,pa_cidcas,6709796,0000,6690279,CID NAO INFORMADO
+sia_producao_ambulatorial,pa_cidpri,6871461,0000,5384529,CID NAO INFORMADO
+sia_producao_ambulatorial,pa_cidpri,6871461,N182,1696,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial,pa_cidpri,6871461,N185,36,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial,pa_cidpri,6871461,M881,5,M88.1 Doenc de Paget de outr ossos
+sia_producao_ambulatorial,pa_cidpri,6871461,N184,4,
+sia_producao_ambulatorial,pa_cidpri,6871461,Q350,3,Q35.0 Fenda bilateral do palato duro
+sia_producao_ambulatorial,pa_cidsec,6871461,0000,6838396,CID NAO INFORMADO
+sia_producao_ambulatorial,pa_cidsec,6871461,N182,689,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial,pa_cidsec,6871461,N185,6,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,0,469967,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,0000,132431,CID NAO INFORMADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C610,545,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C560,49,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C800,45,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C200,38,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C190,22,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C070,9,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C330,2,
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C520,2,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C640,2,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C010,1,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C550,1,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,C730,1,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,D270,1,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidpri,674744,Q350,1,Q35.0 Fenda bilateral do palato duro
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,0,618123,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,C610,456,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,C800,27,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,C200,21,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,C560,18,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,C190,9,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,C640,2,CID NÇO IDENTIFICADO
+sia_producao_ambulatorial_1994_2007,pa_cidsec,629457,2,1,

@@ -2,7 +2,7 @@ name: sia_producao_ambulatorial
 title: SIASUS — Produção ambulatorial (PA)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.0
+x-version: "1.2.0"
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -361,10 +361,16 @@ schema:
         note: Mapa do CNV.
   - name: pa_cidpri
     type: string
+    foreignKeys:
+      - { fields: pa_cidpri, reference: { resource: aux_cid10, fields: codigo } }
   - name: pa_cidsec
     type: string
+    foreignKeys:
+      - { fields: pa_cidsec, reference: { resource: aux_cid10, fields: codigo } }
   - name: pa_cidcas
     type: string
+    foreignKeys:
+      - { fields: pa_cidcas, reference: { resource: aux_cid10, fields: codigo } }
   - name: pa_catend
     type: string
     x-decode:

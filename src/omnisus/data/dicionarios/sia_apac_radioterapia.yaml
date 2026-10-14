@@ -2,7 +2,7 @@ name: sia_apac_radioterapia
 title: SIASUS — APAC de Radioterapia (AR)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: "1.1.0"
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -409,16 +409,24 @@ schema:
     type: string
   - name: ap_cidcas
     type: string
+    foreignKeys:
+      - { fields: ap_cidcas, reference: { resource: aux_cid10, fields: codigo } }
   - name: ap_cidpri
     type: string
+    foreignKeys:
+      - { fields: ap_cidpri, reference: { resource: aux_cid10, fields: codigo } }
   - name: ap_cidsec
     type: string
+    foreignKeys:
+      - { fields: ap_cidsec, reference: { resource: aux_cid10, fields: codigo } }
   - name: ap_etnia
     type: string
   - name: ar_smrd
     type: string
   - name: ar_cid10
     type: string
+    foreignKeys:
+      - { fields: ar_cid10, reference: { resource: aux_cid10, fields: codigo } }
   - name: ar_linfin
     type: string
     x-decode:
@@ -470,14 +478,20 @@ schema:
     type: string
   - name: ar_cidini1
     type: string
+    foreignKeys:
+      - { fields: ar_cidini1, reference: { resource: aux_cid10, fields: codigo } }
   - name: ar_dtini1
     type: string
   - name: ar_cidini2
     type: string
+    foreignKeys:
+      - { fields: ar_cidini2, reference: { resource: aux_cid10, fields: codigo } }
   - name: ar_dtini2
     type: string
   - name: ar_cidini3
     type: string
+    foreignKeys:
+      - { fields: ar_cidini3, reference: { resource: aux_cid10, fields: codigo } }
   - name: ar_dtini3
     type: string
   - name: ar_conttr
@@ -532,10 +546,16 @@ schema:
           lista 1 a 6 (p. 11). SP 2022: 41 linhas (4 em ARSP2212).'
   - name: ar_cidtr1
     type: string
+    foreignKeys:
+      - { fields: ar_cidtr1, reference: { resource: aux_cid10, fields: codigo } }
   - name: ar_cidtr2
     type: string
+    foreignKeys:
+      - { fields: ar_cidtr2, reference: { resource: aux_cid10, fields: codigo } }
   - name: ar_cidtr3
     type: string
+    foreignKeys:
+      - { fields: ar_cidtr3, reference: { resource: aux_cid10, fields: codigo } }
   - name: ar_numc1
     type: string
   - name: ar_iniar1
