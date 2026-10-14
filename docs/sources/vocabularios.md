@@ -76,6 +76,28 @@ que não resolve (`tests/unit/test_references.py`).
   `aux_cid10`, como `N182` e `N185`. `M881` (5 linhas) e `Q350` (3) têm rótulo próprio
   no S_CID, mas também não têm linha na `aux_cid10` e ficam sem rótulo no lake
   (`evidence/2026-10-07-sia-cid-widths/values.csv`).
+- **`0`, `0000` e categorias com zero no PA de 1994-2007.** Em
+  `sia_producao_ambulatorial_1994_2007`, a marca de "sem CID" muda com o tempo e com
+  `pa_docorig` (censo dos 162 arquivos de RR, `values_by_month.csv`). Nas linhas com
+  `pa_docorig` 'B', os dois campos ficam em branco até 2003-12 e gravam `0`, de um
+  caractere, de 2004-01 a 2007-12 (469.967 linhas; no arquivo de 2007-12, PARR0712, todas
+  as 14.123). Nas linhas 'A', `pa_cidpri` grava `0000` de 2004-11 a 2006-10 (132.431
+  linhas) e `pa_cidsec` grava `0` de 2004-01 a 2006-12 (148.156); fora disso, e em 2007,
+  o campo sem CID fica em branco. O S_CID do `TAB_SIA.zip` chama o `0` de "CID NÃO
+  IDENTIFICADO" e o `0000` de "CID NAO INFORMADO". Nas linhas 'A', de 2002-03 a 2006-12,
+  aparecem ainda categorias de três caracteres completadas com zero (1.252 linhas:
+  `C610` 1.001, `C800`, `C560`, `C200`...), que o S_CID também chama de "CID NÃO
+  IDENTIFICADO", exceto `C330`, que não está no S_CID. Em 38 desses 40 meses, o mesmo
+  arquivo também grava categorias sem o zero (como `G20`); o censo não conta os valores
+  que encontram linha, então não diz se `C61` aparece ao lado de `C610`. As 13 categorias completadas não têm
+  subcategoria na `aux_cid10` 2.1.0, que as guarda com três caracteres, então o zero ali é
+  só enchimento; mesmo assim o lake não converte `C610` em `C61`, porque os códigos ficam
+  como publicados, e em geral o zero não é enchimento (`C100` é o código C10.0). Quem
+  conta, por exemplo, câncer de próstata nessa era não pode contar só com `C61`:
+  precisa decidir se soma `C610` (`pa_cidpri IN ('C61', 'C610')`). `Q350` (1 linha) é outro caso: subcategoria real que o
+  S_CID rotula e que falta na `aux_cid10`. No censo de RR, de 674.744 `pa_cidpri`
+  preenchidos, 71.627 encontram linha; de 629.457 `pa_cidsec`, 10.800. Só RR foi contado;
+  outras UFs podem ter outros valores (`evidence/2026-10-07-sia-cid-widths/`).
 - **Descrições abreviadas.** `aux_cid10.descricao` é o texto de `CID10.DBF`, que
   abrevia (`Form aguda doenc de Chagas s/compr cardiaco`).
 

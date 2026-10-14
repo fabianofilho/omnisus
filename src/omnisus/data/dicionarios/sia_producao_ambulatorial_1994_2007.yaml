@@ -2,7 +2,7 @@ name: sia_producao_ambulatorial_1994_2007
 title: SIASUS — Produção ambulatorial (PA), 1994-07 a 2007-12
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.1.0
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -58,8 +58,12 @@ schema:
     type: string
   - name: pa_cidpri
     type: string
+    foreignKeys:
+      - { fields: pa_cidpri, reference: { resource: aux_cid10, fields: codigo } }
   - name: pa_cidsec
     type: string
+    foreignKeys:
+      - { fields: pa_cidsec, reference: { resource: aux_cid10, fields: codigo } }
   - name: pa_morfol
     type: string
   - name: pa_cnpj_cc

@@ -43,8 +43,12 @@
   `aux_cid10`, so `reference_join_sql` works for them. `0000` is "CID NAO INFORMADO" in
   `S_CID.DBF` of `TAB_SIA.zip` and finds no row. The census of the CID field widths and
   of the values without a row is in `evidence/2026-10-07-sia-cid-widths/`.
-  `sia_producao_ambulatorial_1994_2007` does not declare the reference yet: its `0` and
-  zero-padded categories (`C610`) wait for a decision in #82.
+- `pa_cidpri` and `pa_cidsec` of `sia_producao_ambulatorial_1994_2007` (1.1.0) declare
+  `aux_cid10` too (#82). Codes stay as published, so the values the PA of that era
+  writes with no row in `aux_cid10` stay unlabelled: `0` (in both fields of every row
+  with `pa_docorig` 'B' in PARR0712) and three-character categories padded with zero
+  (`C610`), which `S_CID.DBF` calls "CID NÃO IDENTIFICADO", and `0000`. `C610` is not
+  mapped to `C61`. No DEF of 1994-2007 is archived, so the fields come from the RR census instead.
 - The CID-10 fields of six more SIA datasets declare `aux_cid10`: `sia_apac_laudos_diversos`
   (0.2.0), `sia_apac_medicamentos` (0.2.0), `sia_apac_nefrologia` (1.1.0) and
   `sia_apac_tratamento_dialitico` (0.2.0) (`ap_cidpri`, `ap_cidsec`, `ap_cidcas`),

@@ -312,12 +312,18 @@ referência a `aux_cid10.codigo`, como os do SIH; `sus.reference_join_sql` dá o
 doença. Os DEFs do `TAB_SIA.zip` relacionam esses campos a `DBF/S_CID.DBF`. Eles são
 C(4) em todo arquivo do censo em `evidence/2026-10-07-sia-cid-widths/` (PA de RR e AQ e
 AR de AL, um arquivo por mês de 2008-01 a 2026-07). O `0000` quer dizer CID não
-informado (ver [Vocabulários](vocabularios.md)). `sia_producao_ambulatorial_1994_2007`
-ainda não declara a referência; a decisão está pendente na
-[issue #82](https://github.com/raphaelfh/omnisus/issues/82). De 1999-07 a 2007-12 o PA
-grava `0` de um caractere, que o S_CID rotula "CID NÃO IDENTIFICADO", `0000` ("CID NAO
-INFORMADO", 132.431 vezes em `pa_cidpri`) e categorias de três caracteres completadas
-com zero (`C610`), que não estão na `aux_cid10`.
+informado (ver [Vocabulários](vocabularios.md)).
+
+`sia_producao_ambulatorial_1994_2007` também declara referência a `aux_cid10.codigo` em
+`pa_cidpri` e `pa_cidsec`, os dois campos de CID que o PA tem de 1999-07 a 2007-12 (antes
+disso não há campo de CID). Os DEFs dessa era não estão arquivados, então nenhum DEF diz
+quais campos se relacionam ao `S_CID.DBF`; a lista vem do censo de RR em
+`evidence/2026-10-07-sia-cid-widths/`. Os códigos ficam como publicados, e muitos não
+encontram linha na `aux_cid10`, por isso ficam sem rótulo (ver
+[Vocabulários](vocabularios.md)): o `0`, o `0000` e categorias de três caracteres
+completadas com zero (`C610`). Os códigos CID-10 válidos encontram o nome da doença,
+inclusive as categorias de três caracteres escritas sem zero (`G20`); as completadas com
+zero (`C610`), não.
 
 Também declaram referência a `aux_cid10.codigo` os campos de CID-10 de
 `sia_apac_laudos_diversos`, `sia_apac_medicamentos`, `sia_apac_nefrologia` e

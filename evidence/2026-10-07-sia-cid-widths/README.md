@@ -62,9 +62,9 @@ SHA-256 `4eb308b01474e26309912e6cbe8952f5ef391dc5f860b35d6765ed029ba045cf`), and
   NÃO IDENTIFICADO", except `C330`, which is not in S_CID. `Q350` appears once in
   `pa_cidpri` and `2` once in `pa_cidsec`.
 
-These counts are what `sia_producao_ambulatorial`, `sia_apac_quimioterapia` and
-`sia_apac_radioterapia` declaring `aux_cid10` rests on (#82);
-`sia_producao_ambulatorial_1994_2007` does not declare it yet.
+These counts are what `sia_producao_ambulatorial`, `sia_apac_quimioterapia`,
+`sia_apac_radioterapia` and `sia_producao_ambulatorial_1994_2007` declaring `aux_cid10`
+rests on (#82). The 1994-2007 values without a row stay as published and unlabelled.
 
 ## The 1994-2007 PA by month and by PA_DOCORIG (#82)
 

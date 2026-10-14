@@ -51,6 +51,12 @@ UNRESOLVED: dict[tuple[str, str, int, str], list[tuple[str, str, int]]] = {
         ("pa_cidsec", "0000", 21310),
         ("pa_cidcas", "0000", 19644),
     ],
+    # PARR0712 writes 0 in both CID fields of every row with pa_docorig 'B'; S_CID calls
+    # it "CID NÃO IDENTIFICADO" (evidence/2026-10-07-sia-cid-widths/values.csv).
+    ("sia_producao_ambulatorial_1994_2007", "sia_pa_rr_2007_12_mini", 2007, "RR"): [
+        ("pa_cidpri", "0", 14123),
+        ("pa_cidsec", "0", 14123),
+    ],
     ("sia_apac_quimioterapia", "sia_aq_rr_2024_01_mini", 2024, "RR"): [
         ("ap_cidcas", "0000", 17),
         ("ap_cidsec", "0000", 17),
@@ -208,6 +214,11 @@ SIA_CID = {
         "pa_cidsec": (21341, 31),
         "pa_cidcas": (19680, 36),
     },
+    # PARR0712, the whole file: the 14,123 rows with pa_docorig 'B' hold 0 in both fields.
+    ("sia_producao_ambulatorial_1994_2007", "sia_pa_rr_2007_12_mini", 2007, "RR"): {
+        "pa_cidpri": (15945, 1822),
+        "pa_cidsec": (14368, 245),
+    },
     ("sia_apac_quimioterapia", "sia_aq_rr_2024_01_mini", 2024, "RR"): {
         "ap_cidpri": (17, 17),
         "ap_cidsec": (17, 0),
@@ -292,13 +303,27 @@ SIA_CID = {
 }
 
 
+# Datasets with no archived DEF, so no DEF line says which fields relate to S_CID.DBF:
+# the DEFs of 1994-07 to 2007-12 are in SIASUS/200801_/Auxiliar/TAB_SIA_199407-199910.zip
+# and the two archives after it, which the repo has not read (docs/sources/sia.md). Their
+# SIA_CID fields are the CID fields of the census instead
+# (evidence/2026-10-07-sia-cid-widths/README.md: PA_CIDPRI and PA_CIDSEC).
+NO_ARCHIVED_DEF = {"sia_producao_ambulatorial_1994_2007"}
+
+
 @pytest.mark.parametrize(("dataset", "fixture", "ano", "uf"), sorted(SIA_CID))
 def test_sia_cid_fields_declare_the_cid10_reference(con, dbc_fixture, dataset, fixture, ano, uf):
     """The DEF that vinculos.json gives the dataset relates these fields, and no other, to
     S_CID.DBF of TAB_SIA.zip (#82). Each declares aux_cid10, and the joins are counted
-    here because UNRESOLVED skips a field without foreignKeys."""
+    here because UNRESOLVED skips a field without foreignKeys. A dataset in
+    NO_ARCHIVED_DEF has no DEF to compare with, and the test fails once vinculos.json
+    gives it one, so the DEF check is not skipped by mistake."""
     expected = SIA_CID[(dataset, fixture, ano, uf)]
-    assert s_cid_fields(dataset) == set(expected)
+    if dataset in NO_ARCHIVED_DEF:
+        vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+        assert dataset not in vinculos["datasets"]
+    else:
+        assert s_cid_fields(dataset) == set(expected)
     assert set(referenced_fields(dataset)) == set(expected)
     dictionary = load_dicionario(dataset)
     assert {f: dictionary.field_def(f)["foreignKeys"] for f in expected} == {
