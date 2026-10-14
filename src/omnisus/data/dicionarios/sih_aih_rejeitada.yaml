@@ -11531,8 +11531,11 @@ schema:
         description: 'etnia.cnv (TAB_SIH, f05b32f32908) lista os códigos 0001-0264 e abre com a
           faixa 0000-9999, "NÃO INFORMADO". O mapa expande a faixa, como decidido na #7:
           todo código de 4 dígitos fora de 0001-0264, inclusive ''0000'', recebe "NÃO
-          INFORMADO" só pela faixa, publicado ou não. RR 2024-01: ''0000'' em 27 das 30
-          AIHs.'
+          INFORMADO" só pela faixa, publicado ou não. Nas fixtures, ''0000'' não quer
+          dizer etnia desconhecida: marca AIH de paciente não indígena. RR 2024-01:
+          ''0000'' em 27 das 30 AIHs, todas com raca_cor 01-04, e as 3 AIHs com raca_cor
+          05 têm código de 0001-0264; nos excertos SP (RJSP2203, RJSP2207), ''0000'' tem
+          raca_cor 03. Para contar pacientes indígenas, filtre por raca_cor.'
       - id: etnia-hifen-suave
         status: open
         description: 'etnia.cnv (TAB_SIH, f05b32f32908) escreve o byte 0xAD em 15 rótulos, que o
