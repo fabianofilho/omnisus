@@ -27,9 +27,15 @@ Cada tabela vem de um instrumento ou laudo diferente:
 - `sia_apac_laudos_diversos` (prefixo `AD`): Laudos Diversos da APAC
   (Informe SIASUS 2019-07, p. 5), com o layout comum da APAC e nenhum campo próprio
   (p. 6).
-- `sia_apac_cirurgia_bariatrica` (prefixo `ABO` na biblioteca): Laudo de Acompanhamento à
-  Cirurgia Bariátrica da APAC (Informe SIASUS 2019-07, p. 5), com número da AIH, data
-  da cirurgia e número de meses de acompanhamento (p. 12).
+- `sia_apac_cirurgia_bariatrica` (prefixo `ABO`): APAC de acompanhamento pós-cirurgia
+  bariátrica. O `TAB_SIA.zip` lê os arquivos `ABO` com `APAC_Pos_Cirurgia_Bariatica.def`,
+  e todas as 844 linhas de `ABOSP2401.dbc` têm `ap_pripal` 0301120056, "ACOMPANHAMENTO DE
+  PACIENTE POS- CIRURGIA BARIATRICA" no SIGTAP de 2008-01; `ab_procaih` traz o
+  procedimento da cirurgia na AIH (0407010173, gastroplastia com derivação intestinal, em
+  837 linhas) e `ab_numaih` o número dessa AIH
+  (`tests/unit/sources/datasus_ftp/test_sia_apac.py`). O nome do dataset fica por
+  compatibilidade: trocá-lo mudaria a API. O Laudo de Acompanhamento à Cirurgia
+  Bariátrica do informe é o arquivo `AB` (veja [Armadilhas](#armadilhas)).
 - `sia_psicossocial` (prefixo `PS`): Registro das Ações Ambulatoriais de Saúde (RAAS) –
   Psicossocial (Informe SIASUS 2019-07, p. 15–16).
 
@@ -87,8 +93,8 @@ Sobre as linhas:
 
 Arquivos mensais por UF, todos no diretório `/dissemin/publicos/SIASUS/200801_/Dados`,
 sem diretório preliminar. O início difere por tabela: 2008-01 para BPA-I, medicamentos,
-quimioterapia e laudos diversos; 2012-11 para a RAAS psicossocial; 2014-01 para
-cirurgia bariátrica; 2014-08 para tratamento dialítico. Veja
+quimioterapia e laudos diversos; 2012-11 para a RAAS psicossocial; 2014-01 para o
+acompanhamento pós-cirurgia bariátrica (`ABO`); 2014-08 para tratamento dialítico. Veja
 [Bases e argumentos](../datasets.md#sia).
 
 ### Produção ambulatorial (PA)
@@ -114,29 +120,42 @@ Nomes do Informe Técnico SIASUS 2019-07 (p. 5 e p. 15); cobertura lida da lista
 | `sia_apac_radioterapia` | `AR` | 2008-01 em diante |
 | `sia_atencao_domiciliar` | `SAD` | 2012-04 a 2018-10 |
 
-`AB` e `ABO` são famílias diferentes: o `TAB_SIA.zip` liga `AB*` a
-`APAC_Cirurgia_Bariatica.DEF` e `ABO*` a `APAC_Pos_Cirurgia_Bariatica.def`. `AMP` não tem
+`AB` e `ABO` são famílias diferentes: a linha 3 de `APAC_Cirurgia_Bariatica.DEF` lê
+`DADOS\AB*.DBC` e a de `APAC_Pos_Cirurgia_Bariatica.def` lê `DADOS\ABO*.DBF`
+(`TAB_SIA.zip`). Só o DEF pós-cirurgia liga os campos de acompanhamento `AB_PRCAIH4` a
+`AB_PRCAIH6`, `AP_MEDICAM`, `AP_POLIVIT`, `AP_ATV_FIS`, `AP_REG_PES`, `AP_ADESAO` e
+`AP_CID_C1` a `AP_CID_C5`, que o arquivo `ABO` de SP tem e o `AB` de SE não
+(`tests/unit/sources/datasus_ftp/test_sia_apac.py`,
+`test_each_bariatric_def_reads_the_family_vinculos_gives_it`). Nas duas fixtures, todas
+as linhas têm `ap_pripal` 0301120056, o acompanhamento pós-cirurgia. `AMP` não tem
 DEF no `TAB_SIA.zip`, por isso não tem rótulos. Todas declaram identidade de arquivo
 (mês e UF), como as outras APAC.
 
 ## Armadilhas
 
 - Os códigos de `ap_ufdif` e `ap_mndif` mudam entre layouts: 0 e 1 em laudos diversos
-  (Informe SIASUS 2019-07, p. 6), N e S em quimioterapia (p. 9), cirurgia bariátrica
-  (p. 12) e tratamento dialítico (p. 14), e nenhum código, com 2 caracteres, em
+  (Informe SIASUS 2019-07, p. 6), N e S em quimioterapia (p. 9), acompanhamento à
+  cirurgia bariátrica (`AB`, p. 12) e tratamento dialítico (p. 14), e nenhum código, com
+  2 caracteres, em
   medicamentos (p. 7).
 - Os cinco dicionários de APAC decodificam `ap_ufdif` e `ap_mndif` a partir de
   `Invasao.CNV`, ligado pelo DEF de cada laudo de APAC no pacote oficial
   `TAB_SIA.zip` (`src/omnisus/data/dicionarios/sources/cnv/vinculos.json`).
-- O documento nomeia o arquivo de cirurgia bariátrica `ABufaamm.dbf` (p. 5) e
-  `ABUFMM.DBF` (p. 11); a biblioteca usa o prefixo `ABO`
-  ([Bases e argumentos](../datasets.md#onde-fica-no-servidor);
-  `tests/unit/sources/datasus_ftp/test_filenames_golden.py`).
-- No arquivo real de cirurgia bariátrica, o cabeçalho tem 86 campos, 8 sem nome, que o
-  parser descarta, e nomes variantes como `AP_TPPRE`, `AP_APACAN`, `AP_DTOOCOR` e
-  `CO_CIDPRIM` (`tests/unit/sources/datasus_ftp/test_sia_apac.py`, docstring do
-  módulo), enquanto o layout do documento lista 58 campos com `AP_TIPPRE`,
-  `AP_APACANT`, `AP_DTOCOR` e `AP_CIDPRI` (Informe SIASUS 2019-07, p. 11–12).
+- O Laudo de Acompanhamento à Cirurgia Bariátrica do informe é o arquivo `AB`
+  (`sia_apac_acompanhamento_bariatrica`), não o `ABO`: o documento o nomeia
+  `ABufaamm.dbf` (p. 5) e `ABUFMM.DBF` (p. 11), e o layout das p. 11–12 lista 58 campos
+  com `AP_TIPPRE`, `AP_APACANT`, `AP_DTOCOR` e `AP_CIDPRI`, como o cabeçalho de
+  `ABSE2507.dbc` (58 campos; `src/omnisus/data/dicionarios/sia_apac_acompanhamento_bariatrica.yaml`,
+  `x-evidence`).
+- O cabeçalho de `ABOSP2401.dbc` tem outro layout: 86 campos, 8 sem nome, que o parser
+  descarta, com `AP_TPPRE`, `AP_APACAN`, `AP_DTOOCOR` e `CO_CIDPRIM` no lugar daqueles
+  quatro, e os campos de acompanhamento que só o DEF pós-cirurgia liga
+  (`tests/unit/sources/datasus_ftp/test_sia_apac.py`, docstring do módulo).
+- No `ABO`, `ap_mn_ind` e `ap_cid_c1` a `ap_cid_c5` ficam sem rótulos. O DEF pós-cirurgia
+  liga `AP_MN_IND` a `MANT_IND.CNV` sem a pasta `CNV/` (linha 241), um caminho que não é o
+  do `CNV/MANT_IND.CNV` empacotado (`vinculos.json`, `sem_cnv`); o `AB` usa esse CNV. Os
+  campos de comorbidade são ligados a `CNV/CID_COM.CNV`, que não está entre os membros
+  do `TAB_SIA.zip` que o pacote arquiva (`vinculos.json`, `membros`).
 - Os dicionários de APAC e da RAAS psicossocial foram gerados do cabeçalho de arquivos
   DBF reais de 2024, não do informe técnico, e muitos rótulos só repetem o nome do campo
   (`src/omnisus/data/dicionarios/sia_apac_*.yaml` e `sia_psicossocial.yaml`,
@@ -165,7 +184,7 @@ DEF no `TAB_SIA.zip`, por isso não tem rótulos. Todas declaram identidade de a
   - Somadas as UFs fora de SP e GO, a parte em branco subiu de 2024-10 para 2026-07:
     de 6,0% para 68,4% no BPA-I, de 0,3% para 70,2% no tratamento dialítico, de 2,7%
     para 45,4% nos laudos diversos, de 0,8% para 29,9% na quimioterapia e de 0,8% para
-    29,6% na cirurgia bariátrica.
+    29,6% no acompanhamento pós-cirurgia bariátrica (`ABO`).
   - Em 2026-07, a parte em branco do BPA-I vai de 27,0% (RR e TO) a 84,0% (GO).
   - A RAAS psicossocial não tem nenhuma linha em branco nesses meses.
   - A APAC de medicamentos perdeu o CNS em GO e SP

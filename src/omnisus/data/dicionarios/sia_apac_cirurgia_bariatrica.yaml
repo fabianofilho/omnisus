@@ -1,12 +1,15 @@
 name: sia_apac_cirurgia_bariatrica
-title: SIASUS — APAC de Cirurgia Bariátrica Acompanhamento (ABO)
+title: SIASUS — APAC de Acompanhamento Pós-Cirurgia Bariátrica (ABO)
 profile: tabular-data-resource
+# ABO e o acompanhamento pos-cirurgia: o TAB_SIA.zip le ABO*.DBF com
+# APAC_Pos_Cirurgia_Bariatica.def, e AP_PRIPAL e 0301120056 (SIGTAP). O nome
+# sia_apac_cirurgia_bariatrica fica por compatibilidade; so o titulo mudou.
 # Gerado do header DBF REAL (ABOSP2401.dbf), nao do informe tecnico.
 # latin-1 obrigatorio: cifra do CNS usa 0x7B-0x84 (0x81 quebra cp1252).
 # NOTA: o header real tem 86 campos; 8 sem nome sao
 # descartados pelo dbfread2 e ficam fora do dicionario.
 encoding: latin-1
-x-version: "0.1.0"
+x-version: "0.2.0"
 schema:
   fields:
     - name: ap_mvm
@@ -15,6 +18,27 @@ schema:
     - name: ap_condic
       type: string
       label: Ap condic
+      x-decode:
+        EC: EC Estado Convencional
+        EP: EP Estado Pleno
+        MN: MN Municipio Pleno NOAS
+        MP: MP Municipio Pleno NOB
+        PA: PA Municipio Pleno da Atenção Básica NOAS
+        PB: PB Municipio Pleno da Atenção Básica NOB 96
+        PG: PG Pacto de Gestão
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 72f3ca35c0ecc8e4db4af7064ff53b13ef82152293010c35bdc942fb930b930c
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sia-tab-e5812b51d802
+            pages: []
+            locator: 'APAC_Pos_Cirurgia_Bariatica.def: DTipo de Gestão, AP_CONDIC, 1, CNV/TP_GESTAO.CNV; CNV/TP_GESTAO.CNV'
+          note: Mapa do CNV.
     - name: ap_gestao
       type: string
       label: Ap gestao
@@ -39,6 +63,63 @@ schema:
     - name: ap_tpups
       type: string
       label: Ap tpups
+      x-decode:
+        '  -99': TIPO ESTABELECIMENTO NÃO INFORMADO
+        '01': POSTO DE SAUDE
+        '02': CENTRO DE SAUDE/UNIDADE BASICA DE SAUDE
+        '04': POLICLINICA
+        '05': HOSPITAL GERAL
+        '07': HOSPITAL ESPECIALIZADO
+        '09': PRONTO SOCORRO DE HOSPITAL GERAL (ANTIGO)
+        '12': PRONTO SOCORRO TRAUMATO-ORTOPEDICO (ANTIGO)
+        '15': UNIDADE MISTA
+        '20': PRONTO SOCORRO GERAL
+        '21': PRONTO SOCORRO ESPECIALIZADO
+        '22': CONSULTORIO
+        '32': UNIDADE MOVEL FLUVIAL
+        '36': CLINICA ESPECIALIZADA/AMBULATORIO ESPECIALIZADO
+        '39': UNIDADE DE SERVICO DE APOIO DE DIAGNOSE E TERAPIA
+        '40': UNIDADE MOVEL TERRESTRE
+        '42': UNIDADE MOVEL DE NIVEL PRE-HOSP-URGENCIA/EMERGENCIA
+        '43': FARMACIA
+        '45': UNIDADE DE SAUDE DA FAMILIA
+        '50': UNIDADE DE VIGILANCIA EM SAUDE
+        '60': COOPERATIVA
+        '61': CENTRO DE PARTO NORMAL
+        '62': HOSPITAL DIA
+        '63': UNIDADE AUTORIZADORA
+        '64': CENTRAL DE REGULACAO DE SERVICOS DE SAUDE
+        '65': UNIDADE DE VIGILANCIA EPIDEMIOLOGIA (ANTIGO)
+        '66': UNIDADE DE VIGILANCIA SANITARIA (ANTIGO)
+        '67': LABORATORIO CENTRAL DE SAUDE PUBLICA - LACEN
+        '68': SECRETARIA DE SAUDE
+        '69': CENTRO DE ATENÇÃO HEMOTERÁPICA E/OU HEMATOLÓGICA
+        '70': CENTRO DE ATENÇÃO PSICOSSOCIAL-CAPS
+        '71': CENTRO DE APOIO A SAÚDE DA FAMÍLIA-CASF
+        '72': UNIDADE DE ATENÇÃO À SAÚDE INDÍGENA
+        '73': PRONTO ANTEDIMENTO
+        '74': ACADEMIA DA SAÚDE
+        '75': TELESAÚDE
+        '76': CENTRAL DE REGULAÇÃO MÉDICA DAS URGÊNCIAS
+        '77': SERVICO DE ATENCAO DOMICILIAR ISOLADO(HOME CARE)
+        '78': UNIDADE DE ATENCAO EM REGIME RESIDENCIAL
+        '79': OFICINA ORTOPEDICA
+        '80': ORIO DE SAUDE PUBLICA
+        '81': CENTRAL DE REGUALAÇÃO
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: cd03c42b858f4512695cf4b2d86473ab5aba4012a81b25f19d7c999b746a202f
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sia-tab-e5812b51d802
+            pages: []
+            locator: 'APAC_Pos_Cirurgia_Bariatica.def: XTipo Estabelecimento, AP_TPUPS, 1, CNV/TP_ESTAB.CNV;
+              CNV/TP_ESTAB.CNV'
+          note: Mapa do CNV.
     - name: ap_tppre
       type: string
       label: Ap tppre
@@ -238,6 +319,43 @@ schema:
     - name: ap_motsai
       type: string
       label: Ap motsai
+      x-decode:
+        '00': PRODUÇÃO SEM MOTIVO DE SAÍDA (BPA-C / BPA-I)
+        '11': ALTA CURADO
+        '12': ALTA MELHORADO
+        '13': ALTA DA PUÉRPERA E PERMANÊNCIA DO RECÉM NASCIDO
+        '14': ALTA A PEDIDO
+        '15': ALTA COM PREVISÃO DE RETORNO P/ ACOMPAN. DO PACIENT
+        '16': ALTA POR EVASÃO
+        '17': ALTA DA PUÉRPERA E RECÉM NASCIDO
+        '18': ALTA POR OUTROS MOTIVOS
+        '21': PERMANÊNCIA POR CARACTERÍSTICAS PRÓPRIAS DA DOENÇA
+        '22': PERMANÊNCIA POR INTERCORRÊNCIA
+        '23': PERMANÊNCIA POR IMPOSSIBILIDADE SÓCIO-FAMILIAR
+        '24': PERMAN. POR PROCESSO-DOAÇÃO DE ÓRGÃOS-DOADOR VIVO
+        '25': PERMAN. POR PROCESSO-DOAÇÃO DE ÓRGÃOS-DOADOR MORTO
+        '26': PERMANÊNCIA POR MUDANÇA DE PROCEDIMENTO
+        '27': PERMANÊNCIA POR REOPERAÇÃO
+        '28': PERMANÊNCIA POR OUTROS MOTIVOS
+        '31': TRANSFERIDO PARA OUTRO ESTABELECIMENTO
+        '41': ÓBITO COM DECLARAÇÃO DE ÓBITO FORNEC. MÉDICO ASSIST
+        '42': ÓBITO COM DECLARAÇÃO DE ÓBITO FORNECIDA PELO I.M.L
+        '43': ÓBITO COM DECLARAÇÃO DE ÓBITO FORNECIDA PELO S.V.O
+        '51': ENCERRAMENTO ADMINSTRATIVO
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: c32352b40748bdd2b73db7c50eb49d646a98fd5b0185f4c0bbb871ed8a07be42
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sia-tab-e5812b51d802
+            pages: []
+            locator: 'APAC_Pos_Cirurgia_Bariatica.def: XMotivo Saída-Permanência, AP_MOTSAI, 1, CNV/MOTSAIPE.CNV;
+              CNV/MOTSAIPE.CNV'
+          note: Mapa do CNV.
     - name: ap_obito
       type: string
       label: Óbito no período
@@ -371,6 +489,41 @@ schema:
     - name: ap_catend
       type: string
       label: Ap catend
+      x-decode:
+        ? ''
+        : CARATER DE ATENDIMENTO NÃO INFORMADO
+        0-: CARATER DE ATENDIMENTO INVALIDO
+        '00': CARATER DE ATENDIMENTO NÃO INFORMADO
+        '01': ELETIVO
+        '02': URGÊNCIA
+        '03': ACIDENTE NO LOCAL TRABALHO OU A SERViÇO DA EMPRESA
+        '04': ACIDENTE NO TRAJETO PARA O TRABALHO
+        '05': OUTROS TIPOS DE ACIDENTE DE TRÂNSITO
+        '06': OUTROS TIPOS LESÕES/ENVENENAMENTOS(AGENT.FIS./QUIM.
+        '07': CARATER DE ATENDIMENTO INVALIDO
+        0E: CARATER DE ATENDIMENTO INVALIDO
+        0U: CARATER DE ATENDIMENTO INVALIDO
+        '10': CARATER DE ATENDIMENTO INVALIDO
+        '12': CARATER DE ATENDIMENTO INVALIDO
+        '20': CARATER DE ATENDIMENTO INVALIDO
+        '53': CARATER DE ATENDIMENTO INVALIDO
+        '54': CARATER DE ATENDIMENTO INVALIDO
+        '57': CARATER DE ATENDIMENTO INVALIDO
+        '99': INFORMAÇÃO INEXISTENTE  (BPA-C)
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: d25d681486c1cc8a64ead3cc4cf8284925e623abd08d89a0ef734c88ed18eea1
+          status: verified_in_source
+          checked_at: '2026-09-21'
+          method: cnv-parse
+          reviewer: scripts/metadados/gerar_decode_cnv.py
+          evidence:
+          - source_id: sia-tab-e5812b51d802
+            pages: []
+            locator: 'APAC_Pos_Cirurgia_Bariatica.def: XCarater Atendimento, AP_CATEND, 1, CNV/CARAT_AT.CNV;
+              CNV/CARAT_AT.CNV'
+          note: Mapa do CNV.
     - name: ap_apacan
       type: string
       label: Número da APAC anterior (encadeamento)

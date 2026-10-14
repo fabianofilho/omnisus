@@ -1067,18 +1067,23 @@
       ],
       "campos": {
         "ap_alta": "sia/CNV/ALTA.CNV",
+        "ap_catend": "sia/CNV/CARAT_AT.CNV",
+        "ap_condic": "sia/CNV/TP_GESTAO.CNV",
         "ap_encerr": "sia/CNV/ENCERRAM.CNV",
         "ap_mndif": "sia/CNV/Invasao.CNV",
+        "ap_motsai": "sia/CNV/MOTSAIPE.CNV",
         "ap_obito": "sia/CNV/OBITO.CNV",
         "ap_perman": "sia/CNV/PERMANEN.CNV",
         "ap_racacor": "sia/CNV/RACA_COR.CNV",
         "ap_sexo": "sia/CNV/SEXO.CNV",
         "ap_tpapac": "sia/CNV/TP_APAC.CNV",
+        "ap_tpups": "sia/CNV/TP_ESTAB.CNV",
         "ap_transf": "sia/CNV/TRANSFER.CNV",
         "ap_ufdif": "sia/CNV/Invasao.CNV"
       },
       "sem_cnv": {
-        "ap_coidade": "IDADEDET e IDADE18.CNV comparam 3 caracteres a partir de AP_COIDADE, que tem 1."
+        "ap_coidade": "IDADEDET e IDADE18.CNV comparam 3 caracteres a partir de AP_COIDADE, que tem 1.",
+        "ap_mn_ind": "A linha 241 do DEF liga AP_MN_IND a MANT_IND.CNV sem a pasta CNV/; o caminho, lido da pasta do DEF, é sia/MANT_IND.CNV, que não é membro, e não sia/CNV/MANT_IND.CNV."
       }
     },
     "sia_apac_laudos_diversos": {

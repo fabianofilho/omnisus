@@ -14,12 +14,18 @@ Stress scenarios these tests encode (all field-measured, 2026-08):
 
 from __future__ import annotations
 
+import json
+from importlib.resources import files
+from pathlib import Path
+
 import pytest
 
+from omnisus.sources import sigtap
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp.datasets import REGISTRY, resolve
 from omnisus.sources.datasus_ftp.filenames import decode_for
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
+from omnisus.transforms.cnv import cnv_map, parse_cnv, parse_def, parse_def_lookups
 from omnisus.transforms.dictionaries import load_dicionario
 from tests.support.datasus_names import filename_for
 
@@ -164,3 +170,102 @@ def test_cross_family_cns_intersection_rr(dbc_fixture) -> None:
     psicossocial = cns("sia_ps_rr_2024_01_mini", "sia_psicossocial", "cns_pac")
     assert len(bpa_i & medicamentos) == 312
     assert len(bpa_i & psicossocial) == 56
+
+
+# ---------------------------------------------------------------------------
+# bariatric follow-up: AB and ABO, and the TAB_SIA DEF that reads each
+# ---------------------------------------------------------------------------
+
+_CNV = files("omnisus.data.dicionarios") / "sources" / "cnv"
+_VINCULOS = json.loads((_CNV / "vinculos.json").read_text("utf-8"))
+_POS_DEF = "APAC_Pos_Cirurgia_Bariatica.def"
+_CIR_DEF = "APAC_Cirurgia_Bariatica.DEF"
+# dataset -> (fixture, the DEF whose line 3 reads its files)
+_BARIATRIC = {
+    "sia_apac_acompanhamento_bariatrica": ("sia_ab_se_2025_07_mini", _CIR_DEF),
+    "sia_apac_cirurgia_bariatrica": ("sia_abo_sp_2024_01_mini", _POS_DEF),
+}
+
+
+def _def_text(name: str) -> str:
+    return (_CNV / "sia" / name).read_bytes().decode("latin-1")
+
+
+def _bariatric_frame(dbc_fixture, dataset: str):
+    fixture = _BARIATRIC[dataset][0]
+    return dbc_bytes_to_lazyframe(dbc_fixture(fixture).read_bytes(), dataset=dataset).collect()
+
+
+def test_each_bariatric_def_reads_the_family_vinculos_gives_it(dbc_fixture) -> None:
+    """TAB_SIA.zip: line 3 of APAC_Cirurgia_Bariatica.DEF reads `DADOS\\AB*.DBC`, line 3
+    of APAC_Pos_Cirurgia_Bariatica.def reads `DADOS\\ABO*.DBF`. Only the Pos DEF binds the
+    13 follow-up fields below; the ABO file of SP has all of them, the AB file of SE none.
+
+    The two DEFs disagree on the names of the common APAC fields (the Pos DEF binds
+    AP_DTOCOR and AP_TPATEN, as AB publishes them; the other DEF CO_CIDPRIM and
+    AP_TPATEND, as ABO does), so those names cannot tell the DEFs apart. Swapping the
+    DEFs in vinculos.json fails here.
+    """
+    assert _def_text(_CIR_DEF).splitlines()[2] == "ADADOS\\AB*.DBC"
+    assert _def_text(_POS_DEF).splitlines()[2] == "ADADOS\\ABO*.DBF"
+
+    def bound(name: str) -> set[str]:
+        text = _def_text(name)
+        return {b.field for b in parse_def(text)} | {b.field for b in parse_def_lookups(text)}
+
+    def header(dataset: str) -> set[str]:
+        return {name.upper() for name in _bariatric_frame(dbc_fixture, dataset).columns}
+
+    follow_up = {
+        "AB_PRCAIH4", "AB_PRCAIH5", "AB_PRCAIH6", "AP_MEDICAM", "AP_POLIVIT", "AP_ATV_FIS",
+        "AP_REG_PES", "AP_ADESAO", "AP_CID_C1", "AP_CID_C2", "AP_CID_C3", "AP_CID_C4",
+        "AP_CID_C5",
+    }  # fmt: skip
+    assert follow_up <= bound(_POS_DEF) - bound(_CIR_DEF)
+    assert follow_up <= header("sia_apac_cirurgia_bariatrica")
+    assert not follow_up & header("sia_apac_acompanhamento_bariatrica")
+    for dataset, (_, def_name) in _BARIATRIC.items():
+        assert _VINCULOS["datasets"][dataset]["def"] == [f"sia/{def_name}"]
+
+
+def test_abo_is_the_post_surgery_follow_up_and_its_title_says_so(dbc_fixture) -> None:
+    """Every row of ABOSP2401 has AP_PRIPAL 0301120056, which SIGTAP 2008-01 names
+    'ACOMPANHAMENTO DE PACIENTE POS- CIRURGIA BARIATRICA'; AB_PROCAIH holds the SIH
+    surgery (0407010173, a gastroplasty, in 837 of 844 rows). The dataset keeps its name, which an API
+    change would take, and only its title says what the file holds."""
+    df = _bariatric_frame(dbc_fixture, "sia_apac_cirurgia_bariatrica")
+    assert set(df["ap_pripal"]) == {"0301120056"}
+    assert df["ab_procaih"].to_list().count("0407010173") == 837
+    zip_200801 = Path(__file__).resolve().parents[3] / "fixtures/sigtap/TabelaUnificada_200801.zip"
+    procedimentos = sigtap.read_procedimentos(zip_200801.read_bytes())
+    names = dict(procedimentos.select("co_procedimento", "no_procedimento").iter_rows())
+    assert names["0301120056"] == "ACOMPANHAMENTO DE PACIENTE POS- CIRURGIA BARIATRICA"
+    assert names["0407010173"] == "GASTROPLASTIA C/ DERIVACAO INTESTINAL"
+    title = load_dicionario("sia_apac_cirurgia_bariatrica").title
+    assert title == "SIASUS — APAC de Acompanhamento Pós-Cirurgia Bariátrica (ABO)"
+
+
+# field -> (CNV both bariatric DEFs bind it to, a code of the fixtures, its label)
+_SHARED_LABELS = {
+    "ap_catend": ("CARAT_AT.CNV", "01", "ELETIVO"),
+    "ap_condic": ("TP_GESTAO.CNV", "PG", "PG Pacto de Gestão"),
+    "ap_motsai": ("MOTSAIPE.CNV", "21", "PERMANÊNCIA POR CARACTERÍSTICAS PRÓPRIAS DA DOENÇA"),
+    "ap_tpups": ("TP_ESTAB.CNV", "05", "HOSPITAL GERAL"),
+}
+
+
+@pytest.mark.parametrize("dataset", sorted(_BARIATRIC))
+@pytest.mark.parametrize("field", sorted(_SHARED_LABELS))
+def test_bariatric_labels_come_from_the_cnv_each_def_binds(dbc_fixture, dataset, field) -> None:
+    """Each bariatric DEF binds the field at column 1 to the same packaged CNV; the
+    dictionary holds that CNV's map, and every value of the AB file of SE and of the ABO
+    file of SP is one of its keys. SP is the only committed ABO file:
+    evidence/2026-10-08-cns-vazio-sia records only hashes and counts of the others."""
+    member, code, label = _SHARED_LABELS[field]
+    bindings = {(b.field, b.start, b.table) for b in parse_def(_def_text(_BARIATRIC[dataset][1]))}
+    assert (field.upper(), 1, f"CNV/{member}") in bindings
+    cnv = cnv_map(parse_cnv((_CNV / "sia" / "CNV" / member).read_bytes().decode("latin-1")))
+    decode = load_dicionario(dataset).field_def(field).get("x-decode")
+    assert decode == cnv
+    assert set(_bariatric_frame(dbc_fixture, dataset)[field]) <= decode.keys()
+    assert decode[code] == label

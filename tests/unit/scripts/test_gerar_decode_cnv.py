@@ -420,3 +420,23 @@ def test_a_dbf_field_with_several_defs_is_refused(monkeypatch):
     defs = ["sih/Motivo_de_Erro.DEF", "sih/Motivo_de_Erro.DEF"]
     with pytest.raises(ValueError, match=r"DBF member .* one DEF"):
         gerar.evidence_for(defs, "co_erro", "sih/DBF/MOTERRO.dbf", vinculos)
+
+
+def test_a_bare_cnv_name_resolves_beside_the_def_not_in_its_cnv_folder(monkeypatch):
+    """APAC_Pos_Cirurgia_Bariatica.def line 241 binds AP_MN_IND to `MANT_IND.CNV`, with no
+    `CNV/` folder; the eight other APAC DEFs, AB's among them, name `CNV/MANT_IND.CNV`.
+    The generator resolves a table path from the DEF's folder, so that line names
+    `sia/MANT_IND.CNV`, which is not a packaged member, and not `sia/CNV/MANT_IND.CNV`.
+    ABO's AP_MN_IND stays without a map, listed in `sem_cnv`; AB's takes the CNV."""
+    gerar = _load(monkeypatch)
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    pos = "sia/APAC_Pos_Cirurgia_Bariatica.def"
+    text = gerar.read_def(pos, vinculos)
+    assert text.splitlines()[240].split(",")[-1].strip() == "MANT_IND.CNV"
+    with pytest.raises(ValueError, match="does not bind ap_mn_ind"):
+        gerar.binding_for(pos, text, "ap_mn_ind", "sia/CNV/MANT_IND.CNV")
+    assert "sia/MANT_IND.CNV" not in vinculos["membros"]
+    abo = vinculos["datasets"]["sia_apac_cirurgia_bariatrica"]
+    assert "ap_mn_ind" not in abo["campos"] and "ap_mn_ind" in abo["sem_cnv"]
+    ab = vinculos["datasets"]["sia_apac_acompanhamento_bariatrica"]
+    assert ab["campos"]["ap_mn_ind"] == "sia/CNV/MANT_IND.CNV"
