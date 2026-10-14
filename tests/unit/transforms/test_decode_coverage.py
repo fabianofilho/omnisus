@@ -216,6 +216,7 @@ RANGE_ONLY = {
     ("sih_aih_reduzida", "sih_rd_rr_2025_03_excerpt"): [
         ("contracep1", "00", 29),
         ("contracep2", "00", 29),
+        ("etnia", "0000", 28),
         ("instru", "0", 29),
         ("natureza", "00", 30),
         ("vincprev", "0", 30),
