@@ -29,6 +29,15 @@
   value of the RDRR2503 excerpt, is not a key of the table and stays unlabeled (issue
   `fonte_orc-00-sem-fonte`). `check_columns` no longer reports the field as "not in
   dictionary" (#86).
+- `etnia` of `sih_aih_reduzida` (2.14.0) and `sih_aih_rejeitada` (1.3.0) takes its labels
+  from `CNV/etnia.cnv` of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` and `RJ2008.DEF`
+  bind to `ETNIA`. The table names `0001`-`0264` and opens with the range `0000-9999`,
+  "NÃO INFORMADO", expanded as decided in #7: every other 4-digit code, `0000` included,
+  takes that label only through the range (issue `etnia-nao-informado-pela-faixa`). In
+  the RR and SP fixtures `0000` marks a non-indigenous patient (`raca_cor` 01-04), not an
+  unknown ethnicity, as the SIH page and that issue say: count indigenous patients by
+  `raca_cor`. 15 labels hold U+00AD, a soft hyphen, and a text search misses them
+  (issue `etnia-hifen-suave`). The RD dictionary grows by 314 KB and the RJ one by 294 KB.
 
 ### Packaging
 
