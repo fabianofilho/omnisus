@@ -4,6 +4,12 @@
 
 ### API
 
+- `read(dataset, years=..., ufs=..., months=...)` returns the rows `load` returns for
+  the same arguments, harmonised categories included, from what the lake already has,
+  without connecting to DATASUS: it works while the server is down, when `load` raises
+  `FtpUnavailable`. It warns naming the requested scopes the lake lacks and raises
+  `LookupError` when it has none of them. `read(table)` without `years` is unchanged
+  (#92).
 - `WriterBusyError`, `CommitOutcomeUnknown`, `CENSUS_YEARS` and
   `ESTIMATE_UNAVAILABLE_YEARS` are exported from `omnisus`, so a caller that imports
   only `omnisus.__all__` can catch the writer's errors and build the IBGE year selector.
@@ -17,6 +23,12 @@
 
 ### Dictionaries
 
+- `sih_aih_reduzida` (2.13.0) declares `fonte_orc`, which RD files publish from 2025-03
+  (layout 6, `evidence/2026-10-06-rd-2008-layouts`), with the labels of `CNV/fonterem.CNV`
+  of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` binds to `FONTE_ORC`. `00`, the only
+  value of the RDRR2503 excerpt, is not a key of the table and stays unlabeled (issue
+  `fonte_orc-00-sem-fonte`). `check_columns` no longer reports the field as "not in
+  dictionary" (#86).
 - `etnia` of `sih_aih_reduzida` (2.14.0) and `sih_aih_rejeitada` (1.3.0) takes its labels
   from `CNV/etnia.cnv` of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` and `RJ2008.DEF`
   bind to `ETNIA`. The table names `0001`-`0264` and opens with the range `0000-9999`,
@@ -59,6 +71,10 @@
   the tests call it for every dataset.
 - Staging maps each batch's columns by name once, instead of rebuilding the list of
   column names for every field.
+- `load_dicionario()` parses with libyaml (`yaml.CSafeLoader`) when PyYAML was built
+  with it, as its wheels are, and with the pure-Python loader otherwise. The first load
+  of `sih_aih_reduzida` in a process drops from about 0.7 s to 0.1 s, and a cold
+  `describe_datasets()` from about 2.5 s to 0.4 s. The parsed dictionaries are the same.
 
 ## v0.2.3 — 2026-10-08
 
