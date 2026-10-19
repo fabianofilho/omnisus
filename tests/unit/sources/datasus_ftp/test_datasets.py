@@ -24,6 +24,8 @@ ROWS = {
     "sinan_chagas",
     "sinan_hanseniase",
     "sinan_tuberculose",
+    "sinan_dengue",
+    "sinan_violencia",
     "sia_producao_ambulatorial",
     "sia_producao_ambulatorial_1994_2007",
     "sih_aih_rejeitada",

@@ -124,6 +124,8 @@ _FIXTURE_FOR: dict[str, tuple[str, ScopeKey]] = {
     "sinan_chagas": ("sinan_chagas_br_2023", ScopeKey(uf=None, ano=2023)),
     "sinan_hanseniase": ("sinan_hanseniase_br_2026", ScopeKey(uf=None, ano=2026)),
     "sinan_tuberculose": ("sinan_tuberculose_br_2020_excerpt", ScopeKey(uf=None, ano=2020)),
+    "sinan_dengue": ("sinan_dengue_br_2023_excerpt", ScopeKey(uf=None, ano=2023)),
+    "sinan_violencia": ("sinan_violencia_br_2023_excerpt", ScopeKey(uf=None, ano=2023)),
     "sim_obitos": ("sim_rr_2023_mini", ScopeKey(uf="RR", ano=2023)),
     "sinasc_nascidos_vivos": ("sinasc_rr_2022_mini", ScopeKey(uf="RR", ano=2022)),
     "sih_aih_reduzida": ("sih_rr_2024_01_mini", ScopeKey(uf="RR", ano=2024, mes=1)),

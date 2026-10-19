@@ -57,8 +57,10 @@
   "sim_rr_2022_mini.dbc": {"length": 1593358, "sha256": "a5b84a87a76b7c4ca30a3fbc3564d32944b96cbf5fcf84402991e0536f9dbe7b"},
   "sim_rr_2023_mini.dbc": {"length": 1625208, "sha256": "43cf972da5531b91c4b54476be517c0b365e079fedccc8588e613eaa9141bf66"},
   "sinan_chagas_br_2023.dbc": {"length": 2767316, "sha256": "4399207106ed1afb0cbebc84796ca3bc493c81eae5b322ed0f0ffdb0befcfee8"},
+  "sinan_dengue_br_2023_excerpt.dbc": {"length": 166906, "sha256": "83614739463d7dbba0bf0a77e3caa8646a1568503cc7f2c9c2b5314152e0de5c"},
   "sinan_hanseniase_br_2026.dbc": {"length": 2704444, "sha256": "51e9fba5eaa6d999a11086d0f1987b96ba0f5acf8572b6e5cc5e4e5db5863bf6"},
   "sinan_tuberculose_br_2020_excerpt.dbc": {"length": 783042, "sha256": "2b2e12a45fc70ec2cfe593fc27356d5f74b22291c89c222e3d651bc817d57a22"},
+  "sinan_violencia_br_2023_excerpt.dbc": {"length": 288622, "sha256": "ee0feef3ecf4f8c1049bde12f22b8ed706a98adf3475f1dbb8bcfef7261d9395"},
   "sinasc_rr_1995_mini.dbc": {"length": 1678773, "sha256": "a6fb41f837bef98ece2b8ada76d0f326ba15ecafac6705bdf4fa042702881ee0"},
   "sinasc_rr_2022_mini.dbc": {"length": 2934370, "sha256": "d6d6cdc3fc35f2e3b4c2cad2ed7781fee40941e08c158b4e50f2eb7a03155e24"}
 }

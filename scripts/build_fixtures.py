@@ -36,6 +36,8 @@ TARGETS: list[tuple[str, ScopeKey, str]] = [
         ScopeKey(uf=None, ano=2020),
         "sinan_tuberculose_br_2020_excerpt.dbc",
     ),
+    ("sinan_dengue", ScopeKey(uf=None, ano=2023), "sinan_dengue_br_2023_excerpt.dbc"),
+    ("sinan_violencia", ScopeKey(uf=None, ano=2023), "sinan_violencia_br_2023_excerpt.dbc"),
     ("sim_obitos", ScopeKey(uf="RR", ano=2023), "sim_rr_2023_mini.dbc"),
     ("sinasc_nascidos_vivos", ScopeKey(uf="RR", ano=2022), "sinasc_rr_2022_mini.dbc"),
     ("sih_aih_reduzida", ScopeKey(uf="RR", ano=2024, mes=1), "sih_rr_2024_01_mini.dbc"),

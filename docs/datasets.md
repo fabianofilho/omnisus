@@ -118,13 +118,15 @@ Perfil: [SIM · óbitos (`sim_obitos`)](sources/sim_obitos.md)
 
 ## SINAN
 
-Perfis: [SINAN · doença de Chagas aguda (`sinan_chagas`)](sources/sinan_chagas.md) · [SINAN · hanseníase (`sinan_hanseniase`)](sources/sinan_hanseniase.md) · [SINAN · tuberculose (`sinan_tuberculose`)](sources/sinan_tuberculose.md)
+Perfis: [SINAN · doença de Chagas aguda (`sinan_chagas`)](sources/sinan_chagas.md) · [SINAN · dengue (`sinan_dengue`)](sources/sinan_dengue.md) · [SINAN · hanseníase (`sinan_hanseniase`)](sources/sinan_hanseniase.md) · [SINAN · tuberculose (`sinan_tuberculose`)](sources/sinan_tuberculose.md) · [SINAN · violência interpessoal e autoprovocada (`sinan_violencia`)](sources/sinan_violencia.md)
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
 | `sinan_chagas` | SINAN — Doença de Chagas aguda, notificações preliminares nacionais | Brasil, anual | 2000 em diante + preliminar | [11](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_chagas.yaml) | idade em Brasil, 2023 |
+| `sinan_dengue` | SINAN — Dengue, notificações nacionais | Brasil, anual | 2000 em diante + preliminar | [10](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_dengue.yaml) | — |
 | `sinan_hanseniase` | SINAN — Hanseníase, notificações nacionais | Brasil, anual | 2001 em diante + preliminar | [13](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_hanseniase.yaml) | idade em Brasil, 2026 |
 | `sinan_tuberculose` | SINAN — Tuberculose, notificações nacionais | Brasil, anual | 2001 em diante + preliminar | [42](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_tuberculose.yaml) | idade em Brasil, 2020 |
+| `sinan_violencia` | SINAN — Violência interpessoal/autoprovocada, notificações nacionais | Brasil, anual | 2009 em diante + preliminar | [5](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_violencia.yaml) | — |
 
 ## SINASC
 
@@ -181,8 +183,10 @@ nome de cada arquivo; bases que dividem um diretório se distinguem por ele.
 | `sim_obitos_infantis` | `DOINF` | `SIM/CID10/DOFET` | — |
 | `sim_obitos_maternos` | `DOMAT` | `SIM/CID10/DOFET` | — |
 | `sinan_chagas` | `CHAG` | `SINAN/DADOS/FINAIS` | `SINAN/DADOS/PRELIM` |
+| `sinan_dengue` | `DENG` | `SINAN/DADOS/FINAIS` | `SINAN/DADOS/PRELIM` |
 | `sinan_hanseniase` | `HANS` | `SINAN/DADOS/FINAIS` | `SINAN/DADOS/PRELIM` |
 | `sinan_tuberculose` | `TUBE` | `SINAN/DADOS/FINAIS` | `SINAN/DADOS/PRELIM` |
+| `sinan_violencia` | `VIOL` | `SINAN/DADOS/FINAIS` | `SINAN/DADOS/PRELIM` |
 | `sinasc_1994_1995` | `DNR` | `SINASC/1994_1995/Dados/DNRES` | — |
 | `sinasc_nascidos_vivos` | `DN` | `SINASC/1996_/Dados/DNRES` | `SINASC/PRELIM/DNRES` |
 

@@ -1,0 +1,499 @@
+name: sinan_violencia
+title: SINAN — Violência interpessoal/autoprovocada, notificações nacionais
+profile: tabular-data-resource
+encoding: latin-1
+x-version: 1.0.0
+x-source-format: dbc
+x-partitions:
+- _source_ano
+x-evidence:
+  physical_schema: VIOLBR23.dbc, 159 fields; observed 2026-10-19
+  semantic_status: Physical inventory; individual semantic fields not audited. No
+    inferred category mappings.
+  dictionary_url: https://portalsinan.saude.gov.br/images/documentos/Agravos/via/DIC_DADOS_NET_Violencias_v5.pdf
+  source_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS/VIOLBR23.dbc
+schema:
+  fields:
+  - name: tp_not
+    type: string
+    x-decode:
+      '1': Negativa
+      '2': Individual
+      '3': Surto
+      '4': Agregado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: dcf8c99c8d2fbadd5d45f06c1382ef31a9652bfffd995898322cf68b8230ce2c
+        status: verified_in_source
+        checked_at: '2026-09-22'
+        method: page-read
+        reviewer: scripts/metadados/sinan_bloco_comum.yaml
+        evidence:
+        - source_id: sinan-b3e0561c7a2d
+          pages:
+          - 1
+          locator: '1. Tipo de Notificação (TP_NOT): 1 – Negativa, 2 – Individual, 3 – Surto, 4 – Agregado'
+        note: Cada código citado por uma página ou um CNV oficial.
+  - name: id_agravo
+    type: string
+  - name: dt_notific
+    type: date
+  - name: sem_not
+    type: string
+  - name: nu_ano
+    type: string
+  - name: sg_uf_not
+    type: string
+  - name: id_municip
+    type: string
+  - name: dt_ocor
+    type: date
+  - name: sem_pri
+    type: string
+  - name: ano_nasc
+    type: string
+  - name: nu_idade_n
+    type: integer
+    label: Idade
+    x-metadata:
+      physical_name: NU_IDADE_N
+      unit: encoded
+      derivation:
+        kind: coded_age
+        inputs:
+        - nu_idade_n
+        rule_version: 1.0.0
+        output:
+        - idade_anos_completos
+        - idade_quantidade
+        - idade_unidade
+      applicability:
+        status: confirmed
+        data_period: null
+        valid_from: null
+        valid_until: null
+        conditions:
+        - Only the exact source identities in dataset.analytics.validated_sources.
+        reason: Documented rule compared with the complete-file audits of 2026-09-21 (evidence/2026-09-21-w3-idade-sinan/)
+          and 2026-09-22 (evidence/2026-09-22-w6-idade-tb/); no applicability to other source hashes is
+          inferred.
+        evidence:
+        - source_id: sinan-b3e0561c7a2d
+          pages:
+          - 3
+          - 4
+          locator: '10. Idade (NU_IDADE_N): 1º dígito 1 Hora, 2 Dia, 3 Mês, 4 Ano; ex. 3009 = nove meses,
+            4018 = dezoito anos'
+  - name: cs_sexo
+    type: string
+    x-decode:
+      M: Masculino
+      F: Feminino
+      I: Ignorado
+    x-metadata:
+      missing_codes:
+        I: ignored
+      claims:
+      - target: /field/codes
+        value_sha256: 03f1b56525c2bd3ad4b5365e1dd3e7a67a53c0d24389f0038e4031d642e4596b
+        status: verified_in_source
+        checked_at: '2026-09-22'
+        method: page-read
+        reviewer: scripts/metadados/sinan_bloco_comum.yaml
+        evidence:
+        - source_id: sinan-b3e0561c7a2d
+          pages:
+          - 4
+          locator: '11. Sexo (CS_SEXO): M- Masculino, F- Feminino, I- Ignorado'
+        note: Cada código citado por uma página ou um CNV oficial.
+  - name: cs_gestant
+    type: string
+    x-decode:
+      '1': 1º Trimestre
+      '2': 2º Trimestre
+      '3': 3º Trimestre
+      '4': Idade gestacional ignorada
+      '5': Não
+      '6': Não se aplica
+      '9': Ignorado
+    x-metadata:
+      missing_codes:
+        '6': not_applicable
+        '9': ignored
+      claims:
+      - target: /field/codes
+        value_sha256: 56e8fb62503aa12594230ef14613fbffe8b421b388913657b0375496d99f2b76
+        status: verified_in_source
+        checked_at: '2026-09-22'
+        method: page-read
+        reviewer: scripts/metadados/sinan_bloco_comum.yaml
+        evidence:
+        - source_id: sinan-b3e0561c7a2d
+          pages:
+          - 4
+          locator: '12. Gestante (CS_GESTANT): 1 a 6 e 9. Ignorado'
+        note: Cada código citado por uma página ou um CNV oficial.
+  - name: cs_raca
+    type: string
+    x-decode:
+      '1': branca
+      '2': preta
+      '3': amarela
+      '4': parda
+      '5': indígena
+      '9': Ignorado
+    x-metadata:
+      missing_codes:
+        '9': ignored
+      claims:
+      - target: /field/codes
+        value_sha256: 1cf71f1e71941e48b0c970bef202cffa953417dbbdf85e410186cbf1f09a5e26
+        status: verified_in_source
+        checked_at: '2026-09-22'
+        method: page-read
+        reviewer: scripts/metadados/sinan_bloco_comum.yaml
+        evidence:
+        - source_id: sinan-b3e0561c7a2d
+          pages:
+          - 5
+          locator: '13. Raça/Cor (CS_RACA): 1- branca, 2- preta, 3- amarela, 4- parda, 5- indígena, 9 Ignorado'
+        note: Cada código citado por uma página ou um CNV oficial.
+  - name: cs_escol_n
+    type: string
+    x-decode:
+      '0': Analfabeto
+      '00': Analfabeto
+      '1': 1ª a 4ª série incompleta do EF
+      '01': 1ª a 4ª série incompleta do EF
+      '2': 4ª série completa do EF (antigo 1° grau)
+      '02': 4ª série completa do EF (antigo 1° grau)
+      '3': 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau)
+      '03': 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau)
+      '4': Ensino fundamental completo (antigo ginásio ou 1° grau)
+      '04': Ensino fundamental completo (antigo ginásio ou 1° grau)
+      '5': Ensino médio incompleto (antigo colegial ou 2° grau)
+      '05': Ensino médio incompleto (antigo colegial ou 2° grau)
+      '6': Ensino médio completo (antigo colegial ou 2° grau)
+      '06': Ensino médio completo (antigo colegial ou 2° grau)
+      '7': Educação superior incompleta
+      '07': Educação superior incompleta
+      '8': Educação superior completa
+      '08': Educação superior completa
+      '9': Ignorado
+      '09': Ignorado
+      '10': Não se aplica
+    x-metadata:
+      missing_codes:
+        '9': ignored
+        '09': ignored
+        '10': not_applicable
+      claims:
+      - target: /field/codes
+        value_sha256: 6eb1368615a3cf03d6f2928e0a47dcc30d0ea885788a18620fcc6056e7c156a6
+        status: verified_in_source
+        checked_at: '2026-09-22'
+        method: page-read
+        reviewer: scripts/metadados/sinan_bloco_comum.yaml
+        evidence:
+        - source_id: sinan-b3e0561c7a2d
+          pages:
+          - 5
+          locator: '14. Escolaridade (CS_ESCOL_N): 1. a 8., 9. Ignorado, 10. Não se aplica; a primeira categoria
+            está impressa como "43 Analfabeto"'
+        - source_id: sinan-tab-cad66ee38781
+          pages: []
+          locator: 'TAB_SINANNET/Escolarnet.cnv: 0 e 00 Analfabeto; 01 a 09 na mesma linha de 1 a 9'
+        note: Cada código citado por uma página ou um CNV oficial.
+  - name: sg_uf
+    type: string
+  - name: id_mn_resi
+    type: string
+  - name: id_pais
+    type: string
+  - name: nduplic
+    type: string
+  - name: dt_invest
+    type: date
+  - name: id_ocupa_n
+    type: string
+  - name: sit_conjug
+    type: string
+  - name: def_trans
+    type: string
+  - name: def_fisica
+    type: string
+  - name: def_mental
+    type: string
+  - name: def_visual
+    type: string
+  - name: def_auditi
+    type: string
+  - name: tran_ment
+    type: string
+  - name: tran_comp
+    type: string
+  - name: def_out
+    type: string
+  - name: def_espec
+    type: string
+  - name: sg_uf_ocor
+    type: string
+  - name: id_mn_ocor
+    type: string
+  - name: hora_ocor
+    type: string
+  - name: local_ocor
+    type: string
+  - name: local_espe
+    type: string
+  - name: out_vezes
+    type: string
+  - name: les_autop
+    type: string
+  - name: viol_fisic
+    type: string
+  - name: viol_psico
+    type: string
+  - name: viol_tort
+    type: string
+  - name: viol_sexu
+    type: string
+  - name: viol_traf
+    type: string
+  - name: viol_finan
+    type: string
+  - name: viol_negli
+    type: string
+  - name: viol_infan
+    type: string
+  - name: viol_legal
+    type: string
+  - name: viol_outr
+    type: string
+  - name: viol_espec
+    type: string
+  - name: ag_forca
+    type: string
+  - name: ag_enfor
+    type: string
+  - name: ag_objeto
+    type: string
+  - name: ag_corte
+    type: string
+  - name: ag_quente
+    type: string
+  - name: ag_enven
+    type: string
+  - name: ag_fogo
+    type: string
+  - name: ag_ameaca
+    type: string
+  - name: ag_outros
+    type: string
+  - name: ag_espec
+    type: string
+  - name: sex_assedi
+    type: string
+  - name: sex_estupr
+    type: string
+  - name: sex_pudor
+    type: string
+  - name: sex_porno
+    type: string
+  - name: sex_explo
+    type: string
+  - name: sex_outro
+    type: string
+  - name: sex_espec
+    type: string
+  - name: pen_oral
+    type: string
+  - name: pen_anal
+    type: string
+  - name: pen_vagina
+    type: string
+  - name: proc_dst
+    type: string
+  - name: proc_hiv
+    type: string
+  - name: proc_hepb
+    type: string
+  - name: proc_sang
+    type: string
+  - name: proc_semen
+    type: string
+  - name: proc_vagin
+    type: string
+  - name: proc_contr
+    type: string
+  - name: proc_abort
+    type: string
+  - name: cons_abort
+    type: string
+  - name: cons_grav
+    type: string
+  - name: cons_dst
+    type: string
+  - name: cons_suic
+    type: string
+  - name: cons_ment
+    type: string
+  - name: cons_comp
+    type: string
+  - name: cons_estre
+    type: string
+  - name: cons_outr
+    type: string
+  - name: cons_espec
+    type: string
+  - name: lesao_nat
+    type: string
+  - name: lesao_espe
+    type: string
+  - name: lesao_corp
+    type: string
+  - name: num_envolv
+    type: string
+  - name: rel_sexual
+    type: string
+  - name: rel_pai
+    type: string
+  - name: rel_mae
+    type: string
+  - name: rel_pad
+    type: string
+  - name: rel_conj
+    type: string
+  - name: rel_excon
+    type: string
+  - name: rel_namo
+    type: string
+  - name: rel_exnam
+    type: string
+  - name: rel_filho
+    type: string
+  - name: rel_desco
+    type: string
+  - name: rel_irmao
+    type: string
+  - name: rel_conhec
+    type: string
+  - name: rel_cuida
+    type: string
+  - name: rel_patrao
+    type: string
+  - name: rel_inst
+    type: string
+  - name: rel_pol
+    type: string
+  - name: rel_propri
+    type: string
+  - name: rel_outros
+    type: string
+  - name: rel_espec
+    type: string
+  - name: autor_sexo
+    type: string
+  - name: autor_alco
+    type: string
+  - name: enc_saude
+    type: string
+  - name: enc_tutela
+    type: string
+  - name: enc_vara
+    type: string
+  - name: enc_abrigo
+    type: string
+  - name: enc_sentin
+    type: string
+  - name: enc_deam
+    type: string
+  - name: enc_dpca
+    type: string
+  - name: enc_deleg
+    type: string
+  - name: enc_mpu
+    type: string
+  - name: enc_mulher
+    type: string
+  - name: enc_creas
+    type: string
+  - name: enc_iml
+    type: string
+  - name: enc_outr
+    type: string
+  - name: enc_espec
+    type: string
+  - name: rel_trab
+    type: string
+  - name: rel_cat
+    type: string
+  - name: circ_lesao
+    type: string
+  - name: classi_fin
+    type: string
+  - name: evolucao
+    type: string
+  - name: dt_obito
+    type: date
+  - name: dt_digita
+    type: date
+  - name: dt_transus
+    type: date
+  - name: dt_transdm
+    type: date
+  - name: dt_transsm
+    type: date
+  - name: dt_transrm
+    type: date
+  - name: dt_transrs
+    type: date
+  - name: dt_transse
+    type: date
+  - name: rel_mad
+    type: string
+  - name: tpuninot
+    type: string
+  - name: orient_sex
+    type: string
+  - name: ident_gen
+    type: string
+  - name: viol_motiv
+    type: string
+  - name: cicl_vid
+    type: string
+  - name: rede_sau
+    type: string
+  - name: assist_soc
+    type: string
+  - name: rede_educa
+    type: string
+  - name: atend_mulh
+    type: string
+  - name: cons_tutel
+    type: string
+  - name: cons_ido
+    type: string
+  - name: deleg_idos
+    type: string
+  - name: dir_human
+    type: string
+  - name: mpu
+    type: string
+  - name: deleg_cria
+    type: string
+  - name: deleg_mulh
+    type: string
+  - name: deleg
+    type: string
+  - name: infan_juv
+    type: string
+  - name: defen_publ
+    type: string
+  - name: dt_encerra
+    type: date
+x-identity:
+  year_column: nu_ano
+  code_column: id_agravo
+  code: Y09

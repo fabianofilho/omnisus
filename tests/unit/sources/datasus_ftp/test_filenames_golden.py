@@ -23,6 +23,8 @@ GOLDEN: list[tuple[str, ScopeKey, str]] = [
     ("sinan_chagas", ScopeKey(uf=None, ano=2023), "CHAGBR23.dbc"),
     ("sinan_hanseniase", ScopeKey(uf=None, ano=2026), "HANSBR26.dbc"),
     ("sinan_tuberculose", ScopeKey(uf=None, ano=2020), "TUBEBR20.dbc"),
+    ("sinan_dengue", ScopeKey(uf=None, ano=2023), "DENGBR23.dbc"),
+    ("sinan_violencia", ScopeKey(uf=None, ano=2023), "VIOLBR23.dbc"),
     ("sim_obitos",    ScopeKey(uf="SP", ano=2024),         "DOSP2024.dbc"),
     ("sim_obitos",    ScopeKey(uf="RR", ano=1996),         "DORR1996.dbc"),
     ("sinasc_nascidos_vivos", ScopeKey(uf="MG", ano=2022),         "DNMG2022.dbc"),

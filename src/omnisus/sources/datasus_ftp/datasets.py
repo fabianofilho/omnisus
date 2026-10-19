@@ -169,6 +169,9 @@ _ROWS: tuple[Dataset, ...] = (
     Dataset(name="sia_apac_nefrologia", prefix="AN", ftp_dir=_SIA, cadence="monthly", partition_by=_MONTHLY, coverage=((2008, 1), (2014, 10))),
     Dataset(name="sia_apac_radioterapia", prefix="AR", ftp_dir=_SIA, cadence="monthly", partition_by=_MONTHLY, coverage=((2008, 1), None)),
     Dataset(name="sia_atencao_domiciliar", prefix="SAD", ftp_dir=_SIA, cadence="monthly", partition_by=_MONTHLY, coverage=((2012, 4), (2018, 10))),
+    # SINAN agravos, coverage from the FINAIS and PRELIM listings of 2026-10-19.
+    Dataset(name="sinan_dengue", prefix="DENG", ftp_dir=_SINAN_FINAIS, prelim_dir=_SINAN_PRELIM, cadence="yearly", partition_by=("_source_ano",), coverage=((2000, 1), None), geography="national"),
+    Dataset(name="sinan_violencia", prefix="VIOL", ftp_dir=_SINAN_FINAIS, prelim_dir=_SINAN_PRELIM, cadence="yearly", partition_by=("_source_ano",), coverage=((2009, 1), None), geography="national"),
 )
 # fmt: on
 

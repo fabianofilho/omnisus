@@ -23,6 +23,13 @@
 
 ### Dictionaries
 
+- Two SINAN agravos join the registry, national and yearly like the other three:
+  `sinan_dengue` (`DENG`, 2000 onwards, 1.0.0, physical inventory of `DENGBR23`, 121
+  fields, identity `A90`) and `sinan_violencia` (`VIOL`, 2009 onwards, 1.0.0, physical
+  inventory of `VIOLBR23`, 159 fields, identity `Y09`). Only the Notificação Individual
+  fields carry labels, copied by `gerar_sinan.py`; no source is validated for the age
+  rule. Fixtures are 500-record excerpts of `DENGBR23` and `VIOLBR23`; the profiles
+  record the dictionaries' URL and SHA-256.
 - `sih_aih_reduzida` (2.13.0) declares `fonte_orc`, which RD files publish from 2025-03
   (layout 6, `evidence/2026-10-06-rd-2008-layouts`), with the labels of `CNV/fonterem.CNV`
   of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` binds to `FONTE_ORC`. `00`, the only

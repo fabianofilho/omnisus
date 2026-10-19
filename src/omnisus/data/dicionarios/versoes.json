@@ -161,11 +161,17 @@
   "sinan_chagas": {
     "1.2.0": "8b341da3cdae13f57e0c577a48b7b50b8c3a511eea1feb1f2ad110cbc52c016a"
   },
+  "sinan_dengue": {
+    "1.0.0": "54bf6a26a4eb667ec1a003cfd2c7fd0f861d22b1957120e9ac4f3b386d09e68c"
+  },
   "sinan_hanseniase": {
     "1.2.0": "c87cbe69a097e515c7fa0718b7e3bb3b7a5beef094589b367a97fb20c0ba1244"
   },
   "sinan_tuberculose": {
     "1.0.0": "b059a5403e7a0d1aa84dce8e8f7aab0b51ef41f1d15afb20560673b66a1667b6"
+  },
+  "sinan_violencia": {
+    "1.0.0": "ddd3e811d4128024584ef5a85afd45e98125458bac3c0248434730dc923f30d6"
   },
   "sinasc_1994_1995": {
     "1.0.0": "79f11487a9497e55d4d73c5a165bb2d0c16a701199d82ec58f02063cceefea55"
