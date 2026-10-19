@@ -62,6 +62,10 @@
   digits, so outside the `0000-9999` range of `etnia.cnv` and unlabeled; the open issue
   `etnia-x389-x401-sem-fonte` says so, and the excerpt `sih_rd_rr_2025_01_excerpt` (the two
   `X389` rows, `GESTOR_CPF` blanked) pins it (#7).
+- `vinculos.json` lists in `sem_cnv`, with the reason, the SIH fields `RD2008.DEF` and
+  `RJ2008.DEF` bind to CNV members not packaged yet: `nat_jur` and `cnaer` of
+  `sih_aih_reduzida` and `sih_aih_rejeitada`, and `gestor_cod` of `sih_aih_rejeitada`
+  (#7, decision 4). No dictionary changes.
 
 ### Packaging
 
