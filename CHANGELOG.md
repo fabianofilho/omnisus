@@ -58,6 +58,10 @@
   `tests/unit/test_references.py` (AD of RR and SP, PS of RR and SP, AM and ATD of RR,
   AN of PA, SAD of MA); no field-width census was run for them. Their only value
   without a row there is `0000`.
+- `sih_aih_reduzida` (2.14.1): RDRR2501 publishes `etnia` `X389` (2 rows) and `X401` (3), not
+  digits, so outside the `0000-9999` range of `etnia.cnv` and unlabeled; the open issue
+  `etnia-x389-x401-sem-fonte` says so, and the excerpt `sih_rd_rr_2025_01_excerpt` (the two
+  `X389` rows, `GESTOR_CPF` blanked) pins it (#7).
 
 ### Packaging
 
