@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 import yaml
 
+from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.cnv import parse_def
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -58,6 +59,57 @@ def test_every_hand_map_a_def_binds_is_generated_or_excused(monkeypatch):
         listed = set(spec["campos"]) | set(spec.get("sem_cnv", {}))
         assert hand <= listed, (dataset, sorted(hand - listed))
         assert set(spec.get("sem_cnv", {})) <= bound, dataset
+
+
+# Issue #7: the fields RD2008.DEF and RJ2008.DEF bind at position 1 to CNV members that
+# are not packaged yet, with the values the RR 2024-01 fixture publishes. gestor_cod of
+# the RD is related to DBF/LIBGESTOR.DBF (a lookup, decision 6), not bound to a CNV, so
+# it is not here.
+SIH_FIELDS_WAITING_FOR_A_MEMBER = [
+    ("sih_aih_reduzida", "sih_rr_2024_01_mini", "nat_jur", {"1236", "1244", "2062"}),
+    ("sih_aih_reduzida", "sih_rr_2024_01_mini", "cnaer", {"000"}),
+    ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini", "nat_jur", {"1236", "1244"}),
+    ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini", "cnaer", {"000"}),
+    ("sih_aih_rejeitada", "sih_rj_rr_2024_01_mini", "gestor_cod", {""}),
+]
+
+
+@pytest.mark.parametrize(
+    ("dataset", "fixture", "field", "observed"), SIH_FIELDS_WAITING_FOR_A_MEMBER
+)
+def test_a_sih_field_bound_to_an_unpackaged_cnv_is_excused_naming_each_member(
+    monkeypatch, dataset, fixture, field, observed
+):
+    """Issue #7, decision 4: a field the SIH DEF binds to a CNV that is not packaged has no
+    map and is listed in `sem_cnv` with a reason that names every member the DEF binds it
+    to, taken from the packaged DEF, not from memory; the fixture publishes exactly the
+    values recorded here, which the reason may cite."""
+    gerar = _load(monkeypatch)
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    spec = vinculos["datasets"][dataset]
+    members = {
+        (Path(def_path).parent / b.table.replace("\\", "/")).as_posix()
+        for def_path in spec["def"]
+        for b in parse_def(gerar.read_def(def_path, vinculos))
+        if b.field.lower() == field and b.start == 1
+    }
+    assert members, (dataset, field)
+    packaged = {m.lower() for m in vinculos["membros"]}
+    assert not {m.lower() for m in members} & packaged, (dataset, field)
+    doc = yaml.load(
+        (ROOT / "src/omnisus/data/dicionarios" / f"{dataset}.yaml").read_text("utf-8"),
+        Loader=yaml.CSafeLoader,
+    )
+    (definition,) = [f for f in doc["schema"]["fields"] if f["name"] == field]
+    assert "x-decode" not in definition
+    assert field not in spec["campos"]
+    reason = spec.get("sem_cnv", {}).get(field, "")
+    assert reason, (dataset, field)
+    assert all(Path(m).name in reason for m in members), (dataset, field, sorted(members))
+    frame = dbc_bytes_to_lazyframe(
+        (ROOT / "tests/fixtures/dbc" / f"{fixture}.dbc").read_bytes(), dataset=dataset
+    ).collect()
+    assert set(frame[field].to_list()) == observed, (dataset, field)
 
 
 def test_the_listed_out_of_layout_def_lines_are_the_only_ones_dropped(monkeypatch):
