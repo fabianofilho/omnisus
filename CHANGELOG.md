@@ -66,6 +66,14 @@
   `RJ2008.DEF` bind to CNV members not packaged yet: `nat_jur` and `cnaer` of
   `sih_aih_reduzida` and `sih_aih_rejeitada`, and `gestor_cod` of `sih_aih_rejeitada`
   (#7, decision 4). No dictionary changes.
+- `vinculos.json` lists in `sem_cnv` the other fields `RD2008.DEF` and `RJ2008.DEF` bind
+  to a CNV with no map: 21 of `sih_aih_reduzida` and 20 of `sih_aih_rejeitada`. Each reason
+  cites the DEF lines and why the binding gives no map: a grouping of the code (CID chapter
+  and group, year and month of a date, region and UF of the municipality,
+  `br_municgestor`), a start other than 1 (`dias_perm`, `n_aih`), lines with no start column
+  (`faec_tp`, `proc_rea`) or a member not packaged. A test now fails when either DEF binds a
+  field with no map and no reason; `cod_idade` of `sih_aih_rejeitada` is left to #6 (#137).
+  No dictionary changes.
 
 ### Packaging
 

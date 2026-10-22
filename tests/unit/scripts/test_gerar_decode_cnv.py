@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -40,7 +42,10 @@ def test_every_hand_map_a_def_binds_is_generated_or_excused(monkeypatch):
 
     A binding whose start column is unknown (``start=None``: RD2008.DEF ``FAEC_TP``,
     ``PROC_REA``) counts as binding the field, so a hand map on such a field must be
-    listed in ``campos`` or ``sem_cnv`` too; it cannot pass unnoticed.
+    listed in ``campos`` or ``sem_cnv`` too; it cannot pass unnoticed. A field in
+    ``sem_cnv`` may be bound at any start column: issue #137 lists a start other than 1
+    as one of the reasons a binding gives no map (RD2008.DEF ``DIAS_PERM`` at 2,
+    ``N_AIH`` at 5).
     """
     gerar = _load(monkeypatch)
     vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
@@ -58,7 +63,12 @@ def test_every_hand_map_a_def_binds_is_generated_or_excused(monkeypatch):
         hand = {f["name"] for f in doc["schema"]["fields"] if f.get("x-decode")} & bound
         listed = set(spec["campos"]) | set(spec.get("sem_cnv", {}))
         assert hand <= listed, (dataset, sorted(hand - listed))
-        assert set(spec.get("sem_cnv", {})) <= bound, dataset
+        bound_anywhere = {
+            b.field.lower()
+            for def_path in spec["def"]
+            for b in parse_def(gerar.read_def(def_path, vinculos))
+        }
+        assert set(spec.get("sem_cnv", {})) <= bound_anywhere, dataset
 
 
 # Issue #7: the fields RD2008.DEF and RJ2008.DEF bind at position 1 to CNV members that
@@ -110,6 +120,66 @@ def test_a_sih_field_bound_to_an_unpackaged_cnv_is_excused_naming_each_member(
         (ROOT / "tests/fixtures/dbc" / f"{fixture}.dbc").read_bytes(), dataset=dataset
     ).collect()
     assert set(frame[field].to_list()) == observed, (dataset, field)
+
+
+# Issue #137: every field RD2008.DEF and RJ2008.DEF bind to a CNV, at any start column,
+# has a map (`x-decode` or `campos`) or a reason in `sem_cnv`. The issue leaves one field
+# out on purpose: cod_idade of the RJ, which issue #6 tracks.
+SIH_2008_FIELDS_LEFT_TO_ANOTHER_ISSUE = {"sih_aih_rejeitada": {"cod_idade"}}
+_CITED_LINES = re.compile(r"\blinhas? ((?:\d+(?:-\d+)?(?:, | e )?)+)")
+
+
+def _cited_lines(reason: str) -> set[int]:
+    """The DEF lines a reason cites, from its "linha N" and "linhas A-B, C e D" parts."""
+    cited: set[int] = set()
+    for group in _CITED_LINES.findall(reason):
+        for first, last in re.findall(r"(\d+)(?:-(\d+))?", group):
+            cited.update(range(int(first), int(last or first) + 1))
+    return cited
+
+
+@pytest.mark.parametrize("dataset", ["sih_aih_reduzida", "sih_aih_rejeitada"])
+def test_every_field_the_sih_2008_def_binds_has_a_map_or_a_reason(monkeypatch, dataset):
+    """Issue #137 (decision 4 of #7, extended): no field the RD or RJ DEF binds is left
+    without a map and without a word. A field with no map is in `sem_cnv` with a reason
+    that names the DEF and cites every line of it that binds the field, read from the
+    packaged DEF (each line on its own), and says why the binding gives no map: a
+    grouping, a start other than 1, a start column the DEF does not give, or a member
+    that is not packaged. cod_idade of the RJ is the one field left out, by the issue."""
+    gerar = _load(monkeypatch)
+    vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
+    spec = vinculos["datasets"][dataset]
+    (def_path,) = spec["def"]
+    doc = yaml.load(
+        (ROOT / "src/omnisus/data/dicionarios" / f"{dataset}.yaml").read_text("utf-8"),
+        Loader=yaml.CSafeLoader,
+    )
+    fields = {f["name"]: f for f in doc["schema"]["fields"]}
+    lines: dict[str, set[int]] = defaultdict(set)
+    text = gerar.read_def(def_path, vinculos)
+    for number, line in enumerate(text.splitlines(), 1):
+        for b in parse_def(line):
+            if b.field.lower() in fields:
+                lines[b.field.lower()].add(number)
+    reasons = spec.get("sem_cnv", {})
+    without_word = {
+        f
+        for f in lines
+        if not fields[f].get("x-decode") and f not in spec["campos"] and f not in reasons
+    }
+    assert without_word == SIH_2008_FIELDS_LEFT_TO_ANOTHER_ISSUE.get(dataset, set()), (
+        dataset,
+        sorted(without_word),
+    )
+    for field in sorted(lines.keys() & reasons.keys()):
+        if fields[field].get("x-decode"):
+            continue  # a hand map with a reason says why the CNV does not fit (cod_idade, RD)
+        reason = reasons[field]
+        assert Path(def_path).name in reason, (dataset, field)
+        missing = lines[field] - _cited_lines(reason)
+        assert not missing, (dataset, field, sorted(missing))
+        kinds = ("agrupamento", "posição", "coluna inicial", "empacotad")
+        assert any(kind in reason for kind in kinds), (dataset, field)
 
 
 def test_the_listed_out_of_layout_def_lines_are_the_only_ones_dropped(monkeypatch):
