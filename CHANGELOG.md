@@ -21,6 +21,16 @@
   before the first import returns `[]`. `None` keeps the SQL and the rows of 0.2.3. The
   data table is pinned by the caller's `FROM` (#101).
 
+- `import_cnes_master_ftp(competencia, zip_path=..., download_dir=...)`
+  (`omnisus.sources.cnes.importers.master_ftp`) fills `cnes_master` from
+  `tbEstabelecimentoAAAAMM.csv` of the full CNES base on the FTP
+  (`BASE_DE_DADOS_CNES_AAAAMM.ZIP`, about 576 MB for 202312) in one pass, instead of one
+  request per code to the open-data API. Each row records `fonte`, `arquivo`, `sha256`
+  and `competencia_nome`; tables created by `import_cnes_master` gain those columns on the
+  next write. `aux_cnes` exposes `nome_fantasia`, `razao_social`, `competencia_nome` and
+  `fonte_nome` next to `nome`. The name is the one of the loaded competência, not of the
+  code's last month in ST (#150).
+
 ### Dictionaries
 
 - `sih_aih_reduzida` (2.13.0) declares `fonte_orc`, which RD files publish from 2025-03
