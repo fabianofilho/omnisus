@@ -14,6 +14,7 @@ import importlib.metadata
 import importlib.util
 import os
 import sys
+from datetime import date
 from pathlib import Path
 
 import omnisus_dbf as dbf
@@ -103,8 +104,18 @@ def test_early_close_keeps_delivered_batch_alive() -> None:
     assert batch.equals(pa.record_batch([pa.array(["\x81"], type=pa.string())], names=["X"]))
 
 
+def test_date_seed_reads_as_date32() -> None:
+    data = (Path(__file__).parent / "dbf" / "date.dbf").read_bytes()
+    reader = dbf.open_reader(data, encoding="cp1252", batch_rows=1)
+    batch = next(reader)
+    reader.close()
+    assert batch.equals(
+        pa.record_batch([pa.array([date(2024, 1, 1)], type=pa.date32())], names=["X"])
+    )
+
+
 def test_unsupported_seed_fails_during_open() -> None:
-    data = (Path(__file__).parent / "dbf" / "unsupported-date.dbf").read_bytes()
+    data = (Path(__file__).parent / "dbf" / "unsupported-logical.dbf").read_bytes()
     with pytest.raises(dbf.UnsupportedDbfError):
         dbf.open_reader(data, encoding="cp1252", batch_rows=1)
 

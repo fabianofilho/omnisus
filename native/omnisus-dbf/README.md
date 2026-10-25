@@ -40,11 +40,13 @@ Returned batches remain valid after `close()` or reader destruction. Closing is
 idempotent, as is exhaustion. A decoding or conversion error closes the reader.
 No Python object is created per record.
 
-API version 2 supports DBF versions 0x03 and 0x30, C/N fields, and strict latin-1,
+API version 2 supports DBF versions 0x03 and 0x30, C/N/D fields, and strict latin-1,
 cp1252, ASCII and UTF-8. Python codec aliases are resolved at open. Character
 padding strips only trailing spaces and NUL bytes. Numeric fields attempt exact
 int64 before float64, accept Python numeric underscores and decimal comma, and
-preserve null-only batches as Arrow null. Integer overflow and mixed integer /
+preserve null-only batches as Arrow null. Date fields follow dbfread's `parseD`:
+`YYYYMMDD` parsed with Python `int` semantics becomes date32, a value of only spaces,
+zeros and NULs is null, and anything else raises ValueError. Integer overflow and mixed integer /
 float families fail; the Python staging layer reconciles schemas across batches.
 Deleted records do not appear in output. The SIA ABO FoxPro extension header is
 skipped after the first real descriptor terminator. Missing descriptor repair is

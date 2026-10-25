@@ -163,3 +163,73 @@ pub fn number(raw: &[u8]) -> Result<Number> {
     };
     Ok(Number::Float(float))
 }
+
+/// Python `int(bytes)` for the short slices of a date: outer whitespace, one sign,
+/// ASCII digits with single underscores between digits. `None` where Python raises.
+fn python_int(raw: &[u8]) -> Option<i64> {
+    let data = python_strip(raw);
+    let digits = data
+        .strip_prefix(b"+")
+        .or_else(|| data.strip_prefix(b"-"))
+        .unwrap_or(data);
+    let valid = !digits.is_empty()
+        && digits.first().is_some_and(u8::is_ascii_digit)
+        && digits.last().is_some_and(u8::is_ascii_digit)
+        && digits.iter().all(|&b| b.is_ascii_digit() || b == b'_')
+        && !digits.windows(2).any(|w| w == b"__");
+    if !valid {
+        return None;
+    }
+    let value = digits
+        .iter()
+        .filter(|&&b| b != b'_')
+        .try_fold(0i64, |acc, &b| {
+            acc.checked_mul(10)?.checked_add(i64::from(b - b'0'))
+        })?;
+    Some(if data.first() == Some(&b'-') {
+        -value
+    } else {
+        value
+    })
+}
+
+/// Days since 1970-01-01 of a valid proleptic Gregorian date (Hinnant's days_from_civil).
+fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
+    let y = if month <= 2 { year - 1 } else { year };
+    let era = y.div_euclid(400);
+    let yoe = y - era * 400;
+    let mp = (month + 9) % 12;
+    let doy = (153 * mp + 2) / 5 + day - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    era * 146_097 + doe - 719_468
+}
+
+/// dbfread2 `parseD`: `date(int(data[:4]), int(data[4:6]), int(data[6:8]))`; on failure,
+/// a value made only of spaces, zeros and NULs is null and anything else is an error.
+pub fn date(raw: &[u8]) -> Result<Option<i32>> {
+    let part = |range: std::ops::Range<usize>| {
+        python_int(&raw[range.start.min(raw.len())..range.end.min(raw.len())])
+    };
+    let parsed = match (part(0..4), part(4..6), part(6..8)) {
+        (Some(y), Some(m), Some(d)) if (1..=9999).contains(&y) && (1..=12).contains(&m) => {
+            let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+            let last = match m {
+                2 if leap => 29,
+                2 => 28,
+                4 | 6 | 9 | 11 => 30,
+                _ => 31,
+            };
+            (1..=last).contains(&d).then(|| days_from_civil(y, m, d))
+        }
+        _ => None,
+    };
+    match parsed {
+        // Every year 1 to 9999 fits in i32 days.
+        Some(days) => Ok(Some(days as i32)),
+        None if raw.iter().all(|&b| matches!(b, b' ' | b'0' | 0)) => Ok(None),
+        None => Err(Error::Value(format!(
+            "invalid date {:?}",
+            String::from_utf8_lossy(raw)
+        ))),
+    }
+}

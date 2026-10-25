@@ -111,12 +111,51 @@ def test_encoding_error_is_not_replacement_text():
         next(reader)
 
 
-def test_unsupported_date_auto_matches_python():
-    raw = make_dbf([("X", "D", 8, 0)], [b" 20240101"])
-    with pytest.raises(native().UnsupportedDbfError):
-        native().open_reader(raw, encoding="cp1252", batch_rows=1)
-    with open_dbf_batches(raw, encoding="cp1252", batch_rows=1, backend="auto") as reader:
-        assert next(reader).schema.field("X").type == pa.date32()
+def _batches(raw, backend, batch_rows):
+    with open_dbf_batches(
+        raw, encoding="cp1252", batch_rows=batch_rows, backend=backend
+    ) as reader:
+        return list(reader)
+
+
+# dbfread2 parseD: int() of each slice, so whitespace, sign and underscores count.
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b"20240101",
+        b"99991231",
+        b"00010101",
+        b"2_240101",
+        b"+0240101",
+        b"        ",
+        b"00000000",
+        b"\x00" * 8,
+        b"0 0\x000 0 ",
+    ],
+)
+def test_date_matches_python(raw):
+    data = make_dbf([("X", "D", 8, 0)], [b" " + raw])
+    python, rust = (_batches(data, backend, 1) for backend in ("python", "rust"))
+    assert len(python) == len(rust) == 1
+    assert python[0].equals(rust[0])
+
+
+@pytest.mark.parametrize("raw", [b"20241301", b"20240230", b"2024ab01", b"-0240101", b"00000001"])
+def test_invalid_date_fails_in_both_readers(raw):
+    data = make_dbf([("X", "D", 8, 0)], [b" " + raw])
+    for backend in ("python", "rust"):
+        with pytest.raises(ValueError):
+            _batches(data, backend, 1)
+
+
+@pytest.mark.parametrize("batch_rows", [1, 2])
+def test_null_only_date_batch_matches_python(batch_rows):
+    data = make_dbf([("X", "D", 8, 0)], [b"         ", b" 20240101"])
+    python, rust = (_batches(data, backend, batch_rows) for backend in ("python", "rust"))
+    assert len(python) == len(rust)
+    for p, r in zip(python, rust, strict=True):
+        assert p.equals(r)
+    assert rust[-1].schema.field("X").type == pa.date32()
 
 
 @pytest.mark.parametrize("batch_rows", [1, 2])

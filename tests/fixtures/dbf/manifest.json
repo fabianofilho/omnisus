@@ -14,10 +14,17 @@
     "rust_supported": true
   },
   {
-    "file": "unsupported-date.dbf",
+    "file": "date.dbf",
     "sha256": "023abc4b841f7d194b44e6ce7212657f420ba881759975276d29620da22d21a5",
     "encoding": "cp1252",
-    "purpose": "unsupported-date",
+    "purpose": "date",
+    "rust_supported": true
+  },
+  {
+    "file": "unsupported-logical.dbf",
+    "sha256": "14519f9f7a22b01c839f68e86a8527b07c179a98354bc724dba35ae8950cf045",
+    "encoding": "cp1252",
+    "purpose": "unsupported-logical",
     "rust_supported": false
   }
 ]

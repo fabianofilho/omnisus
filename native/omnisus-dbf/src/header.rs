@@ -66,7 +66,7 @@ impl Header {
             }
             let field = &data[descriptor..end];
             let kind = field[11];
-            if !matches!(kind, b'C' | b'N') {
+            if !matches!(kind, b'C' | b'N' | b'D') {
                 return Err(Error::Unsupported(format!(
                     "DBF field type 0x{kind:02x} is not supported"
                 )));

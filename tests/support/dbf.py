@@ -14,6 +14,10 @@ DBC_CASES = [
     ("sia_ps_rr_2024_01_mini", "sia_psicossocial"),
     ("sih_rd_sp_2023_08_excerpt", "sih_aih_reduzida"),
     ("cnes_st_sp_2022_12_excerpt", "cnes_estabelecimentos"),
+    # SINAN national files carry D (date) fields.
+    ("sinan_tuberculose_br_2020_excerpt", "sinan_tuberculose"),
+    ("sinan_hanseniase_br_2026", "sinan_hanseniase"),
+    ("sinan_chagas_br_2023", "sinan_chagas"),
 ]
 
 

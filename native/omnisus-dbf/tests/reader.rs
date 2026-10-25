@@ -148,7 +148,7 @@ fn header_checks_geometry_types_flags_and_real_descriptor_terminator() {
         Err(Error::Invalid(_))
     ));
     assert!(matches!(
-        Reader::new(dbf(&[("D", b'D', 8)], &[]), Encoding::Latin1, 7),
+        Reader::new(dbf(&[("L", b'L', 1)], &[]), Encoding::Latin1, 7),
         Err(Error::Unsupported(_))
     ));
     let mut fox = good.clone();
@@ -215,7 +215,7 @@ fn eof_stops_before_padding_and_empty_descriptor_tables_are_unsupported() {
 #[test]
 fn shared_synthetic_corpus_is_read_directly_from_repository() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tests/fixtures/dbf");
-    for name in ["text-latin1.dbf", "numeric-exact.dbf"] {
+    for name in ["text-latin1.dbf", "numeric-exact.dbf", "date.dbf"] {
         let data = std::fs::read(root.join(name)).expect("required shared fixture");
         let mut reader = Reader::new(data, Encoding::Latin1, 1).unwrap();
         let mut count = 0;
@@ -226,10 +226,47 @@ fn shared_synthetic_corpus_is_read_directly_from_repository() {
     }
     assert!(matches!(
         Reader::new(
-            std::fs::read(root.join("unsupported-date.dbf")).unwrap(),
+            std::fs::read(root.join("unsupported-logical.dbf")).unwrap(),
             Encoding::Latin1,
             1
         ),
         Err(Error::Unsupported(_))
     ));
+}
+
+#[test]
+fn date_fields_follow_dbfread_parse_d() {
+    use arrow_array::Date32Array;
+    let data = dbf(
+        &[("D", b'D', 8)],
+        &[
+            b" 19700102",
+            b"         ",
+            b" 00000000",
+            b" 2_240101",
+            b" 20240229",
+        ],
+    );
+    let mut reader = Reader::new(data, Encoding::Latin1, 10).unwrap();
+    let batch = reader.next_batch().unwrap().unwrap();
+    assert_eq!(batch.schema().field(0).data_type(), &DataType::Date32);
+    let column = batch
+        .column(0)
+        .as_any()
+        .downcast_ref::<Date32Array>()
+        .unwrap();
+    let values = (0..column.len())
+        .map(|i| column.is_valid(i).then(|| column.value(i)))
+        .collect::<Vec<_>>();
+    // 0224-01-01 and 2024-02-29 as days since the epoch.
+    assert_eq!(values, [Some(1), None, None, Some(-637_714), Some(19_782)]);
+}
+
+#[test]
+fn null_only_date_batch_stays_arrow_null_and_bad_date_fails() {
+    let data = dbf(&[("D", b'D', 8)], &[b"         ", b" 20241301"]);
+    let mut reader = Reader::new(data, Encoding::Latin1, 1).unwrap();
+    let first = reader.next_batch().unwrap().unwrap();
+    assert_eq!(first.schema().field(0).data_type(), &DataType::Null);
+    assert!(matches!(reader.next_batch(), Err(Error::Value(_))));
 }
