@@ -332,8 +332,10 @@ class Lake(Session):
         Every import of ``cnes_estabelecimentos`` already calls this. The view joins
         the latest competência of ``cnes_estabelecimentos`` with ``cnes_master``
         names: ``cnes`` (7 digits), ``nome`` (NULL until
-        :func:`~omnisus.import_cnes_master` runs), ``tp_unid``, ``codufmun`` and
-        ``yyyymm_max``.
+        :func:`~omnisus.import_cnes_master` or ``import_cnes_master_ftp`` runs),
+        ``nome_fantasia``, ``razao_social``, ``competencia_nome`` and ``fonte_nome``
+        (where the name came from and which month it reflects), ``tp_unid``,
+        ``codufmun`` and ``yyyymm_max``.
 
         Returns:
             ``False`` when ``cnes_estabelecimentos`` does not exist yet, else ``True``.
@@ -354,12 +356,24 @@ class Lake(Session):
 
         operational = qualified(self._alias, "cnes_estabelecimentos")
         view = qualified(self._alias, "aux_cnes")
-        if "cnes_master" in tables:
-            nome_select = "m.nome"
-            join_clause = f"LEFT JOIN {qualified(self._alias, 'cnes_master')} m USING (cnes)"
-        else:
-            nome_select = "CAST(NULL AS VARCHAR) AS nome"
-            join_clause = ""
+        master_columns = self._table_columns("cnes_master") if "cnes_master" in tables else set()
+        # (column in cnes_master, name in the view); missing ones stay NULL.
+        name_columns = (
+            ("nome", "nome"),
+            ("nome_fantasia", "nome_fantasia"),
+            ("razao_social", "razao_social"),
+            ("competencia_nome", "competencia_nome"),
+            ("fonte", "fonte_nome"),
+        )
+        nome_select = ", ".join(
+            f"m.{src} AS {alias}" if src in master_columns else f"CAST(NULL AS VARCHAR) AS {alias}"
+            for src, alias in name_columns
+        )
+        join_clause = (
+            f"LEFT JOIN {qualified(self._alias, 'cnes_master')} m USING (cnes)"
+            if master_columns
+            else ""
+        )
 
         # Select all rows at the latest competence. Identical repeated imports
         # can collapse in this view; conflicting rows must never be picked by

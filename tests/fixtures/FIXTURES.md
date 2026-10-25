@@ -1,14 +1,16 @@
 # Fixture provenance
 
 Every data file under `tests/fixtures/dbc/`, `tests/fixtures/listings/`,
-`tests/fixtures/cnv/` and `tests/fixtures/sigtap/` has one row here (AGENTS.md, zero-assumption policy, rule 2).
+`tests/fixtures/cnv/`, `tests/fixtures/sigtap/` and `tests/fixtures/cnes_base/` has one row here (AGENTS.md, zero-assumption policy, rule 2).
 `tests/unit/test_fixture_provenance.py` enforces it.
 
 - `whole`: the unchanged server file; `source_sha256` is its digest.
 - `excerpt`: `records` consecutive records of the server file named in `source`,
   re-wrapped by `scripts/dbc_excerpt.py`; `source_sha256` is the digest of the
   full server file. They are the first records unless `note` names the first one
-  kept (0-based, `--first`). A `blanked:` list in `note` names the columns
+  kept (0-based, `--first`). A CSV excerpt from a zip (`cnes_base/`) keeps the
+  header line and the records `note` names, byte for byte, re-zipped under the
+  member's name. A `blanked:` list in `note` names the columns
   `--blank` filled with spaces because they hold a CPF or CNS in clear
   (AGENTS.md, "Never commit"); `COLUMN:FLAG=VALUE` blanks only the records whose
   `FLAG` holds `VALUE`. Every other byte of those records is as published.
@@ -29,6 +31,7 @@ zone), or `unknown`.
 
 | file | kind | source | server_modified | source_sha256 | records | note |
 | --- | --- | --- | --- | --- | --- | --- |
+| cnes_base/BASE_DE_DADOS_CNES_202312.ZIP | excerpt | ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_202312.ZIP#tbEstabelecimento202312.csv | 2024-01-12T21:27 | b7933bb5af98e594d3b39652d28c1129b03844c2715594138cb264cc8d51bd42 | 5 | records with CO_CNES 2320886, 2319659, 0860638, 6185177, 4339517; blanked: NU_TELEFONE, NU_FAX, NO_EMAIL, NU_CPF, CO_USUARIO, CO_CPFDIRETORCLN, REG_DIRETORCLN, NO_USUARIO_GEO |
 | cnv/DNNOVA.CNV | member | ftp://ftp.datasus.gov.br/dissemin/publicos/SINASC/1996_/Auxiliar/Arq_Para_Tabulacao_A_Partir_1996.zip#Arquivos Auxiliares para Tabulação a partir de 1996/DNNOVA.CNV | 2026-07-09T19:46 | c8ea069a96007e047ac47b5b8594b5d3b5a0ec92a81616e47cf7ff91ac425b33 | | archive SHA-256 de43d0c99630e3229d0c23e00ceca7b13eb41d80b5108da769d61c248aed1ab6; code written in column 60, outside the TabWin layout |
 | cnv/IDADEDET.CNV | member | ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/200801_/Auxiliar/TAB_SIA.zip#CNV/IDADEDET.CNV | 2026-09-15T23:18 | 47e02370f68924ac1748e526215b95a12a2942a97ea216e96f4ad9c562954d6e | | archive SHA-256 e5812b51d802b2fe3d0c7988a24d694b97a7998a9f2f5cff390b0b4103e74d98; the same bytes as TAB_SIH `CNV/IDADEDET.CNV` |
 | dbc/cnes_dc_rr_2024_01_mini.dbc | excerpt | ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/DC/DCRR2401.dbc | 2024-02-15T14:25 | f33f297642b455e644d3be11d5bfa1608ac1da6e4848dd82ac53110d8ed28538 | 9 | all records; blanked: CNS_NEFR, CNS_ADM, CNS_OPED, CNS_CONC, CNS_OCLIN, CNS_MRAD, CNS_FNUC, CNS_HMTR, CNS_HMTL, CNS_CRES, CNS_RTEC |

@@ -24,6 +24,7 @@ from collections.abc import Callable, Sequence
 from contextlib import nullcontext
 
 import httpx
+import pyarrow as pa
 import structlog
 
 from omnisus._loop import run_sync
@@ -32,6 +33,12 @@ from omnisus.lake import Lake
 logger = structlog.get_logger(__name__)
 
 API_URL = "https://apidadosabertos.saude.gov.br/cnes/estabelecimentos/{cnes}"
+
+# Provenance kept per row: which source gave the name, the file and its SHA-256,
+# and the competência (AAAAMM) the name reflects. API rows carry only ``fonte``.
+_PROVENANCE_COLUMNS = ("fonte", "arquivo", "sha256", "competencia_nome")
+_MASTER_COLUMNS = ("cnes", "nome", "nome_fantasia", "razao_social", *_PROVENANCE_COLUMNS)
+API_FONTE = "API dados abertos CNES (apidadosabertos.saude.gov.br)"
 
 # Type alias: callback receives (done, total) after each fetch completes.
 ProgressCallback = Callable[[int, int], None]
@@ -63,6 +70,7 @@ async def _fetch_one(client: httpx.AsyncClient, cnes: str) -> dict | None:
         "nome": nome_fantasia or razao_social or None,
         "nome_fantasia": nome_fantasia or None,
         "razao_social": razao_social or None,
+        "fonte": API_FONTE,
     }
 
 
@@ -128,6 +136,12 @@ def _ensure_master_table(lake: Lake) -> None:
         )
         """
     )
+    # Provenance columns, added after the first release: tables created by the
+    # API-only importer gain them on the next write.
+    for column in _PROVENANCE_COLUMNS:
+        lake.connect().execute(
+            f"ALTER TABLE {lake.alias}.cnes_master ADD COLUMN IF NOT EXISTS {column} VARCHAR"
+        )
 
 
 def _upsert_master(lake: Lake, records: list[dict]) -> None:
@@ -138,19 +152,26 @@ def _upsert_master(lake: Lake, records: list[dict]) -> None:
     context = nullcontext() if lake.in_transaction else lake.transaction()
     with context:
         con = lake.connect()
-        codes = [row[0] for row in rows]
-        placeholders = ", ".join("?" for _ in codes)
-        con.execute(
-            f"DELETE FROM {lake.alias}.cnes_master WHERE cnes IN ({placeholders})",
-            codes,
-        )
-        con.executemany(f"INSERT INTO {lake.alias}.cnes_master VALUES (?, ?, ?, ?)", rows)
+        columns = _MASTER_COLUMNS[: len(rows[0])]
+        # A whole monthly base is ~600k rows: go through an Arrow table instead of
+        # one bound parameter per code.
+        batch = pa.table({c: [row[i] for row in rows] for i, c in enumerate(columns)})
+        con.register("_cnes_master_batch", batch)
+        try:
+            con.execute(
+                f"DELETE FROM {lake.alias}.cnes_master "
+                "WHERE cnes IN (SELECT cnes FROM _cnes_master_batch)"
+            )
+            names = ", ".join(columns)
+            con.execute(
+                f"INSERT INTO {lake.alias}.cnes_master ({names}) SELECT {names} FROM _cnes_master_batch"
+            )
+        finally:
+            con.unregister("_cnes_master_batch")
 
 
-def _prepare_master_rows(
-    records: list[dict],
-) -> list[tuple[str, str, str | None, str | None]]:
-    prepared: dict[str, tuple[str, str, str | None, str | None]] = {}
+def _prepare_master_rows(records: list[dict]) -> list[tuple[str | None, ...]]:
+    prepared: dict[str, tuple[str | None, ...]] = {}
     for record in records:
         code = record.get("cnes")
         name = record.get("nome")
@@ -162,7 +183,10 @@ def _prepare_master_rows(
         razao = record.get("razao_social")
         if any(value is not None and not isinstance(value, str) for value in (fantasia, razao)):
             raise ValueError("CNES optional names must be strings or None")
-        row = (code, name, fantasia, razao)
+        provenance = tuple(record.get(column) for column in _PROVENANCE_COLUMNS)
+        if any(value is not None and not isinstance(value, str) for value in provenance):
+            raise ValueError("CNES provenance fields must be strings or None")
+        row = (code, name, fantasia, razao, *provenance)
         if code in prepared and prepared[code] != row:
             raise ValueError(f"conflicting CNES records for {code}")
         prepared[code] = row

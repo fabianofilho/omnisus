@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import csv
 import hashlib
+import io
 import re
+import zipfile
 from pathlib import Path
 
 from scripts.dbc_excerpt import _columns, blank_dbf
@@ -15,7 +18,7 @@ TABLE = FIXTURES / "FIXTURES.md"
 COLUMNS = ["file", "kind", "source", "server_modified", "source_sha256", "records", "note"]
 KINDS = {"whole", "excerpt", "listing", "synthetic", "vector", "member"}
 PINNED_URL = r"https://github\.com/[^/]+/[^/]+/blob/[0-9a-f]{40}/\S+"
-DATA_GLOBS = ["dbc/**/*.dbc", "listings/*.txt.gz", "cnv/*", "sigtap/*"]
+DATA_GLOBS = ["dbc/**/*.dbc", "listings/*.txt.gz", "cnv/*", "sigtap/*", "cnes_base/*"]
 
 
 def load_fixture_rows() -> list[dict[str, str]]:
@@ -134,10 +137,24 @@ def test_no_fixture_holds_a_person_identifier_in_clear() -> None:
     assert found == []
 
 
+def _zipped_csv_records(path: Path) -> list[dict[str, str]]:
+    """Records of the single CSV member of a zipped excerpt (``cnes_base/``)."""
+    with zipfile.ZipFile(path) as zf:
+        (member,) = zf.namelist()
+        text = zf.read(member).decode("latin-1")
+    return list(csv.DictReader(io.StringIO(text), delimiter=";"))
+
+
 def test_blanked_columns_are_blank() -> None:
     """A note's ``blanked:`` list is what the file holds: blanking it again changes nothing."""
     for row in load_fixture_rows():
         listed = re.search(r"blanked: ([A-Z0-9_:=, ]+)", row["note"])
-        if listed:
+        if listed and row["file"].endswith(".ZIP"):
+            assert all(
+                record[column] == ""
+                for record in _zipped_csv_records(FIXTURES / row["file"])
+                for column in listed.group(1).split(", ")
+            ), row["file"]
+        elif listed:
             dbf = decompress_bytes((FIXTURES / row["file"]).read_bytes())
             assert blank_dbf(dbf, listed.group(1).split(", ")) == dbf, row["file"]

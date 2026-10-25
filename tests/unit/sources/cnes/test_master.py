@@ -337,7 +337,7 @@ def test_upsert_failure_preserves_previous_record(tmp_path):
     with Lake.local(f"ducklake:{tmp_path}/atomic.ducklake") as lake:
         _ensure_master_table(lake)
         lake.connect().execute(
-            "INSERT INTO lake.cnes_master VALUES ('1234567', 'OLD', 'OLD', NULL)"
+            "INSERT INTO lake.cnes_master (cnes, nome, nome_fantasia, razao_social) VALUES ('1234567', 'OLD', 'OLD', NULL)"
         )
         lake._con = FaultyConnection(
             lake.connect(), before={"INSERT INTO": RuntimeError("insert failed")}
@@ -356,7 +356,7 @@ def test_conflicting_records_are_rejected_before_delete(tmp_path):
     with Lake.local(f"ducklake:{tmp_path}/conflict.ducklake") as lake:
         _ensure_master_table(lake)
         lake.connect().execute(
-            "INSERT INTO lake.cnes_master VALUES ('1234567', 'OLD', 'OLD', NULL)"
+            "INSERT INTO lake.cnes_master (cnes, nome, nome_fantasia, razao_social) VALUES ('1234567', 'OLD', 'OLD', NULL)"
         )
         records = [
             {"cnes": "1234567", "nome": "A", "nome_fantasia": "A", "razao_social": None},
@@ -389,7 +389,7 @@ def test_view_failure_rolls_back_master_refresh(tmp_path, monkeypatch):
     with Lake.local(target) as lake:
         _ensure_master_table(lake)
         lake.connect().execute(
-            "INSERT INTO lake.cnes_master VALUES ('1234567', 'OLD', 'OLD', NULL)"
+            "INSERT INTO lake.cnes_master (cnes, nome, nome_fantasia, razao_social) VALUES ('1234567', 'OLD', 'OLD', NULL)"
         )
     respx.get(_api_url("1234567")).mock(
         return_value=httpx.Response(
