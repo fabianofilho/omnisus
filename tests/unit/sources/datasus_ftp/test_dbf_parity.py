@@ -20,7 +20,11 @@ pytestmark = pytest.mark.rust_dbf
 
 @pytest.mark.parametrize("batch_size", [7, 100_000])
 @pytest.mark.parametrize("name,dataset", DBC_CASES)
-def test_all_fixtures_exact_parity(name, dataset, batch_size, dbc_fixture, monkeypatch, tmp_path):
+def test_all_fixtures_exact_parity(
+    name, dataset, batch_size, dbc_fixture, monkeypatch, tmp_path, request
+):
+    if dataset.startswith("sinan_"):  # SINAN national files carry D fields
+        request.getfixturevalue("native_reads_date")
     raw = dbc_fixture(name).read_bytes()
     monkeypatch.setattr(parse, "BATCH_ROWS", batch_size)
     frames = []
@@ -118,6 +122,20 @@ def _batches(raw, backend, batch_rows):
         return list(reader)
 
 
+@pytest.fixture
+def native_reads_date(request):
+    """omnisus-dbf 0.2.0 (on PyPI, pinned in uv.lock) rejects D fields; native.yml builds
+    the wheel from this checkout and runs with --require-rust-dbf, so there it must pass."""
+    try:
+        native().open_reader(
+            make_dbf([("X", "D", 8, 0)], [b" 20240101"]), encoding="latin-1", batch_rows=1
+        ).close()
+    except native().UnsupportedDbfError:
+        if request.config.getoption("--require-rust-dbf"):
+            pytest.fail("--require-rust-dbf: the installed omnisus-dbf rejects D fields")
+        pytest.skip("installed omnisus-dbf predates D fields")
+
+
 # dbfread2 parseD: int() of each slice, so whitespace, sign and underscores count.
 @pytest.mark.parametrize(
     "raw",
@@ -133,7 +151,7 @@ def _batches(raw, backend, batch_rows):
         b"0 0\x000 0 ",
     ],
 )
-def test_date_matches_python(raw):
+def test_date_matches_python(raw, native_reads_date):
     data = make_dbf([("X", "D", 8, 0)], [b" " + raw])
     python, rust = (_batches(data, backend, 1) for backend in ("python", "rust"))
     assert len(python) == len(rust) == 1
@@ -141,7 +159,7 @@ def test_date_matches_python(raw):
 
 
 @pytest.mark.parametrize("raw", [b"20241301", b"20240230", b"2024ab01", b"-0240101", b"00000001"])
-def test_invalid_date_fails_in_both_readers(raw):
+def test_invalid_date_fails_in_both_readers(raw, native_reads_date):
     data = make_dbf([("X", "D", 8, 0)], [b" " + raw])
     for backend in ("python", "rust"):
         with pytest.raises(ValueError):
@@ -149,7 +167,7 @@ def test_invalid_date_fails_in_both_readers(raw):
 
 
 @pytest.mark.parametrize("batch_rows", [1, 2])
-def test_null_only_date_batch_matches_python(batch_rows):
+def test_null_only_date_batch_matches_python(batch_rows, native_reads_date):
     data = make_dbf([("X", "D", 8, 0)], [b"         ", b" 20240101"])
     python, rust = (_batches(data, backend, batch_rows) for backend in ("python", "rust"))
     assert len(python) == len(rust)
