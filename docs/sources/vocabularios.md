@@ -17,8 +17,8 @@ exceto a CBO 2002 e os blocos da CID-10, que vêm de `CBO2002.CNV` e `CID10-grup
 | Tabela | Fonte | Linhas | Chave |
 | --- | --- | ---: | --- |
 | `aux_uf` | `TABUF.DBF` | 27 | `codigo_ibge` (2 dígitos) |
-| `aux_municipios` | `CADMUN.DBF` | 5.652 | `codigo_ibge` (7 dígitos); `codigo_6` também é único |
-| `aux_cid10` | `CID10.DBF` + `CIDCAP10.DBF` + `CID10-grup_d.cnv` | 14.257 | `codigo` sem ponto (`B571`) |
+| `aux_municipios` | `CADMUN.DBF` + `tb_municip.dbf` da base territorial | 5.652 + 6 | `codigo_ibge` (7 dígitos); `codigo_6` também é único |
+| `aux_cid10` | `CID10.DBF` + `CIDCAP10.DBF` + `CID10-grup_d.cnv` + `tb_cid.txt` do SIGTAP | 14.257 + 9 | `codigo` sem ponto (`B571`) |
 | `aux_ocupacoes` | `CBO2002.CNV` + `TABOCUP.DBF` | 2.458 + 3.564 | `(esquema, codigo)` só em `cbo2002` |
 | `aux_paises` | `TABPAIS.DBF` | 264 | nenhuma: 3 códigos têm dois nomes |
 
@@ -45,9 +45,13 @@ que não resolve (`tests/unit/test_references.py`).
 
 - **Municípios com 6 dígitos.** SIM, SINASC, SIH e CNES gravam o código sem o dígito
   verificador; as referências apontam para `aux_municipios.codigo_6`.
-- **CADMUN é de 2011** (data do arquivo no servidor). Municípios instalados depois não
-  estão lá: no exemplo do SIM de Roraima de 2023, `codmunnatu` `150475` (Mojuí dos
-  Campos, PA) não resolve.
+- **CADMUN é de 2011** (data do arquivo no servidor). Os seis municípios instalados
+  depois que SIM, SINASC e SIH gravam (`150475` Mojuí dos Campos, `220672` Nazária,
+  `421265` Pescaria Brava, `422000` Balneário Rincão, `431454` Pinto Bandeira e `500627`
+  Paraíso das Águas) vêm do `tb_municip.dbf` da base territorial do DATASUS
+  (`ftp://ftp.datasus.gov.br/territorio/tabelas/2026/06-base_territorial_jun26.zip`):
+  o nome como a base grava, sem acento (`Mojui Dos Campos`), e `regiao_saude` e
+  `macrorregiao_saude` nulos, porque a base usa outro código de região que o CADMUN.
 - **Coordenadas nulas em 91 municípios.** O CADMUN grava 0 e 0 nas linhas de ignorado
   (27), transferidos (60) e em 4 ativos; o lake guarda nulo, porque 0°, 0° fica no
   Atlântico.
@@ -100,6 +104,10 @@ que não resolve (`tests/unit/test_references.py`).
   outras UFs podem ter outros valores (`evidence/2026-10-07-sia-cid-widths/`).
 - **Descrições abreviadas.** `aux_cid10.descricao` é o texto de `CID10.DBF`, que
   abrevia (`Form aguda doenc de Chagas s/compr cardiaco`).
+- **Códigos que o `CID10.DBF` não tem.** O arquivo é de 2020. N182 a N185, P354, U09,
+  U099, U10 e U109, que SIH e SIM gravam, vêm do `tb_cid.txt` do SIGTAP de 202610, com a
+  descrição por extenso como o SIGTAP grava. N181 e O987 também aparecem nos dados, mas
+  não estão em nenhum dos dois arquivos e não resolvem.
 
 ## CID-9 e CID-10 nos sistemas do SUS
 

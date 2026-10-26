@@ -107,6 +107,18 @@
   no group and have no block. `evidence/2026-10-11-blocos-cid10/` compares the groups
   with the WHO ICD-10 2019 and CBCD 2008 lists. Run `omnisus lake update-auxiliares` (or
   `Lake.bootstrap_auxiliares()`) to load the new columns (#103).
+- `aux_municipios` (2.1.0) gains the six municipalities installed after the 2011
+  `CADMUN.DBF` that SIM, SINASC and SIH write: `150475`, `220672`, `421265`, `422000`,
+  `431454` and `500627`, from `tb_municip.dbf` of the DATASUS territorial base
+  (`territorio/tabelas/2026/06-base_territorial_jun26.zip`, registered with its SHA-256).
+  Names are written as the base writes them, unaccented; `regiao_saude` and
+  `macrorregiao_saude` are NULL in those rows, since the base codes regions in another
+  scheme. `codmunnatu` `150475` of the SIM RR 2023 excerpt now resolves.
+- `aux_cid10` (2.2.0) gains `N182`-`N185`, `P354`, `U09`, `U099`, `U10` and `U109`, which
+  `CID10.DBF` (2020) lacks, from `tb_cid.txt` of the SIGTAP 202610, registered with its
+  SHA-256 and listed in the manifest as a second source. `N181` and `O987` appear in the
+  data but are in neither file and stay out. Run `omnisus lake update-auxiliares` (or
+  `Lake.bootstrap_auxiliares()`) to load the new rows.
 
 ### Performance
 

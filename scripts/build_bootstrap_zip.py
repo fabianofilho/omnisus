@@ -4,8 +4,11 @@
 
 Every source is a file of ``SIM/CID10/TABELAS`` registered in
 ``sources/registry.json``, plus the packaged ``sources/cnv/sim/CBO2002.CNV`` and
-``sources/cnv/sim/CID10-grup_d.cnv``. Each download, and each packaged member, must
-match its registered SHA-256, else the build stops. The zip carries one
+``sources/cnv/sim/CID10-grup_d.cnv``. Two newer registered files fill what the
+TABELAS (CADMUN of 2011, CID10 of 2020) lack: the six municipalities installed after
+CADMUN, from ``tb_municip.dbf`` of the DATASUS territorial base, and the CID-10 codes
+of ``NEW_CID10``, from ``tb_cid.txt`` of the SIGTAP. Each download, and each packaged
+member, must match its registered SHA-256, else the build stops. The zip carries one
 Parquet file per table and ``manifest.json`` (table -> rows and sources).
 """
 
@@ -31,6 +34,16 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = ROOT / "src" / "omnisus" / "data" / "auxiliares-bootstrap.zip"
 CNV = ROOT / "src" / "omnisus" / "data" / "dicionarios" / "sources" / "cnv"
 TABELAS = "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/"
+TERRITORIAL = "ftp://ftp.datasus.gov.br/territorio/tabelas/2026/06-base_territorial_jun26.zip"
+SIGTAP = (
+    "ftp://ftp2.datasus.gov.br/public/sistemas/tup/downloads/"
+    "TabelaUnificada_202610_v2610151110.zip"
+)
+NEW_MUNICIPALITIES = ("150475", "220672", "421265", "422000", "431454", "500627")
+"""Municipalities installed after CADMUN.DBF (2011) that the SIM, SINASC and SIH codes."""
+NEW_CID10 = ("N182", "N183", "N184", "N185", "P354", "U09", "U099", "U10", "U109")
+"""Codes the SIH and SIM use that CID10.DBF (2020) lacks and the SIGTAP tb_cid has.
+N181 and O987 are used too but are in neither file."""
 # The DBF headers do not state these reliably (CID10 declares none); read from the text.
 ENCODING = {
     "TABUF.DBF": "ascii",
@@ -42,9 +55,8 @@ ENCODING = {
 }
 
 
-def download(name: str, into: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
-    """Records of one TABELAS file, after checking its bytes against the registry."""
-    url = TABELAS + name
+def fetch(url: str) -> tuple[bytes, dict[str, str]]:
+    """The bytes of one registered file, after checking them against the registry."""
     entry = next(s for s in sources_registry()["sources"] if s["url"] == url)
     parsed = urlparse(url)
     raw = bytearray()
@@ -54,9 +66,42 @@ def download(name: str, into: Path) -> tuple[list[dict[str, Any]], dict[str, str
     digest = hashlib.sha256(raw).hexdigest()
     if digest != entry["sha256"]:
         raise SystemExit(f"{url}: SHA-256 {digest} differs from the registry's {entry['sha256']}")
+    return bytes(raw), {"url": url, "sha256": digest}
+
+
+def download(name: str, into: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Records of one TABELAS file, after checking its bytes against the registry."""
+    raw, source = fetch(TABELAS + name)
     path = into / name
     path.write_bytes(raw)
-    return [dict(r) for r in DBF(path, encoding=ENCODING[name])], {"url": url, "sha256": digest}
+    return [dict(r) for r in DBF(path, encoding=ENCODING[name])], source
+
+
+def territorial_municipalities(into: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Records of ``NEW_MUNICIPALITIES`` in tb_municip.dbf of the territorial base."""
+    raw, source = fetch(TERRITORIAL)
+    path = into / "tb_municip.dbf"
+    with zipfile.ZipFile(io.BytesIO(raw)) as zf:
+        path.write_bytes(zf.read("tb_municip.dbf"))
+    rows = [dict(r) for r in DBF(path, encoding="cp1252") if r["CO_MUNICIP"] in NEW_MUNICIPALITIES]
+    if sorted(r["CO_MUNICIP"] for r in rows) != sorted(NEW_MUNICIPALITIES):
+        raise SystemExit(f"tb_municip.dbf lacks some of {NEW_MUNICIPALITIES}")
+    return rows, source
+
+
+def sigtap_cid10() -> tuple[list[tuple[str, str]], dict[str, str]]:
+    """(code, description) of ``NEW_CID10`` in tb_cid.txt of the SIGTAP, read with its
+    layout file (CO_CID in columns 1-4, NO_CID in 5-104)."""
+    raw, source = fetch(SIGTAP)
+    with zipfile.ZipFile(io.BytesIO(raw)) as zf:
+        layout = zf.read("tb_cid_layout.txt").decode("latin-1").splitlines()
+        lines = zf.read("tb_cid.txt").decode("latin-1").splitlines()
+    if layout[1:3] != ["CO_CID,4,1,4,VARCHAR2", "NO_CID,100,5,104,VARCHAR2"]:
+        raise SystemExit(f"tb_cid_layout.txt changed: {layout[:3]}")
+    codes = {line[:4].strip(): line[4:104].strip() for line in lines}
+    if missing := [c for c in NEW_CID10 if c not in codes]:
+        raise SystemExit(f"tb_cid.txt lacks {missing}")
+    return [(c, codes[c]) for c in NEW_CID10], source
 
 
 def aux_uf(rows: list[dict[str, Any]]) -> pl.DataFrame:
@@ -73,7 +118,38 @@ def _year(value: str) -> int | None:
     return int(value) if value.strip() else None
 
 
-def aux_municipios(rows: list[dict[str, Any]]) -> pl.DataFrame:
+def _decimal(value: str) -> float | None:
+    """A tb_municip number: comma as decimal separator, empty when unknown."""
+    return float(value.replace(",", ".")) if value.strip() else None
+
+
+def _from_territorial(r: dict[str, Any]) -> dict[str, Any]:
+    """A tb_municip record in CADMUN's columns. The base codes health regions in another
+    scheme than CADMUN's RSAUDCOD and MSAUDCOD, so those stay empty."""
+    altitude = _decimal(r["NU_ALTITUD"])
+    return {
+        "MUNCODDV": r["CO_MUNICDV"],
+        "MUNCOD": r["CO_MUNICIP"],
+        "MUNNOME": r["DS_NOME"],
+        "UFCOD": r["CO_UF"],
+        "SITUACAO": r["CO_STATUS"],
+        "ANOINST": r["DT_INSTAL"],
+        "ANOEXT": r["DT_EXTIN"],
+        "SUCESSOR": r["CO_SUCESS"],
+        "LATITUDE": _decimal(r["NU_LATITUD"]),
+        "LONGITUDE": _decimal(r["NU_LONGIT"]),
+        "ALTITUDE": None if altitude is None else int(altitude),
+        "AREA": _decimal(r["NU_AREA"]),
+        "RSAUDCOD": None,
+        "MSAUDCOD": None,
+    }
+
+
+def aux_municipios(rows: list[dict[str, Any]], territorial: list[dict[str, Any]]) -> pl.DataFrame:
+    if clash := {r["CO_MUNICIP"] for r in territorial} & {r["MUNCOD"] for r in rows}:
+        raise SystemExit(f"CADMUN already has {sorted(clash)}")
+    rows = rows + [_from_territorial(r) for r in territorial]
+
     def coordinate(r: dict[str, Any], key: str) -> float | None:
         # CADMUN writes 0/0 where it has no position; 0°, 0° is in the Atlantic.
         return None if r["LATITUDE"] == 0 and r["LONGITUDE"] == 0 else r[key]
@@ -146,9 +222,15 @@ def aux_cid10(
     rows: list[dict[str, Any]],
     chapters: list[dict[str, Any]],
     blocks: list[tuple[str, str]],
+    sigtap: list[tuple[str, str]],
 ) -> pl.DataFrame:
     def display(code: str) -> str:
         return code if len(code) == 3 else f"{code[:3]}.{code[3:]}"
+
+    if clash := {c for c, _ in sigtap} & {r["CID10"] for r in rows}:
+        raise SystemExit(f"CID10.DBF already has {sorted(clash)}")
+    # In CID10's shape, DESCR repeating the code, so both go through the same checks.
+    rows = rows + [{"CID10": c, "DESCR": f"{display(c)} {d}"} for c, d in sigtap]
 
     def chapter(code: str) -> int:
         found = [n for n, c in enumerate(chapters, start=1) if _in_range(code, c["CAUSAS"])]
@@ -211,13 +293,15 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         into = Path(tmp)
         read = {name: download(name, into) for name in ENCODING}
+        territorial, territorial_source = territorial_municipalities(into)
+    sigtap, sigtap_source = sigtap_cid10()
     ocupacoes, cbo_source = aux_ocupacoes(read["TABOCUP.DBF"][0])
     blocks, blocks_source = cid10_blocks()
     tables = {
         "aux_uf": (aux_uf(read["TABUF.DBF"][0]), ["TABUF.DBF"]),
-        "aux_municipios": (aux_municipios(read["CADMUN.DBF"][0]), ["CADMUN.DBF"]),
+        "aux_municipios": (aux_municipios(read["CADMUN.DBF"][0], territorial), ["CADMUN.DBF"]),
         "aux_cid10": (
-            aux_cid10(read["CID10.DBF"][0], read["CIDCAP10.DBF"][0], blocks),
+            aux_cid10(read["CID10.DBF"][0], read["CIDCAP10.DBF"][0], blocks, sigtap),
             ["CID10.DBF", "CIDCAP10.DBF"],
         ),
         "aux_ocupacoes": (ocupacoes, ["TABOCUP.DBF"]),
@@ -241,8 +325,10 @@ def main() -> None:
             sources = [read[n][1] for n in names]
             if table == "aux_ocupacoes":
                 sources.append(cbo_source)
+            if table == "aux_municipios":
+                sources.append(territorial_source)
             if table == "aux_cid10":
-                sources.append(blocks_source)
+                sources.extend([blocks_source, sigtap_source])
             manifest[table] = {"rows": frame.height, "sources": sources}
             print(f"  {table}: {frame.height} rows")
         zf.writestr(

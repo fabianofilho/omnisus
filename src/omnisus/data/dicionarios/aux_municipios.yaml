@@ -1,5 +1,5 @@
 name: aux_municipios
-title: Municípios brasileiros, incluindo extintos e transferidos (DATASUS CADMUN)
+title: Municípios brasileiros, incluindo extintos e transferidos (DATASUS CADMUN e base territorial)
 profile: tabular-data-resource
 encoding: utf-8
 schema:
@@ -47,11 +47,11 @@ schema:
       description: "CADMUN.AREA, como publicado"
     - name: regiao_saude
       type: string
-      description: "CADMUN.RSAUDCOD"
+      description: "CADMUN.RSAUDCOD; nulo nos seis municípios da base territorial, que usa outro código de região"
     - name: macrorregiao_saude
       type: string
-      description: "CADMUN.MSAUDCOD"
+      description: "CADMUN.MSAUDCOD; nulo nos seis municípios da base territorial"
   primaryKey: [codigo_ibge]
-x-version: "2.0.0"
+x-version: "2.1.0"
 x-source: DATASUS
 x-source-url: "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CADMUN.DBF"
