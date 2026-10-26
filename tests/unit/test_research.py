@@ -193,6 +193,32 @@ def test_the_citation_names_every_part_of_a_split_month() -> None:
     assert "1" * 64 in text and "2" * 64 in text
 
 
+def test_the_access_date_is_the_import_date_of_each_publication() -> None:
+    """Without ``accessed``, a file imported on 2026-10-18 is cited as accessed that day,
+    not on the day the citation is printed."""
+    row = {
+        "dataset": "sim_obitos",
+        "source_uri": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DORES/DORR2023.dbc",
+        "source_sha256": "15b5203507161b7c35f9c69a52c955bdac133629549099b85a88e03a9a45baf0",
+        "run_id": "r1",
+        "published_at": "2026-10-18T23:40:00+00:00",
+    }
+    assert "acessado em 2026-10-18 " in sus.citation_from_publications([row], snapshot_id=3).text
+    explicit = sus.citation_from_publications([row], snapshot_id=3, accessed=date(2026, 9, 1))
+    assert "acessado em 2026-09-01 " in explicit.text
+
+
+def test_the_ibge_access_date_is_its_collection_date() -> None:
+    row = {
+        "publication_id": "pub-1",
+        "sha256": "abc123",
+        "url": "https://example.test/sidra",
+        "collected_at": "2026-01-01T00:00:00+00:00",
+    }
+    text = sus.citation_from_publications([row], snapshot_id=3, dataset="ibge_populacao").text
+    assert "acessado em 2026-01-01." in text
+
+
 def test_municipality_join_key_takes_the_left_digits() -> None:
     assert sus.municipality_join_key("1400100") == "140010"
     assert sus.municipality_join_key("140010", digits=6) == "140010"

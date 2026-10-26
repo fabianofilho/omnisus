@@ -257,7 +257,9 @@ def citation_from_publications(
         dataset: Dataset name, used when a row lacks it; ``"ibge_populacao"`` selects
             the IBGE wording.
         run_id: The run to name; ``None`` uses each row's own ``run_id``.
-        accessed: Access date to print; ``None`` (default) is today.
+        accessed: Access date to print for every row; ``None`` (default) prints each
+            row's import date (``published_at``, or ``collected_at`` for IBGE), and
+            today only for a row that has neither.
 
     Returns:
         A :class:`~omnisus.Citation` whose ``text`` is the Portuguese paragraph.
@@ -274,15 +276,18 @@ def citation_from_publications(
         >>> print(sus.citation_from_publications([row], snapshot_id=7, accessed=date(2026, 9, 23)).text)
         SIM — Declarações de Óbito (sim_obitos), arquivo DORR2023.dbc (...), SHA-256 15b5...baf0, acessado em 2026-09-23 pelo DATASUS. Importado com omnisus ..., lake snapshot 7, execução cap2.
     """
-    accessed_on = accessed or datetime.now(UTC).date()
     rows = [dict(row) for row in publications]
     if dataset:
         for row in rows:
             row.setdefault("dataset", dataset)
     if dataset == "ibge_populacao" or (rows and "url" in rows[0] and "source_uri" not in rows[0]):
-        paragraphs = [_ibge_paragraph(row, snapshot_id, accessed_on) for row in rows]
+        paragraphs = [
+            _ibge_paragraph(row, snapshot_id, _accessed_on(row, accessed)) for row in rows
+        ]
     else:
-        paragraphs = [_ftp_paragraph(row, snapshot_id, accessed_on, run_id) for row in rows]
+        paragraphs = [
+            _ftp_paragraph(row, snapshot_id, _accessed_on(row, accessed), run_id) for row in rows
+        ]
     if not paragraphs:
         paragraphs = [
             (
@@ -319,7 +324,8 @@ def cite(
         snapshot_id: The snapshot your analysis read; ``None`` (default) is the
             newest.
         run_id: Cite only this run's publications.
-        accessed: Access date to print; ``None`` (default) is today.
+        accessed: Access date to print; ``None`` (default) prints each publication's
+            import date.
 
     Returns:
         A :class:`~omnisus.Citation`; paste ``citation.text`` into the methods.
@@ -348,6 +354,15 @@ def cite(
         run_id=run_id,
         accessed=accessed,
     )
+
+
+def _accessed_on(row: Mapping[str, Any], accessed: date | None) -> date:
+    """The date the file was fetched: ``accessed`` when given, else the day the row was
+    imported, which is when omnisus downloaded it."""
+    if accessed is not None:
+        return accessed
+    stamp = row.get("published_at") or row.get("collected_at")
+    return date.fromisoformat(str(stamp)[:10]) if stamp else datetime.now(UTC).date()
 
 
 def _require_join_digits(digits: int) -> None:

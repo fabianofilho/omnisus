@@ -21,6 +21,12 @@
   before the first import returns `[]`. `None` keeps the SQL and the rows of 0.2.3. The
   data table is pinned by the caller's `FROM` (#101).
 
+- `cite()` and `citation_from_publications()` with `accessed=None` print each row's
+  import date (`published_at`, or `collected_at` for IBGE) as the access date, instead of
+  the day the citation is generated: a file imported on 2026-10-18 and cited a week later
+  stays "acessado em 2026-10-18". `accessed=` still sets one date for every row; a row
+  without either column keeps today.
+
 ### Dictionaries
 
 - `sih_aih_reduzida` (2.13.0) declares `fonte_orc`, which RD files publish from 2025-03

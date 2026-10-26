@@ -226,9 +226,9 @@ Onde encontrar cada valor:
 
 - `<dataset>`, `<source_uri>`, `<source_sha256>` e `<run_id>`: na publicação, em
   `publications()`; o nome do arquivo é o fim de `source_uri`.
-- `<AAAA-MM-DD>`: `sus.cite` escreve a data de hoje, a menos que você passe
-  `accessed=`. Sugestão deste guia: a data de `published_at`, com
-  `accessed=date.fromisoformat(publicacao["published_at"][:10])`.
+- `<AAAA-MM-DD>`: `sus.cite` escreve a data de `published_at` de cada publicação, o dia
+  em que o omnisus baixou e importou o arquivo (`collected_at` no IBGE). `accessed=`
+  troca essa data por outra, a mesma para todas.
 - `<versão>`: o omnisus que gera a citação (`sus.__version__`). O lake não grava a versão
   que importou cada escopo; por isso, gere a citação na mesma sessão que importou, como
   fazem os notebooks, ou corrija a versão à mão.
