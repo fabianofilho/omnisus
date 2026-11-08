@@ -97,6 +97,9 @@
   `LakeReader`) no longer pulls the Jupyter kernel and its ~25 dependencies. The Colab
   notebook installs `"omnisus[colab]==<version>"`; `uv pip install "omnisus[colab]"` does
   the same elsewhere (#100).
+- `release.yml` publishes to PyPI only after `native` passes as well as the wheel-only
+  `gate`. Before, `publish` waited for `gate` alone, and v0.2.2 reached PyPI with the
+  native parity job red (#118).
 
 ### Dictionaries
 
