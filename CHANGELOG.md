@@ -102,6 +102,13 @@
   when a reason's DEF, lines, members, member count, start columns or labels differ from the
   packaged DEF; `cod_idade` of `sih_aih_rejeitada` is left to #6 (#137). No dictionary
   changes.
+- The 37 dictionaries that declared `x-partitions` no longer do, and each takes a patch
+  `x-version`: the list had no reader and disagreed with `Dataset.partition_by`, which
+  stays the one place a dataset's partitions are declared. `sinasc_nascidos_vivos`
+  (2.4.1) also drops `_fonte_arquivo`, `_data_extracao`, `_hash_arquivo`, `_sistema` and
+  `_grupo`, columns no import creates. A test fails when a dictionary declares
+  `x-partitions` again or a `_` column other than `_source_ano` and `_source_release`
+  (#71).
 
 ### Packaging
 

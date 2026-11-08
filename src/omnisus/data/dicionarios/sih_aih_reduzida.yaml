@@ -12544,8 +12544,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
-x-partitions: [ano, uf, mes]
-x-version: "2.15.0"
+x-version: "2.15.1"
 
 x-analytics:
   version: 1.3.0

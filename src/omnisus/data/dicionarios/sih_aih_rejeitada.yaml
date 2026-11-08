@@ -2,10 +2,8 @@ name: sih_aih_rejeitada
 title: SIHSUS — AIH rejeitada (RJ)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.3.0
+x-version: 1.3.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: sih_rj_rr_2024_01_mini.dbc, 90 fields; observed 2026-09-22
   semantic_status: Physical inventory. Category maps only where a TabWin CNV binds the

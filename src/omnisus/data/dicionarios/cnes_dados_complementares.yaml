@@ -2,10 +2,8 @@ name: cnes_dados_complementares
 title: CNES — Dados complementares (DC)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.0
+x-version: 1.1.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: cnes_dc_rr_2024_01_mini.dbc, 171 fields; observed 2026-09-22
   semantic_status: Physical inventory. Category maps only where a TabWin CNV binds the
