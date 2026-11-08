@@ -36,6 +36,9 @@
 
 ### Dictionaries
 
+- `uf_zi` of `sih_aih_reduzida` (2.15.0) is labelled "Município gestor", as
+  `RD2008.DEF` (lines 175-176) names it, instead of "UF do gestor": RD files publish it
+  with 6 digits, a municipality code (#155).
 - `cnsprof` of `sia_bpa_individualizado` (0.3.0) is no longer labelled "criptografado"
   nor marked `x-crypto: datasus-cns`: the BPA-I files publish the professional's CNS in
   clear, which is why the fixtures blank it. `pa_cnsmed` (`sia_producao_ambulatorial`

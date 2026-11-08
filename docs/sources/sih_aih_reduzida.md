@@ -54,9 +54,8 @@ SUS (SIH/SUS), nos arquivos RD que o DATASUS publica um por UF e mês de process
   (Informe SIH 2016-03, p. 1).
 - `munic_mov` é o município do estabelecimento, com 6 caracteres
   (Informe SIH 2016-03, p. 2).
-- `uf_zi` é o município gestor, com 6 caracteres (Informe SIH 2016-03, p. 1), embora o
-  dicionário o rotule "UF do gestor"
-  (`src/omnisus/data/dicionarios/sih_aih_reduzida.yaml`).
+- `uf_zi` é o município gestor, com 6 caracteres, apesar do nome (Informe SIH 2016-03,
+  p. 1; `RD2008.DEF`, linhas 175-176).
 - `cnes` é o código CNES do hospital, com 7 caracteres (Informe SIH 2016-03, p. 3).
 - O dicionário liga `munic_res` e `munic_mov` a `aux_municipios.codigo_6`; `diag_secun`, `cid_asso` e `cid_morte` gravam `0000` quando não há causa ([vocabulários](vocabularios.md)).
   A importação preserva o comprimento dos códigos publicados; não aplica

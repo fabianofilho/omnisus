@@ -14,6 +14,7 @@ import pytest
 from scripts.gen_dicionario import fields_of
 
 from omnisus.sources.datasus_ftp import dbc
+from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.dictionaries import load_dicionario
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -69,3 +70,22 @@ def test_fonte_orc_takes_the_labels_of_fonterem(dbc_fixture):
     assert claim["method"] == "cnv-parse"
     assert "FONTE_ORC, 1, CNV/fonterem.CNV" in claim["evidence"][0]["locator"]
     assert [i["id"] for i in field["x-metadata"]["issues"]] == ["fonte_orc-00-sem-fonte"]
+
+
+def test_uf_zi_is_the_gestor_municipality(dbc_fixture):
+    """RD2008.DEF lines 175-176 call UF_ZI 'Município gestor' (CNV/br_municgestor.cnv),
+    and RDRR2401 publishes it with 6 digits, the width of a municipality code; the
+    dictionary called it "UF do gestor" (#155)."""
+    def_lines = (
+        (ROOT / "src/omnisus/data/dicionarios/sources/cnv/sih/RD2008.DEF")
+        .read_text(encoding="latin-1")
+        .splitlines()
+    )
+    assert [line.split(",")[0][1:].strip() for line in def_lines[174:176]] == [
+        "Município gestor",
+        "Município gestor",
+    ]
+    raw = dbc_fixture("sih_rr_2024_01_mini").read_bytes()
+    values = dbc_bytes_to_lazyframe(raw, dataset=DATASET).collect()["uf_zi"]
+    assert values.str.contains(r"^\d{6}$").all()
+    assert load_dicionario(DATASET).field_def("uf_zi")["label"] == "Município gestor"
