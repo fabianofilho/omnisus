@@ -72,9 +72,8 @@ def test_every_hand_map_a_def_binds_is_generated_or_excused(monkeypatch):
 
 
 # Issues #7 (decision 4) and #137: every field RD2008.DEF and RJ2008.DEF bind to a CNV,
-# at any start column, has a map (`x-decode` or `campos`) or a reason in `sem_cnv`. The
-# issue leaves one field out on purpose: cod_idade of the RJ, which issue #6 tracks.
-SIH_2008_FIELDS_LEFT_TO_ANOTHER_ISSUE = {"sih_aih_rejeitada": {"cod_idade"}}
+# at any start column, has a map (`x-decode` or `campos`) or a reason in `sem_cnv`. Since
+# #6 gave the RJ cod_idade a map, no field is left out.
 # Issue #7: fields waiting for the choice of a member, with the values the fixtures
 # publish, which their reasons cite: the RR 2024-01 ones, and for gestor_cod of the RJ
 # the three RJ fixtures, whose 32 rows its reason counts. gestor_cod of the RD is
@@ -142,8 +141,7 @@ def test_every_field_the_sih_2008_def_binds_has_a_map_or_a_reason_true_to_the_de
     name the DEF puts in place of a start column, only labels the DEF writes, exactly
     the references the field declares in the YAML, and no other number; every member is
     unpacked and each mention of packaging says so itself. The fields waiting for a
-    member also hold the values and the row count the fixture publishes. cod_idade of
-    the RJ is the one field left out, by the issue."""
+    member also hold the values and the row count the fixture publishes."""
     gerar = _load(monkeypatch)
     vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
     spec = vinculos["datasets"][dataset]
@@ -168,14 +166,11 @@ def test_every_field_the_sih_2008_def_binds_has_a_map_or_a_reason_true_to_the_de
         for f in bindings
         if not fields[f].get("x-decode") and f not in spec["campos"] and f not in reasons
     }
-    assert without_word == SIH_2008_FIELDS_LEFT_TO_ANOTHER_ISSUE.get(dataset, set()), (
-        dataset,
-        sorted(without_word),
-    )
+    assert without_word == set(), (dataset, sorted(without_word))
     packaged = {Path(m).name.lower() for m in vinculos["membros"]}
     for field in sorted(bindings.keys() & reasons.keys()):
         if fields[field].get("x-decode"):
-            continue  # a hand map with a reason says why the CNV does not fit (cod_idade, RD)
+            continue  # a hand map with a reason says why the CNV does not fit (cod_idade)
         reason, where = reasons[field], (dataset, field)
         bound = [b for _, b in bindings[field]]
         members = {Path(b.table.replace("\\", "/")).name for b in bound}

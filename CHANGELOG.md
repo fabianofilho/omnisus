@@ -41,6 +41,20 @@
 
 ### Dictionaries
 
+- The 1-character age unit is labelled `'5'`: "Anos (somar 100)", as `IDADEDET.CNV`
+  reads 500-530 as 100 to 130 years, in `cod_idade` of `sih_aih_reduzida` (2.16.0, which
+  called it "Mais de 100 anos") and `sih_aih_rejeitada` (1.4.0), `tpidadepac` of
+  `sia_bpa_individualizado` (0.4.0) and `ap_coidade` of the seven APAC datasets with a
+  map (`sia_apac_cirurgia_bariatrica` 0.3.0, `sia_apac_fistula_arteriovenosa` 1.1.0,
+  `sia_apac_laudos_diversos` 0.3.0, `sia_apac_medicamentos` 0.3.0,
+  `sia_apac_quimioterapia` 0.3.0, `sia_apac_radioterapia` 1.2.0,
+  `sia_apac_tratamento_dialitico` 0.3.0). `cod_idade` `'0'` of the RD loses its
+  "Ignorada" label, which no source gives (in the CNV `000` is "Idade inválida"):
+  `cod_idade_rotulo` is null for it. The RJ `cod_idade` had no map and takes the RD's
+  (`RJ2008.DEF` lines 193-196 bind it to the same CNVs), so `sus.label` adds
+  `cod_idade_rotulo` to RJ rows. Every one of these maps was measured, not read: the
+  CNVs label the 3-character composite, never the unit alone (issues
+  `cod_idade-sem-tabela`, `tpidadepac-sem-tabela`, `ap_coidade-sem-tabela`) (#6).
 - `uf_zi` of `sih_aih_reduzida` (2.15.0) is labelled "Município gestor", as
   `RD2008.DEF` (lines 175-176) names it, instead of "UF do gestor": RD files publish it
   with 6 digits, a municipality code (#155).

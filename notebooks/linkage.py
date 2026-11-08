@@ -2722,8 +2722,9 @@ def _(mo):
       `M/F`), e o dicionário do SINASC rotula `M`/`F` em vez de por extenso.
       Pelo rótulo do decoder, as quatro viram a mesma variável.
     - Ainda há códigos publicados fora do `x-decode`: `homonimo = 2` no SIH,
-      `tpidadepac` `0/5/9` no BPA-I, `tp_droga` `AC`, `ACO`, `AO` (mais de uma
-      substância) na RAAS psicossocial, `ap_coidade = 5` nas APAC.
+      `tpidadepac` `0/9` no BPA-I, `tp_droga` `AC`, `ACO`, `AO` (mais de uma
+      substância) na RAAS psicossocial. A unidade `5` de `tpidadepac` e de
+      `ap_coidade` ganhou o rótulo "Anos (somar 100)" na #6.
     - `cid_morte` e `cid_asso` do SIH são `0000` em todas as AIHs: a causa do
       óbito só existe no SIM.
     - A faixa de datas acusa o que a validação de formato não pega: nascimento

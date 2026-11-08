@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # Gerado do header DBF REAL (AQRR2401.dbf), nao do informe tecnico.
 # latin-1 obrigatorio: cifra do CNS usa 0x7B-0x84 (0x81 quebra cp1252).
 encoding: latin-1
-x-version: "0.2.0"
+x-version: "0.3.0"
 schema:
   fields:
     - name: ap_mvm
@@ -60,14 +60,15 @@ schema:
         '2': Dias
         '3': Meses
         '4': Anos
+        '5': Anos (somar 100)
       x-metadata:
         issues:
         - id: ap_coidade-sem-tabela
           status: open
-          description: '''5'' fica sem rótulo, e ''2'', ''3'' e ''4'' foram medidos, não lidos: nenhuma tabela
+          description: '''2'', ''3'', ''4'' e ''5'' foram medidos, não lidos: nenhuma tabela
             rotula o código de 1 caractere. IDADEDET.CNV e IDADE18.CNV (TAB_SIA), ligados a AP_COIDADE em
             todos os DEF de APAC, leem 3 caracteres, AP_COIDADE seguido de AP_NUIDADE: ''000'' é ''Idade inválida''
-            e 500 a 530 são 100 a 130 anos. O Informe Técnico SIASUS 2019-07 descreve AP_COIDADE (CHAR 1,
+            e 500 a 530 são 100 a 130 anos, e por isso ''5'' é ''Anos (somar 100)''. O Informe Técnico SIASUS 2019-07 descreve AP_COIDADE (CHAR 1,
             ''Código da Idade'') sem códigos (pp. 6-14). SP 2022: ''5'' em 172 linhas (relatório 2026-09-23-linkage-ampliado).'
     - name: ap_nuidade
       type: string

@@ -597,11 +597,40 @@ schema:
       type: string
       label: Unidade da idade
       x-decode:
-        "0": "Ignorada"
         "2": "Dias"
         "3": "Meses"
         "4": "Anos"
-        "5": "Mais de 100 anos"
+        "5": "Anos (somar 100)"
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 83616371dedaa6efde39e6aa288ca9c043d7a29fcef25633a2fa65a3d37952e0
+          status: unreviewed
+          checked_at: '2026-11-08'
+          method: fixture-measure
+          reviewer: maintainer review
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF, linhas 188-191: COD_IDADE, 1, CNV\IDADEBAS.CNV, CNV\IDADEPUB.CNV,
+              CNV\IDADE18.CNV e CNV\IDADEDET.CNV'
+          - source_id: sih-tab-714ed980d483
+            pages: []
+            locator: CNV/IDADEDET.CNV; composto de 3 caracteres, unidade + quantidade
+          note: Medido, não lido (issue cod_idade-sem-tabela). O CNV rotula o composto, não o
+            código de 1 caractere.
+        issues:
+        - id: cod_idade-sem-tabela
+          status: open
+          description: '''2'', ''3'', ''4'' e ''5'' foram medidos, não lidos: nenhuma tabela rotula o código
+            de 1 caractere, e ''0'' fica sem rótulo. RD2008.DEF (linhas 188-191) liga COD_IDADE a
+            IDADEBAS.CNV, IDADEPUB.CNV, IDADE18.CNV e IDADEDET.CNV, que leem 3 caracteres, COD_IDADE
+            seguido de IDADE. IDADEDET.CNV (TAB_SIH 714ed980d483): 200-229 são dias, 230 e 301 são
+            ''1 mês'', 302-312 são meses, 401-499 são anos, 500 a 530 são 100 a 130 anos, e ''000''
+            e ''999'' são ''Idade inválida''. IDADEBAS.CNV agrupa 000-099 em ignorados, e a auditoria
+            de 2026-09-14 o recusou como autoridade (evidence/2026-09-14-contrato-analitico/regras.md):
+            nenhuma fonte diz que ''0'' é ''Ignorada''. RR 2024-01: ''2'' em 157 linhas, ''3'' em 175,
+            ''4'' em 3.378, ''5'' em 4, nenhum ''0''.'
     - name: idade
       type: integer
       label: Idade
@@ -12544,7 +12573,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
-x-version: "2.15.1"
+x-version: "2.16.0"
 
 x-analytics:
   version: 1.3.0

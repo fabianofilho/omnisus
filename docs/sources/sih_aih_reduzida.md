@@ -146,6 +146,12 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   deslocamento de 100 anos no domínio detalhado. Os códigos compostos `000` e
   `999` são classificados como inválidos; isso não define uma sentinela global
   para o campo bruto `idade`.
+- O rótulo de `cod_idade` (no RD e no RJ) foi medido, não lido: o `RD2008.DEF` e o
+  `RJ2008.DEF` ligam o campo a tabelas que leem 3 caracteres (unidade e idade), e
+  nenhuma rotula a unidade sozinha. `2` é "Dias", `3` "Meses", `4` "Anos" e `5`
+  "Anos (somar 100)", porque `IDADEDET.CNV` lê 500 a 530 como 100 a 130 anos. `0`
+  fica sem rótulo: nenhuma fonte o chama de "Ignorada", e no CNV `000` é "Idade
+  inválida". O dicionário registra isso na issue `cod_idade-sem-tabela` (#6).
 - `sexo` tem 1 caractere (Informe SIH 2016-03, p. 1). A tabela oficial
   `CNV/SEXO.CNV` define 1 masculino e 2/3 feminino. A aplicação dessas regras
   exige os escopos e hashes confirmados no contrato; códigos não documentados
@@ -197,7 +203,8 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   agrupamento do código (capítulo e grupo da CID, ano e mês das datas, região e UF do
   município), coluna inicial diferente de 1 (`dias_perm`, `n_aih`), linhas que trazem um
   nome de campo no lugar da coluna inicial (`faec_tp`, `proc_rea`) ou tabela não
-  empacotada (`uf_zi` e os demais, #137). O `cod_idade` do RJ fica de fora, na #6.
+  empacotada (`uf_zi` e os demais, #137). O `cod_idade` está em `sem_cnv` no RD e no RJ
+  e tem o mapa medido descrito acima (#6).
 
 ## Como usar
 

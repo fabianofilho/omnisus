@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # latin-1 e OBRIGATORIO: o CNS cifrado usa bytes 0x7B-0x84 e 0x81 e
 # indefinido em cp1252 (UnicodeDecodeError). Medido em BIAC2401/BIRR2401.
 encoding: latin-1
-x-version: "0.3.0"
+x-version: "0.4.0"
 schema:
   fields:
     # ========================================================================
@@ -140,16 +140,16 @@ schema:
         "2": "Dias"
         "3": "Meses"
         "4": "Anos"
+        "5": "Anos (somar 100)"
       x-metadata:
         issues:
         - id: tpidadepac-sem-tabela
           status: open
-          description: '''0'', ''5'' e ''9'' ficam sem rótulo: o TAB_SIA não tem DEF do BPA-I, e
+          description: '''0'' e ''9'' ficam sem rótulo: o TAB_SIA não tem DEF do BPA-I, e
             IDADEDET.CNV (ligado a TPIDADEPAC em RAAS_Psicossocial.def e Atencao_Domiciliar.def)
             rotula só os 3 caracteres TPIDADEPAC seguido de IDADEPAC, nunca o código de 1 caractere.
             Essa leitura decodifica idadepac (derivação coded_age): ''000'' e ''999'' são "Idade
-            inválida", ''5'' mais 00 a 30 são 100 a 130 anos. ''2'', ''3'' e ''4'' foram medidos
-            (BIAC2401: 4 concorda com DTNASC em 99,2%), não lidos numa fonte. BI RR 2022: ''5'' com
+            inválida", ''5'' mais 00 a 30 são 100 a 130 anos. ''2'', ''3'', ''4'' e ''5'' foram medidos (BIAC2401: 4 concorda com DTNASC em 99,2%), não lidos numa fonte; ''5'' é ''Anos (somar 100)'', como 500 a 530 no IDADEDET.CNV. BI RR 2022: ''5'' com
             IDADEPAC 00-29 e nascimento 1892-1922, ''9'' sempre com 99, ''0'' com 00 em BIRR2205 e
             BIRR2211 (nascimentos 1192 e 1892).'
     - name: idadepac
