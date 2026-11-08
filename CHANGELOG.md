@@ -109,6 +109,15 @@
   `_grupo`, columns no import creates. A test fails when a dictionary declares
   `x-partitions` again or a `_` column other than `_source_ano` and `_source_release`
   (#71).
+- The `sem_cnv` test of `RD2008.DEF` and `RJ2008.DEF` also fails when a reason cites a
+  reference the field does not declare in `foreignKeys` (or leaves one out), says a
+  member is packaged in a phrase whose "não" negates something else, quotes a text that
+  is neither a DEF label nor a fixture value, cites a number outside its formulas
+  (listed in a comment of the test), names the wrong field in place of a start column, or
+  counts fixture rows wrongly. The reasons of `faec_tp` and `proc_rea` now name that
+  field (`DS_TPFIN`, `IP_DSCR`), and the row count of `gestor_cod` of
+  `sih_aih_rejeitada` is checked against the three RJ fixtures (#156). No dictionary
+  changes.
 
 ### Packaging
 
