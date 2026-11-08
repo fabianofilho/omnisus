@@ -33,6 +33,11 @@
   run. Without `snapshot_id`, a `LakeReader(snapshot_id=M)` cites M instead of the
   newest snapshot. A snapshot the lake does not have raises
   `duckdb.InvalidInputException`.
+- `check_columns` reports the harmonised categories that `load` adds (`idade_*`,
+  `sexo_*`, `<date>_data`, `<date>_data_status`) with `rule = "harmonised from <fields>"`,
+  e.g. `"harmonised from idadepac, tpidadepac"`, instead of `"not in dictionary"`: 28
+  columns of SIM RR 2023 were flagged. The names come from the same rules
+  `analytical_projection` reads, `x-analytics` of the dictionary (#69).
 
 ### Dictionaries
 

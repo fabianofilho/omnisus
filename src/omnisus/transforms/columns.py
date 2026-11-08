@@ -6,6 +6,7 @@ from typing import Any
 
 import polars as pl
 
+from omnisus.transforms.analytics import harmonised_inputs
 from omnisus.transforms.dictionaries import DATE_FORMATS, _lookup_decode, load_dicionario
 
 _SCHEMA: dict[str, pl.DataType] = {
@@ -24,9 +25,9 @@ _SCHEMA: dict[str, pl.DataType] = {
 }
 
 
-def _rule(field: dict[str, Any] | None) -> str | None:
+def _rule(field: dict[str, Any] | None, inputs: tuple[str, ...] | None) -> str | None:
     if field is None:
-        return "not in dictionary"
+        return f"harmonised from {', '.join(inputs)}" if inputs else "not in dictionary"
     if field.get("x-decode"):
         return f"code map ({len(field['x-decode'])} codes)"
     if field.get("type") == "date" and field.get("x-format") in DATE_FORMATS:
@@ -53,8 +54,9 @@ def check_columns(dataset: str, df: pl.DataFrame) -> pl.DataFrame:
     Returns:
         One row per column of ``df``, in order, with columns:
         ``column``; ``label`` (the dictionary's, ``None`` when undeclared);
-        ``rule`` (``"code map (n codes)"``, ``"date ddMMyyyy"``, ``"not in
-        dictionary"`` or ``None``); ``pct_empty``; ``distinct`` (filled values);
+        ``rule`` (``"code map (n codes)"``, ``"date ddMMyyyy"``, ``"harmonised
+        from idade"`` for a harmonised category :func:`omnisus.load` adds,
+        ``"not in dictionary"`` or ``None``); ``pct_empty``; ``distinct`` (filled values);
         ``example_code`` and ``example_label`` (the first filled value and its
         label); ``unlabelled_codes`` (list of filled codes the code map does not
         label) and ``unlabelled_rows``; ``pct_invalid_dates``, ``date_min`` and
@@ -74,6 +76,7 @@ def check_columns(dataset: str, df: pl.DataFrame) -> pl.DataFrame:
         [('homonimo', 33.3, ['2'], None), ('nasc', 33.3, [], datetime.date(1899, 12, 30))]
     """
     dicionario = load_dicionario(dataset)
+    harmonised = harmonised_inputs(dicionario.raw.get("x-analytics"))
     rows = []
     for column in df.columns:
         field = dicionario.field_def(column)
@@ -98,7 +101,7 @@ def check_columns(dataset: str, df: pl.DataFrame) -> pl.DataFrame:
             {
                 "column": column,
                 "label": field.get("label") if field else None,
-                "rule": _rule(field),
+                "rule": _rule(field, harmonised.get(column)),
                 "pct_empty": _percent(df.height - filled.len(), df.height),
                 "distinct": filled.n_unique(),
                 "example_code": example,
