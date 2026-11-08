@@ -66,14 +66,14 @@ def check_columns(dataset: str, df: pl.DataFrame) -> pl.DataFrame:
         FileNotFoundError: ``dataset`` has no packaged dictionary.
 
     Examples:
-        SIH publishes ``homonimo`` ``2``, which no DATASUS table labels:
+        SIH publishes ``tpdisec1`` ``0``, which ``TP_DIAGSEC.CNV`` does not label:
 
         >>> import polars as pl
         >>> import omnisus as sus
-        >>> dados = pl.DataFrame({"homonimo": ["0", "2", ""], "nasc": ["19850320", "18991230", ""]})
+        >>> dados = pl.DataFrame({"tpdisec1": ["1", "0", ""], "nasc": ["19850320", "18991230", ""]})
         >>> relatorio = sus.check_columns("sih_aih_reduzida", dados)
         >>> relatorio.select("column", "pct_empty", "unlabelled_codes", "date_min").rows()
-        [('homonimo', 33.3, ['2'], None), ('nasc', 33.3, [], datetime.date(1899, 12, 30))]
+        [('tpdisec1', 33.3, ['0'], None), ('nasc', 33.3, [], datetime.date(1899, 12, 30))]
     """
     dicionario = load_dicionario(dataset)
     harmonised = harmonised_inputs(dicionario.raw.get("x-analytics"))

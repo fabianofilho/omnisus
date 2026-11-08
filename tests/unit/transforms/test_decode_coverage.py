@@ -42,10 +42,9 @@ REMAINING = {
         ("tp_droga", "AO", 907),
         ("tp_droga", "CO", 2),
     ],
-    # homonimo 2 is on no source page (issue homonimo-sem-fonte); tpdisec 0 is not in
-    # TP_DIAGSEC.CNV, which lists only 1 and 2 (issue tpdisec-0-sem-fonte).
+    # tpdisec 0 is not in TP_DIAGSEC.CNV, which lists only 1 and 2 (issue
+    # tpdisec-0-sem-fonte).
     ("sih_aih_reduzida", "sih_rr_2024_01_mini"): [
-        ("homonimo", "2", 39),
         ("tpdisec1", "0", 3092),
         ("tpdisec2", "0", 3699),
         *[(f"tpdisec{n}", "0", 3714) for n in range(3, 10)],
@@ -551,7 +550,6 @@ def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field
 @pytest.mark.parametrize(
     ("dataset", "fixture", "field", "issue", "codes"),
     [
-        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "homonimo", "homonimo-sem-fonte", {"2"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", "tpdisec-0-sem-fonte", {"0"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec9", "tpdisec-0-sem-fonte", {"0"}),
         (
@@ -645,6 +643,31 @@ def test_amp_age_unit_and_sex_stay_undecoded_without_a_def(dbc_fixture):
         assert "x-decode" not in field
         (entry,) = [i for i in field["x-metadata"]["issues"] if i["id"] == "amp-sem-def"]
         assert entry["status"] == "open"
+
+
+@pytest.mark.parametrize(
+    ("field", "published", "issue"),
+    [
+        ("homonimo", {"0", "2"}, "homonimo-sem-fonte"),
+        ("gestor_tp", {"0", "1"}, "gestor_tp-sem-fonte"),
+    ],
+)
+def test_sih_homonimo_and_gestor_tp_stay_undecoded_without_a_def(
+    dbc_fixture, field, published, issue
+):
+    """#10: none of the 37 packaged DEF (RD2008.DEF, RJ2008.DEF, the RD.DEF of 1992-2007
+    and the rest) names HOMONIMO or GESTOR_TP, and no registered document lists their
+    codes. RDRR2401 holds homonimo 0/2, which contradicted the {0: Não, 1: Sim} map, and
+    gestor_tp 0/1; neither field gets a map, and the field's issue says what was read."""
+    defs = [p for p in Path(str(CNV)).rglob("*") if p.suffix.lower() == ".def"]
+    assert len(defs) == 37
+    assert not [p.name for p in defs if field.upper() in p.read_text(encoding="latin-1").upper()]
+    frame = _read("sih_aih_reduzida", dbc_fixture("sih_rr_2024_01_mini"))
+    assert set(frame[field]) == published
+    definition = load_dicionario("sih_aih_reduzida").field_def(field)
+    assert "x-decode" not in definition
+    (entry,) = [i for i in definition["x-metadata"]["issues"] if i["id"] == issue]
+    assert entry["status"] == "open" and "DEF" in entry["description"]
 
 
 APAC_WITH_UNIT_MAP = [

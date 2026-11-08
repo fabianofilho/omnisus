@@ -11184,15 +11184,17 @@ schema:
     - name: homonimo
       type: string
       label: Homônimo
-      x-decode: { "0": "Não", "1": "Sim" }
       x-metadata:
         issues:
         - id: homonimo-sem-fonte
           status: open
-          description: '''2'' fica sem rótulo: nenhuma fonte dá os códigos. IT_SIHSUS_1603, p. 3,
+          description: 'Sem mapa: nenhum documento registrado dá os códigos. IT_SIHSUS_1603, p. 3,
             só descreve o campo ("Indicador se o paciente da AIH é homônimo do paciente de outra
-            AIH"), e nenhum DEF ou CNV do TAB_SIH.zip (f05b32f32908) cita HOMONIMO. ''0'' e ''1''
-            também não têm fonte. RR 2024-01: ''2'' em 39 AIHs.'
+            AIH"), e nenhum dos 37 DEF empacotados (RD2008.DEF, RJ2008.DEF, os RD.DEF da era
+            1992-2007 e os demais) cita HOMONIMO. O mapa anterior, ''0'' Não e ''1'' Sim, não tinha
+            fonte e contrariava os dados: o RD publica ''0'' e ''2'' (RR 2024-01: ''2'' em 39 AIHs; RR
+            2022: 138, evidence/2026-09-23-colunas-e-linkage.md), e o RJ publica ''0'' e ''1''. Saiu
+            na issue #10.'
 
     # ========================================================================
     # Internação
@@ -12122,10 +12124,18 @@ schema:
     - name: gestor_tp
       type: string
       label: Tipo gestor autorizador
-      x-decode:
-        "0": "Sem autorização"
-        "1": "Auditor"
-        "2": "Autorizador"
+      x-metadata:
+        issues:
+        - id: gestor_tp-sem-fonte
+          status: open
+          description: 'Sem mapa: nenhum documento registrado dá os códigos, e nenhum dos 37 DEF
+            empacotados (RD2008.DEF, RJ2008.DEF, os RD.DEF da era 1992-2007 e os demais) cita
+            GESTOR_TP. O mapa anterior, ''0'' Sem autorização, ''1'' Auditor e ''2'' Autorizador,
+            não tinha fonte. RR 2024-01: ''0'' em 2.985 AIHs e ''1'' em 729. A descrição do campo na
+            p. 3 do IT_SIHSUS_1603 não está transcrita em nenhum artefato do repositório. Pista,
+            que não autoriza rótulo: em RR 2024-01, homonimo diferente de ''0'' sempre vem com
+            gestor_tp ''1''; AUTORIZ.CNV e LIBGESTOR.DBF do TAB_SIH, ainda não empacotados (#7), são o
+            lugar para procurar. Saiu na issue #10.'
     - name: gestor_cpf
       type: string
       label: CPF do gestor
@@ -12573,7 +12583,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
-x-version: "2.16.0"
+x-version: "2.17.0"
 
 x-analytics:
   version: 1.3.0

@@ -41,6 +41,15 @@
 
 ### Dictionaries
 
+- **Breaking:** `homonimo` and `gestor_tp` of `sih_aih_reduzida` (2.17.0) lose their
+  code maps (`{'0': Não, '1': Sim}` and `{'0': Sem autorização, '1': Auditor, '2':
+  Autorizador}`). No registered document lists their codes and none of the 37 packaged
+  DEF names either field; the `homonimo` map also contradicted the data, since the RD
+  publishes `0` and `2`. `sus.label` no longer adds `homonimo_rotulo` nor
+  `gestor_tp_rotulo`, `sus.label(columns=["homonimo"])` (or `"gestor_tp"`) raises
+  `ValueError`, and `check_columns` reports no `unlabelled_codes` for them. The issues
+  `homonimo-sem-fonte` (rewritten) and `gestor_tp-sem-fonte` (new) say what was
+  consulted (#10).
 - The 1-character age unit is labelled `'5'`: "Anos (somar 100)", as `IDADEDET.CNV`
   reads 500-530 as 100 to 130 years, in `cod_idade` of `sih_aih_reduzida` (2.16.0, which
   called it "Mais de 100 anos") and `sih_aih_rejeitada` (1.4.0), `tpidadepac` of

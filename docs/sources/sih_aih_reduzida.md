@@ -25,7 +25,11 @@ SUS (SIH/SUS), nos arquivos RD que o DATASUS publica um por UF e mês de process
   (Informe SIH 2016-03, p. 1–4); `aud_just` e `sis_just` guardam a justificativa para
   aceitar a AIH sem esse número (p. 3).
 - `homonimo` indica se o paciente da AIH é homônimo do paciente de outra AIH
-  (Informe SIH 2016-03, p. 3).
+  (Informe SIH 2016-03, p. 3). Nenhum documento registrado dá os códigos de `homonimo`
+  nem de `gestor_tp`, e nenhum DEF empacotado cita os dois campos: eles ficam sem
+  rótulo. O RD publica `homonimo` `0` e `2`, e o RJ `0` e `1`; não suponha que `2`
+  e `1` querem dizer a mesma coisa (issues `homonimo-sem-fonte` e
+  `gestor_tp-sem-fonte`, #10).
 - `diag_princ` é o código do diagnóstico principal pela CID-10, com 4 caracteres
   (Informe SIH 2016-03, p. 2), e o dicionário o liga à tabela `aux_cid10`
   (`src/omnisus/data/dicionarios/sih_aih_reduzida.yaml`).
