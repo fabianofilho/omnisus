@@ -36,6 +36,11 @@
 
 ### Dictionaries
 
+- `cnsprof` of `sia_bpa_individualizado` (0.3.0) is no longer labelled "criptografado"
+  nor marked `x-crypto: datasus-cns`: the BPA-I files publish the professional's CNS in
+  clear, which is why the fixtures blank it. `pa_cnsmed` (`sia_producao_ambulatorial`
+  1.3.0) and `sp_pf_doc` (`sih_servicos_profissionais` 1.2.0) say the same, and
+  `docs/sources/sia.md` warns that the lake keeps these columns as published (#68).
 - `sih_aih_reduzida` (2.13.0) declares `fonte_orc`, which RD files publish from 2025-03
   (layout 6, `evidence/2026-10-06-rd-2008-layouts`), with the labels of `CNV/fonterem.CNV`
   of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` binds to `FONTE_ORC`. `00`, the only

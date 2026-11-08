@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # latin-1 e OBRIGATORIO: o CNS cifrado usa bytes 0x7B-0x84 e 0x81 e
 # indefinido em cp1252 (UnicodeDecodeError). Medido em BIAC2401/BIRR2401.
 encoding: latin-1
-x-version: "0.2.0"
+x-version: "0.3.0"
 schema:
   fields:
     # ========================================================================
@@ -104,8 +104,8 @@ schema:
       label: Número da autorização
     - name: cnsprof
       type: string
-      label: CNS do profissional (criptografado)
-      x-crypto: datasus-cns
+      label: CNS do profissional
+      description: "Não é cifrado: identifica o profissional e vem sem cifra no arquivo do DATASUS, ao contrário do CNS do paciente; as fixtures a deixam em branco (tests/fixtures/FIXTURES.md) e o lake a importa como publicada (#68)."
     - name: cboprof
       type: string
       label: CBO do profissional

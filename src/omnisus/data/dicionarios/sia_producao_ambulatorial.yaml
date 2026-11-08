@@ -2,7 +2,7 @@ name: sia_producao_ambulatorial
 title: SIASUS — Produção ambulatorial (PA)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: "1.2.0"
+x-version: "1.3.0"
 x-source-format: dbc
 x-partitions:
 - _source_ano
@@ -225,6 +225,7 @@ schema:
     type: string
   - name: pa_cnsmed
     type: string
+    description: "Coluna que identifica o profissional e vem sem cifra no arquivo do DATASUS, ao contrário do CNS do paciente; as fixtures a deixam em branco (tests/fixtures/FIXTURES.md) e o lake a importa como publicada (#68)."
   - name: pa_cbocod
     type: string
   - name: pa_motsai

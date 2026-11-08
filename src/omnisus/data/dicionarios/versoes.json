@@ -99,11 +99,13 @@
     "1.2.0": "31856fe1acfdb72150f8083fcb1f390f96167121a7ba4722f310dce1cd6cb3cc"
   },
   "sia_bpa_individualizado": {
-    "0.2.0": "98b0ac433649fce8c3ca26ebc2e5de514949af1901c892741fd88c8efe0baa3e"
+    "0.2.0": "98b0ac433649fce8c3ca26ebc2e5de514949af1901c892741fd88c8efe0baa3e",
+    "0.3.0": "fa3fa3f165fa27f9a0e9b759273638e124236117b075c257b81603cb10ad7cb8"
   },
   "sia_producao_ambulatorial": {
     "1.1.0": "37c80bd4c170e95d4432453b871831167a5a8173795fc43cc0aac1287ccdf2bb",
-    "1.2.0": "82b9ff561175a8614feab714a3d861962cf208aa6d5a64059a8d9b1a128de976"
+    "1.2.0": "82b9ff561175a8614feab714a3d861962cf208aa6d5a64059a8d9b1a128de976",
+    "1.3.0": "30c8b87b43ee6c78d7642398719432296d79908e1833a41cc8b010dece668ac9"
   },
   "sia_producao_ambulatorial_1994_2007": {
     "1.0.0": "cfa71be9d235afa75eaeb04839e48fa8dff4cd71e0e25c4e164349ab1427c9dd",
@@ -134,7 +136,8 @@
     "1.0.0": "b6de35b9d9b140f1acd181fe70dfe16773b34a29d7ae8010f550c41cfb1577ca"
   },
   "sih_servicos_profissionais": {
-    "1.1.0": "34a007b44a6ff54f22aba6af29fba978608da15ccdcd362f88884725eaf41f7b"
+    "1.1.0": "34a007b44a6ff54f22aba6af29fba978608da15ccdcd362f88884725eaf41f7b",
+    "1.2.0": "f3428e5fa804d51fda089862e4a0fbb59d5b01d550b224ab70cc7fd5cee6134a"
   },
   "sim_obitos": {
     "2.5.0": "f8a339e1ea76bb7f9999cc7d01a6f3b988d6c9c7d3f782c2da7e642902d6a967",
