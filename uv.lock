@@ -684,7 +684,7 @@ wheels = [
 
 [[package]]
 name = "frictionless"
-version = "5.19.1"
+version = "5.21.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -699,6 +699,7 @@ dependencies = [
     { name = "python-dateutil" },
     { name = "python-slugify" },
     { name = "pyyaml" },
+    { name = "referencing" },
     { name = "requests" },
     { name = "rfc3986" },
     { name = "simpleeval" },
@@ -707,9 +708,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "validators" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/72/ea/3ec889b39fc9b6b85b1de8a26d4790e43fcf5c8deb1146c2c2cb4fb39677/frictionless-5.19.1.tar.gz", hash = "sha256:d4d9e3b0d02dbe1ed82cefeed5684375cc0d09c6ea3d8adf03e32dc8daa0b268", size = 74376619, upload-time = "2026-09-25T16:04:58.844Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a4/f2/a0978b650b0c8b19e087e545aeb992d3f0b3596c763244565f1ea9075056/frictionless-5.21.0.tar.gz", hash = "sha256:4d9848570bc682943375824a4be7633e8bbdeff228affee763cab346e48000b4", size = 74413561, upload-time = "2026-10-15T21:52:18.022Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6a/14/00aa1e41c00633fb3c09cb8c1b96fbb8d5609077f0600a646748605cdbf6/frictionless-5.19.1-py3-none-any.whl", hash = "sha256:787b4ce506cf5cbe1747a2ebc8beb7211e170c5a14d6ac8660c6b287af3d986a", size = 536018, upload-time = "2026-09-25T16:04:56.454Z" },
+    { url = "https://files.pythonhosted.org/packages/88/e1/8140a97773b48ceb2b8d04179a13aec003c3999be764813ad47830fab657/frictionless-5.21.0-py3-none-any.whl", hash = "sha256:c76db03abaee4862aa04116057dbc13e788a2fc18b9be37c2d35dc07a67e1b11", size = 575379, upload-time = "2026-10-15T21:52:14.863Z" },
 ]
 
 [[package]]
