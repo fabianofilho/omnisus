@@ -26,3 +26,21 @@ Lido com `dbfread2` em cp1252, coluna `CO_STATUS` dos 5.725 registros:
 O `SITUACAO` do `CADMUN.DBF` só tem `ATIVO`, `EXTIN`, `IGNOR` e `TRANS`: a base escreve
 dois valores a mais (`REG ADM`, `IGNR`). Os seis municípios que entram na tabela são
 `ATIVO`. `DT_INSTAL` é 2013 em cinco e 2009 em Nazária (`220672`).
+
+## Os seis municípios (conferido em 2026-11-09)
+
+Lidos do mesmo `tb_municip.dbf` (SHA-256 acima), com `dbfread2` em cp1252, os 26 campos de
+cada registro, sem mudança:
+
+| CO_MUNICIP | DS_NOME | CO_STATUS | DT_INSTAL | NU_ALTITUD | NU_AREA |
+| --- | --- | --- | --- | --- | --- |
+| `150475` | Mojui Dos Campos | `ATIVO` | 2013 | 84 | 4988,236 |
+| `220672` | Nazaria | `ATIVO` | 2009 | 72 | vazio |
+| `421265` | Pescaria Brava | `ATIVO` | 2013 | 13 | vazio |
+| `422000` | Balneario Rincao | `ATIVO` | 2013 | 44 | vazio |
+| `431454` | Pinto Bandeira | `ATIVO` | 2013 | 638 | 104,821 |
+| `500627` | Paraiso Das Aguas | `ATIVO` | 2013 | 608 | 5061,433 |
+
+`area` é nula nos três de `NU_AREA` vazio. As seis altitudes são inteiras; o build para
+diante de uma que não seja. O build também só aceita o `CO_STATUS` do enum do dicionário
+(`ATIVO`, `EXTIN`, `IGNOR`, `TRANS`): `REG ADM` e `IGNR`, que a base grava, o param.

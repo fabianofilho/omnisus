@@ -120,7 +120,7 @@
   no group and have no block. `evidence/2026-10-11-blocos-cid10/` compares the groups
   with the WHO ICD-10 2019 and CBCD 2008 lists. Run `omnisus lake update-auxiliares` (or
   `Lake.bootstrap_auxiliares()`) to load the new columns (#103).
-- `aux_municipios` (2.2.0) gains the six municipalities that the 2011
+- `aux_municipios` (2.2.1) gains the six municipalities that the 2011
   `CADMUN.DBF` lacks and SIM, SINASC and SIH write: `150475`, `220672`, `421265`, `422000`,
   `431454` and `500627`, from `tb_municip.dbf` of the DATASUS territorial base
   (`territorio/tabelas/2026/06-base_territorial_jun26.zip`, registered with its SHA-256).
@@ -128,7 +128,11 @@
   `macrorregiao_saude` are NULL in those rows, since the base codes regions in another
   scheme. `codmunnatu` `150475` of the SIM RR 2023 excerpt now resolves. Nazária
   (`220672`) was installed in 2009, before CADMUN, which does not list it. The build stops
-  on a `CO_STATUS` outside the six values of `tb_municip.dbf`.
+  on a `CO_STATUS` outside the dictionary's enum (`REG ADM` and `IGNR`, which the base
+  writes, included) and on an altitude that is not whole. `area` is NULL in Nazária,
+  Pescaria Brava and Balneário Rincão, which the base writes empty. `aux_municipios`
+  2.1.0 and 2.2.0 and `aux_cid10` 2.2.0 were locked in `versoes.json` during the review
+  of this change and never published.
 - `aux_cid10` (2.3.0) gains the 25 codes of `tb_cid.txt` of the SIGTAP 202610 that
   `CID10.DBF` (2020) lacks: `A925`, `A97`, `C823`-`C826`, `N182`-`N185`, `P354`, `U09`,
   `U099`, `U10`, `U109` and `W460`-`W469` (`evidence/2026-10-31-cid10-sigtap-e-s-cid/`).

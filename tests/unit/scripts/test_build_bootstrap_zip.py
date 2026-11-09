@@ -13,6 +13,7 @@ import pytest
 from scripts.build_bootstrap_zip import (
     _from_territorial,
     aux_cid10,
+    aux_municipios,
     parse_tb_cid,
     sigtap_cid10,
 )
@@ -39,14 +40,21 @@ PINTO_BANDEIRA = {
     "NU_ORDMAP": "", "NU_LATITUD": "-29,09777778", "NU_LONGIT": "-51,45027778",
     "NU_ALTITUD": "638", "NU_AREA": "104,821",
 }  # fmt: skip
+# Nazária, all 26 fields as dbfread2 reads them from the same tb_municip.dbf, unchanged;
+# nothing is inherited from Pinto Bandeira.
 NAZARIA = {
-    **PINTO_BANDEIRA, "CO_MUNICIP": "220672", "CO_MUNICDV": "2206720", "UF": "PI",
-    "MACRORREGI": "2208", "DS_NOME": "Nazaria", "DS_NOMEPAD": "NAZARIA", "CO_REGIAO": "2",
-    "CO_UF": "22", "DT_INSTAL": "2009", "NU_LATITUD": "-5,346925",
-    "NU_LONGIT": "-42,8140484695768", "NU_ALTITUD": "72", "NU_AREA": "",
+    "CO_MUNICIP": "220672", "CO_MUNICDV": "2206720", "CO_STATUS": "ATIVO", "CO_TIPO": "ATIVO",
+    "DS_NOME": "Nazaria", "UF": "PI", "MACRORREGI": "2208", "DS_NOMEPAD": "NAZARIA",
+    "DS_OBSERV": "S", "CO_REGIAO": "2", "CO_UF": "22", "CO_ALTER": "", "CO_ALTERDV": "",
+    "IN_CAPITAL": "N", "IN_AMAZLEG": "N", "IN_SEMIAR": "", "IN_FRONTZN": "N",
+    "DT_INSTAL": "2009", "DT_EXTIN": "", "CO_SUCESS": "", "NU_ORDEM": "", "NU_ORDMAP": "",
+    "NU_LATITUD": "-5,346925", "NU_LONGIT": "-42,8140484695768", "NU_ALTITUD": "72",
+    "NU_AREA": "",
 }  # fmt: skip
-# CO_STATUS of the 5725 records: ATIVO 5571, REG ADM 63, TRANS 60, IGNR 27, EXTIN 2, IGNOR 2.
-TERRITORIAL_STATUS = ["ATIVO", "REG ADM", "TRANS", "IGNR", "EXTIN", "IGNOR"]
+# CO_STATUS of the 5725 records: ATIVO 5571, REG ADM 63, TRANS 60, IGNR 27, EXTIN 2,
+# IGNOR 2 (evidence/2026-10-31-tb-municip-co-status/). The build takes only the enum of
+# aux_municipios.yaml, CADMUN's four.
+SITUACAO = ["ATIVO", "EXTIN", "IGNOR", "TRANS"]
 
 
 def tb_cid_files() -> tuple[list[str], list[str]]:
@@ -115,12 +123,35 @@ def test_a_territorial_record_without_area_has_none() -> None:
     assert (nazaria["ANOINST"], nazaria["ALTITUDE"], nazaria["AREA"]) == ("2009", 72, None)
 
 
-@pytest.mark.parametrize("status", TERRITORIAL_STATUS)
-def test_every_status_of_the_territorial_base_is_accepted(status: str) -> None:
+@pytest.mark.parametrize("status", SITUACAO)
+def test_every_status_the_dictionary_accepts_is_accepted(status: str) -> None:
     assert _from_territorial({**PINTO_BANDEIRA, "CO_STATUS": status})["SITUACAO"] == status
 
 
-def test_a_status_outside_the_territorial_base_stops_the_build() -> None:
-    """The real record with CO_STATUS changed: the malformed-input case of AGENTS.md rule 2."""
-    with pytest.raises(SystemExit, match="CO_STATUS 'EM INSTALACAO'"):
-        _from_territorial({**PINTO_BANDEIRA, "CO_STATUS": "EM INSTALACAO"})
+@pytest.mark.parametrize("status", ["REG ADM", "IGNR", "EM INSTALACAO"])
+def test_a_status_outside_the_dictionary_stops_the_build(status: str) -> None:
+    """The real record with CO_STATUS changed: the malformed-input case of AGENTS.md rule 2.
+    REG ADM and IGNR are in the base but not in the dictionary's enum."""
+    with pytest.raises(SystemExit, match=f"CO_STATUS '{status}'"):
+        _from_territorial({**PINTO_BANDEIRA, "CO_STATUS": status})
+
+
+def test_a_decimal_altitude_stops_the_build() -> None:
+    """The real record with NU_ALTITUD changed: the malformed-input case of AGENTS.md rule 2.
+    The six altitudes are whole; a decimal one would be truncated by int()."""
+    with pytest.raises(SystemExit, match="NU_ALTITUD '638,5'"):
+        _from_territorial({**PINTO_BANDEIRA, "NU_ALTITUD": "638,5"})
+
+
+def test_aux_municipios_appends_the_territorial_records() -> None:
+    frame = aux_municipios([], [PINTO_BANDEIRA, NAZARIA])
+    assert frame.select("codigo_6", "nome", "ano_instalacao", "area").rows() == [
+        ("431454", "Pinto Bandeira", 2013, 104.821),
+        ("220672", "Nazaria", 2009, None),
+    ]
+
+
+def test_a_territorial_code_cadmun_already_has_stops_the_build() -> None:
+    """CADMUN with Pinto Bandeira, built from the real record: the clash the build refuses."""
+    with pytest.raises(SystemExit, match=r"CADMUN already has \['431454'\]"):
+        aux_municipios([_from_territorial(PINTO_BANDEIRA)], [PINTO_BANDEIRA])

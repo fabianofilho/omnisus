@@ -20,11 +20,13 @@ import io
 import json
 import tempfile
 import zipfile
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
 import polars as pl
+import yaml
 from dbfread2 import DBF
 
 from omnisus.metadata import sources_registry
@@ -41,10 +43,6 @@ SIGTAP = (
 )
 NEW_MUNICIPALITIES = ("150475", "220672", "421265", "422000", "431454", "500627")
 """Municipalities that CADMUN.DBF (2011) lacks and the SIM, SINASC and SIH code."""
-TERRITORIAL_STATUS = ("ATIVO", "REG ADM", "TRANS", "IGNR", "EXTIN", "IGNOR")
-"""CO_STATUS values of the 5725 records of tb_municip.dbf (base of 2026-06). CADMUN's
-SITUACAO has ATIVO, EXTIN, IGNOR and TRANS only, so the base's vocabulary is checked
-here, and a test holds the dictionary's enum to CADMUN's four."""
 # The DBF headers do not state these reliably (CID10 declares none); read from the text.
 ENCODING = {
     "TABUF.DBF": "ascii",
@@ -132,12 +130,31 @@ def _decimal(value: str) -> float | None:
     return float(value.replace(",", ".")) if value.strip() else None
 
 
+def _situacao() -> tuple[str, ...]:
+    """The ``situacao`` values aux_municipios.yaml accepts (CADMUN's ATIVO, EXTIN, IGNOR and
+    TRANS). tb_municip.dbf also writes REG ADM and IGNR
+    (evidence/2026-10-31-tb-municip-co-status/); the build takes none outside the enum."""
+    doc = yaml.safe_load(
+        (files("omnisus.data") / "dicionarios" / "aux_municipios.yaml").read_text("utf-8")
+    )
+    (field,) = [f for f in doc["schema"]["fields"] if f["name"] == "situacao"]
+    return tuple(field["constraints"]["enum"])
+
+
 def _from_territorial(r: dict[str, Any]) -> dict[str, Any]:
     """A tb_municip record in CADMUN's columns. The base codes health regions in another
     scheme than CADMUN's RSAUDCOD and MSAUDCOD, so those stay empty."""
-    if r["CO_STATUS"] not in TERRITORIAL_STATUS:
-        raise SystemExit(f"tb_municip {r['CO_MUNICIP']}: CO_STATUS {r['CO_STATUS']!r} is new")
+    if r["CO_STATUS"] not in _situacao():
+        raise SystemExit(
+            f"tb_municip {r['CO_MUNICIP']}: CO_STATUS {r['CO_STATUS']!r} is not in the "
+            f"situacao enum of aux_municipios.yaml {_situacao()}"
+        )
     altitude = _decimal(r["NU_ALTITUD"])
+    if altitude is not None and not altitude.is_integer():
+        raise SystemExit(
+            f"tb_municip {r['CO_MUNICIP']}: NU_ALTITUD {r['NU_ALTITUD']!r} is not whole; "
+            "the column is an integer"
+        )
     return {
         "MUNCODDV": r["CO_MUNICDV"],
         "MUNCOD": r["CO_MUNICIP"],

@@ -55,7 +55,9 @@ que não resolve (`tests/unit/test_references.py`).
   têm `DT_INSTAL` 2013; Nazária tem 2009, anterior ao CADMUN, que mesmo assim não a traz.
   A base grava `CO_STATUS` com seis valores (`ATIVO`, `REG ADM`, `TRANS`, `IGNR`, `EXTIN`,
   `IGNOR`; `evidence/2026-10-31-tb-municip-co-status/`); os seis municípios são `ATIVO`, e o
-  build para diante de valor fora desses seis.
+  build só aceita os quatro do enum do dicionário (`ATIVO`, `EXTIN`, `IGNOR`, `TRANS`),
+  parando diante de `REG ADM`, `IGNR` ou outro valor. `NU_AREA` vem vazio em Nazária,
+  Pescaria Brava e Balneário Rincão, e a `area` fica nula nesses três.
 - **Coordenadas nulas em 91 municípios.** O CADMUN grava 0 e 0 nas linhas de ignorado
   (27), transferidos (60) e em 4 ativos; o lake guarda nulo, porque 0°, 0° fica no
   Atlântico.

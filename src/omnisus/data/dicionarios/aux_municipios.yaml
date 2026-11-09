@@ -44,7 +44,7 @@ schema:
       description: "CADMUN.ALTITUDE, tb_municip.NU_ALTITUD nos seis da base territorial, como publicado"
     - name: area
       type: number
-      description: "CADMUN.AREA, tb_municip.NU_AREA nos seis da base territorial, como publicado (nulo em Nazária, que a base grava vazia)"
+      description: "CADMUN.AREA, tb_municip.NU_AREA nos seis da base territorial, como publicado (nulo em Nazária, Pescaria Brava e Balneário Rincão, que a base grava vazios)"
     - name: regiao_saude
       type: string
       description: "CADMUN.RSAUDCOD; nulo nos seis municípios da base territorial, que usa outro código de região"
@@ -52,7 +52,7 @@ schema:
       type: string
       description: "CADMUN.MSAUDCOD; nulo nos seis municípios da base territorial"
   primaryKey: [codigo_ibge]
-x-version: "2.2.0"
+x-version: "2.2.1"
 x-source: DATASUS
 x-source-url:
   - "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CADMUN.DBF"
