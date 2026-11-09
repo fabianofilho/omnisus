@@ -35,7 +35,10 @@ import structlog
 
 from omnisus.lake import Lake
 from omnisus.sources.cnes.importers.master import (
+    _contains_cpf,
+    _delete_master_codes,
     _ensure_master_table,
+    _pf_pj_codes,
     _prepare_master_rows,
     _upsert_master,
 )
@@ -53,6 +56,7 @@ FTP_DIR = "/cnes"
 FTP_NAME = "BASE_DE_DADOS_CNES_{competencia}.ZIP"
 FTP_FONTE = "DATASUS FTP, base completa do CNES (tbEstabelecimento)"
 PESSOA_FISICA = "1"  # TP_PFPJ: 1 pessoa física, 3 pessoa jurídica
+PESSOA_JURIDICA = "3"
 _COMPETENCIA = re.compile(r"^(19|20)\d{2}(0[1-9]|1[0-2])$")
 
 
@@ -137,9 +141,25 @@ def read_names(
     url: str | None = None,
     modificado_em: str | None = None,
 ) -> list[dict]:
-    """One record per establishment in the base's tbEstabelecimento.
+    """One record per pessoa jurídica with a name in the base's tbEstabelecimento.
 
     ``url`` and ``modificado_em`` are where the zip came from, when known.
+    """
+    return read_base(zip_path, competencia, url=url, modificado_em=modificado_em)[0]
+
+
+def read_base(
+    zip_path: Path,
+    competencia: str,
+    *,
+    url: str | None = None,
+    modificado_em: str | None = None,
+) -> tuple[list[dict], set[str]]:
+    """``(records, codes that keep no name)`` of the base's tbEstabelecimento.
+
+    Only a row with ``TP_PFPJ`` 3 (pessoa jurídica) gives a record; the codes of the other
+    rows, pessoa física or an unknown value, come back apart so the importer can remove a
+    name a lake already holds for them.
     """
     sha = _sha256(zip_path)
     wanted = f"tbestabelecimento{competencia}.csv"
@@ -160,17 +180,31 @@ def read_names(
             if missing:
                 raise ValueError(f"tbEstabelecimento lacks columns: {sorted(missing)}")
             records: list[dict] = []
+            sem_nome_publico: set[str] = set()
             pessoa_fisica = 0
+            desconhecido = 0
+            cpf_no_nome = 0
             sem_nome = 0
             for row in reader:
-                if row["TP_PFPJ"].strip() == PESSOA_FISICA:
-                    # NO_RAZAO_SOCIAL and NO_FANTASIA of a pessoa física carry the
-                    # professional's name: no name is kept for it (AGENTS.md, "Never commit").
-                    pessoa_fisica += 1
-                    continue
                 code = row["CO_CNES"].strip()
+                tp_pfpj = row["TP_PFPJ"].strip()
+                if tp_pfpj != PESSOA_JURIDICA:
+                    # NO_RAZAO_SOCIAL and NO_FANTASIA of a pessoa física carry the
+                    # professional's name, and a value other than 1 or 3 cannot be told
+                    # apart from one: only a pessoa jurídica keeps a name (AGENTS.md,
+                    # "Never commit").
+                    if tp_pfpj == PESSOA_FISICA:
+                        pessoa_fisica += 1
+                    else:
+                        desconhecido += 1
+                    sem_nome_publico.add(code)
+                    continue
                 fantasia = row["NO_FANTASIA"].strip() or None
                 razao = row["NO_RAZAO_SOCIAL"].strip() or None
+                if _contains_cpf(fantasia) or _contains_cpf(razao):
+                    cpf_no_nome += 1
+                    sem_nome_publico.add(code)
+                    continue
                 if not (fantasia or razao):
                     sem_nome += 1
                     continue
@@ -192,11 +226,13 @@ def read_names(
         "cnes_master_ftp.rows_skipped",
         competencia=competencia,
         pessoa_fisica=pessoa_fisica,
+        pf_pj_desconhecido=desconhecido,
+        cpf_no_nome=cpf_no_nome,
         sem_nome=sem_nome,
     )
     # One answer per code, as on the API path: a repeated code with another name is an error.
     _prepare_master_rows(records)
-    return list({record["cnes"]: record for record in records}.values())
+    return list({record["cnes"]: record for record in records}.values()), sem_nome_publico
 
 
 def import_cnes_master_ftp(
@@ -228,18 +264,23 @@ def import_cnes_master_ftp(
         if download_dir is None:
             raise ValueError("pass zip_path or download_dir")
         downloaded = download_base(competencia, download_dir)
-        records = read_names(
+        records, sem_nome_publico = read_base(
             downloaded.path,
             competencia,
             url=downloaded.url,
             modificado_em=downloaded.modificado_em,
         )
     else:
-        records = read_names(Path(zip_path), competencia)
+        records, sem_nome_publico = read_base(Path(zip_path), competencia)
     with Lake.local(target) as lake:
         context = contextlib.nullcontext() if lake.in_transaction else lake.transaction()
         with context:
             _ensure_master_table(lake)
+            # A code the lake's ST marks anything but pessoa jurídica in some month keeps
+            # no name either, and a name a lake already holds for any of them goes.
+            sem_nome_publico |= _pf_pj_codes(lake)[1]
+            records = [r for r in records if r["cnes"] not in sem_nome_publico]
+            removed = _delete_master_codes(lake, sem_nome_publico)
             if only_missing:
                 have = {
                     r[0]
@@ -250,5 +291,7 @@ def import_cnes_master_ftp(
                 records = [r for r in records if r["cnes"] not in have]
             _upsert_master(lake, records)
             lake.ensure_aux_cnes_view()
-    logger.info("cnes_master_ftp.done", competencia=competencia, written=len(records))
+    logger.info(
+        "cnes_master_ftp.done", competencia=competencia, written=len(records), removed=removed
+    )
     return len(records)

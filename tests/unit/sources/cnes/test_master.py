@@ -6,12 +6,15 @@ import json
 from pathlib import Path
 
 import httpx
+import polars as pl
 import pytest
 import respx
+from structlog.testing import capture_logs
 
 from omnisus import import_cnes_master
 from omnisus.lake import Lake
 from omnisus.sources.cnes.importers.master import API_FONTE
+from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from tests.support.connection_faults import FaultyConnection
 
 
@@ -34,13 +37,13 @@ def _seed_cnes_estabelecimentos(lake: Lake, cnes_codes: list[str]) -> None:
     con.execute(
         f"""
         CREATE TABLE {lake.alias}.cnes_estabelecimentos (
-            cnes VARCHAR, tp_unid VARCHAR, codufmun VARCHAR,
+            cnes VARCHAR, pf_pj VARCHAR, tp_unid VARCHAR, codufmun VARCHAR,
             ano INTEGER, mes INTEGER
         )
         """
     )
     con.executemany(
-        f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES (?, '05', '355030', 2024, 1)",
+        f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES (?, '3', '05', '355030', 2024, 1)",
         [(c,) for c in cnes_codes],
     )
 
@@ -192,8 +195,11 @@ def test_import_cnes_master_returns_zero_when_cnes_estabelecimentos_missing(
 
 @respx.mock
 def test_import_cnes_master_accepts_explicit_codes(tmp_path: Path) -> None:
-    """Explicit codes bypasses the cnes_estabelecimentos discovery."""
+    """Explicit codes bypass the cnes_estabelecimentos discovery; the ST still has to mark
+    them pessoa jurídica (pf_pj '3') for a name to be fetched."""
     target = f"ducklake:{tmp_path}/x.ducklake"
+    with Lake.local(target) as lake:
+        _seed_cnes_estabelecimentos(lake, ["7654321"])
 
     respx.get(_api_url("7654321")).mock(
         return_value=httpx.Response(
@@ -252,7 +258,7 @@ def test_import_cnes_master_only_missing_skips_already_fetched(tmp_path: Path) -
     # Add a new code to cnes_estabelecimentos; re-run — only the new one should be fetched.
     with Lake.local(target) as lake:
         lake.connect().execute(
-            f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES ('3333333', '02', '355030', 2024, 1)"
+            f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES ('3333333', '3', '02', '355030', 2024, 1)"
         )
 
     respx.get(_api_url("3333333")).mock(
@@ -383,6 +389,8 @@ def test_duplicate_codes_fetch_once(tmp_path):
         )
     )
     target = f"ducklake:{tmp_path}/dedup.ducklake"
+    with Lake.local(target) as lake:
+        _seed_cnes_estabelecimentos(lake, ["1234567"])
     assert import_cnes_master(codes=["1234567", "1234567"], target=target) == 1
     assert route.call_count == 1
     with Lake.local(target) as lake:
@@ -438,43 +446,117 @@ def test_import_cnes_master_runs_inside_a_running_event_loop(tmp_path: Path) -> 
     assert asyncio.run(notebook_cell()) == 1
 
 
-def _seed_with_pf_pj(lake: Lake, rows: list[tuple[str, str]]) -> None:
-    """cnes_estabelecimentos with the PF_PJ column of the ST (1 pessoa física, 3 jurídica)."""
-    con = lake.connect()
-    con.execute(
-        f"CREATE TABLE {lake.alias}.cnes_estabelecimentos "
-        "(cnes VARCHAR, pf_pj VARCHAR, tp_unid VARCHAR, codufmun VARCHAR, ano INTEGER, mes INTEGER)"
+ST_RR = Path(__file__).resolve().parents[3] / "fixtures" / "dbc" / "cnes_rr_2024_01_mini.dbc"
+PF_RR = "0048046"  # pf_pj '1' in the real ST excerpt of RR, 2024-01
+PJ_RR = "0048038"  # pf_pj '3'
+FORA_DO_ST = "9999999"
+
+
+def _load_st_rr(lake: Lake) -> None:
+    """The real ST excerpt of RR 2024-01 (pf_pj '3' 959 rows, '1' 77) as cnes_estabelecimentos."""
+    frame = (
+        dbc_bytes_to_lazyframe(ST_RR.read_bytes(), dataset="cnes_estabelecimentos")
+        .collect()
+        .with_columns(pl.lit(2024).alias("ano"), pl.lit(1).alias("mes"))
     )
-    con.executemany(
-        f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES (?, ?, '22', '355030', 2023, 12)",
-        rows,
+    con = lake.connect()
+    con.register("_st_rr", frame.to_arrow())
+    con.execute(f"CREATE TABLE {lake.alias}.cnes_estabelecimentos AS SELECT * FROM _st_rr")
+    con.unregister("_st_rr")
+
+
+def _mock(code: str, nome: str) -> respx.Route:
+    return respx.get(_api_url(code.lstrip("0"))).mock(
+        return_value=httpx.Response(
+            200, content=json.dumps(_api_response(int(code), nome_fantasia=nome, razao=nome))
+        )
     )
 
 
 @pytest.mark.parametrize("explicit", [False, True])
 @respx.mock
-def test_import_cnes_master_keeps_no_name_for_pessoa_fisica(tmp_path: Path, explicit) -> None:
-    """The name of a pessoa física is the professional's name: the API path keeps none, as the
-    FTP path does. A code the lake marks PF_PJ = 1 is not fetched, discovered or listed."""
+def test_only_a_code_the_st_marks_pessoa_juridica_is_fetched(tmp_path: Path, explicit) -> None:
+    """A pessoa física (pf_pj '1') and a code outside the ST are not fetched, listed or
+    discovered: only a code the ST marks '3' in every imported month gets a name."""
     target = f"ducklake:{tmp_path}/x.ducklake"
     with Lake.local(target) as lake:
-        _seed_with_pf_pj(lake, [("1111111", "1"), ("2222222", "3")])
-    pf = respx.get(_api_url("1111111")).mock(
-        return_value=httpx.Response(
-            200,
-            content=json.dumps(_api_response(1111111, nome_fantasia="DR FULANO", razao="FULANO")),
-        )
-    )
-    respx.get(_api_url("2222222")).mock(
-        return_value=httpx.Response(
-            200, content=json.dumps(_api_response(2222222, nome_fantasia="HOSPITAL", razao="H SA"))
-        )
-    )
+        _load_st_rr(lake)
+    pf, pj, fora = _mock(PF_RR, "DR FULANO"), _mock(PJ_RR, "HOSPITAL"), _mock(FORA_DO_ST, "X")
+    # The ST has 958 other pessoa jurídica codes; discovery fetches them too.
+    respx.get(url__regex=r"/cnes/estabelecimentos/\d+$").mock(return_value=httpx.Response(404))
 
-    n = import_cnes_master(codes=["1111111", "2222222"] if explicit else None, target=target)
+    codes = [PF_RR, PJ_RR, FORA_DO_ST] if explicit else None
+    with capture_logs() as logs:
+        import_cnes_master(codes=codes, target=target)
 
-    assert n == 1
-    assert not pf.called
+    assert pj.called and not pf.called and not fora.called
     with Lake.local(target) as lake:
-        rows = lake.connect().execute(f"SELECT cnes FROM {lake.alias}.cnes_master").fetchall()
-    assert rows == [("2222222",)]
+        names = dict(
+            lake.connect().execute(f"SELECT cnes, nome FROM {lake.alias}.cnes_master").fetchall()
+        )
+    assert names[PJ_RR] == "HOSPITAL" and PF_RR not in names and FORA_DO_ST not in names
+    (start,) = [e for e in logs if e["event"] == "cnes_master.start"]
+    if explicit:
+        assert (start["pessoa_fisica"], start["pf_pj_desconhecido"]) == (1, 1)
+
+
+@respx.mock
+def test_a_pessoa_fisica_name_already_in_cnes_master_is_removed(tmp_path: Path) -> None:
+    """A lake filled before the rule keeps the professional's name; the next import of the
+    API path removes it in the same transaction as the upsert."""
+    target = f"ducklake:{tmp_path}/x.ducklake"
+    with Lake.local(target) as lake:
+        _load_st_rr(lake)
+    _mock(PJ_RR, "HOSPITAL")
+    import_cnes_master(codes=[PJ_RR], target=target)
+    with Lake.local(target) as lake:
+        lake.connect().execute(
+            f"INSERT INTO {lake.alias}.cnes_master (cnes, nome) VALUES ('{PF_RR}', 'DR LEGADO')"
+        )
+
+    import_cnes_master(codes=[PJ_RR], target=target, only_missing=False)
+
+    with Lake.local(target) as lake:
+        con = lake.connect()
+        master = {
+            r[0] for r in con.execute(f"SELECT cnes FROM {lake.alias}.cnes_master").fetchall()
+        }
+        view = con.execute(
+            f"SELECT nome FROM {lake.alias}.aux_cnes WHERE cnes = '{PF_RR}'"
+        ).fetchall()
+    assert PF_RR not in master
+    assert view in ([], [(None,)])
+
+
+@respx.mock
+def test_without_pf_pj_in_the_lake_no_name_is_fetched(tmp_path: Path) -> None:
+    """A lake whose cnes_estabelecimentos has no pf_pj cannot tell a pessoa física apart:
+    nothing is fetched, and the log says why."""
+    target = f"ducklake:{tmp_path}/x.ducklake"
+    with Lake.local(target) as lake:
+        lake.connect().execute(
+            f"CREATE TABLE {lake.alias}.cnes_estabelecimentos "
+            "(cnes VARCHAR, tp_unid VARCHAR, codufmun VARCHAR, ano INTEGER, mes INTEGER)"
+        )
+        lake.connect().execute(
+            f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES ('{PJ_RR}', '05', '140010', 2024, 1)"
+        )
+    route = _mock(PJ_RR, "HOSPITAL")
+    with capture_logs() as logs:
+        assert import_cnes_master(target=target) == 0
+    assert not route.called
+    (start,) = [e for e in logs if e["event"] == "cnes_master.start"]
+    assert start["pf_pj_desconhecido"] == 1
+
+
+@respx.mock
+def test_an_api_name_with_a_valid_cpf_is_not_written(tmp_path: Path) -> None:
+    """Synthetic, sensitive input: the CPF is made up, with valid check digits."""
+    target = f"ducklake:{tmp_path}/x.ducklake"
+    with Lake.local(target) as lake:
+        _load_st_rr(lake)
+    _mock(PJ_RR, "FULANO DE TAL 52998224725")
+    assert import_cnes_master(codes=[PJ_RR], target=target) == 0
+    with Lake.local(target) as lake:
+        names = lake.connect().execute(f"SELECT cnes FROM {lake.alias}.cnes_master").fetchall()
+    assert names == []

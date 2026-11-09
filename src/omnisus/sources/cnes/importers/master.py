@@ -20,6 +20,7 @@ in ``cnes_master`` are skipped, so periodic top-ups are cheap.
 from __future__ import annotations
 
 import asyncio
+import re
 from collections.abc import Callable, Sequence
 from contextlib import nullcontext
 
@@ -45,6 +46,27 @@ API_FONTE = "API dados abertos CNES (apidadosabertos.saude.gov.br)"
 ProgressCallback = Callable[[int, int], None]
 
 
+_CPF = re.compile(r"(?<!\d)\d{3}\.?\d{3}\.?\d{3}-?\d{2}(?!\d)")
+
+
+def _contains_cpf(text: str | None) -> bool:
+    """Whether ``text`` holds 11 digits (dots and dash allowed) with valid CPF check digits.
+
+    Some pessoa jurídica rows write the owner's name and CPF as the razão social, mostly
+    empresário individual (evidence/2026-11-09-cnes-cpf-em-nome-pj.md): no such name is kept.
+    """
+    for match in _CPF.findall(text or ""):
+        digits = [int(c) for c in re.sub(r"\D", "", match)]
+        if len(set(digits)) == 1:
+            continue
+        if all(
+            sum(digits[i] * (n + 1 - i) for i in range(n)) * 10 % 11 % 10 == digits[n]
+            for n in (9, 10)
+        ):
+            return True
+    return False
+
+
 async def _fetch_one(client: httpx.AsyncClient, cnes: str) -> dict | None:
     """Fetch a single CNES record. Returns None on any failure (404, network).
 
@@ -66,6 +88,8 @@ async def _fetch_one(client: httpx.AsyncClient, cnes: str) -> dict | None:
         return None
     nome_fantasia = (d.get("nome_fantasia") or "").strip()
     razao_social = (d.get("nome_razao_social") or "").strip()
+    if _contains_cpf(nome_fantasia) or _contains_cpf(razao_social):
+        return None
     return {
         "cnes": cnes_canonical,
         "nome": nome_fantasia or razao_social or None,
@@ -125,20 +149,43 @@ def _codes_from_lake(lake: Lake, *, only_missing: bool) -> list[str]:
     return [r[0] for r in con.execute(sql).fetchall()]
 
 
-def _pessoa_fisica_codes(lake: Lake) -> set[str]:
-    """Codes ``cnes_estabelecimentos`` marks as pessoa física (``pf_pj = '1'``) in any month.
+def _pf_pj_codes(lake: Lake) -> tuple[set[str], set[str]]:
+    """``(pessoa jurídica, not pessoa jurídica)`` codes, from ``cnes_estabelecimentos.pf_pj``.
 
-    The name of a pessoa física is the professional's name, so no name is kept for it, as
-    the FTP path does by ``TP_PFPJ``. Empty when the table or the column is absent.
+    A code is pessoa jurídica only if every imported month marks it ``'3'``; ``'1'`` (pessoa
+    física, whose names are the professional's) or any other value in some month makes it
+    not. A code that is not in the table, or a lake whose table has no ``pf_pj``, is in
+    neither set: unknown. Only the months already imported count, so a code marked ``'3'``
+    in all of them and ``'1'`` in a month not imported is taken as pessoa jurídica.
     """
     if "cnes_estabelecimentos" not in lake.tables():
-        return set()
+        return set(), set()
     con = lake.connect()
     describe = f"DESCRIBE {lake.alias}.cnes_estabelecimentos"
     if "pf_pj" not in {row[0] for row in con.execute(describe).fetchall()}:
-        return set()
-    sql = f"SELECT DISTINCT cnes FROM {lake.alias}.cnes_estabelecimentos WHERE pf_pj = '1'"
-    return {row[0] for row in con.execute(sql).fetchall()}
+        return set(), set()
+    rows = con.execute(
+        f"SELECT cnes, bool_and(coalesce(pf_pj, '') = '3') "
+        f"FROM {lake.alias}.cnes_estabelecimentos WHERE cnes IS NOT NULL AND cnes <> '' "
+        "GROUP BY cnes"
+    ).fetchall()
+    return {code for code, pj in rows if pj}, {code for code, pj in rows if not pj}
+
+
+def _delete_master_codes(lake: Lake, codes: set[str]) -> int:
+    """Remove the names of ``codes`` from ``cnes_master``; returns how many rows left."""
+    if not codes:
+        return 0
+    con = lake.connect()
+    con.register("_cnes_master_drop", pa.table({"cnes": sorted(codes)}))
+    try:
+        row = con.execute(
+            f"DELETE FROM {lake.alias}.cnes_master "
+            "WHERE cnes IN (SELECT cnes FROM _cnes_master_drop)"
+        ).fetchone()
+    finally:
+        con.unregister("_cnes_master_drop")
+    return int(row[0]) if row else 0
 
 
 def _ensure_master_table(lake: Lake) -> None:
@@ -239,19 +286,29 @@ def import_cnes_master(
         codes = list(dict.fromkeys(str(code).zfill(7) for code in codes))
         if any(len(code) != 7 or not code.isascii() or not code.isdigit() for code in codes):
             raise ValueError("CNES codes must contain seven ASCII digits")
-        pessoa_fisica = _pessoa_fisica_codes(lake)
-        skipped = sum(code in pessoa_fisica for code in codes)
-        codes = [code for code in codes if code not in pessoa_fisica]
+        pessoa_juridica, not_pessoa_juridica = _pf_pj_codes(lake)
+        pessoa_fisica = sum(code in not_pessoa_juridica for code in codes)
+        desconhecido = sum(
+            code not in pessoa_juridica and code not in not_pessoa_juridica for code in codes
+        )
+        codes = [code for code in codes if code in pessoa_juridica]
         logger.info(
-            "cnes_master.start", codes=len(codes), pessoa_fisica=skipped, only_missing=only_missing
+            "cnes_master.start",
+            codes=len(codes),
+            pessoa_fisica=pessoa_fisica,
+            pf_pj_desconhecido=desconhecido,
+            only_missing=only_missing,
         )
 
         records = run_sync(lambda: _fetch_all(codes, concurrency=concurrency, progress=progress))
         _prepare_master_rows(records)
         with lake.transaction():
             _ensure_master_table(lake)
+            removed = _delete_master_codes(lake, not_pessoa_juridica)
             _upsert_master(lake, records)
             lake.ensure_aux_cnes_view()
+        if removed:
+            logger.info("cnes_master.names_removed", pessoa_fisica=removed)
 
         logger.info("cnes_master.done", fetched=len(records), requested=len(codes))
         return len(records)

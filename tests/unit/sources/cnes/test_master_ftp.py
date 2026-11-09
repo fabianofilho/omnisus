@@ -13,6 +13,7 @@ for malformed or sensitive input only.
 
 from __future__ import annotations
 
+import csv
 import ftplib
 import hashlib
 import zipfile
@@ -61,10 +62,10 @@ def _seed(lake: Lake, codes: list[str]) -> None:
     con = lake.connect()
     con.execute(
         f"CREATE TABLE {lake.alias}.cnes_estabelecimentos "
-        "(cnes VARCHAR, tp_unid VARCHAR, codufmun VARCHAR, ano INTEGER, mes INTEGER)"
+        "(cnes VARCHAR, pf_pj VARCHAR, tp_unid VARCHAR, codufmun VARCHAR, ano INTEGER, mes INTEGER)"
     )
     con.executemany(
-        f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES (?, '05', '140010', 2023, 12)",
+        f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES (?, '3', '05', '140010', 2023, 12)",
         [(c,) for c in codes],
     )
 
@@ -88,7 +89,11 @@ def test_a_pessoa_fisica_row_gives_no_name() -> None:
         recs = {r["cnes"] for r in read_names(FIXTURE, "202312")}
     assert PESSOA_FISICA not in recs
     (skipped,) = [e for e in logs if e["event"] == "cnes_master_ftp.rows_skipped"]
-    assert (skipped["pessoa_fisica"], skipped["sem_nome"]) == (1, 0)
+    assert (skipped["pessoa_fisica"], skipped["pf_pj_desconhecido"], skipped["sem_nome"]) == (
+        1,
+        0,
+        0,
+    )
 
 
 def test_a_pessoa_fisica_name_in_the_file_never_reaches_the_records(tmp_path: Path) -> None:
@@ -96,10 +101,8 @@ def test_a_pessoa_fisica_name_in_the_file_never_reaches_the_records(tmp_path: Pa
     NO_RAZAO_SOCIAL); the fixture blanks it, so a name is put back here."""
 
     def with_names(text: str) -> str:
-        line = _line_of(text, PESSOA_FISICA)
-        return text.replace(
-            line, line.replace('"";"";"', '"DR EXEMPLO";"CONSULTORIO DR EXEMPLO";"', 1)
-        )
+        text = _set_field(text, PESSOA_FISICA, "NO_RAZAO_SOCIAL", "DR EXEMPLO")
+        return _set_field(text, PESSOA_FISICA, "NO_FANTASIA", "CONSULTORIO DR EXEMPLO")
 
     path = _synthetic_zip(tmp_path, with_names)
     assert "CONSULTORIO DR EXEMPLO" in zipfile.ZipFile(path).read(MEMBER).decode("latin-1")
@@ -305,3 +308,94 @@ def test_a_zip_from_the_caller_has_no_url_or_mdtm(tmp_path: Path) -> None:
             .fetchall()
         )
     assert rows == [(None, None)]
+
+
+def _set_field(text: str, code: str, column: str, value: str) -> str:
+    """Synthetic: one field of the fixture row of ``code`` replaced, every other byte kept."""
+    header = next(csv.reader([text.splitlines()[0]], delimiter=";"))
+    line = _line_of(text, code)
+    fields = next(csv.reader([line], delimiter=";"))
+    fields[header.index(column)] = value
+    return text.replace(line, ";".join(f'"{f}"' for f in fields))
+
+
+@pytest.mark.parametrize("tp_pfpj", ["", "2", "9"])
+def test_a_tp_pfpj_other_than_3_gives_no_name(tmp_path: Path, tp_pfpj: str) -> None:
+    """Synthetic, malformed input: 202312 only has TP_PFPJ 1 and 3. Any other value, blank
+    included, is not taken as a pessoa jurídica and is counted apart."""
+    path = _synthetic_zip(tmp_path, lambda t: _set_field(t, "2320886", "TP_PFPJ", tp_pfpj))
+    with capture_logs() as logs:
+        recs = {r["cnes"] for r in read_names(path, "202312")}
+    assert "2320886" not in recs
+    (skipped,) = [e for e in logs if e["event"] == "cnes_master_ftp.rows_skipped"]
+    assert (skipped["pessoa_fisica"], skipped["pf_pj_desconhecido"]) == (1, 1)
+
+
+def test_a_pessoa_fisica_name_already_in_cnes_master_is_removed(tmp_path: Path) -> None:
+    """A lake filled before the rule keeps the professional's name; the next FTP import
+    removes it in the same transaction as the upsert, even with only_missing=True."""
+    target = f"ducklake:{tmp_path}/ftp.ducklake"
+    with Lake.local(target) as lake:
+        _seed(lake, [*CODES, PESSOA_FISICA])
+    import_cnes_master_ftp("202312", zip_path=FIXTURE, target=target)
+    with Lake.local(target) as lake:
+        lake.connect().execute(
+            f"INSERT INTO {lake.alias}.cnes_master (cnes, nome) "
+            f"VALUES ('{PESSOA_FISICA}', 'DR LEGADO')"
+        )
+
+    import_cnes_master_ftp("202312", zip_path=FIXTURE, target=target)
+
+    with Lake.local(target) as lake:
+        master = {
+            r[0]
+            for r in lake.connect()
+            .execute(f"SELECT cnes FROM {lake.alias}.cnes_master")
+            .fetchall()
+        }
+    assert PESSOA_FISICA not in master
+    assert set(CODES) <= master
+
+
+def test_a_code_the_st_marks_pessoa_fisica_gets_no_name_from_the_file(tmp_path: Path) -> None:
+    """The file says TP_PFPJ 3, the lake's ST says pf_pj '1' in some month: no name."""
+    target = f"ducklake:{tmp_path}/ftp.ducklake"
+    with Lake.local(target) as lake:
+        _seed(lake, CODES)
+        lake.connect().execute(
+            f"INSERT INTO {lake.alias}.cnes_estabelecimentos VALUES ('2320886', '1', '05', '140010', 2023, 11)"
+        )
+    import_cnes_master_ftp("202312", zip_path=FIXTURE, target=target)
+    with Lake.local(target) as lake:
+        master = {
+            r[0]
+            for r in lake.connect()
+            .execute(f"SELECT cnes FROM {lake.alias}.cnes_master")
+            .fetchall()
+        }
+    assert "2320886" not in master
+    assert set(CODES) - {"2320886"} <= master
+
+
+@pytest.mark.parametrize("column", ["NO_RAZAO_SOCIAL", "NO_FANTASIA"])
+def test_a_name_with_a_valid_cpf_gives_no_name(tmp_path: Path, column: str) -> None:
+    """Synthetic, sensitive input: 546 rows of 202312 with TP_PFPJ 3 carry a valid CPF in a
+    name, mostly empresário individual (evidence/2026-11-09-cnes-cpf-em-nome-pj.md). The
+    CPF here is a made-up one with valid check digits. No name of that row is kept."""
+    path = _synthetic_zip(
+        tmp_path, lambda t: _set_field(t, "2320886", column, "FULANO DE TAL 52998224725")
+    )
+    with capture_logs() as logs:
+        recs = {r["cnes"] for r in read_names(path, "202312")}
+    assert "2320886" not in recs
+    (skipped,) = [e for e in logs if e["event"] == "cnes_master_ftp.rows_skipped"]
+    assert skipped["cpf_no_nome"] == 1
+
+
+def test_eleven_digits_that_fail_the_cpf_check_keep_the_name(tmp_path: Path) -> None:
+    """Synthetic: an 11-digit run whose check digits do not match is not a CPF."""
+    path = _synthetic_zip(
+        tmp_path, lambda t: _set_field(t, "2320886", "NO_FANTASIA", "UNIDADE 52998224724")
+    )
+    recs = {r["cnes"]: r for r in read_names(path, "202312")}
+    assert recs["2320886"]["nome"] == "UNIDADE 52998224724"

@@ -30,11 +30,22 @@
   `modificado_em` (MDTM); tables created by `import_cnes_master` gain those columns on the
   next write. `aux_cnes` exposes `nome_fantasia`, `razao_social`, `competencia_nome` and
   `fonte_nome` next to `nome`. The name is the one of the loaded competência, not of the
-  code's last month in ST (#150). A pessoa física (`TP_PFPJ=1`) gets no name, a row with no
-  name is skipped, and a `CO_CNES` repeated with another name is an error; the counts of
-  skipped rows go to the `cnes_master_ftp.rows_skipped` log. `import_cnes_master` (API)
-  also keeps no name for a pessoa física: it does not fetch a code `cnes_estabelecimentos`
-  marks `pf_pj = '1'`, discovered or listed, and logs how many it left out.
+  code's last month in ST (#150). Only a pessoa jurídica (`TP_PFPJ=3`) keeps a name: a
+  pessoa física (`TP_PFPJ=1`, whose names are the professional's) or any other value gets
+  none, and neither does a row whose name holds a valid CPF (546 of 202312, mostly
+  empresário individual; `evidence/2026-11-09-cnes-cpf-em-nome-pj.md`). A row with no name
+  is skipped, a `CO_CNES` repeated with another name is an error, and the counts go to the
+  `cnes_master_ftp.rows_skipped` log. A name `cnes_master` already holds for any of those
+  codes, or for a code the lake's ST marks anything but `'3'` in some month, is removed in
+  the same transaction as the upsert, so a lake filled before this rule loses the
+  professionals' names on the next import.
+- `import_cnes_master` (API) fetches a name only for a code `cnes_estabelecimentos` marks
+  `pf_pj = '3'` in every imported month, discovered or listed by hand: a pessoa física, a
+  code outside the ST, or a lake whose ST has no `pf_pj` gets none (breaking: explicit
+  codes not in the ST are no longer fetched). It drops a name holding a valid CPF, removes
+  the names of the codes the ST marks otherwise, and logs `pessoa_fisica` and
+  `pf_pj_desconhecido`. Only imported months count: a code marked `'3'` in all of them
+  and `'1'` in a month not imported is still taken as pessoa jurídica.
 - `cite()` and `citation_from_publications()` with `accessed=None` print as the access
   date the UTC day of each row's `published_at` (when the publication was written to the
   lake) or, for IBGE, of `collected_at` (when the HTTP request was made), instead of the

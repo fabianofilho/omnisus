@@ -138,12 +138,19 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
   `nome` (fantasia ou razão), `nome_fantasia`, `razao_social`, `competencia_nome` e
   `fonte_nome`. O nome é o da competência do arquivo, não o do último mês do código no ST.
   Carregar um mês recente primeiro e meses antigos depois só preenche os códigos sem nome.
-  Estabelecimento de pessoa física (`TP_PFPJ=1`, cerca de 30% das linhas de 202312) fica sem
-  nome: a razão social e o nome fantasia dele trazem o nome do profissional, e a importação
-  ignora essas linhas. O `import_cnes_master` (API) também não busca nome de código que o
-  `cnes_estabelecimentos` marca com `pf_pj = '1'`, mesmo listado à mão.
-  Uma linha sem razão social e sem nome fantasia também é ignorada; as
-  duas contagens saem no log `cnes_master_ftp.rows_skipped`.
+  Só estabelecimento de pessoa jurídica (`TP_PFPJ=3`) fica com nome. O de pessoa física
+  (`TP_PFPJ=1`, cerca de 30% das linhas de 202312) traz o nome do profissional na razão
+  social e no nome fantasia, e a importação ignora essas linhas, como ignora qualquer outro
+  valor de `TP_PFPJ`. Também fica sem nome a linha cujo nome traz um CPF válido: 546 de
+  202312, quase todas de empresário individual
+  ([medição](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-11-09-cnes-cpf-em-nome-pj.md)).
+  O nome que o `cnes_master` já tiver para esses códigos sai na mesma transação.
+  O `import_cnes_master` (API) só busca nome de código que o `cnes_estabelecimentos` marca
+  com `pf_pj = '3'` em todos os meses importados, mesmo listado à mão; código fora do ST, ou
+  lake sem `pf_pj`, fica sem nome. Um código `'3'` nos meses importados e `'1'` num mês não
+  importado ainda passa.
+  Uma linha sem razão social e sem nome fantasia também é ignorada; as contagens saem no
+  log `cnes_master_ftp.rows_skipped`.
   O arquivo é lido como `latin-1`: o de 202312 não tem nenhum byte entre `0x80` e `0x9F`, a
   faixa em que `latin-1` e `cp1252` diferem, então as duas leituras coincidem
   ([medição](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-10-31-cnes-tbestabelecimento-encoding.md)).
