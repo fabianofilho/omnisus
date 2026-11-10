@@ -2,10 +2,8 @@ name: sinan_hanseniase
 title: SINAN — Hanseníase, notificações nacionais
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.2.0
+x-version: 1.2.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: HANSBR26.dbc, 63 fields; observed 2026-09-12
   semantic_status: Page-sourced maps only; every x-decode code cites an official page

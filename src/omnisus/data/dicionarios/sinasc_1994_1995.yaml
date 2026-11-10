@@ -2,10 +2,8 @@ name: sinasc_1994_1995
 title: SINASC — Nascidos vivos por residência (DNR), 1994 e 1995
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.0.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: sinasc_rr_1995_mini.dbc, 30 fields; observed 2026-09-22
   semantic_status: Physical inventory; individual semantic fields not audited. No

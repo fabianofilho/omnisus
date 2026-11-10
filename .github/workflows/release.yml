@@ -64,7 +64,8 @@ jobs:
   publish:
     # PyPI is the distribution channel (RELEASE.md): Trusted Publisher, no token.
     if: vars.PUBLISH_TO_PYPI == 'true'
-    needs: gate
+    # native must pass too: its parity tests are what v0.2.2 published past (#118).
+    needs: [gate, native]
     runs-on: ubuntu-latest
     environment:
       name: pypi

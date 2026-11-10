@@ -2,10 +2,8 @@ name: sih_servicos_profissionais
 title: SIHSUS — Serviços profissionais (SP)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.0
+x-version: 1.2.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: sih_sp_rr_2024_01_mini.dbc, 36 fields; observed 2026-09-22
   semantic_status: Physical inventory. Category maps only where a TabWin CNV binds the
@@ -69,6 +67,7 @@ schema:
     type: string
   - name: sp_pf_doc
     type: string
+    description: "Coluna que identifica o profissional e vem sem cifra no arquivo do DATASUS, ao contrário do CNS do paciente; as fixtures a deixam em branco (tests/fixtures/FIXTURES.md) e o lake a importa como publicada (#68)."
   - name: sp_pj_doc
     type: string
   - name: in_tp_val

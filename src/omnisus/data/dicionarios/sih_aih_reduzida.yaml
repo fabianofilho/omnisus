@@ -12,7 +12,8 @@ schema:
     # ========================================================================
     - name: uf_zi
       type: string
-      label: UF do gestor
+      label: Município gestor
+      description: "Código de 6 dígitos do município gestor, apesar do nome: RD2008.DEF, linhas 175-176 ('Município gestor'); Informe SIH 2016-03, p. 1."
     - name: ano_cmpt
       type: integer
       label: Ano de competência
@@ -596,11 +597,40 @@ schema:
       type: string
       label: Unidade da idade
       x-decode:
-        "0": "Ignorada"
         "2": "Dias"
         "3": "Meses"
         "4": "Anos"
-        "5": "Mais de 100 anos"
+        "5": "Anos (somar 100)"
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 83616371dedaa6efde39e6aa288ca9c043d7a29fcef25633a2fa65a3d37952e0
+          status: unreviewed
+          checked_at: '2026-11-08'
+          method: fixture-measure
+          reviewer: null
+          evidence:
+          - source_id: sih-tab-f05b32f32908
+            pages: []
+            locator: 'RD2008.DEF, linhas 188-191: COD_IDADE, 1, CNV\IDADEBAS.CNV, CNV\IDADEPUB.CNV,
+              CNV\IDADE18.CNV e CNV\IDADEDET.CNV'
+          - source_id: sih-tab-714ed980d483
+            pages: []
+            locator: CNV/IDADEDET.CNV; composto de 3 caracteres, unidade + quantidade
+          note: Medido, não lido (issue cod_idade-sem-tabela). O CNV rotula o composto, não o
+            código de 1 caractere.
+        issues:
+        - id: cod_idade-sem-tabela
+          status: open
+          description: '''2'', ''3'', ''4'' e ''5'' foram medidos, não lidos: nenhuma tabela rotula o código
+            de 1 caractere, e ''0'' fica sem rótulo. RD2008.DEF (linhas 188-191) liga COD_IDADE a
+            IDADEBAS.CNV, IDADEPUB.CNV, IDADE18.CNV e IDADEDET.CNV, que leem 3 caracteres, COD_IDADE
+            seguido de IDADE. IDADEDET.CNV (TAB_SIH 714ed980d483): 200-229 são dias, 230 e 301 são
+            ''1 mês'', 302-312 são meses, 401-499 são anos, 500 a 530 são 100 a 130 anos, e ''000''
+            e ''999'' são ''Idade inválida''. IDADEBAS.CNV agrupa 000-099 em ignorados, e a auditoria
+            de 2026-09-14 o recusou como autoridade (evidence/2026-09-14-contrato-analitico/regras.md):
+            nenhuma fonte diz que ''0'' é ''Ignorada''. RR 2024-01: ''2'' em 157 linhas, ''3'' em 175,
+            ''4'' em 3.378, ''5'' em 4, nenhum ''0''.'
     - name: idade
       type: integer
       label: Idade
@@ -11154,15 +11184,17 @@ schema:
     - name: homonimo
       type: string
       label: Homônimo
-      x-decode: { "0": "Não", "1": "Sim" }
       x-metadata:
         issues:
         - id: homonimo-sem-fonte
           status: open
-          description: '''2'' fica sem rótulo: nenhuma fonte dá os códigos. IT_SIHSUS_1603, p. 3,
+          description: 'Sem mapa: nenhum documento registrado dá os códigos. IT_SIHSUS_1603, p. 3,
             só descreve o campo ("Indicador se o paciente da AIH é homônimo do paciente de outra
-            AIH"), e nenhum DEF ou CNV do TAB_SIH.zip (f05b32f32908) cita HOMONIMO. ''0'' e ''1''
-            também não têm fonte. RR 2024-01: ''2'' em 39 AIHs.'
+            AIH"), e nenhum dos 37 DEF empacotados (RD2008.DEF, RJ2008.DEF, os RD.DEF da era
+            1992-2007 e os demais) cita HOMONIMO. O mapa anterior, ''0'' Não e ''1'' Sim, não tinha
+            fonte e contrariava os dados: o RD publica ''0'' e ''2'' (RR 2024-01: ''2'' em 39 AIHs; RR
+            2022: 138, evidence/2026-09-23-colunas-e-linkage.md), e o RJ publica ''0'' e ''1''. Saiu
+            na issue #10.'
 
     # ========================================================================
     # Internação
@@ -12092,10 +12124,18 @@ schema:
     - name: gestor_tp
       type: string
       label: Tipo gestor autorizador
-      x-decode:
-        "0": "Sem autorização"
-        "1": "Auditor"
-        "2": "Autorizador"
+      x-metadata:
+        issues:
+        - id: gestor_tp-sem-fonte
+          status: open
+          description: 'Sem mapa: nenhum documento registrado dá os códigos, e nenhum dos 37 DEF
+            empacotados (RD2008.DEF, RJ2008.DEF, os RD.DEF da era 1992-2007 e os demais) cita
+            GESTOR_TP. O mapa anterior, ''0'' Sem autorização, ''1'' Auditor e ''2'' Autorizador,
+            não tinha fonte. RR 2024-01: ''0'' em 2.985 AIHs e ''1'' em 729. A descrição do campo na
+            p. 3 do IT_SIHSUS_1603 não está transcrita em nenhum artefato do repositório. Pista,
+            que não autoriza rótulo: em RR 2024-01, homonimo diferente de ''0'' sempre vem com
+            gestor_tp ''1''; AUTORIZ.CNV e LIBGESTOR.DBF do TAB_SIH, ainda não empacotados (#7), são o
+            lugar para procurar. Saiu na issue #10.'
     - name: gestor_cpf
       type: string
       label: CPF do gestor
@@ -12543,8 +12583,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
-x-partitions: [ano, uf, mes]
-x-version: "2.14.1"
+x-version: "2.17.1"
 
 x-analytics:
   version: 1.3.0

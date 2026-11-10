@@ -2,10 +2,8 @@ name: sia_apac_fistula_arteriovenosa
 title: SIASUS — APAC de Confecção de Fístula Arteriovenosa (ACF)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.1.0
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: sia_acf_rr_2024_01_mini.dbc, 56 fields; observed 2026-09-23
   semantic_status: Physical inventory. Category maps only where a TabWin CNV binds the
@@ -146,14 +144,14 @@ schema:
       '2': Dias
       '3': Meses
       '4': Anos
+      '5': Anos (somar 100)
     x-metadata:
       issues:
       - id: ap_coidade-sem-tabela
         status: open
-        description: '''0'' e ''5'', se aparecerem, ficam sem rótulo, e ''2'', ''3'' e ''4'' foram medidos,
-          não lidos: nenhuma tabela rotula o código de 1 caractere. IDADEDET.CNV e IDADE18.CNV (TAB_SIA),
+        description: '''0'', se aparecer, fica sem rótulo, e ''2'', ''3'', ''4'' e ''5'' foram medidos, não lidos: nenhuma tabela rotula o código de 1 caractere. IDADEDET.CNV e IDADE18.CNV (TAB_SIA),
           ligados a AP_COIDADE em todos os DEF de APAC, leem 3 caracteres, AP_COIDADE seguido de AP_NUIDADE:
-          ''000'' é ''Idade inválida'' e 500 a 530 são 100 a 130 anos. O Informe Técnico SIASUS 2019-07
+          ''000'' é ''Idade inválida'' e 500 a 530 são 100 a 130 anos, e por isso ''5'' é ''Anos (somar 100)''. O Informe Técnico SIASUS 2019-07
           descreve AP_COIDADE (CHAR 1, ''Código da Idade'') sem códigos (pp. 6-14). O mapa é o de AQ: APAC_Confeccao_de_Fistula.DEF
           (linhas 316-317) liga AP_COIDADE aos mesmos IDADEDET.CNV e IDADE18.CNV que APAC_Quimioterapia.DEF
           (linhas 416-417).'

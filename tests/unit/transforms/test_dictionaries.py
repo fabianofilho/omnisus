@@ -57,11 +57,41 @@ def test_without_libyaml_a_dictionary_loads_the_same(monkeypatch: pytest.MonkeyP
 def test_load_sim_obitos_has_expected_extensions() -> None:
     dic = load_dicionario("sim_obitos")
     assert dic.encoding == "latin-1"
-    assert dic.partitions == ["ano", "uf"]
     assert dic.source_format == "dbc"
     # Type-tolerant decode: int input + string keys in YAML
     assert dic.decode("sexo", 1) == "Masculino"
     assert dic.decode("sexo", 99) is None
+
+
+_DICIONARIOS = Path(__file__).resolve().parents[3] / "src/omnisus/data/dicionarios"
+
+# The library columns staging adds to every imported file (staging.py, dbc_bytes_to_parquet).
+_LIBRARY_COLUMNS = {"_source_ano", "_source_release"}
+
+
+def _packaged() -> dict[str, dict]:
+    return {
+        path.stem: yaml.load(path.read_text(encoding="utf-8"), Loader=yaml.CSafeLoader)
+        for path in sorted(_DICIONARIOS.glob("*.yaml"))
+    }
+
+
+def test_partitions_are_declared_only_by_the_registry() -> None:
+    """Issue #71: Dataset.partition_by is the one list of a dataset's partitions; a
+    dictionary's own list diverged from it and had no reader."""
+    assert sorted(name for name, raw in _packaged().items() if "x-partitions" in raw) == []
+
+
+def test_a_declared_library_column_is_one_staging_adds() -> None:
+    """Issue #71: a field whose name starts with "_" is a library column, so the
+    dictionary may declare it only if the import creates it."""
+    declared = {
+        (name, field["name"])
+        for name, raw in _packaged().items()
+        for field in raw.get("schema", {}).get("fields", [])
+        if field["name"].startswith("_") and field["name"] not in _LIBRARY_COLUMNS
+    }
+    assert sorted(declared) == []
 
 
 # ---------------------------------------------------------------------------

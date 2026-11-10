@@ -25,7 +25,11 @@ SUS (SIH/SUS), nos arquivos RD que o DATASUS publica um por UF e mês de process
   (Informe SIH 2016-03, p. 1–4); `aud_just` e `sis_just` guardam a justificativa para
   aceitar a AIH sem esse número (p. 3).
 - `homonimo` indica se o paciente da AIH é homônimo do paciente de outra AIH
-  (Informe SIH 2016-03, p. 3).
+  (Informe SIH 2016-03, p. 3). Nenhum documento registrado dá os códigos de `homonimo`
+  nem de `gestor_tp`, e nenhum DEF empacotado cita os dois campos: eles ficam sem
+  rótulo. O RD publica `homonimo` `0` e `2`, e o RJ `0` e `1`; não suponha que `2`
+  e `1` querem dizer a mesma coisa (issues `homonimo-sem-fonte` e
+  `gestor_tp-sem-fonte`, #10).
 - `diag_princ` é o código do diagnóstico principal pela CID-10, com 4 caracteres
   (Informe SIH 2016-03, p. 2), e o dicionário o liga à tabela `aux_cid10`
   (`src/omnisus/data/dicionarios/sih_aih_reduzida.yaml`).
@@ -54,9 +58,8 @@ SUS (SIH/SUS), nos arquivos RD que o DATASUS publica um por UF e mês de process
   (Informe SIH 2016-03, p. 1).
 - `munic_mov` é o município do estabelecimento, com 6 caracteres
   (Informe SIH 2016-03, p. 2).
-- `uf_zi` é o município gestor, com 6 caracteres (Informe SIH 2016-03, p. 1), embora o
-  dicionário o rotule "UF do gestor"
-  (`src/omnisus/data/dicionarios/sih_aih_reduzida.yaml`).
+- `uf_zi` é o município gestor, com 6 caracteres, apesar do nome (Informe SIH 2016-03,
+  p. 1; `RD2008.DEF`, linhas 175-176).
 - `cnes` é o código CNES do hospital, com 7 caracteres (Informe SIH 2016-03, p. 3).
 - O dicionário liga `munic_res` e `munic_mov` a `aux_municipios.codigo_6`; `diag_secun`, `cid_asso` e `cid_morte` gravam `0000` quando não há causa ([vocabulários](vocabularios.md)).
   A importação preserva o comprimento dos códigos publicados; não aplica
@@ -147,6 +150,12 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   deslocamento de 100 anos no domínio detalhado. Os códigos compostos `000` e
   `999` são classificados como inválidos; isso não define uma sentinela global
   para o campo bruto `idade`.
+- O rótulo de `cod_idade` (no RD e no RJ) foi medido, não lido: o `RD2008.DEF` e o
+  `RJ2008.DEF` ligam o campo a tabelas que leem 3 caracteres (unidade e idade), e
+  nenhuma rotula a unidade sozinha. `2` é "Dias", `3` "Meses", `4` "Anos" e `5`
+  "Anos (somar 100)", porque `IDADEDET.CNV` lê 500 a 530 como 100 a 130 anos. `0`
+  fica sem rótulo: nenhuma fonte o chama de "Ignorada", e no CNV `000` é "Idade
+  inválida". O dicionário registra isso na issue `cod_idade-sem-tabela` (#6).
 - `sexo` tem 1 caractere (Informe SIH 2016-03, p. 1). A tabela oficial
   `CNV/SEXO.CNV` define 1 masculino e 2/3 feminino. A aplicação dessas regras
   exige os escopos e hashes confirmados no contrato; códigos não documentados
@@ -198,7 +207,8 @@ Em `sih_aih_reduzida` e `sih_aih_rejeitada`, `CONTRAC.CNV` (`contracep1` e `cont
   agrupamento do código (capítulo e grupo da CID, ano e mês das datas, região e UF do
   município), coluna inicial diferente de 1 (`dias_perm`, `n_aih`), linhas que trazem um
   nome de campo no lugar da coluna inicial (`faec_tp`, `proc_rea`) ou tabela não
-  empacotada (`uf_zi` e os demais, #137). O `cod_idade` do RJ fica de fora, na #6.
+  empacotada (`uf_zi` e os demais, #137). O `cod_idade` está em `sem_cnv` no RD e no RJ
+  e tem o mapa medido descrito acima (#6).
 
 ## Como usar
 

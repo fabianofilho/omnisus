@@ -2,10 +2,8 @@ name: sinan_tuberculose
 title: SINAN — Tuberculose, notificações nacionais
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.0.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: TUBEBR20.dbc, 94 fields (layout of 2019-2025); observed 2026-09-22.
     TUBEBR01-18 add EXTRAPUL_O, AGRAVOUTDE and OUTRAS_DES, kept as staged.
