@@ -87,6 +87,14 @@ de mesmo nome do DBF ou, sem ele, o primeiro campo, e o rótulo é a coluna que 
 O localizador traz a linha do DEF e o membro lido. É o caso de `co_erro` no ER
 (`Motivo_de_Erro.DEF`, `DBF/MOTERRO.dbf`).
 
+`method: fixture-measure` marca um mapa de códigos escrito à mão quando nenhuma tabela
+rotula o código como o arquivo o publica: os valores foram medidos num arquivo real (uma
+fixture de `tests/fixtures/FIXTURES.md`) e os rótulos foram lidos num CNV que rotula um
+valor composto, não o código sozinho. A afirmação fica sempre `unreviewed`, com
+`reviewer: null`, e o campo traz um issue `*-sem-tabela` aberto que diz de onde vem cada
+rótulo. É o caso de `cod_idade` no RD e no RJ do SIH (`IDADEDET.CNV` rotula a unidade
+junto com a quantidade).
+
 `verified_in_source` **não confirma** vigência nos dados. A dimensão separada
 `applicability.status` pode ser `unknown`, `confirmed`, `conflicting` ou
 `not_applicable`. Aplicar uma interpretação automaticamente a um recorte pede as

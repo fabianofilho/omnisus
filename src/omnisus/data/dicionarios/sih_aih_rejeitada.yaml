@@ -2,7 +2,7 @@ name: sih_aih_rejeitada
 title: SIHSUS — AIH rejeitada (RJ)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.4.0
+x-version: 1.4.1
 x-source-format: dbc
 x-evidence:
   physical_schema: sih_rj_rr_2024_01_mini.dbc, 90 fields; observed 2026-09-22
@@ -468,7 +468,7 @@ schema:
         status: unreviewed
         checked_at: '2026-11-08'
         method: fixture-measure
-        reviewer: maintainer review
+        reviewer: null
         evidence:
         - source_id: sih-tab-f05b32f32908
           pages: []

@@ -97,7 +97,7 @@ SIH_FIELDS_WAITING_FOR_A_MEMBER = {
 # - "nas N linhas": the fixture's row count;
 # - "não está empacotado", "nenhum está empacotado", "nenhuma está empacotada" or
 #   "não empacotado", for every mention of packaging;
-# - "pela referência a aux_X": every foreignKeys resource of the field in the YAML;
+# - every "aux_X" it names: exactly the foreignKeys resources of the field in the YAML;
 # - "issue N", "decisão N" and "pp. N-M", not checked.
 # A number outside these formulas fails the test.
 _CITED_LINES = re.compile(r"\blinhas? ((?:\d+(?:-\d+)?(?:, | e )?)+)")
@@ -109,7 +109,7 @@ _CITED_NO_START = re.compile(r"\bnome de campo no lugar da coluna inicial \((\w+
 _QUOTED = re.compile(r"'([^']+)'")
 _CITED_ROWS = re.compile(r"\bnas (\d+) linhas\b")
 _UNPACKED = re.compile(r"\b(?:(?:não|nenhum|nenhuma) está|não) empacotad[oa]\b")
-_CITED_REFERENCES = re.compile(r"\bpela referência a (aux_\w+)")
+_CITED_REFERENCES = re.compile(r"\baux_\w+")
 _UNCHECKED_NUMBERS = re.compile(r"\b(?:issue|decisão) \d+\b|\bpp\. \d+-\d+\b", re.IGNORECASE)
 _FORMULAS = (_QUOTED, _CITED_LINES, _CITED_COUNT, _CITED_STARTS, _CITED_ROWS, _UNCHECKED_NUMBERS)
 
@@ -169,8 +169,6 @@ def test_every_field_the_sih_2008_def_binds_has_a_map_or_a_reason_true_to_the_de
     assert without_word == set(), (dataset, sorted(without_word))
     packaged = {Path(m).name.lower() for m in vinculos["membros"]}
     for field in sorted(bindings.keys() & reasons.keys()):
-        if fields[field].get("x-decode"):
-            continue  # a hand map with a reason says why the CNV does not fit (cod_idade)
         reason, where = reasons[field], (dataset, field)
         bound = [b for _, b in bindings[field]]
         members = {Path(b.table.replace("\\", "/")).name for b in bound}

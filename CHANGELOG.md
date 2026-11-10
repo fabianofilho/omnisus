@@ -41,6 +41,11 @@
 
 ### Dictionaries
 
+- `docs/dicionario/contrato.md` documents `method: fixture-measure`, the method of the
+  `cod_idade` claims of the RD and the RJ (`sih_aih_reduzida` 2.17.1, `sih_aih_rejeitada`
+  1.4.1), whose `reviewer` is now null: nobody reviewed them. Their `sem_cnv` reasons cite
+  the DEF lines and members like the other entries, and the test checks them and every
+  `aux_*` resource a reason names (review of #157).
 - **Breaking:** `homonimo` and `gestor_tp` of `sih_aih_reduzida` (2.17.0) lose their
   code maps (`{'0': Não, '1': Sim}` and `{'0': Sem autorização, '1': Auditor, '2':
   Autorizador}`). No registered document lists their codes and none of the 37 packaged
@@ -123,8 +128,7 @@
   (`faec_tp`, `proc_rea`) or a member not packaged (`uf_zi` and the rest). One test, which
   replaces the #130 one, fails when either DEF binds a field with no map and no reason, or
   when a reason's DEF, lines, members, member count, start columns or labels differ from the
-  packaged DEF; `cod_idade` of `sih_aih_rejeitada` is left to #6 (#137). No dictionary
-  changes.
+  packaged DEF (#137). No dictionary changes.
 - The 37 dictionaries that declared `x-partitions` no longer do, and each takes a patch
   `x-version`: the list had no reader and disagreed with `Dataset.partition_by`, which
   stays the one place a dataset's partitions are declared. `sinasc_nascidos_vivos`

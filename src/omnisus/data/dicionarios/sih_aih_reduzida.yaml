@@ -608,7 +608,7 @@ schema:
           status: unreviewed
           checked_at: '2026-11-08'
           method: fixture-measure
-          reviewer: maintainer review
+          reviewer: null
           evidence:
           - source_id: sih-tab-f05b32f32908
             pages: []
@@ -12583,7 +12583,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: RD
-x-version: "2.17.0"
+x-version: "2.17.1"
 
 x-analytics:
   version: 1.3.0
