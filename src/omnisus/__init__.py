@@ -608,18 +608,33 @@ def import_cnes_master(
     is an idempotent upsert, not a publication: no ``run_id``, no ``policy``, no
     manifest row. To finish an interrupted run, run it again.
 
+    Only a pessoa jurídica gets a name: a code that ``cnes_estabelecimentos`` marks
+    ``pf_pj = '3'`` in every imported month. A pessoa física (``'1'``, whose names are the
+    professional's), any other or empty value, a code outside ``cnes_estabelecimentos`` and
+    a lake whose table has no ``pf_pj`` get none, listed in ``codes`` or not (a breaking
+    change: earlier versions fetched every listed code). Only the months already imported count: a
+    code ``'3'`` in all of them and ``'1'`` in a month not imported is still fetched. An
+    answer whose nome fantasia or razão social holds a valid CPF is not written. In the
+    same transaction as the upsert, the names ``cnes_master`` already holds for the codes
+    that are not pessoa jurídica are removed, and so is every stored name that holds a
+    valid CPF, of any code; the counts go to the ``cnes_master.names_removed`` log.
+
     Args:
-        codes: 7-digit CNES codes, e.g. ``["2789590"]``. ``None`` (default) takes
-            every code in ``cnes_estabelecimentos``.
+        codes: 7-digit CNES codes, e.g. ``["2789590"]``; only the pessoa jurídica ones
+            are fetched. ``None`` (default) takes every pessoa jurídica code in
+            ``cnes_estabelecimentos``.
         target: DuckLake target; ``None`` (default) is ``data/raw/omnisus.ducklake``
             under the working directory, or under ``$OMNISUS_DATA_DIR``.
         concurrency: API requests in flight (default 5).
-        only_missing: ``True`` (default) skips codes already in ``cnes_master``, so
-            reruns are incremental; ``False`` fetches every code again.
+        only_missing: ``True`` (default) leaves out of the discovery (``codes=None``)
+            the codes already in ``cnes_master``, so reruns are incremental; ``False``
+            fetches every code again. A code whose stored name held a CPF is missing
+            after the removal, so the next run fetches it.
         progress: Optional ``progress(done, total)`` callback after each fetch.
 
     Returns:
-        The number of records written in this run.
+        The number of records written in this run; 0 when no requested code is a
+        pessoa jurídica in ``cnes_estabelecimentos``.
 
     Raises:
         ValueError: a code is not seven ASCII digits, or the API returned conflicting
@@ -627,6 +642,7 @@ def import_cnes_master(
 
     Examples:
         >>> import omnisus as sus
+        >>> # 2789590 is marked pf_pj '3' in the imported months of cnes_estabelecimentos
         >>> sus.import_cnes_master(codes=["2789590"])  # doctest: +SKIP
         1
     """
@@ -658,8 +674,15 @@ def import_cnes_master_ftp(
     one-request-per-code of :func:`import_cnes_master`. The result is joined into the
     ``aux_cnes`` view. Each row records the file, its SHA-256 and the competência the name
     reflects; a file downloaded here also records the server URL and its ``MDTM``.
-    Establishments that are a pessoa física (``TP_PFPJ=1``) get no name, and a row with no
-    name at all is skipped; both counts go to the ``cnes_master_ftp.rows_skipped`` log.
+    Only a row with ``TP_PFPJ=3`` (pessoa jurídica) gives a name. A pessoa física
+    (``TP_PFPJ=1``, whose names are the professional's), any other or empty value, a row
+    whose nome fantasia or razão social holds a valid CPF and a row with no name at all
+    give none; the counts go to the ``cnes_master_ftp.rows_skipped`` log. A code the
+    lake's ``cnes_estabelecimentos`` marks anything but ``'3'`` in some imported month
+    gets no name either. In the same transaction as the upsert, the names ``cnes_master``
+    already holds for the codes the file or the ST does not mark pessoa jurídica are
+    removed, and so is every stored name that holds a valid CPF, of any code. A clean
+    stored name stays when the file now writes a CPF for that code.
 
     Args:
         competencia: ``AAAAMM`` of the base, e.g. ``"202312"``.
@@ -669,7 +692,9 @@ def import_cnes_master_ftp(
         target: DuckLake target; ``None`` (default) is ``data/raw/omnisus.ducklake``
             under the working directory, or under ``$OMNISUS_DATA_DIR``.
         only_missing: ``True`` (default) keeps names already in ``cnes_master``, so
-            loading a recent month first and older months after only fills gaps.
+            loading a recent month first and older months after only fills gaps. The
+            removals come first, so a code whose stored name held a CPF takes the
+            file's clean name.
 
     Returns:
         The number of rows written in this run.

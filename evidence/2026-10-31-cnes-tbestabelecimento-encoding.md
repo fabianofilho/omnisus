@@ -1,7 +1,7 @@
 # Encoding do tbEstabelecimento do CNES: latin-1 ou cp1252? 2026-10-31
 
 `import_cnes_master_ftp` lê `tbEstabelecimentoAAAAMM.csv` como `latin-1`
-(`src/omnisus/sources/cnes/importers/master_ftp.py`, `read_names`). O SIGTAP, do mesmo
+(`src/omnisus/sources/cnes/importers/master_ftp.py`, `read_base`). O SIGTAP, do mesmo
 servidor, é lido como `cp1252` (`src/omnisus/sources/sigtap/__init__.py`). Este registro
 mede o arquivo real para decidir.
 
@@ -59,7 +59,7 @@ pede nova medida.
 ## Outras contagens do mesmo arquivo
 
 Medidas com `csv.DictReader` (`;`, latin-1) sobre o mesmo membro; as decisões de
-`read_names` citam estas linhas.
+`read_base` citam estas linhas.
 
 | Contagem | Valor |
 | --- | --- |

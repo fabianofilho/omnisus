@@ -560,3 +560,123 @@ def test_an_api_name_with_a_valid_cpf_is_not_written(tmp_path: Path) -> None:
     with Lake.local(target) as lake:
         names = lake.connect().execute(f"SELECT cnes FROM {lake.alias}.cnes_master").fetchall()
     assert names == []
+
+
+# Synthetic, sensitive input: made up, with valid check digits, as in the test above.
+CPF_SINTETICO = "52998224725"
+
+
+def _master_names(target: str) -> dict[str, str | None]:
+    with Lake.local(target) as lake:
+        rows = lake.connect().execute(f"SELECT cnes, nome FROM {lake.alias}.cnes_master")
+        return dict(rows.fetchall())
+
+
+def _seed_legacy_cpf_names(target: str) -> None:
+    """Synthetic, sensitive input: names with a CPF stored before the CPF rule. One has only
+    ``nome``, the shape of the first API importer; the other has the CPF in the razão social
+    of a code outside the ST."""
+    from omnisus.sources.cnes.importers.master import _ensure_master_table
+
+    with Lake.local(target) as lake:
+        _load_st_rr(lake)
+        _ensure_master_table(lake)
+        con = lake.connect()
+        con.execute(
+            f"INSERT INTO {lake.alias}.cnes_master (cnes, nome) "
+            f"VALUES ('{PJ_RR}', 'FULANO DE TAL {CPF_SINTETICO}')"
+        )
+        con.execute(
+            f"INSERT INTO {lake.alias}.cnes_master (cnes, nome, razao_social) "
+            f"VALUES ('{FORA_DO_ST}', 'CLINICA', 'BELTRANO 529.982.247-25')"
+        )
+
+
+@pytest.mark.parametrize(
+    ("explicit", "only_missing", "api_name", "expected"),
+    [
+        # Discovery skips the code already in cnes_master; the next run fetches it.
+        (False, True, "HOSPITAL", {}),
+        # The API still writes the CPF: nothing is written for the code.
+        (True, False, f"FULANO DE TAL {CPF_SINTETICO}", {}),
+        # The API now gives a clean name: it replaces the removed one.
+        (True, False, "HOSPITAL", {PJ_RR: "HOSPITAL"}),
+    ],
+)
+@respx.mock
+def test_a_name_with_a_cpf_already_in_cnes_master_is_removed(
+    tmp_path: Path, monkeypatch, explicit, only_missing, api_name, expected
+) -> None:
+    """Every stored name with a CPF goes in the import's transaction, in any code and in any
+    of nome, nome_fantasia and razao_social, whatever the API answers. One row per read, so
+    a scan that stops after the first batch leaves a name behind."""
+    monkeypatch.setattr("omnisus.sources.cnes.importers.master._CPF_SCAN_BATCH", 1)
+    target = f"ducklake:{tmp_path}/x.ducklake"
+    _seed_legacy_cpf_names(target)
+    _mock(PJ_RR, api_name)
+    respx.get(url__regex=r"/cnes/estabelecimentos/\d+$").mock(return_value=httpx.Response(404))
+
+    with capture_logs() as logs:
+        import_cnes_master(
+            codes=[PJ_RR] if explicit else None, target=target, only_missing=only_missing
+        )
+
+    assert _master_names(target) == expected
+    with Lake.local(target) as lake:
+        view = dict(
+            lake.connect()
+            .execute(
+                f"SELECT cnes, nome FROM {lake.alias}.aux_cnes WHERE cnes IN ('{PJ_RR}', '{FORA_DO_ST}')"
+            )
+            .fetchall()
+        )
+    assert view.get(PJ_RR) == expected.get(PJ_RR) and view.get(FORA_DO_ST) is None
+    (removed,) = [e for e in logs if e["event"] == "cnes_master.names_removed"]
+    assert removed["cpf_no_nome"] == 2
+
+
+@respx.mock
+def test_the_cpf_removal_rolls_back_with_the_import(tmp_path: Path, monkeypatch) -> None:
+    """The removal is in the same transaction as the upsert: a failure undoes it."""
+    target = f"ducklake:{tmp_path}/x.ducklake"
+    _seed_legacy_cpf_names(target)
+    _mock(PJ_RR, "HOSPITAL")
+
+    def fail_view(self):
+        raise RuntimeError("view unavailable")
+
+    monkeypatch.setattr(Lake, "ensure_aux_cnes_view", fail_view)
+    with pytest.raises(RuntimeError, match="view unavailable"):
+        import_cnes_master(codes=[PJ_RR], target=target, only_missing=False)
+    assert set(_master_names(target)) == {PJ_RR, FORA_DO_ST}
+
+
+@respx.mock
+def test_a_clean_stored_name_stays_when_the_api_now_writes_a_cpf(tmp_path: Path) -> None:
+    """The CPF answer is not written, and the clean name already stored is kept: the rule
+    removes names with a CPF, not the codes whose source now has one. The FTP path does
+    the same."""
+    target = f"ducklake:{tmp_path}/x.ducklake"
+    with Lake.local(target) as lake:
+        _load_st_rr(lake)
+    _mock(PJ_RR, "HOSPITAL")
+    import_cnes_master(codes=[PJ_RR], target=target)
+    respx.routes.clear()
+    _mock(PJ_RR, f"FULANO DE TAL {CPF_SINTETICO}")
+
+    assert import_cnes_master(codes=[PJ_RR], target=target, only_missing=False) == 0
+    assert _master_names(target) == {PJ_RR: "HOSPITAL"}
+
+
+@respx.mock
+def test_a_null_pf_pj_is_not_pessoa_juridica(tmp_path: Path) -> None:
+    """A month whose ST row has no pf_pj cannot tell a pessoa física apart: not fetched."""
+    target = f"ducklake:{tmp_path}/x.ducklake"
+    with Lake.local(target) as lake:
+        _load_st_rr(lake)
+        lake.connect().execute(
+            f"UPDATE {lake.alias}.cnes_estabelecimentos SET pf_pj = NULL WHERE cnes = '{PJ_RR}'"
+        )
+    route = _mock(PJ_RR, "HOSPITAL")
+    assert import_cnes_master(codes=[PJ_RR], target=target) == 0
+    assert not route.called

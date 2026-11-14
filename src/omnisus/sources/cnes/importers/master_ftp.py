@@ -36,6 +36,7 @@ import structlog
 from omnisus.lake import Lake
 from omnisus.sources.cnes.importers.master import (
     _contains_cpf,
+    _delete_cpf_names,
     _delete_master_codes,
     _ensure_master_table,
     _pf_pj_codes,
@@ -134,20 +135,6 @@ def download_base(
         partial.unlink(missing_ok=True)
 
 
-def read_names(
-    zip_path: Path,
-    competencia: str,
-    *,
-    url: str | None = None,
-    modificado_em: str | None = None,
-) -> list[dict]:
-    """One record per pessoa jurídica with a name in the base's tbEstabelecimento.
-
-    ``url`` and ``modificado_em`` are where the zip came from, when known.
-    """
-    return read_base(zip_path, competencia, url=url, modificado_em=modificado_em)[0]
-
-
 def read_base(
     zip_path: Path,
     competencia: str,
@@ -159,7 +146,9 @@ def read_base(
 
     Only a row with ``TP_PFPJ`` 3 (pessoa jurídica) gives a record; the codes of the other
     rows, pessoa física or an unknown value, come back apart so the importer can remove a
-    name a lake already holds for them.
+    name a lake already holds for them. A row with a valid CPF in a name gives no record,
+    and its code does not come back: the importer removes every stored name with a CPF
+    whatever the file says, and keeps a clean one.
     """
     sha = _sha256(zip_path)
     wanted = f"tbestabelecimento{competencia}.csv"
@@ -203,7 +192,6 @@ def read_base(
                 razao = row["NO_RAZAO_SOCIAL"].strip() or None
                 if _contains_cpf(fantasia) or _contains_cpf(razao):
                     cpf_no_nome += 1
-                    sem_nome_publico.add(code)
                     continue
                 if not (fantasia or razao):
                     sem_nome += 1
@@ -245,6 +233,11 @@ def import_cnes_master_ftp(
 ) -> int:
     """Fill ``cnes_master`` from one month of the full CNES base and refresh ``aux_cnes``.
 
+    Only a pessoa jurídica row without a CPF in a name gives a name (``read_base``), and a
+    code the lake's ST marks anything but ``'3'`` in some month gets none. In the same
+    transaction as the upsert, the stored names of the codes without a public name go,
+    and so does every stored name with a valid CPF, of any code.
+
     Args:
         competencia: ``AAAAMM`` of the base, e.g. ``"202312"``.
         zip_path: an already downloaded ``BASE_DE_DADOS_CNES_AAAAMM.ZIP``; when
@@ -253,7 +246,8 @@ def import_cnes_master_ftp(
         download_dir: where to download; required when ``zip_path`` is ``None``.
         target: DuckLake target, as in the other importers.
         only_missing: ``True`` (default) keeps names already in ``cnes_master``, so
-            loading a recent month first and older months after only fills gaps.
+            loading a recent month first and older months after only fills gaps. The
+            removals of pessoa física and CPF names come first.
 
     Returns:
         The number of rows written.
@@ -281,6 +275,9 @@ def import_cnes_master_ftp(
             sem_nome_publico |= _pf_pj_codes(lake)[1]
             records = [r for r in records if r["cnes"] not in sem_nome_publico]
             removed = _delete_master_codes(lake, sem_nome_publico)
+            # Before only_missing reads what is stored, so a clean row of the file fills a
+            # code whose stored name had a CPF.
+            removed_cpf = _delete_cpf_names(lake)
             if only_missing:
                 have = {
                     r[0]
@@ -292,6 +289,10 @@ def import_cnes_master_ftp(
             _upsert_master(lake, records)
             lake.ensure_aux_cnes_view()
     logger.info(
-        "cnes_master_ftp.done", competencia=competencia, written=len(records), removed=removed
+        "cnes_master_ftp.done",
+        competencia=competencia,
+        written=len(records),
+        removed=removed,
+        removed_cpf=removed_cpf,
     )
     return len(records)

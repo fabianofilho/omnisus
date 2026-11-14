@@ -27,7 +27,7 @@ from omnisus.sources.cnes.importers.master_ftp import (
     FTP_FONTE,
     download_base,
     import_cnes_master_ftp,
-    read_names,
+    read_base,
 )
 from omnisus.sources.datasus_ftp.fetch import FtpFileNotFound, FtpUnavailable
 from tests.support import fake_ftp
@@ -70,8 +70,8 @@ def _seed(lake: Lake, codes: list[str]) -> None:
     )
 
 
-def test_read_names_prefers_fantasia_and_records_provenance() -> None:
-    recs = {r["cnes"]: r for r in read_names(FIXTURE, "202312")}
+def test_read_base_prefers_fantasia_and_records_provenance() -> None:
+    recs = {r["cnes"]: r for r in read_base(FIXTURE, "202312")[0]}
     assert sorted(recs) == CODES
     assert recs["2320886"]["nome"] == "HOSPITAL JOSE GUEDES CATAO"
     assert recs["2320886"]["razao_social"] == "ESTADO DE RORAIMA"
@@ -86,7 +86,7 @@ def test_read_names_prefers_fantasia_and_records_provenance() -> None:
 def test_a_pessoa_fisica_row_gives_no_name() -> None:
     """The committed pessoa física has its names blanked; the row is left out, not written empty."""
     with capture_logs() as logs:
-        recs = {r["cnes"] for r in read_names(FIXTURE, "202312")}
+        recs = {r["cnes"] for r in read_base(FIXTURE, "202312")[0]}
     assert PESSOA_FISICA not in recs
     (skipped,) = [e for e in logs if e["event"] == "cnes_master_ftp.rows_skipped"]
     assert (skipped["pessoa_fisica"], skipped["pf_pj_desconhecido"], skipped["sem_nome"]) == (
@@ -106,7 +106,7 @@ def test_a_pessoa_fisica_name_in_the_file_never_reaches_the_records(tmp_path: Pa
 
     path = _synthetic_zip(tmp_path, with_names)
     assert "CONSULTORIO DR EXEMPLO" in zipfile.ZipFile(path).read(MEMBER).decode("latin-1")
-    recs = read_names(path, "202312")
+    recs = read_base(path, "202312")[0]
     assert sorted(r["cnes"] for r in recs) == CODES
     assert "EXEMPLO" not in repr(recs)
 
@@ -123,7 +123,7 @@ def test_a_row_without_any_name_is_skipped_and_the_month_still_loads(tmp_path: P
 
     path = _synthetic_zip(tmp_path, nameless)
     with capture_logs() as logs:
-        recs = read_names(path, "202312")
+        recs = read_base(path, "202312")[0]
     assert sorted(r["cnes"] for r in recs) == [c for c in CODES if c != "4339517"]
     (skipped,) = [e for e in logs if e["event"] == "cnes_master_ftp.rows_skipped"]
     assert (skipped["pessoa_fisica"], skipped["sem_nome"]) == (1, 1)
@@ -141,7 +141,7 @@ def test_a_repeated_code_with_another_name_is_a_conflict(tmp_path: Path) -> None
 
     path = _synthetic_zip(tmp_path, repeated)
     with pytest.raises(ValueError, match="conflicting CNES records for 2320886"):
-        read_names(path, "202312")
+        read_base(path, "202312")[0]
     with pytest.raises(ValueError, match="conflicting CNES records for 2320886"):
         import_cnes_master_ftp("202312", zip_path=path, target=f"ducklake:{tmp_path}/c.ducklake")
 
@@ -149,12 +149,12 @@ def test_a_repeated_code_with_another_name_is_a_conflict(tmp_path: Path) -> None
 def test_a_repeated_identical_line_is_one_record(tmp_path: Path) -> None:
     """Synthetic: the line of 2320886 twice, byte for byte."""
     path = _synthetic_zip(tmp_path, lambda text: text + _line_of(text, "2320886") + "\n")
-    assert sorted(r["cnes"] for r in read_names(path, "202312")) == CODES
+    assert sorted(r["cnes"] for r in read_base(path, "202312")[0]) == CODES
 
 
-def test_read_names_rejects_zip_without_the_month_file() -> None:
+def test_read_base_rejects_zip_without_the_month_file() -> None:
     with pytest.raises(ValueError, match="tbestabelecimento202311"):
-        read_names(FIXTURE, "202311")
+        read_base(FIXTURE, "202311")[0]
 
 
 def test_import_fills_view_and_a_second_load_keeps_existing_names(tmp_path: Path) -> None:
@@ -325,7 +325,7 @@ def test_a_tp_pfpj_other_than_3_gives_no_name(tmp_path: Path, tp_pfpj: str) -> N
     included, is not taken as a pessoa jurídica and is counted apart."""
     path = _synthetic_zip(tmp_path, lambda t: _set_field(t, "2320886", "TP_PFPJ", tp_pfpj))
     with capture_logs() as logs:
-        recs = {r["cnes"] for r in read_names(path, "202312")}
+        recs = {r["cnes"] for r in read_base(path, "202312")[0]}
     assert "2320886" not in recs
     (skipped,) = [e for e in logs if e["event"] == "cnes_master_ftp.rows_skipped"]
     assert (skipped["pessoa_fisica"], skipped["pf_pj_desconhecido"]) == (1, 1)
@@ -379,14 +379,14 @@ def test_a_code_the_st_marks_pessoa_fisica_gets_no_name_from_the_file(tmp_path: 
 
 @pytest.mark.parametrize("column", ["NO_RAZAO_SOCIAL", "NO_FANTASIA"])
 def test_a_name_with_a_valid_cpf_gives_no_name(tmp_path: Path, column: str) -> None:
-    """Synthetic, sensitive input: 546 rows of 202312 with TP_PFPJ 3 carry a valid CPF in a
+    """Synthetic, sensitive input: 600 rows of 202312 with TP_PFPJ 3 carry a valid CPF in a
     name, mostly empresário individual (evidence/2026-11-09-cnes-cpf-em-nome-pj.md). The
     CPF here is a made-up one with valid check digits. No name of that row is kept."""
     path = _synthetic_zip(
         tmp_path, lambda t: _set_field(t, "2320886", column, "FULANO DE TAL 52998224725")
     )
     with capture_logs() as logs:
-        recs = {r["cnes"] for r in read_names(path, "202312")}
+        recs = {r["cnes"] for r in read_base(path, "202312")[0]}
     assert "2320886" not in recs
     (skipped,) = [e for e in logs if e["event"] == "cnes_master_ftp.rows_skipped"]
     assert skipped["cpf_no_nome"] == 1
@@ -397,5 +397,122 @@ def test_eleven_digits_that_fail_the_cpf_check_keep_the_name(tmp_path: Path) -> 
     path = _synthetic_zip(
         tmp_path, lambda t: _set_field(t, "2320886", "NO_FANTASIA", "UNIDADE 52998224724")
     )
-    recs = {r["cnes"]: r for r in read_names(path, "202312")}
+    recs = {r["cnes"]: r for r in read_base(path, "202312")[0]}
     assert recs["2320886"]["nome"] == "UNIDADE 52998224724"
+
+
+# Synthetic, sensitive input: made up, with valid check digits.
+CPF_SINTETICO = "52998224725"
+
+
+def _master_names(target: str) -> dict[str, str | None]:
+    with Lake.local(target) as lake:
+        rows = lake.connect().execute(f"SELECT cnes, nome FROM {lake.alias}.cnes_master")
+        return dict(rows.fetchall())
+
+
+def _seed_legacy_cpf_names(target: str) -> None:
+    """Synthetic, sensitive input: names with a CPF stored before the CPF rule, for a code
+    whose row in the file is clean (only ``nome``, the first importer's shape) and for a code
+    the file does not have (CPF in the razão social)."""
+    from omnisus.sources.cnes.importers.master import _ensure_master_table
+
+    with Lake.local(target) as lake:
+        _seed(lake, CODES)
+        _ensure_master_table(lake)
+        con = lake.connect()
+        con.execute(
+            f"INSERT INTO {lake.alias}.cnes_master (cnes, nome) "
+            f"VALUES ('2320886', 'FULANO DE TAL {CPF_SINTETICO}')"
+        )
+        con.execute(
+            f"INSERT INTO {lake.alias}.cnes_master (cnes, nome, razao_social) "
+            "VALUES ('9999999', 'CLINICA', 'BELTRANO 529.982.247-25')"
+        )
+
+
+def test_a_name_with_a_cpf_already_in_cnes_master_is_removed(tmp_path: Path) -> None:
+    """Every stored name with a CPF goes in the import's transaction, before only_missing
+    looks at what is stored: a clean row of the file fills the code again."""
+    target = f"ducklake:{tmp_path}/ftp.ducklake"
+    _seed_legacy_cpf_names(target)
+
+    import_cnes_master_ftp("202312", zip_path=FIXTURE, target=target)
+
+    names = _master_names(target)
+    assert names["2320886"] == "HOSPITAL JOSE GUEDES CATAO"
+    assert "9999999" not in names
+    with Lake.local(target) as lake:
+        view = (
+            lake.connect()
+            .execute(f"SELECT nome FROM {lake.alias}.aux_cnes WHERE cnes = '9999999'")
+            .fetchall()
+        )
+    assert view in ([], [(None,)])
+
+
+def test_the_cpf_removal_rolls_back_with_the_import(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The removal is in the same transaction as the upsert: a failure undoes it."""
+    target = f"ducklake:{tmp_path}/ftp.ducklake"
+    _seed_legacy_cpf_names(target)
+
+    def fail_view(self):
+        raise RuntimeError("view unavailable")
+
+    monkeypatch.setattr(Lake, "ensure_aux_cnes_view", fail_view)
+    with pytest.raises(RuntimeError, match="view unavailable"):
+        import_cnes_master_ftp("202312", zip_path=FIXTURE, target=target)
+    assert _master_names(target) == {
+        "2320886": f"FULANO DE TAL {CPF_SINTETICO}",
+        "9999999": "CLINICA",
+    }
+
+
+def test_a_clean_stored_name_stays_when_the_file_now_writes_a_cpf(tmp_path: Path) -> None:
+    """The CPF row gives no record, and the clean name already stored is kept, as on the
+    API path: the rule removes names with a CPF, not the codes whose source now has one."""
+    target = f"ducklake:{tmp_path}/ftp.ducklake"
+    with Lake.local(target) as lake:
+        _seed(lake, CODES)
+    import_cnes_master_ftp("202312", zip_path=FIXTURE, target=target)
+    path = _synthetic_zip(
+        tmp_path,
+        lambda t: _set_field(t, "2320886", "NO_RAZAO_SOCIAL", f"FULANO DE TAL {CPF_SINTETICO}"),
+    )
+
+    import_cnes_master_ftp("202312", zip_path=path, target=target, only_missing=False)
+
+    assert _master_names(target)["2320886"] == "HOSPITAL JOSE GUEDES CATAO"
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        "529 982 247 25",  # 51 of the 54 rows of 202312 the dotted rule missed
+        "529982247 25",  # the other shape found in 202312
+        "529.982.247/25",
+        "529.982.247 25",
+    ],
+)
+def test_a_cpf_written_with_spaces_or_a_slash_gives_no_name(tmp_path: Path, written: str) -> None:
+    """Synthetic, sensitive input: the made-up CPF in the separators 202312 uses besides
+    dots and dash (evidence/2026-11-09-cnes-cpf-em-nome-pj.md)."""
+    path = _synthetic_zip(
+        tmp_path, lambda t: _set_field(t, "2320886", "NO_RAZAO_SOCIAL", f"FULANO DE TAL {written}")
+    )
+    assert "2320886" not in {r["cnes"] for r in read_base(path, "202312")[0]}
+
+
+@pytest.mark.parametrize("written", ["52 998 224 725", "5299 8224 725", "529 982 247 24"])
+def test_digits_outside_the_cpf_grouping_or_check_keep_the_name(
+    tmp_path: Path, written: str
+) -> None:
+    """Synthetic: the same digits grouped otherwise, or with a wrong check digit, are not a
+    CPF, so the separators do not widen the rule beyond the CPF's own positions."""
+    path = _synthetic_zip(
+        tmp_path, lambda t: _set_field(t, "2320886", "NO_FANTASIA", f"UNIDADE {written}")
+    )
+    recs = {r["cnes"]: r for r in read_base(path, "202312")[0]}
+    assert recs["2320886"]["nome"] == f"UNIDADE {written}"

@@ -14,9 +14,19 @@ Membro `tbEstabelecimento202312.csv`, lido com `csv` em `latin-1`, separador `;`
 
 ## Método
 
-Um CPF é uma sequência de 11 dígitos, com ou sem pontos e traço, sem dígito colado antes ou
-depois, cujos dois dígitos verificadores batem (módulo 11) e que não é um só dígito
+Um CPF é uma sequência de 11 dígitos no agrupamento do CPF (`ddd.ddd.ddd-dd`, com os pontos
+e o traço opcionais ou escritos como espaço, e o traço também como barra), sem dígito colado
+antes ou depois, cujos dois dígitos verificadores batem (módulo 11) e que não é um só dígito
 repetido. A mesma regra está em `omnisus.sources.cnes.importers.master._contains_cpf`.
+
+A primeira medição (2026-11-09) só aceitava pontos e traço como separador. Na revisão, a
+pergunta foi se uma regra mais frouxa pegaria mais: 11 dígitos depois de tirar espaços,
+pontos, traços e barras, ou 10 dígitos que viram CPF válido com um zero à esquerda. Medido
+em 2026-11-14 sobre o mesmo arquivo: 54 linhas `TP_PFPJ` 3 a mais, todas com o CPF escrito
+com espaços (`ddd ddd ddd dd` em 51 ocorrências, `ddddddddd dd` em 6), 49 de natureza
+`2135` e 5 de `2062`; nenhuma com barra e nenhuma de 10 dígitos. A regra passou a aceitar
+espaço e barra nas posições do ponto e do traço, e a medição abaixo é a da regra atual. Com
+ela, a regra frouxa não acha mais nenhuma linha.
 
 ## Contagem
 
@@ -26,21 +36,24 @@ repetido. A mesma regra está em `omnisus.sources.cnes.importers.master._contain
 | `TP_PFPJ` 3 | 354.732 |
 | `TP_PFPJ` 1 | 155.143 |
 | Outro valor | 0 |
-| `TP_PFPJ` 3 com CPF válido em algum nome | 546 |
+| `TP_PFPJ` 3 com CPF válido em algum nome | 600 |
 
-Ocorrências: 541 em `NO_RAZAO_SOCIAL` e 21 em `NO_FANTASIA` (uma linha pode ter as duas),
-todas só com dígitos.
+Linhas com CPF por coluna: 595 em `NO_RAZAO_SOCIAL` e 24 em `NO_FANTASIA` (uma linha pode
+ter as duas). Formas: 11 dígitos seguidos em 562 ocorrências, `ddd ddd ddd dd` em 51 e
+`ddddddddd dd` em 6; nenhuma com ponto, traço ou barra.
 
-Por `CO_NATUREZA_JUR` das 546 linhas:
+Por `CO_NATUREZA_JUR` das 600 linhas:
 
 | CO_NATUREZA_JUR | Linhas com CPF | Linhas `TP_PFPJ` 3 dessa natureza |
 | --- | ---: | ---: |
-| `2135` (empresário individual) | 486 | 23.976 |
-| `2062` (sociedade empresária limitada) | 57 | 148.478 |
+| `2135` (empresário individual) | 535 | 23.976 |
+| `2062` (sociedade empresária limitada) | 62 | 148.478 |
 | `2305` | 3 | 2.931 |
 
 ## Efeito no import
 
-`read_base` sobre este arquivo: 354.186 registros com nome; 155.689 códigos sem nome
-público (155.143 de pessoa física e 546 com CPF no nome); nenhum `TP_PFPJ` desconhecido e
-nenhuma linha sem nome.
+`read_base` sobre este arquivo (2026-11-14): 354.132 registros com nome; 600 linhas puladas
+por CPF no nome; 155.143 códigos sem nome público, todos de pessoa física; nenhum
+`TP_PFPJ` desconhecido e nenhuma linha sem nome. O código de uma linha com CPF não entra
+na lista de códigos sem nome público: o importador apaga todo nome gravado que tenha CPF,
+de qualquer código, e mantém um nome limpo já gravado.

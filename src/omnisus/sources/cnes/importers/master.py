@@ -9,8 +9,9 @@ Typical workflow:
 
 1. ``import_dataset("cnes_estabelecimentos", ...)`` or ``load`` populates
    ``lake.cnes_estabelecimentos`` (FTP) and refreshes ``aux_cnes``.
-2. ``import_cnes_master()`` fetches names for every CNES present in cnes_estabelecimentos
-   that isn't yet in cnes_master.
+2. ``import_cnes_master()`` fetches names for every CNES that cnes_estabelecimentos marks
+   pessoa jurídica (``pf_pj = '3'`` in every imported month) and that isn't yet in
+   cnes_master. No other code gets a name, and no name holding a valid CPF is kept.
 3. ``aux_cnes`` view auto-refreshes; explorer lookups now resolve names.
 
 Re-runs are incremental by default (``only_missing=True``): codes already
@@ -46,11 +47,17 @@ API_FONTE = "API dados abertos CNES (apidadosabertos.saude.gov.br)"
 ProgressCallback = Callable[[int, int], None]
 
 
-_CPF = re.compile(r"(?<!\d)\d{3}\.?\d{3}\.?\d{3}-?\d{2}(?!\d)")
+# Separators only where a CPF has them. 202312 writes the 11 digits plain or with spaces
+# (evidence/2026-11-09-cnes-cpf-em-nome-pj.md); dots, dash and slash are the printed forms.
+_CPF = re.compile(r"(?<!\d)\d{3}[. ]?\d{3}[. ]?\d{3}[-/ ]?\d{2}(?!\d)")
+
+# Rows of cnes_master read per step of _delete_cpf_names.
+_CPF_SCAN_BATCH = 10_000
 
 
 def _contains_cpf(text: str | None) -> bool:
-    """Whether ``text`` holds 11 digits (dots and dash allowed) with valid CPF check digits.
+    """Whether ``text`` holds 11 digits in the CPF grouping (``ddd.ddd.ddd-dd``, the dots
+    and dash optional or written as spaces, the dash also as a slash) with valid check digits.
 
     Some pessoa jurídica rows write the owner's name and CPF as the razão social, mostly
     empresário individual (evidence/2026-11-09-cnes-cpf-em-nome-pj.md): no such name is kept.
@@ -188,6 +195,22 @@ def _delete_master_codes(lake: Lake, codes: set[str]) -> int:
     return int(row[0]) if row else 0
 
 
+def _delete_cpf_names(lake: Lake) -> int:
+    """Remove every ``cnes_master`` row with a CPF in ``nome``, ``nome_fantasia`` or
+    ``razao_social`` (``_contains_cpf``); returns how many rows left.
+
+    The whole table is read, not only the codes an import touches: a lake filled before the
+    CPF rule, or from an answer that had no CPF then, may hold one in any code.
+    """
+    cursor = lake.connect().execute(
+        f"SELECT cnes, nome, nome_fantasia, razao_social FROM {lake.alias}.cnes_master"
+    )
+    codes: set[str] = set()
+    while batch := cursor.fetchmany(_CPF_SCAN_BATCH):
+        codes.update(code for code, *names in batch if any(map(_contains_cpf, names)))
+    return _delete_master_codes(lake, codes)
+
+
 def _ensure_master_table(lake: Lake) -> None:
     """Create ``cnes_master`` if it doesn't exist yet (idempotent)."""
     lake.connect().execute(
@@ -266,13 +289,21 @@ def import_cnes_master(
 ) -> int:
     """Fetch establishment names from the CNES API and upsert ``lake.cnes_master``.
 
+    Only a code ``cnes_estabelecimentos`` marks ``pf_pj = '3'`` in every imported month is
+    fetched (``_pf_pj_codes``), listed or discovered. An answer with a valid CPF in a name
+    is not written. In the transaction of the upsert, the stored names of the codes that are
+    not pessoa jurídica go (``_delete_master_codes``), and so does every stored name with a
+    valid CPF, of any code (``_delete_cpf_names``).
+
     Args:
-        codes: explicit list of 7-digit CNES codes. If ``None`` (default),
-            pulls codes from ``lake.cnes_estabelecimentos``.
+        codes: explicit list of 7-digit CNES codes; only the pessoa jurídica ones are
+            fetched. If ``None`` (default), pulls the pessoa jurídica codes from
+            ``lake.cnes_estabelecimentos``.
         target: lake target string (same shape used by every other importer).
         concurrency: max concurrent API requests (default 5 to be polite).
-        only_missing: when ``True`` (default), skip codes already in
-            ``cnes_master`` — re-runs become incremental top-ups.
+        only_missing: when ``True`` (default), discovery (``codes=None``) skips codes
+            already in ``cnes_master`` — re-runs become incremental top-ups. A code
+            whose stored name held a CPF is missing after the removal.
         progress: optional ``(done, total)`` callback fired after each fetch
             completes for each unique requested code. Used by the backend to
             stream job progress to the UI.
@@ -305,10 +336,13 @@ def import_cnes_master(
         with lake.transaction():
             _ensure_master_table(lake)
             removed = _delete_master_codes(lake, not_pessoa_juridica)
+            removed_cpf = _delete_cpf_names(lake)
             _upsert_master(lake, records)
             lake.ensure_aux_cnes_view()
-        if removed:
-            logger.info("cnes_master.names_removed", pessoa_fisica=removed)
+        if removed or removed_cpf:
+            logger.info(
+                "cnes_master.names_removed", pessoa_fisica=removed, cpf_no_nome=removed_cpf
+            )
 
         logger.info("cnes_master.done", fetched=len(records), requested=len(codes))
         return len(records)

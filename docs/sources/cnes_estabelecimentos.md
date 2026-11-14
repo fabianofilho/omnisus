@@ -141,10 +141,17 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
   Só estabelecimento de pessoa jurídica (`TP_PFPJ=3`) fica com nome. O de pessoa física
   (`TP_PFPJ=1`, cerca de 30% das linhas de 202312) traz o nome do profissional na razão
   social e no nome fantasia, e a importação ignora essas linhas, como ignora qualquer outro
-  valor de `TP_PFPJ`. Também fica sem nome a linha cujo nome traz um CPF válido: 546 de
-  202312, quase todas de empresário individual
+  valor de `TP_PFPJ`. Também fica sem nome a linha cujo nome traz um CPF válido, só com
+  dígitos ou com pontos, traço, barra ou espaços nas posições do CPF: 600 de 202312, quase
+  todas de empresário individual
   ([medição](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-11-09-cnes-cpf-em-nome-pj.md)).
-  O nome que o `cnes_master` já tiver para esses códigos sai na mesma transação.
+  Na mesma transação do upsert sai o nome que o `cnes_master` já tiver para um código sem
+  nome público (pessoa física ou outro valor de `TP_PFPJ`), e sai também todo nome gravado
+  que traga um CPF válido, de qualquer código, pelos dois caminhos (API e FTP). Um nome
+  limpo já gravado fica quando a fonte passa a trazer CPF no nome do código.
+  A razão social de empresário individual (natureza jurídica 2135) é o nome civil da
+  pessoa. O lake a guarda, por ser dado público do CNPJ que identifica o estabelecimento;
+  nomes que trazem CPF não são guardados.
   O `import_cnes_master` (API) só busca nome de código que o `cnes_estabelecimentos` marca
   com `pf_pj = '3'` em todos os meses importados, mesmo listado à mão; código fora do ST, ou
   lake sem `pf_pj`, fica sem nome. Um código `'3'` nos meses importados e `'1'` num mês não
