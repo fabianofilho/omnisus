@@ -23,7 +23,7 @@ schema:
     - name: situacao
       type: string
       constraints: { enum: [ATIVO, EXTIN, IGNOR, TRANS] }
-      description: "CADMUN.SITUACAO como publicado; tb_municip.CO_STATUS nos seis da base territorial, todos ATIVO. A base também grava REG ADM e IGNR, que o enum não admite: o build barra valor fora do vocabulário da base e um teste exige o enum do CADMUN"
+      description: "CADMUN.SITUACAO como publicado; tb_municip.CO_STATUS nos seis da base territorial, todos ATIVO. A base também grava REG ADM e IGNR, fora do enum: o build para diante de um CO_STATUS fora do enum do dicionário, esses dois inclusive"
     - name: ano_instalacao
       type: integer
       description: "CADMUN.ANOINST; tb_municip.DT_INSTAL nos seis da base territorial (Nazária: 2009, anterior ao CADMUN, que mesmo assim não a traz)"
@@ -44,7 +44,7 @@ schema:
       description: "CADMUN.ALTITUDE, tb_municip.NU_ALTITUD nos seis da base territorial, como publicado"
     - name: area
       type: number
-      description: "CADMUN.AREA, tb_municip.NU_AREA nos seis da base territorial, como publicado (nulo em Nazária, Pescaria Brava e Balneário Rincão, que a base grava vazios)"
+      description: "CADMUN.AREA, tb_municip.NU_AREA nos seis da base territorial, como publicado; nulo onde a fonte grava vazio: Nazária, Pescaria Brava e Balneário Rincão, da base territorial, e 220095, 500390, 510452 e 510454, do CADMUN"
     - name: regiao_saude
       type: string
       description: "CADMUN.RSAUDCOD; nulo nos seis municípios da base territorial, que usa outro código de região"
@@ -52,7 +52,7 @@ schema:
       type: string
       description: "CADMUN.MSAUDCOD; nulo nos seis municípios da base territorial"
   primaryKey: [codigo_ibge]
-x-version: "2.2.1"
+x-version: "2.2.2"
 x-source: DATASUS
 x-source-url:
   - "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CADMUN.DBF"
