@@ -7,6 +7,7 @@ import tomllib
 from pathlib import Path
 
 import pytest
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 PYPROJECT = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
@@ -49,3 +50,13 @@ def test_no_packaged_data_file_is_gitignored():
         ["git", "check-ignore", "--no-index", *packaged], cwd=ROOT, capture_output=True, text=True
     ).stdout.split()
     assert packaged and ignored == []
+
+
+def test_pypi_publish_waits_for_native_parity():
+    # release.yml ran `native` beside `gate` and published on `gate` alone, so v0.2.2
+    # reached PyPI with `native / wheel` red (#118). The native job fails when the
+    # installed wheels lose parity (native.yml, "Require native parity ...").
+    workflow = yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8"))
+    needs = workflow["jobs"]["publish"]["needs"]
+    needs = {needs} if isinstance(needs, str) else set(needs)
+    assert {"gate", "native"} <= needs

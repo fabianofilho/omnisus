@@ -2,10 +2,8 @@ name: sih_aih_reduzida_1992_2007
 title: SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.3.0
+x-version: 1.3.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: >-
     89 fields: the union of the 19 DBF layouts of the files read on 2026-10-01, one RR file

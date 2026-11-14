@@ -1049,7 +1049,7 @@
         "vincprev": "sih/CNV/VINCPREV.CNV"
       },
       "sem_cnv": {
-        "cod_idade": "IDADEBAS, IDADEPUB, IDADE18 e IDADEDET.CNV comparam 3 caracteres a partir de COD_IDADE, que tem 1.",
+        "cod_idade": "RD2008.DEF (linhas 188-191) liga COD_IDADE a IDADEBAS.CNV, IDADEPUB.CNV, IDADE18.CNV e IDADEDET.CNV, que comparam três caracteres a partir de COD_IDADE, que tem um; nenhum está empacotado. Issue 6.",
         "nat_jur": "RD2008.DEF (linhas 168-173) liga NAT_JUR a NATJUR.CNV, NATJURC.CNV, ESFERAJUR.CNV e ESFERAJURC.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 5 da issue 7.",
         "cnaer": "RD2008.DEF (linhas 222-224) liga CNAER a CNAEG.CNV e CNAE.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 2 da issue 7; as fixtures do RD trazem '000' em todas as linhas.",
         "ano_cmpt": "RD2008.DEF (linhas 179 e 181-183) liga ANO_CMPT a ANO.CNV, ANOMES.CNV e ANOMESC.CNV; nenhum está empacotado. Issue 137.",
@@ -1062,14 +1062,14 @@
         "dias_perm": "RD2008.DEF (linha 249) liga DIAS_PERM a PERM.CNV a partir da posição 2; não está empacotado. Issue 137.",
         "dt_inter": "RD2008.DEF (linhas 239-243) liga DT_INTER a ANO.CNV, MESES.CNV, ANOMES.CNV e ANOMESC.CNV (MESES.CNV a partir da posição 5); nenhum está empacotado. É agrupamento do código: o DEF chama as linhas de 'Ano de internação', 'Mês de internação' e 'Ano/Mês internação'. Issue 137.",
         "dt_saida": "RD2008.DEF (linhas 244-248) liga DT_SAIDA a ANO.CNV, MESES.CNV, ANOMES.CNV e ANOMESC.CNV (MESES.CNV a partir da posição 5); nenhum está empacotado. É agrupamento do código: o DEF chama as linhas de 'Ano de saída', 'Mês de saída' e 'Ano/Mês de saída'. Issue 137.",
-        "faec_tp": "RD2008.DEF (linhas 271-273) liga FAEC_TP a TP_FINAN.CNV; as linhas trazem um nome de campo no lugar da coluna inicial, forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
+        "faec_tp": "RD2008.DEF (linhas 271-273) liga FAEC_TP a TP_FINAN.CNV; as linhas trazem um nome de campo no lugar da coluna inicial (DS_TPFIN), forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
         "insc_pn": "RD2008.DEF (linha 531) liga INSC_PN a INSCPN.CNV; não está empacotado. Issue 137.",
         "mes_cmpt": "RD2008.DEF (linha 180) liga MES_CMPT a MESES.CNV; não está empacotado. Issue 137.",
         "munic_mov": "RD2008.DEF (linhas 26-40) liga MUNIC_MOV a 13 tabelas, entre elas br_regiaouf.cnv e br_uf.cnv; nenhuma está empacotada. É agrupamento do código: o DEF chama as linhas de 'Região e UF internação', 'UF internação' e 'Região internação'. O código tem rótulo pela referência a aux_municipios. Issue 137.",
         "munic_res": "RD2008.DEF (linhas 194-218) liga MUNIC_RES a 13 tabelas, entre elas br_regiao.cnv e br_regiaouf.cnv; nenhuma está empacotada. É agrupamento do código: o DEF chama as linhas de 'Região de Residência', 'Região/UF de Residência' e 'Unid da Federação de Resid.'. O código tem rótulo pela referência a aux_municipios. Issue 137.",
         "n_aih": "RD2008.DEF (linha 230) liga N_AIH a IDENTIFIC.CNV a partir da posição 5; não está empacotado. Issue 137.",
         "num_filhos": "RD2008.DEF (linha 521) liga NUM_FILHOS a NUMFILH.CNV; não está empacotado. Issue 137.",
-        "proc_rea": "RD2008.DEF (linhas 281-283) liga PROC_REA a PROCOBS2b.CNV; as linhas trazem um nome de campo no lugar da coluna inicial, forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
+        "proc_rea": "RD2008.DEF (linhas 281-283) liga PROC_REA a PROCOBS2b.CNV; as linhas trazem um nome de campo no lugar da coluna inicial (IP_DSCR), forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
         "seq_aih5": "RD2008.DEF (linha 232) liga SEQ_AIH5 a SEQAIH.CNV; não está empacotado. Issue 137.",
         "uf_zi": "RD2008.DEF (linhas 175-176) liga UF_ZI a br_municgestor.cnv, com o rótulo 'Município gestor'; não está empacotado. Issue 137.",
         "uti_mes_to": "RD2008.DEF (linha 236) liga UTI_MES_TO a DIARIASUTI.CNV; não está empacotado. Issue 137."
@@ -1415,6 +1415,7 @@
         "vincprev": "sih/CNV/VINCPREV.CNV"
       },
       "sem_cnv": {
+        "cod_idade": "RJ2008.DEF (linhas 193-196) liga COD_IDADE a IDADEBAS.CNV, IDADEPUB.CNV, IDADE18.CNV e IDADEDET.CNV, que comparam três caracteres a partir de COD_IDADE, que tem um; nenhum está empacotado. Issue 6.",
         "nat_jur": "RJ2008.DEF (linhas 170-175) liga NAT_JUR a NATJUR.CNV, NATJURC.CNV, ESFERAJUR.CNV e ESFERAJURC.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 5 da issue 7.",
         "cnaer": "RJ2008.DEF (linhas 226-228) liga CNAER a CNAEG.CNV e CNAE.CNV; nenhum está empacotado. A escolha do vínculo é a decisão 2 da issue 7; as fixtures do RJ trazem '000' em todas as linhas.",
         "gestor_cod": "RJ2008.DEF (linha 489) liga GESTOR_COD a AUTORIZ.CNV, não empacotado; as fixtures do RJ trazem o campo em branco nas 32 linhas. A decisão 6 da issue 7 pede um excerto com o campo preenchido antes de ligar.",
@@ -1427,14 +1428,14 @@
         "dias_perm": "RJ2008.DEF (linha 252) liga DIAS_PERM a PERM.CNV a partir da posição 2; não está empacotado. Issue 137.",
         "dt_inter": "RJ2008.DEF (linhas 242-246) liga DT_INTER a ANO.CNV, MESES.CNV, ANOMES.CNV e ANOMESC.CNV (MESES.CNV a partir da posição 5); nenhum está empacotado. É agrupamento do código: o DEF chama as linhas de 'Ano de internação', 'Mês de internação' e 'Ano/Mês internação'. Issue 137.",
         "dt_saida": "RJ2008.DEF (linhas 247-251) liga DT_SAIDA a ANO.CNV, MESES.CNV, ANOMES.CNV e ANOMESC.CNV (MESES.CNV a partir da posição 5); nenhum está empacotado. É agrupamento do código: o DEF chama as linhas de 'Ano de saída', 'Mês de saída' e 'Ano/Mês de saída'. Issue 137.",
-        "faec_tp": "RJ2008.DEF (linhas 274-276) liga FAEC_TP a TP_FINAN.CNV; as linhas trazem um nome de campo no lugar da coluna inicial, forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
+        "faec_tp": "RJ2008.DEF (linhas 274-276) liga FAEC_TP a TP_FINAN.CNV; as linhas trazem um nome de campo no lugar da coluna inicial (DS_TPFIN), forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
         "insc_pn": "RJ2008.DEF (linha 488) liga INSC_PN a INSCPN.CNV; não está empacotado. Issue 137.",
         "mes_cmpt": "RJ2008.DEF (linha 182) liga MES_CMPT a MESES.CNV; não está empacotado. Issue 137.",
         "munic_mov": "RJ2008.DEF (linhas 21-44) liga MUNIC_MOV a 13 tabelas, entre elas br_regiao.cnv e br_regiaouf.cnv; nenhuma está empacotada. É agrupamento do código: o DEF chama as linhas de 'Região de Atendimento', 'Região/UF de Atendimento' e 'Unid da Federação de Atend.'. Issue 137.",
         "munic_res": "RJ2008.DEF (linhas 199-222) liga MUNIC_RES a 13 tabelas, entre elas br_regiao.cnv e br_regiaouf.cnv; nenhuma está empacotada. É agrupamento do código: o DEF chama as linhas de 'Região de Residência', 'Região/UF de Residência' e 'Unid da Federação de Resid.'. Issue 137.",
         "n_aih": "RJ2008.DEF (linha 234) liga N_AIH a IDENTIFIC.CNV a partir da posição 5; não está empacotado. Issue 137.",
         "num_filhos": "RJ2008.DEF (linha 478) liga NUM_FILHOS a NUMFILH.CNV; não está empacotado. Issue 137.",
-        "proc_rea": "RJ2008.DEF (linhas 283-285) liga PROC_REA a PROCOBS2b.CNV; as linhas trazem um nome de campo no lugar da coluna inicial, forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
+        "proc_rea": "RJ2008.DEF (linhas 283-285) liga PROC_REA a PROCOBS2b.CNV; as linhas trazem um nome de campo no lugar da coluna inicial (IP_DSCR), forma que as pp. 87-88 do TabWin.pdf não documentam para CNV; não está empacotado. Issue 137.",
         "seq_aih5": "RJ2008.DEF (linha 236) liga SEQ_AIH5 a SEQAIH.CNV; não está empacotado. Issue 137.",
         "uf_zi": "RJ2008.DEF (linhas 177-178) liga UF_ZI a br_municgestor.cnv, com o rótulo 'Município gestor'; não está empacotado. Issue 137.",
         "uti_mes_to": "RJ2008.DEF (linha 240) liga UTI_MES_TO a DIARIASUTI.CNV; não está empacotado. Issue 137."

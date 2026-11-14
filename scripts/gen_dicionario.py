@@ -62,7 +62,6 @@ def main() -> None:
         "encoding": "latin-1",
         "x-version": "1.0.0",
         "x-source-format": "dbc",
-        "x-partitions": ["_source_ano"],
         "x-evidence": {
             "physical_schema": (
                 f"{args.dbc.name}, {len(fields)} fields; observed {dt.date.today().isoformat()}"

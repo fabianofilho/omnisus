@@ -18,7 +18,6 @@ def _dic(**identity) -> Dicionario:
         encoding="latin-1",
         fields=[],
         primary_key=[],
-        partitions=[],
         source_format="dbc",
         version="1",
         raw=raw,

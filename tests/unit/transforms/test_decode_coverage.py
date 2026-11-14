@@ -28,15 +28,13 @@ REMAINING = {
     ("cnes_estabelecimentos", "cnes_rr_2024_01_mini"): [],
     ("sia_apac_cirurgia_bariatrica", "sia_abo_sp_2024_01_mini"): [],
     ("sia_apac_laudos_diversos", "sia_ad_rr_2024_01_mini"): [],
-    ("sia_apac_medicamentos", "sia_am_rr_2024_01_mini"): [("ap_coidade", "5", 1)],
+    ("sia_apac_medicamentos", "sia_am_rr_2024_01_mini"): [],
     ("sia_apac_quimioterapia", "sia_aq_rr_2024_01_mini"): [],
     ("sia_apac_tratamento_dialitico", "sia_atd_rr_2024_01_mini"): [],
     ("sia_bpa_individualizado", "sia_bi_rr_2024_01_mini"): [],
-    # tpidadepac: the only tables for it read 3 characters (issue tpidadepac-sem-tabela).
-    ("sia_bpa_individualizado", "sia_bi_rr_2022_01_mini"): [
-        ("tpidadepac", "5", 7),
-        ("tpidadepac", "9", 2),
-    ],
+    # tpidadepac: the only tables for it read 3 characters, and none has 9xx
+    # (issue tpidadepac-sem-tabela).
+    ("sia_bpa_individualizado", "sia_bi_rr_2022_01_mini"): [("tpidadepac", "9", 2)],
     ("sia_bpa_individualizado", "sia_bi_mg_2024_12_part1_excerpt"): [],
     ("sia_bpa_individualizado", "sia_bi_mg_2024_12_part2_excerpt"): [],
     ("sia_psicossocial", "sia_ps_rr_2024_01_mini"): [
@@ -44,10 +42,9 @@ REMAINING = {
         ("tp_droga", "AO", 907),
         ("tp_droga", "CO", 2),
     ],
-    # homonimo 2 is on no source page (issue homonimo-sem-fonte); tpdisec 0 is not in
-    # TP_DIAGSEC.CNV, which lists only 1 and 2 (issue tpdisec-0-sem-fonte).
+    # tpdisec 0 is not in TP_DIAGSEC.CNV, which lists only 1 and 2 (issue
+    # tpdisec-0-sem-fonte).
     ("sih_aih_reduzida", "sih_rr_2024_01_mini"): [
-        ("homonimo", "2", 39),
         ("tpdisec1", "0", 3092),
         ("tpdisec2", "0", 3699),
         *[(f"tpdisec{n}", "0", 3714) for n in range(3, 10)],
@@ -436,6 +433,20 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
             {"2": "Dias", "4": "Anos"},
         ),
         ("sia_apac_fistula_arteriovenosa", "sia_acf_rr_2024_01_mini", "ap_coidade", {"4": "Anos"}),
+        # #6: IDADEDET.CNV reads 500-530 as 100 to 130 years; the unit '5' alone is
+        # measured, not read, and says to add 100.
+        (
+            "sia_apac_medicamentos",
+            "sia_am_rr_2024_01_mini",
+            "ap_coidade",
+            {"5": "Anos (somar 100)"},
+        ),
+        (
+            "sia_bpa_individualizado",
+            "sia_bi_rr_2022_01_mini",
+            "tpidadepac",
+            {"5": "Anos (somar 100)"},
+        ),
         # RD2008.DEF lines 275-277 bind REGCT to REGCT.CNV, as RJ2008.DEF lines 277-279 do.
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "regct", {"0000": "SEM CONTRATO"}),
         # RD2008.DEF lines 407-433 bind TPDISEC1-9 to TP_DIAGSEC.CNV.
@@ -539,7 +550,6 @@ def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field
 @pytest.mark.parametrize(
     ("dataset", "fixture", "field", "issue", "codes"),
     [
-        ("sih_aih_reduzida", "sih_rr_2024_01_mini", "homonimo", "homonimo-sem-fonte", {"2"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec1", "tpdisec-0-sem-fonte", {"0"}),
         ("sih_aih_reduzida", "sih_rr_2024_01_mini", "tpdisec9", "tpdisec-0-sem-fonte", {"0"}),
         (
@@ -568,7 +578,7 @@ def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field
             "sia_bi_rr_2022_01_mini",
             "tpidadepac",
             "tpidadepac-sem-tabela",
-            {"5", "9"},
+            {"9"},
         ),
         # Codes no source defines (SP 2022 excerpts, AM RR 2024-01).
         (
@@ -591,13 +601,6 @@ def test_report_codes_take_the_source_label(dbc_fixture, dataset, fixture, field
             "ap_coidade",
             "ap_coidade-sem-tabela",
             {"0"},
-        ),
-        (
-            "sia_apac_medicamentos",
-            "sia_am_rr_2024_01_mini",
-            "ap_coidade",
-            "ap_coidade-sem-tabela",
-            {"5"},
         ),
         (
             "sia_apac_radioterapia",
@@ -642,6 +645,31 @@ def test_amp_age_unit_and_sex_stay_undecoded_without_a_def(dbc_fixture):
         assert entry["status"] == "open"
 
 
+@pytest.mark.parametrize(
+    ("field", "published", "issue"),
+    [
+        ("homonimo", {"0", "2"}, "homonimo-sem-fonte"),
+        ("gestor_tp", {"0", "1"}, "gestor_tp-sem-fonte"),
+    ],
+)
+def test_sih_homonimo_and_gestor_tp_stay_undecoded_without_a_def(
+    dbc_fixture, field, published, issue
+):
+    """#10: none of the 37 packaged DEF (RD2008.DEF, RJ2008.DEF, the RD.DEF of 1992-2007
+    and the rest) names HOMONIMO or GESTOR_TP, and no registered document lists their
+    codes. RDRR2401 holds homonimo 0/2, which contradicted the {0: Não, 1: Sim} map, and
+    gestor_tp 0/1; neither field gets a map, and the field's issue says what was read."""
+    defs = [p for p in Path(str(CNV)).rglob("*") if p.suffix.lower() == ".def"]
+    assert len(defs) == 37
+    assert not [p.name for p in defs if field.upper() in p.read_text(encoding="latin-1").upper()]
+    frame = _read("sih_aih_reduzida", dbc_fixture("sih_rr_2024_01_mini"))
+    assert set(frame[field]) == published
+    definition = load_dicionario("sih_aih_reduzida").field_def(field)
+    assert "x-decode" not in definition
+    (entry,) = [i for i in definition["x-metadata"]["issues"] if i["id"] == issue]
+    assert entry["status"] == "open" and "DEF" in entry["description"]
+
+
 APAC_WITH_UNIT_MAP = [
     "sia_apac_quimioterapia",
     "sia_apac_tratamento_dialitico",
@@ -655,9 +683,10 @@ APAC_WITH_UNIT_MAP = [
 
 @pytest.mark.parametrize("dataset", APAC_WITH_UNIT_MAP)
 def test_every_apac_age_unit_map_says_it_was_measured(dataset):
-    """No table labels the 1-character AP_COIDADE: every APAC map carries the issue."""
+    """No table labels the 1-character AP_COIDADE: every APAC map carries the issue. '5'
+    is a year to add to 100, as IDADEDET.CNV reads 500-530 (#6)."""
     field = load_dicionario(dataset).field_def("ap_coidade")
-    assert field["x-decode"] == {"2": "Dias", "3": "Meses", "4": "Anos"}
+    assert field["x-decode"] == {"2": "Dias", "3": "Meses", "4": "Anos", "5": "Anos (somar 100)"}
     (entry,) = [i for i in field["x-metadata"]["issues"] if i["id"] == "ap_coidade-sem-tabela"]
     assert entry["status"] == "open"
 

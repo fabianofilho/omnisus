@@ -2,10 +2,8 @@ name: sih_aih_rejeitada_erro
 title: SIHSUS — AIH rejeitada com código de erro (ER)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.0.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: sih_er_rr_2024_01_mini.dbc, 13 fields; observed 2026-09-22
   semantic_status: Physical inventory; individual semantic fields not audited. No

@@ -9,6 +9,7 @@ from pathlib import Path
 from scripts.dbc_excerpt import _columns, blank_dbf
 
 from omnisus.sources.datasus_ftp.dbc import decompress_bytes
+from omnisus.transforms.dictionaries import load_dicionario
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 TABLE = FIXTURES / "FIXTURES.md"
@@ -141,3 +142,46 @@ def test_blanked_columns_are_blank() -> None:
         if listed:
             dbf = decompress_bytes((FIXTURES / row["file"]).read_bytes())
             assert blank_dbf(dbf, listed.group(1).split(", ")) == dbf, row["file"]
+
+
+# The fixtures that blank a professional's identifier, by the dataset they belong to.
+_BLANKING_DATASETS = {
+    "/SIASUS/200801_/Dados/BI": "sia_bpa_individualizado",
+    "/SIASUS/200801_/Dados/PA": "sia_producao_ambulatorial",
+    "/SIHSUS/200801_/Dados/SP": "sih_servicos_profissionais",
+}
+
+
+def test_x_crypto_marks_the_cipher_not_an_identifier_in_clear() -> None:
+    """``x-crypto: datasus-cns`` says a column holds DATASUS's cipher (CNS_PAC: no
+    digits). A column the fixtures blank was a person identifier in clear in the
+    server's file, so it is not marked as one (#68: CNSPROF)."""
+    checked = 0
+    for row in load_fixture_rows():
+        dataset = next((d for k, d in _BLANKING_DATASETS.items() if k in row["source"]), None)
+        listed = re.search(r"blanked: ([A-Z0-9_:=, ]+)", row["note"])
+        if dataset is None or listed is None:
+            continue
+        blanked = {item.split(":")[0] for item in listed.group(1).split(", ")}
+        crypto = {
+            f["name"].upper()
+            for f in load_dicionario(dataset).fields
+            if f.get("x-crypto") == "datasus-cns"
+        }
+        assert crypto.isdisjoint(blanked), (row["file"], sorted(crypto & blanked))
+        dbf = decompress_bytes((FIXTURES / row["file"]).read_bytes())
+        records = int.from_bytes(dbf[4:8], "little")
+        header_length = int.from_bytes(dbf[8:10], "little")
+        record_length = int.from_bytes(dbf[10:12], "little")
+        columns = _columns(dbf)
+        for column in crypto:
+            offset, width = columns[column]
+            cells = [
+                dbf[start + offset : start + offset + width].decode("latin-1").strip()
+                for start in range(
+                    header_length, header_length + records * record_length, record_length
+                )
+            ]
+            assert any(cells) and not any(c.isdigit() for c in cells), (row["file"], column)
+        checked += 1
+    assert checked >= 6

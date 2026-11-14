@@ -1044,7 +1044,7 @@ schema:
       label: Diferença de datas (dias)
 
     # ========================================================================
-    # Partições + procedência (adicionados pelo ETL)
+    # Partições (adicionadas pela importação)
     # ========================================================================
     - name: ano
       type: integer
@@ -1054,26 +1054,10 @@ schema:
       type: string
       label: UF
       constraints: { required: true, pattern: "^[A-Z]{2}$" }
-    - name: _fonte_arquivo
-      type: string
-      label: Arquivo fonte
-    - name: _data_extracao
-      type: string
-      label: Data de extração
-    - name: _hash_arquivo
-      type: string
-      label: Hash do arquivo
-    - name: _sistema
-      type: string
-      label: Sistema
-    - name: _grupo
-      type: string
-      label: Grupo
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DN
-x-partitions: [ano, uf]
-x-version: "2.4.0"
+x-version: "2.4.1"
 
 x-analytics:
   version: 1.0.0

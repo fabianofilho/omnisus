@@ -2,10 +2,8 @@ name: sim_obitos_infantis
 title: SIM — Óbitos infantis (DOINF), nacional
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.1
+x-version: 1.1.2
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: sim_doinf_br_2023_excerpt.dbc, 87 fields; observed 2026-09-22
   semantic_status: >-
