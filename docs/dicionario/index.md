@@ -49,7 +49,8 @@ documento de 2025 não prova que vale para os arquivos de 1996.
 - **`sus.label`** acrescenta `<coluna>_rotulo` a partir do `x-decode`. Um código que o mapa
   não conhece fica sem rótulo (`None`); ele nunca é adivinhado.
 - **`sus.check_columns`** mostra, por coluna, vazios, códigos sem rótulo e as datas mínima
-  e máxima.
+  e máxima. Uma categoria harmonizada que `sus.load` acrescentou traz em `rule` os campos
+  publicados de onde vem (`"harmonised from idade"`), em vez de `"not in dictionary"`.
 - **Categorias harmonizadas** (idade em anos, sexo, datas) só aparecem para arquivos cujo
   SHA-256 foi auditado, listados em `describe_dataset(...)["analytics"]["validated_sources"]`
   ([ADR 0003](../decisions/0003-harmonised-categories-only-for-validated-sources.md)).

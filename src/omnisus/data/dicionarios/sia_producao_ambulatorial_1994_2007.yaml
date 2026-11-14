@@ -2,10 +2,8 @@ name: sia_producao_ambulatorial_1994_2007
 title: SIASUS — Produção ambulatorial (PA), 1994-07 a 2007-12
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.0
+x-version: 1.1.1
 x-source-format: dbc
-x-partitions:
-- _source_ano
 x-evidence:
   physical_schema: sia_pa_rr_2007_12_mini.dbc, 28 fields; observed 2026-09-22
   semantic_status: Physical inventory; individual semantic fields not audited. No

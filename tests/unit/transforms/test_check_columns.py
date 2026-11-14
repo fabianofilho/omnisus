@@ -12,6 +12,7 @@ import pytest
 
 import omnisus as sus
 from omnisus.sources._base import ScopeKey
+from omnisus.transforms.analytics import SourceContext, analytical_projection
 from omnisus.transforms.dictionaries import decode_coverage, load_dicionario
 from tests.support.lake_rows import load_fixture
 
@@ -151,3 +152,47 @@ def test_a_column_outside_the_dictionary_is_reported_not_skipped(sim: pl.DataFra
 
     assert row["rule"] == "not in dictionary"
     assert row["label"] is None and row["example_label"] is None
+
+
+def test_the_harmonised_columns_load_adds_name_the_fields_they_come_from(
+    sim: pl.DataFrame,
+) -> None:
+    """DORR2023 is a validated source, so `sus.load` adds `idade_*`, `sexo_*` and
+    `<date>_data`/`<date>_data_status` (ADR 0003); none of them is "not in dictionary"."""
+    report = sus.check_columns("sim_obitos", sim).rows_by_key("column", named=True, unique=True)
+
+    assert {"idade_status", "sexo_categoria", "dtobito_data_status"} <= set(sim.columns)
+    assert [c for c, row in report.items() if row["rule"] == "not in dictionary"] == []
+    assert report["idade_status"]["rule"] == "harmonised from idade"
+    assert report["sexo_categoria"]["rule"] == "harmonised from sexo"
+    assert report["dtobito_data_status"]["rule"] == "harmonised from dtobito"
+    assert report["idade_status"]["label"] is None
+
+
+def test_a_harmonised_age_names_both_of_its_fields(sia: pl.DataFrame) -> None:
+    """The `idade_*` that `analytical_projection` derives for BIRR2201, the validated
+    publication this fixture excerpts (FIXTURES.md: server SHA-256 03d41d13...)."""
+    birr2201 = SourceContext(
+        ScopeKey("RR", 2022, 1),
+        "final",
+        "03d41d139dd970f25a565471053a5459f7cd77ef7d2633a63f33db2f8725340a",
+    )
+    relation = duckdb.from_arrow(sia.to_arrow())
+    projection = analytical_projection(
+        "sia_bpa_individualizado",
+        observed_schema=dict(zip(relation.columns, map(str, relation.types), strict=True)),
+        scopes=[birr2201],
+    )
+    derived = ", ".join(f"{c.expression} AS {c.name}" for c in projection.columns)
+    rows = relation.select(f"*, {derived}").pl()
+
+    report = sus.check_columns("sia_bpa_individualizado", rows)
+
+    harmonised = report.filter(pl.col("column").is_in([c.name for c in projection.columns]))
+    assert harmonised["column"].to_list() == [
+        "idade_anos_completos",
+        "idade_status",
+        "idade_quantidade",
+        "idade_unidade",
+    ]
+    assert set(harmonised["rule"]) == {"harmonised from idadepac, tpidadepac"}

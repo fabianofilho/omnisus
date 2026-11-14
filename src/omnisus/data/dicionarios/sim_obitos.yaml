@@ -1867,8 +1867,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DO
-x-partitions: [ano, uf]
-x-version: "2.6.0"
+x-version: "2.6.1"
 
 x-analytics:
   version: 1.2.0

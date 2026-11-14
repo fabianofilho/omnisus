@@ -85,6 +85,35 @@ class AnalyticalProjection:
     metadata_hash: str
 
 
+_AGE_OUTPUTS = ("idade_anos_completos", "idade_status", "idade_quantidade", "idade_unidade")
+_SEX_OUTPUTS = ("sexo_categoria", "sexo_status")
+
+
+def _date_outputs(name: str) -> tuple[str, str]:
+    return f"{name}_data", f"{name}_data_status"
+
+
+def _age_inputs(age: Mapping[str, Any]) -> list[str]:
+    return [age["field"]] + ([age["unit_field"]] if age.get("unit_field") else [])
+
+
+def harmonised_inputs(rules: Mapping[str, Any] | None) -> dict[str, tuple[str, ...]]:
+    """``{harmonised column: the published fields it is derived from}`` under ``rules``.
+
+    ``rules`` is a dictionary's ``x-analytics``. These are every column
+    :func:`analytical_projection` can add, whether or not a given source is validated.
+    """
+    rules = rules or {}
+    columns: dict[str, tuple[str, ...]] = {}
+    if rules.get("age"):
+        columns |= dict.fromkeys(_AGE_OUTPUTS, tuple(_age_inputs(rules["age"])))
+    if rules.get("sex"):
+        columns |= dict.fromkeys(_SEX_OUTPUTS, (rules["sex"]["field"],))
+    for name in rules.get("dates", []):
+        columns |= dict.fromkeys(_date_outputs(name), (name,))
+    return columns
+
+
 def _confirmed(contexts: Sequence[SourceContext], validated: Sequence[dict[str, Any]]) -> bool:
     return bool(contexts) and all(
         any(
@@ -206,34 +235,36 @@ def analytical_projection(
         return AnalyticalProjection(
             (),
             (
-                UnavailableField("idade_anos_completos", "unsupported_dataset"),
-                UnavailableField("sexo_categoria", "unsupported_dataset"),
+                UnavailableField(_AGE_OUTPUTS[0], "unsupported_dataset"),
+                UnavailableField(_SEX_OUTPUTS[0], "unsupported_dataset"),
             ),
             None,
             metadata["metadata_hash"],
         )
     age = rules.get("age")
     if age is not None:
-        inputs = [age["field"]] + ([age["unit_field"]] if age.get("unit_field") else [])
-        if available("idade_anos_completos", inputs, age):
+        inputs = _age_inputs(age)
+        years, age_status, quantity, unit = _AGE_OUTPUTS
+        if available(years, inputs, age):
             sql = age_expressions(
                 age,
                 quote_identifier(names[inputs[0]]),
                 quote_identifier(names[inputs[1]]) if len(inputs) > 1 else None,
             )
-            add("idade_anos_completos", "INTEGER", sql.years)
-            add("idade_status", "VARCHAR", sql.status)
-            add("idade_quantidade", "INTEGER", sql.quantity)
-            add("idade_unidade", "VARCHAR", sql.unit)
+            add(years, "INTEGER", sql.years)
+            add(age_status, "VARCHAR", sql.status)
+            add(quantity, "INTEGER", sql.quantity)
+            add(unit, "VARCHAR", sql.unit)
     else:
-        unavailable.append(UnavailableField("idade_anos_completos", "unsupported_field"))
+        unavailable.append(UnavailableField(_AGE_OUTPUTS[0], "unsupported_field"))
     sex = rules.get("sex")
-    if sex is not None and available("sexo_categoria", [sex["field"]], sex):
+    category, sex_status = _SEX_OUTPUTS
+    if sex is not None and available(category, [sex["field"]], sex):
         value, status = _sex_expressions(sex, quote_identifier(names[sex["field"]]))
-        add("sexo_categoria", "VARCHAR", value)
-        add("sexo_status", "VARCHAR", status)
+        add(category, "VARCHAR", value)
+        add(sex_status, "VARCHAR", status)
     for name in rules.get("dates", []):
-        output = f"{name}_data"
+        output, output_status = _date_outputs(name)
         if not available(output, [name], rules):
             continue
         definition = definitions[name]
@@ -246,7 +277,7 @@ def analytical_projection(
             quote_identifier(source_name), observed_schema[source_name], format_
         )
         add(output, "DATE", value)
-        add(f"{output}_status", "VARCHAR", status)
+        add(output_status, "VARCHAR", status)
     return AnalyticalProjection(
         tuple(columns), tuple(unavailable), version, metadata["metadata_hash"]
     )

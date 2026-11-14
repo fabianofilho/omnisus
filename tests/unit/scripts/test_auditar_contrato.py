@@ -38,6 +38,5 @@ def test_decode_coverage_lists_uncovered_values_per_dataset(tmp_path, dbc_fixtur
     report = json.loads((tmp_path / "out" / "decode-coverage.json").read_text(encoding="utf-8"))
     assert report["snapshot_id"] == snapshot
     assert [(u["field"], u["value"]) for u in report["datasets"]["sih_aih_reduzida"]] == [
-        ("homonimo", "2"),
-        *[(f"tpdisec{n}", "0") for n in range(1, 10)],
+        (f"tpdisec{n}", "0") for n in range(1, 10)
     ]

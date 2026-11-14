@@ -187,5 +187,4 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: ST
-x-partitions: [ano, mes]
-x-version: "2.2.0"
+x-version: "2.2.1"

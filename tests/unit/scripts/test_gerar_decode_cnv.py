@@ -72,26 +72,46 @@ def test_every_hand_map_a_def_binds_is_generated_or_excused(monkeypatch):
 
 
 # Issues #7 (decision 4) and #137: every field RD2008.DEF and RJ2008.DEF bind to a CNV,
-# at any start column, has a map (`x-decode` or `campos`) or a reason in `sem_cnv`. The
-# issue leaves one field out on purpose: cod_idade of the RJ, which issue #6 tracks.
-SIH_2008_FIELDS_LEFT_TO_ANOTHER_ISSUE = {"sih_aih_rejeitada": {"cod_idade"}}
-# Issue #7: fields waiting for the choice of a member, with the values the RR 2024-01
-# fixtures publish, which their reasons cite. gestor_cod of the RD is related to
-# DBF/LIBGESTOR.DBF (a lookup, decision 6), not bound to a CNV, so it is not here.
+# at any start column, has a map (`x-decode` or `campos`) or a reason in `sem_cnv`. Since
+# #6 gave the RJ cod_idade a map, no field is left out.
+# Issue #7: fields waiting for the choice of a member, with the values the fixtures
+# publish, which their reasons cite: the RR 2024-01 ones, and for gestor_cod of the RJ
+# the three RJ fixtures, whose 32 rows its reason counts. gestor_cod of the RD is
+# related to DBF/LIBGESTOR.DBF (a lookup, decision 6), not bound to a CNV, so it is not
+# here.
+_RJ_FIXTURES = ("sih_rj_rr_2024_01_mini", "sih_rj_sp_2022_03_excerpt", "sih_rj_sp_2022_07_excerpt")
 SIH_FIELDS_WAITING_FOR_A_MEMBER = {
-    ("sih_aih_reduzida", "nat_jur"): ("sih_rr_2024_01_mini", {"1236", "1244", "2062"}),
-    ("sih_aih_reduzida", "cnaer"): ("sih_rr_2024_01_mini", {"000"}),
-    ("sih_aih_rejeitada", "nat_jur"): ("sih_rj_rr_2024_01_mini", {"1236", "1244"}),
-    ("sih_aih_rejeitada", "cnaer"): ("sih_rj_rr_2024_01_mini", {"000"}),
-    ("sih_aih_rejeitada", "gestor_cod"): ("sih_rj_rr_2024_01_mini", {""}),
+    ("sih_aih_reduzida", "nat_jur"): (("sih_rr_2024_01_mini",), {"1236", "1244", "2062"}),
+    ("sih_aih_reduzida", "cnaer"): (("sih_rr_2024_01_mini",), {"000"}),
+    ("sih_aih_rejeitada", "nat_jur"): (("sih_rj_rr_2024_01_mini",), {"1236", "1244"}),
+    ("sih_aih_rejeitada", "cnaer"): (("sih_rj_rr_2024_01_mini",), {"000"}),
+    ("sih_aih_rejeitada", "gestor_cod"): (_RJ_FIXTURES, {""}),
 }
+# The wording of a `sem_cnv` reason; each formula is checked against the packaged DEF,
+# the dataset's YAML or the fixture (issue #156):
+# - "RD2008.DEF (linha N)" or "(linhas A-B, C e D)": the DEF and every line binding the field;
+# - every member by name, or "a N tabelas, entre elas X.CNV e Y.CNV";
+# - "X.CNV a partir da posição N" for each start other than 1;
+# - "nome de campo no lugar da coluna inicial (NOME)" for lines with a field name there;
+# - 'texto' in single quotes: a label the DEF writes, or a value the fixture publishes;
+# - "nas N linhas": the fixture's row count;
+# - "não está empacotado", "nenhum está empacotado", "nenhuma está empacotada" or
+#   "não empacotado", for every mention of packaging;
+# - every "aux_X" it names: exactly the foreignKeys resources of the field in the YAML;
+# - "issue N", "decisão N" and "pp. N-M", not checked.
+# A number outside these formulas fails the test.
 _CITED_LINES = re.compile(r"\blinhas? ((?:\d+(?:-\d+)?(?:, | e )?)+)")
 _CITED_DEFS = re.compile(r"\b\w+\.DEF\b")
 _CITED_MEMBERS = re.compile(r"[\w-]+\.cnv\b", re.IGNORECASE)
 _CITED_COUNT = re.compile(r"\ba (\d+) tabelas\b")
 _CITED_STARTS = re.compile(r"([\w-]+\.cnv) a partir da posição (\d+)", re.IGNORECASE)
-_CITED_LABELS = re.compile(r"(?:chama as linhas de|com o rótulo) ((?:'[^']+'(?:, | e )?)+)")
-_NO_START_COLUMN = "nome de campo no lugar da coluna inicial"
+_CITED_NO_START = re.compile(r"\bnome de campo no lugar da coluna inicial \((\w+)\)")
+_QUOTED = re.compile(r"'([^']+)'")
+_CITED_ROWS = re.compile(r"\bnas (\d+) linhas\b")
+_UNPACKED = re.compile(r"\b(?:(?:não|nenhum|nenhuma) está|não) empacotad[oa]\b")
+_CITED_REFERENCES = re.compile(r"\baux_\w+")
+_UNCHECKED_NUMBERS = re.compile(r"\b(?:issue|decisão) \d+\b|\bpp\. \d+-\d+\b", re.IGNORECASE)
+_FORMULAS = (_QUOTED, _CITED_LINES, _CITED_COUNT, _CITED_STARTS, _CITED_ROWS, _UNCHECKED_NUMBERS)
 
 
 def _cited_lines(reason: str) -> set[int]:
@@ -103,19 +123,25 @@ def _cited_lines(reason: str) -> set[int]:
     return cited
 
 
+def _numbers_outside_the_formulas(reason: str) -> list[str]:
+    for formula in _FORMULAS:
+        reason = formula.sub(" ", reason)
+    return re.findall(r"\b\d+\b", reason)
+
+
 @pytest.mark.parametrize("dataset", ["sih_aih_reduzida", "sih_aih_rejeitada"])
 def test_every_field_the_sih_2008_def_binds_has_a_map_or_a_reason_true_to_the_def(
     monkeypatch, dataset
 ):
-    """Issues #7 (decision 4) and #137: no field the RD or RJ DEF binds is left without a
-    map and without a word, and each reason says what the packaged DEF says, read line by
-    line. A field with no map is in `sem_cnv` with a reason that cites that DEF and no
-    other, exactly the lines that bind the field, every member by name (or their exact
-    count, naming only real members), each start other than 1, the field name the DEF
-    puts in place of a start column, and only labels the DEF writes; every member is
-    unpacked and the reason never says otherwise. The fields waiting for a member also
-    hold the values the fixture publishes. cod_idade of the RJ is the one field left out,
-    by the issue."""
+    """Issues #7 (decision 4), #137 and #156: no field the RD or RJ DEF binds is left
+    without a map and without a word, and each reason says what the packaged DEF says,
+    read line by line. A field with no map is in `sem_cnv` with a reason that cites that
+    DEF and no other, exactly the lines that bind the field, every member by name (or
+    their exact count, naming only real members), each start other than 1, the field
+    name the DEF puts in place of a start column, only labels the DEF writes, exactly
+    the references the field declares in the YAML, and no other number; every member is
+    unpacked and each mention of packaging says so itself. The fields waiting for a
+    member also hold the values and the row count the fixture publishes."""
     gerar = _load(monkeypatch)
     vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
     spec = vinculos["datasets"][dataset]
@@ -126,25 +152,23 @@ def test_every_field_the_sih_2008_def_binds_has_a_map_or_a_reason_true_to_the_de
     )
     fields = {f["name"]: f for f in doc["schema"]["fields"]}
     bindings: dict[str, list[tuple[int, DefBinding]]] = defaultdict(list)
+    names_for_a_start: dict[str, set[str]] = defaultdict(set)
     text = gerar.read_def(def_path, vinculos)
     for number, line in enumerate(text.splitlines(), 1):
         for b in parse_def(line):
             if b.field.lower() in fields:
                 bindings[b.field.lower()].append((number, b))
+                if b.start is None:  # the start column holds a field name (p. 88)
+                    names_for_a_start[b.field.lower()].add(line.split(",")[2].strip())
     reasons = spec.get("sem_cnv", {})
     without_word = {
         f
         for f in bindings
         if not fields[f].get("x-decode") and f not in spec["campos"] and f not in reasons
     }
-    assert without_word == SIH_2008_FIELDS_LEFT_TO_ANOTHER_ISSUE.get(dataset, set()), (
-        dataset,
-        sorted(without_word),
-    )
+    assert without_word == set(), (dataset, sorted(without_word))
     packaged = {Path(m).name.lower() for m in vinculos["membros"]}
     for field in sorted(bindings.keys() & reasons.keys()):
-        if fields[field].get("x-decode"):
-            continue  # a hand map with a reason says why the CNV does not fit (cod_idade, RD)
         reason, where = reasons[field], (dataset, field)
         bound = [b for _, b in bindings[field]]
         members = {Path(b.table.replace("\\", "/")).name for b in bound}
@@ -164,23 +188,26 @@ def test_every_field_the_sih_2008_def_binds_has_a_map_or_a_reason_true_to_the_de
         }
         cited_starts = {(m, int(p)) for m, p in _CITED_STARTS.findall(reason)}
         assert cited_starts == starts, where
-        assert (_NO_START_COLUMN in reason) == any(b.start is None for b in bound), where
-        quoted = {
-            label
-            for group in _CITED_LABELS.findall(reason)
-            for label in re.findall(r"'([^']+)'", group)
-        }
-        assert quoted <= {b.label for b in bound}, (where, sorted(quoted))
+        assert set(_CITED_NO_START.findall(reason)) == names_for_a_start[field], where
+        references = {fk["reference"]["resource"] for fk in fields[field].get("foreignKeys", [])}
+        assert set(_CITED_REFERENCES.findall(reason)) == references, where
         assert not {m.lower() for m in members} & packaged, where
-        claims = re.findall(r"[^.;]*empacotad[^.;]*", reason)
-        assert claims, where
-        assert all(re.search(r"\b(?:não|nenhum|nenhuma)\b", c) for c in claims), where
-        if where in SIH_FIELDS_WAITING_FOR_A_MEMBER:
-            fixture, observed = SIH_FIELDS_WAITING_FOR_A_MEMBER[where]
-            frame = dbc_bytes_to_lazyframe(
+        assert len(re.findall("empacotad", reason)) == len(_UNPACKED.findall(reason)) > 0, where
+        assert _numbers_outside_the_formulas(reason) == [], where
+        fixtures, observed = SIH_FIELDS_WAITING_FOR_A_MEMBER.get(where, ((), set()))
+        quoted = set(_QUOTED.findall(reason))
+        assert quoted <= {b.label for b in bound} | observed, (where, sorted(quoted))
+        values = [
+            value
+            for fixture in fixtures
+            for value in dbc_bytes_to_lazyframe(
                 (ROOT / "tests/fixtures/dbc" / f"{fixture}.dbc").read_bytes(), dataset=dataset
-            ).collect()
-            assert set(frame[field].to_list()) == observed, where
+            )
+            .collect()[field]
+            .to_list()
+        ]
+        assert set(values) == observed, where
+        assert {int(n) for n in _CITED_ROWS.findall(reason)} <= {len(values)}, where
     assert {k for k in SIH_FIELDS_WAITING_FOR_A_MEMBER if k[0] == dataset} <= {
         (dataset, f) for f in reasons
     }

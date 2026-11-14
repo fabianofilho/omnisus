@@ -67,7 +67,6 @@ class Dicionario:
     encoding: str
     fields: list[dict[str, Any]]
     primary_key: list[str]
-    partitions: list[str]
     source_format: str
     version: str
     raw: dict[str, Any]
@@ -128,7 +127,6 @@ def load_dicionario(name_or_path: str | Path) -> Dicionario:
         encoding=raw.get("encoding", "utf-8"),
         fields=schema.get("fields", []),
         primary_key=schema.get("primaryKey", []),
-        partitions=raw.get("x-partitions", []),
         source_format=raw.get("x-source-format", ""),
         version=raw.get("x-version", "0.0.0"),
         raw=raw,

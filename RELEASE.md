@@ -75,7 +75,8 @@ so the tag comes before the merge:
 
    `release.yml` checks the tag against `_version.py`, builds wheel and sdist once
    (the `distribution` artifact, with checksums), installs that wheel binary-only
-   on Python 3.12–3.14 on Linux, macOS and Windows, and only then runs `publish`.
+   on Python 3.12–3.14 on Linux, macOS and Windows, runs `native.yml` (Rust
+   wheels and the native parity tests), and only when both pass runs `publish`.
 3. Approve the `pypi` environment in the run. `publish` uploads through a Trusted
    Publisher (project `omnisus`, owner `raphaelfh`, repository `omnisus`, workflow
    `release.yml`, environment `pypi`) when repository variable `PUBLISH_TO_PYPI`

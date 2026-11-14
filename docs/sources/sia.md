@@ -167,8 +167,14 @@ DEF no `TAB_SIA.zip`, por isso não tem rótulos. Todas declaram identidade de a
 - No BPA-I, `etnia` só é preenchida quando `racacor` é 05 (indígena), a partir da
   competência de outubro de 2010 (Informe SIASUS 2019-07, p. 18).
 - O CNS do paciente vem cifrado (`cns_pac` na RAAS, "criptografia";
-  Informe SIASUS 2019-07, p. 16), e os dicionários marcam os campos de CNS com
+  Informe SIASUS 2019-07, p. 16), e os dicionários marcam os campos de CNS cifrado com
   `x-crypto: datasus-cns` (`src/omnisus/data/dicionarios/sia_*.yaml`).
+- O identificador do profissional não é cifrado: `cnsprof` (BPA-I) e `pa_cnsmed` (PA)
+  vêm como o arquivo do DATASUS os publica, assim como `sp_pf_doc` nos serviços
+  profissionais do SIH. Por isso os arquivos de teste deixam essas colunas em branco
+  (`tests/fixtures/FIXTURES.md`), e elas não levam `x-crypto`. O lake as importa como
+  publicadas: elas identificam profissionais, e nada as protege como o CNS do paciente
+  (#68).
 - A biblioteca não decifra o CNS. O valor cifrado, comparado como publicado, liga a mesma
   pessoa entre tabelas do SIA (`evidence/2026-09-23-linkage-ampliado.md`, seção "SIA: the
   encrypted CNS"). Nos arquivos de teste de Roraima, janeiro de 2024, 312 CNS distintos

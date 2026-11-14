@@ -58,9 +58,50 @@
   run. Without `snapshot_id`, a `LakeReader(snapshot_id=M)` cites M instead of the
   newest snapshot. A snapshot the lake does not have raises
   `duckdb.InvalidInputException`.
+- `check_columns` reports the harmonised categories that `load` adds (`idade_*`,
+  `sexo_*`, `<date>_data`, `<date>_data_status`) with `rule = "harmonised from <fields>"`,
+  e.g. `"harmonised from idadepac, tpidadepac"`, instead of `"not in dictionary"`: 28
+  columns of SIM RR 2023 were flagged. The names come from the same rules
+  `analytical_projection` reads, `x-analytics` of the dictionary (#69).
 
 ### Dictionaries
 
+- `docs/dicionario/contrato.md` documents `method: fixture-measure`, the method of the
+  `cod_idade` claims of the RD and the RJ (`sih_aih_reduzida` 2.17.1, `sih_aih_rejeitada`
+  1.4.1), whose `reviewer` is now null: nobody reviewed them. Their `sem_cnv` reasons cite
+  the DEF lines and members like the other entries, and the test checks them and every
+  `aux_*` resource a reason names (review of #157).
+- **Breaking:** `homonimo` and `gestor_tp` of `sih_aih_reduzida` (2.17.0) lose their
+  code maps (`{'0': Não, '1': Sim}` and `{'0': Sem autorização, '1': Auditor, '2':
+  Autorizador}`). No registered document lists their codes and none of the 37 packaged
+  DEF names either field; the `homonimo` map also contradicted the data, since the RD
+  publishes `0` and `2`. `sus.label` no longer adds `homonimo_rotulo` nor
+  `gestor_tp_rotulo`, `sus.label(columns=["homonimo"])` (or `"gestor_tp"`) raises
+  `ValueError`, and `check_columns` reports no `unlabelled_codes` for them. The issues
+  `homonimo-sem-fonte` (rewritten) and `gestor_tp-sem-fonte` (new) say what was
+  consulted (#10).
+- The 1-character age unit is labelled `'5'`: "Anos (somar 100)", as `IDADEDET.CNV`
+  reads 500-530 as 100 to 130 years, in `cod_idade` of `sih_aih_reduzida` (2.16.0, which
+  called it "Mais de 100 anos") and `sih_aih_rejeitada` (1.4.0), `tpidadepac` of
+  `sia_bpa_individualizado` (0.4.0) and `ap_coidade` of the seven APAC datasets with a
+  map (`sia_apac_cirurgia_bariatrica` 0.3.0, `sia_apac_fistula_arteriovenosa` 1.1.0,
+  `sia_apac_laudos_diversos` 0.3.0, `sia_apac_medicamentos` 0.3.0,
+  `sia_apac_quimioterapia` 0.3.0, `sia_apac_radioterapia` 1.2.0,
+  `sia_apac_tratamento_dialitico` 0.3.0). `cod_idade` `'0'` of the RD loses its
+  "Ignorada" label, which no source gives (in the CNV `000` is "Idade inválida"):
+  `cod_idade_rotulo` is null for it. The RJ `cod_idade` had no map and takes the RD's
+  (`RJ2008.DEF` lines 193-196 bind it to the same CNVs), so `sus.label` adds
+  `cod_idade_rotulo` to RJ rows. Every one of these maps was measured, not read: the
+  CNVs label the 3-character composite, never the unit alone (issues
+  `cod_idade-sem-tabela`, `tpidadepac-sem-tabela`, `ap_coidade-sem-tabela`) (#6).
+- `uf_zi` of `sih_aih_reduzida` (2.15.0) is labelled "Município gestor", as
+  `RD2008.DEF` (lines 175-176) names it, instead of "UF do gestor": RD files publish it
+  with 6 digits, a municipality code (#155).
+- `cnsprof` of `sia_bpa_individualizado` (0.3.0) is no longer labelled "criptografado"
+  nor marked `x-crypto: datasus-cns`: the BPA-I files publish the professional's CNS in
+  clear, which is why the fixtures blank it. `pa_cnsmed` (`sia_producao_ambulatorial`
+  1.3.0) and `sp_pf_doc` (`sih_servicos_profissionais` 1.2.0) say the same, and
+  `docs/sources/sia.md` warns that the lake keeps these columns as published (#68).
 - `sih_aih_reduzida` (2.13.0) declares `fonte_orc`, which RD files publish from 2025-03
   (layout 6, `evidence/2026-10-06-rd-2008-layouts`), with the labels of `CNV/fonterem.CNV`
   of `TAB_SIH.zip`, now packaged, which `RD2008.DEF` binds to `FONTE_ORC`. `00`, the only
@@ -112,7 +153,22 @@
   (`faec_tp`, `proc_rea`) or a member not packaged (`uf_zi` and the rest). One test, which
   replaces the #130 one, fails when either DEF binds a field with no map and no reason, or
   when a reason's DEF, lines, members, member count, start columns or labels differ from the
-  packaged DEF; `cod_idade` of `sih_aih_rejeitada` is left to #6 (#137). No dictionary
+  packaged DEF (#137). No dictionary changes.
+- The 37 dictionaries that declared `x-partitions` no longer do, and each takes a patch
+  `x-version`: the list had no reader and disagreed with `Dataset.partition_by`, which
+  stays the one place a dataset's partitions are declared. `sinasc_nascidos_vivos`
+  (2.4.1) also drops `_fonte_arquivo`, `_data_extracao`, `_hash_arquivo`, `_sistema` and
+  `_grupo`, columns no import creates. A test fails when a dictionary declares
+  `x-partitions` again or a `_` column other than `_source_ano` and `_source_release`
+  (#71).
+- The `sem_cnv` test of `RD2008.DEF` and `RJ2008.DEF` also fails when a reason cites a
+  reference the field does not declare in `foreignKeys` (or leaves one out), says a
+  member is packaged in a phrase whose "não" negates something else, quotes a text that
+  is neither a DEF label nor a fixture value, cites a number outside its formulas
+  (listed in a comment of the test), names the wrong field in place of a start column, or
+  counts fixture rows wrongly. The reasons of `faec_tp` and `proc_rea` now name that
+  field (`DS_TPFIN`, `IP_DSCR`), and the row count of `gestor_cod` of
+  `sih_aih_rejeitada` is checked against the three RJ fixtures (#156). No dictionary
   changes.
 
 ### Packaging
@@ -122,6 +178,9 @@
   `LakeReader`) no longer pulls the Jupyter kernel and its ~25 dependencies. The Colab
   notebook installs `"omnisus[colab]==<version>"`; `uv pip install "omnisus[colab]"` does
   the same elsewhere (#100).
+- `release.yml` publishes to PyPI only after `native` passes as well as the wheel-only
+  `gate`. Before, `publish` waited for `gate` alone, and v0.2.2 reached PyPI with the
+  native parity job red (#118).
 
 ### Dictionaries
 

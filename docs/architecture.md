@@ -63,11 +63,12 @@ DataFrame. A second pass writes the reconciled schema to Parquet. The legacy
 LazyFrame parser remains available but materializes its result for compatibility.
 
 Staging lowercases column names and trims the spaces some descriptors pad them
-with (`PSRR2401` spells `TIPPRE` plus two spaces). It then adds the partition
-columns (`ano`, `uf`, `mes`, and `_source_ano`/`_source_release` for national
-files). A file column with a partition's name (ER's own `ANO` and `MES`) is
-replaced only if it holds the scope's value in every row, compared as trimmed
-text or, for `ano` and `mes`, as a number; otherwise the file is refused. A file
+with (`PSRR2401` spells `TIPPRE` plus two spaces). It then adds the scope's
+columns (`ano` and `uf` for state files, `mes` for monthly ones, `_source_ano` for
+national ones) and `_source_release` to every file. A file column with a
+partition's name (ER's own `ANO` and `MES`) is replaced only if it holds the
+scope's value in every row, compared as trimmed text or, for `ano` and `mes`, as a
+number; otherwise the file is refused. A file
 column named `_source_ano` or `_source_release` is always refused.
 This is not a constant-memory pipeline: decompression still creates the complete
 DBF. Before receipt, each scope reserves its files' listed sizes from a

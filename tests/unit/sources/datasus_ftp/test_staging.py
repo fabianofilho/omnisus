@@ -247,7 +247,6 @@ def _dictionary_with_a_date(tmp_path, extra_fields=()):
                 "encoding": "latin-1",
                 "x-version": "1.0.0",
                 "x-source-format": "dbc",
-                "x-partitions": ["ano"],
                 "schema": {"fields": fields},
             }
         ),
