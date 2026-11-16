@@ -57,8 +57,14 @@
   output is unchanged); the issue `diag-princ-cid9-ate-1997` becomes `diag-princ-cid9` in
   the first, and the second declares no issue on `diag_princ`. `travar_versoes.py` gets
   `RETIRED`, so the old entry stays in `versoes.json`. Dates, foreign keys and the CNVs of
-  the era stay for the next changes of #12; refs #40 (`num_proc`, `insc_pn` and `seq_aih5`
-  keep `string`, and no cast is added to the staging).
+  the era stay for the next changes of #12.
+- `num_proc` (`sih_aih_reduzida_1992_1997`) and `insc_pn` and `seq_aih5`
+  (`sih_aih_reduzida_1998_2007`), which the DBF publishes as N in some months and as C in
+  others, are staged as text: a field with `x-stage-as: string` in the dictionary has an
+  integer DBF column cast to string, without zero padding (`0` becomes `"0"`, not
+  `"0000000000"`). Before, importing an N month after a C month, or the reverse, failed
+  with `UnsafeSchemaError`. Each field has the issue `sem-zeros-a-esquerda` with its N
+  months (#40). Both dictionaries are 1.1.0.
 - A file name whose scope is outside a dataset's declared `coverage` is no longer read as
   a file of that dataset: `scopes_for`, `available` and `outdated` stop listing a name
   beyond the declared end (or before the start) of a bounded row, such as

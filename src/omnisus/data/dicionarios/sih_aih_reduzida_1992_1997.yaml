@@ -2,7 +2,7 @@ name: sih_aih_reduzida_1992_1997
 title: "SIHSUS: AIH reduzida (RD), 1992-01 a 1997-12"
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.1.0
 x-source-format: dbc
 x-evidence:
   physical_schema: >-
@@ -10,8 +10,8 @@ x-evidence:
     1997-12 (96 files: one RR file a month, AP where RR is missing, and SP and MG in the
     months a layout changes; evidence/2026-10-01-rd-1992-2007-layouts/). Each is in
     sih_rd_rr_1994_12_mini.dbc or sih_rd_rr_1997_09_mini.dbc. num_proc is C4 from 1995-01 and
-    N4 from 1996-01 to 1996-07; it keeps the type of sih_rd_rr_1997_09_mini.dbc (string) until
-    #40 decides. The era is split from 1998-01 (issue #12, decision 1): the dictionary of
+    N4 from 1996-01 to 1996-07; the dictionary types it string and staging writes the N form
+    as text, without zero padding (issue #40). The era is split from 1998-01 (issue #12, decision 1): the dictionary of
     1998-01 to 2007-12 is sih_aih_reduzida_1998_2007.
   semantic_status: >-
     Physical inventory; individual semantic fields not audited. The code maps of ident,
@@ -298,6 +298,17 @@ schema:
         note: Mapa do CNV.
   - name: num_proc
     type: string
+    x-stage-as: string
+    x-metadata:
+      issues:
+      - id: sem-zeros-a-esquerda
+        status: open
+        description: >-
+          O DBF publica num_proc como N4 em 1996-01 a 1996-07 (11 arquivos do censo, 7
+          meses) e como C4 nos outros meses. O staging grava o número como ele vem, sem
+          completar com zeros até 4 caracteres: nesses meses o código sai sem os zeros
+          à esquerda que o C4 tem ('489' em vez de '0489'). Quem une as duas formas faz isso na consulta.
+          Evidência: evidence/2026-10-01-rd-1992-2007-layouts/census.csv (issue #40).
   - name: uti_total
     type: integer
   - name: us_sh

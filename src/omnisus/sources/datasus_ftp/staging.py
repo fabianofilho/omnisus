@@ -24,13 +24,24 @@ from omnisus.sources.datasus_ftp.dbf_batches import (
     physical_arrow_schema,
     physical_arrow_types,
 )
-from omnisus.transforms.dictionaries import load_dicionario
+from omnisus.transforms.dictionaries import Dicionario, load_dicionario
 
 
 @dataclass(frozen=True)
 class StagingResult:
     rows: int
     bytes: int
+
+
+def _as_text(dic: Dicionario) -> frozenset[str]:
+    """Fields the dictionary asks to be staged as text (``x-stage-as: string``).
+
+    A DBF may publish one field as C in some months and N in others (RD
+    ``num_proc``, ``insc_pn``, ``seq_aih5``). Staged as published, the lake would see
+    text and integers under one column name, an unsafe schema change. The number is
+    kept, not padded to the width of the C form: ``0`` becomes ``"0"``.
+    """
+    return frozenset(f["name"] for f in dic.fields if f.get("x-stage-as") == "string")
 
 
 def _merge_schema(existing: pa.Schema, incoming: pa.Schema) -> pa.Schema:
@@ -137,6 +148,7 @@ def dbc_bytes_to_parquet(
     if not payloads:
         raise ValueError("no DBC payload to stage")
     dic = load_dicionario(dictionary if dictionary is not None else dataset)
+    as_text = _as_text(dic)
     physical: dict[str, pa.DataType] | None = None
     empty_schema = pa.schema([])
     path = Path(path)
@@ -155,6 +167,10 @@ def dbc_bytes_to_parquet(
             if len(set(lowered)) != len(lowered):
                 raise ValueError("DBF column names collide after trimming and lowercasing")
             table = table.rename_columns(lowered)
+            for name in as_text:
+                index = table.schema.get_field_index(name)
+                if index >= 0 and pa.types.is_integer(table.schema.field(index).type):
+                    table = table.set_column(index, name, table.column(index).cast(pa.string()))
             if "_source_ano" in lowered:
                 raise ValueError("DBF uses reserved source column _source_ano")
             if "_source_release" in lowered:
@@ -203,8 +219,14 @@ def dbc_bytes_to_parquet(
             parsed += in_part
             del dbf_bytes
         assert physical is not None, "payloads is not empty"
+        staged = {
+            name: pa.string() if name in as_text and pa.types.is_integer(kind) else kind
+            for name, kind in physical.items()
+        }
         if not batches:
-            schema = empty_schema
+            schema = pa.schema(
+                [pa.field(f.name, staged.get(f.name, f.type)) for f in empty_schema]
+            )
             for name, value, dtype in [
                 ("ano", ano, pa.uint16()),
                 ("uf", uf, pa.string()),
@@ -216,7 +238,7 @@ def dbc_bytes_to_parquet(
                     index = schema.get_field_index(name)
                     field = pa.field(name, dtype)
                     schema = schema.set(index, field) if index >= 0 else schema.append(field)
-        schema = _physical_type_for_null_columns(schema, physical)
+        schema = _physical_type_for_null_columns(schema, staged)
         output = root / "output.parquet"
         with pq.ParquetWriter(output, schema) as writer:
             for number in range(batches):

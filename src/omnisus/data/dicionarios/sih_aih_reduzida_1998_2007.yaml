@@ -2,7 +2,7 @@ name: sih_aih_reduzida_1998_2007
 title: "SIHSUS: AIH reduzida (RD), 1998-01 a 2007-12"
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.0
+x-version: 1.1.0
 x-source-format: dbc
 x-evidence:
   physical_schema: >-
@@ -13,8 +13,8 @@ x-evidence:
     published only until 1999-12, no fixture of the era carries it, and its type is the
     generator's for N2.0, the spec it has in every layout and in sih_rd_rr_1994_12_mini.dbc.
     insc_pn and seq_aih5 are C
-    in the files of 2001-01 to 2007-12 and N from 2004-07 to 2006-03; they keep the type of
-    sih_rd_rr_2007_12_mini.dbc (string) until #40 decides. The era is split from 1998-01
+    in the files of 2001-01 to 2007-12 and N from 2004-07 to 2006-03; the dictionary types
+    them string and staging writes the N form as text, without zero padding (issue #40). The era is split from 1998-01
     (issue #12, decision 1): the dictionary of 1992-01 to 1997-12 is
     sih_aih_reduzida_1992_1997.
   semantic_status: >-
@@ -417,8 +417,30 @@ schema:
     type: string
   - name: insc_pn
     type: string
+    x-stage-as: string
+    x-metadata:
+      issues:
+      - id: sem-zeros-a-esquerda
+        status: open
+        description: >-
+          O DBF publica insc_pn como N10 em 2004-07 a 2006-03 (35 arquivos do censo, 21
+          meses) e como C10 nos outros meses. O staging grava o número como ele vem, sem
+          completar com zeros até 10 caracteres: nesses meses o código sai sem os zeros
+          à esquerda que o C10 tem ('0' em vez de '0000000000'). Quem une as duas formas faz isso na consulta.
+          Evidência: evidence/2026-10-01-rd-1992-2007-layouts/census.csv (issue #40).
   - name: seq_aih5
     type: string
+    x-stage-as: string
+    x-metadata:
+      issues:
+      - id: sem-zeros-a-esquerda
+        status: open
+        description: >-
+          O DBF publica seq_aih5 como N3 em 2004-07 a 2006-03 (35 arquivos do censo, 21
+          meses) e como C3 nos outros meses. O staging grava o número como ele vem, sem
+          completar com zeros até 3 caracteres: nesses meses o código sai sem os zeros
+          à esquerda que o C3 tem ('0' em vez de '000'). Quem une as duas formas faz isso na consulta.
+          Evidência: evidence/2026-10-01-rd-1992-2007-layouts/census.csv (issue #40).
   - name: cbor
     type: string
   - name: cnaer

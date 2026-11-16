@@ -108,8 +108,9 @@ período observado. Não preencher um dia fictício quando a fonte só informa m
 
 ## Extensão de autoria
 
-Nos YAMLs atuais, conservar `description`, `type`, `x-decode`, `x-format` e
-demais propriedades usadas pela lib. Acrescentar `x-metadata` com identidade,
+Nos YAMLs atuais, conservar `description`, `type`, `x-decode`, `x-format`,
+`x-stage-as` (`string`: o staging grava como texto, sem zeros à esquerda, o campo que o DBF
+publica como N em alguns meses e como C em outros) e demais propriedades usadas pela lib. Acrescentar `x-metadata` com identidade,
 tipo físico, domínio, procedência e aplicabilidade. O resolvedor transforma essa autoria no contrato resolvido:
 
 | Autoria | Exportação |
