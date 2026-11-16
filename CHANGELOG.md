@@ -41,6 +41,12 @@
 
 ### Dictionaries
 
+- `registry.json` registers the `TAB_SIH.zip` republished on 2026-10-15
+  (`sih-tab-21e42384645a`). The 33 members whose hash the repository holds are identical to
+  those of the two editions already registered, so `vinculos.json` stays on
+  `sih-tab-f05b32f32908`; `evidence/2026-11-15-tab-sih-republicado/` has the member census and
+  what was not compared (#154).
+
 - `docs/dicionario/contrato.md` documents `method: fixture-measure`, the method of the
   `cod_idade` claims of the RD and the RJ (`sih_aih_reduzida` 2.17.1, `sih_aih_rejeitada`
   1.4.1), whose `reviewer` is now null: nobody reviewed them. Their `sem_cnv` reasons cite
