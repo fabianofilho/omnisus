@@ -41,6 +41,14 @@
 
 ### Dictionaries
 
+- `derivation.output` of the age fields lists `idade_status` too, in the nine dictionaries
+  with an age rule (`sim_obitos` 2.7.0, `sih_aih_reduzida` 2.18.0, `sinasc_nascidos_vivos`
+  2.5.0, `sia_bpa_individualizado` 0.5.0, `sia_psicossocial` 0.4.0, `sia_atencao_domiciliar`
+  1.3.0, `sinan_chagas` 1.3.0, `sinan_hanseniase` 1.3.0, `sinan_tuberculose` 1.1.0) and in the three
+  SIM subsets, which copy `sim_obitos` (1.2.0). It had three of the four columns that
+  `analytical_projection` creates, and `describe_dataset` exports that list. A test compares each
+  dictionary's list with `harmonised_inputs`, the list `check_columns` uses (#164).
+
 - `docs/dicionario/contrato.md` documents `method: fixture-measure`, the method of the
   `cod_idade` claims of the RD and the RJ (`sih_aih_reduzida` 2.17.1, `sih_aih_rejeitada`
   1.4.1), whose `reviewer` is now null: nobody reviewed them. Their `sem_cnv` reasons cite

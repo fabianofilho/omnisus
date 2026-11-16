@@ -1,8 +1,10 @@
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
 import omnisus as sus
+from omnisus.transforms.analytics import harmonised_inputs
 from omnisus.transforms.dictionaries import load_dicionario
 
 
@@ -81,6 +83,7 @@ def test_age_derivation_lists_quantity_and_unit_outputs(dataset, field_name):
     field = next(x for x in description["fields"] if x["field"]["name"] == field_name)
     assert field["field"]["derivation"]["output"] == [
         "idade_anos_completos",
+        "idade_status",
         "idade_quantidade",
         "idade_unidade",
     ]
@@ -94,6 +97,7 @@ def test_sinan_age_field_has_derivation_metadata(dataset):
     assert derivation is not None
     assert derivation["output"] == [
         "idade_anos_completos",
+        "idade_status",
         "idade_quantidade",
         "idade_unidade",
     ]
@@ -119,3 +123,25 @@ def test_sih_natureza_says_when_it_stopped_being_filled():
     assert [(e["source_id"], e["pages"]) for e in claim["evidence"]] == [
         ("sihsus-1e89d5f2cc41", [2])
     ]
+
+
+def test_age_derivation_output_is_what_the_harmonisation_creates():
+    """Every field that derives the age lists the columns ``harmonised_inputs`` says the age rule
+    creates, so the metadata and ``check_columns`` do not say different things (#164)."""
+    age_datasets = []
+    for path in sorted(Path(sus.__file__).parent.glob("data/dicionarios/*.yaml")):
+        dataset = path.stem
+        raw = load_dicionario(dataset).raw
+        expected = [c for c in harmonised_inputs(raw.get("x-analytics")) if c.startswith("idade_")]
+        if not expected:  # SIM subsets copy sim_obitos' fields; they have no x-analytics
+            continue
+        listed = [
+            field["x-metadata"]["derivation"]["output"]
+            for field in raw["schema"]["fields"]
+            if "idade_anos_completos"
+            in field.get("x-metadata", {}).get("derivation", {}).get("output", [])
+        ]
+        if listed:
+            age_datasets.append(dataset)
+        assert all(output == expected for output in listed), dataset
+    assert len(age_datasets) == 9

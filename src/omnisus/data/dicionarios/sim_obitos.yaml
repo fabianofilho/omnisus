@@ -182,6 +182,7 @@ schema:
           rule_version: 1.2.0
           output:
           - idade_anos_completos
+          - idade_status
           - idade_quantidade
           - idade_unidade
         applicability:
@@ -1867,7 +1868,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DO
-x-version: "2.6.1"
+x-version: "2.7.0"
 
 x-analytics:
   version: 1.2.0

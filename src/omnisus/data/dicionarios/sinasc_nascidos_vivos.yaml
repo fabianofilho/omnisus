@@ -114,6 +114,7 @@ schema:
           rule_version: 1.0.0
           output:
           - idade_anos_completos
+          - idade_status
           - idade_quantidade
           - idade_unidade
         applicability:
@@ -1057,7 +1058,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DN
-x-version: "2.4.1"
+x-version: "2.5.0"
 
 x-analytics:
   version: 1.0.0
