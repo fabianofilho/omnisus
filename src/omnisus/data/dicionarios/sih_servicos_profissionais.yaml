@@ -38,8 +38,11 @@ schema:
         checked_at: '2026-11-15'
         method: fixture-measure
         reviewer: null
-        evidence: []
-        note: Medido, não lido (issue formato-sem-documento). Nenhuma fonte registrada dá o formato deste campo.
+        evidence:
+        - source_id: sih-tab-f05b32f32908
+          pages: []
+          locator: 'SP2008.DEF, linhas 20-21: XAno de Internação, SP_DTINTER, 1, CNV/ANO.CNV; XMês de Internação, SP_DTINTER, 5, CNV/MESES.CNV'
+        note: Medido, não lido (issue formato-sem-documento). O SP2008.DEF dá a posição do ano (1) e do mês (5) em SP_DTINTER; nenhuma fonte lida dá a posição do dia.
       observations:
       - file: SPRR2401.dbc
         url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Dados/SPRR2401.dbc
@@ -59,7 +62,7 @@ schema:
       issues:
       - id: formato-sem-documento
         status: open
-        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41), p. 4-5, dá SP_DTINTER como char(8), "Data da internação", sem formato. O formato yyyyMMdd foi medido nas 35.669 linhas do SPRR2401, todas com 8 dígitos e data válida; não vale como documento.'
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41), p. 4-5, dá SP_DTINTER como char(8), "Data da internação", sem formato. O formato yyyyMMdd foi medido nas 35.669 linhas do SPRR2401, todas com 8 dígitos e data válida; não vale como documento. O SP2008.DEF (TAB_SIH.zip, sih-tab-f05b32f32908), linhas 20-21, liga o ano à posição 1 e o mês à posição 5 de SP_DTINTER; não tem linha para o dia, e ANO.CNV e MESES.CNV não estão empacotados, então a largura de cada parte não foi lida.'
   - name: sp_dtsaida
     type: date
     x-format: yyyyMMdd
@@ -72,7 +75,7 @@ schema:
         method: fixture-measure
         reviewer: null
         evidence: []
-        note: Medido, não lido (issue formato-sem-documento). Nenhuma fonte registrada dá o formato deste campo.
+        note: Medido, não lido (issue formato-sem-documento). O SP2008.DEF não tem linha para SP_DTSAIDA; nenhuma fonte registrada dá o formato deste campo.
       observations:
       - file: SPRR2401.dbc
         url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Dados/SPRR2401.dbc
@@ -92,7 +95,7 @@ schema:
       issues:
       - id: formato-sem-documento
         status: open
-        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41), p. 4-5, dá SP_DTSAIDA como char(8), "Data da saída", sem formato. O formato yyyyMMdd foi medido nas 35.669 linhas do SPRR2401, todas com 8 dígitos e data válida; não vale como documento.'
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41), p. 5, dá SP_DTSAIDA como char (8), "Data de saída", sem formato. O formato yyyyMMdd foi medido nas 35.669 linhas do SPRR2401, todas com 8 dígitos e data válida; não vale como documento.'
   - name: sp_num_pr
     type: string
   - name: sp_tipo

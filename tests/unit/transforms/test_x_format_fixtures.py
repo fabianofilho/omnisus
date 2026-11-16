@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import warnings
 from datetime import date
+from importlib.resources import files
 from pathlib import Path
 
 import polars as pl
 import pytest
 
 import omnisus as sus
+from omnisus.transforms.cnv import parse_def
 from omnisus.transforms.dictionaries import DATE_FORMATS, load_dicionario
 from tests.support.lake_rows import load_fixture
 from tests.unit.test_fixture_provenance import load_fixture_rows
@@ -28,6 +30,7 @@ FORMATTED = sorted(
 )
 RJ_DATES = ("nasc", "dt_inter", "dt_saida")
 SP_DATES = ("sp_dtinter", "sp_dtsaida")
+CNV = files("omnisus.data.dicionarios") / "sources" / "cnv"
 
 
 @pytest.fixture(scope="module")
@@ -115,6 +118,54 @@ def test_the_observation_names_the_server_file_and_what_the_fixture_shows(
         assert observed["also_valid_as_ddMMyyyy"] == both, name
 
 
+@pytest.mark.parametrize(
+    ("dataset", "name", "member", "line"),
+    [
+        ("sih_aih_rejeitada", "dt_inter", "sih/RJ2008.DEF", 242),
+        ("sih_aih_rejeitada", "dt_saida", "sih/RJ2008.DEF", 247),
+        ("sih_servicos_profissionais", "sp_dtinter", "sih/SP2008.DEF", 20),
+    ],
+)
+def test_the_def_places_the_year_and_the_month_of_three_dates_and_no_day(
+    dataset, name, member, line
+) -> None:
+    """The packaged DEF (TAB_SIH.zip, hash in ``vinculos.json``) binds the field at
+    position 1 to ANO.CNV and at position 5 to MESES.CNV, on the two lines the claim
+    cites; no line of it starts anywhere else, so the day is still only measured."""
+    text = (CNV / member).read_bytes().decode("latin-1")
+    year, month = (parse_def(text.splitlines()[n - 1])[0] for n in (line, line + 1))
+    assert (year.field, year.start, year.table[4:]) == (name.upper(), 1, "ANO.CNV")
+    assert (month.field, month.start, month.table[4:]) == (name.upper(), 5, "MESES.CNV")
+    assert {b.start for b in parse_def(text) if b.field == name.upper()} == {1, 5}
+    claim = next(
+        c for c in _field(dataset, name)["x-metadata"]["claims"] if c["target"] == "/field/format"
+    )
+    cited = "; ".join(f"{b.kind}{b.label}, {b.field}, {b.start}, {b.table}" for b in (year, month))
+    assert claim["evidence"] == [
+        {
+            "source_id": "sih-tab-f05b32f32908",
+            "pages": [],
+            "locator": f"{member[4:]}, linhas {line}-{line + 1}: {cited}",
+        }
+    ]
+
+
+@pytest.mark.parametrize(
+    ("dataset", "name", "member"),
+    [
+        ("sih_aih_rejeitada", "nasc", "sih/RJ2008.DEF"),
+        ("sih_servicos_profissionais", "sp_dtsaida", "sih/SP2008.DEF"),
+    ],
+)
+def test_the_def_has_no_line_for_the_two_other_dates(dataset, name, member) -> None:
+    text = (CNV / member).read_bytes().decode("latin-1")
+    assert not [b for b in parse_def(text) if b.field == name.upper()]
+    claim = next(
+        c for c in _field(dataset, name)["x-metadata"]["claims"] if c["target"] == "/field/format"
+    )
+    assert claim["evidence"] == []
+
+
 def test_rj_gestor_dt_stays_a_string_because_no_fixture_fills_it(frames) -> None:
     field = _field("sih_aih_rejeitada", "gestor_dt")
     assert field["type"] == "string" and "x-format" not in field
@@ -136,8 +187,10 @@ def test_check_columns_now_checks_the_rj_and_sp_dates(frames) -> None:
 
 
 def test_check_columns_and_the_harmonisation_share_the_eight_digit_guard() -> None:
-    """``'1012023'`` (the 0 of the day lost) parses with a non-strict pattern; the guard of
-    ``analytical_projection`` calls it invalid, and so must ``check_columns``."""
+    """Synthetic (AGENTS.md rule 2): malformed input the fixtures do not hold, since
+    ``test_every_x_format_reads_the_fixture_strictly`` finds eight digits in every value it
+    reads. ``'1012023'`` (the 0 of the day lost) parses with a non-strict pattern; the
+    guard of ``analytical_projection`` calls it invalid, and so must ``check_columns``."""
     frame = pl.DataFrame({"dtobito": ["01012023", "1012023", " 02012023 ", "0101202"]})
     report = sus.check_columns("sim_obitos", frame).rows_by_key("column", named=True, unique=True)
     assert report["dtobito"]["pct_invalid_dates"] == 50.0
