@@ -10,8 +10,12 @@ import pytest
 import omnisus as sus
 from omnisus.lake import Lake
 from omnisus.sources._base import ScopeKey
+from omnisus.sources.datasus_ftp import dbc
 from omnisus.sources.datasus_ftp.datasets import REGISTRY
+from omnisus.sources.datasus_ftp.dbf_batches import physical_arrow_types
 from omnisus.sources.datasus_ftp.inventory import FtpEntry, ResolvedSource
+from omnisus.sources.datasus_ftp.library_columns import is_library_field, library_columns
+from omnisus.transforms.dictionaries import load_dicionario
 from tests.support import fake_datasus
 
 
@@ -236,6 +240,26 @@ def test_import_dataset_reaches_every_registry_row(
     assert report.rows > 0
     with Lake.local(target) as lake:
         assert dataset_name in lake.tables()
+        written = {
+            name: dtype
+            for name, dtype, *_ in lake.connect()
+            .execute(f"DESCRIBE lake.{dataset_name}")
+            .fetchall()
+        }
+    # Every column is one the DBF publishes or one the import adds (issue #11); each of the
+    # import's is declared in the dictionary with a derivation and the type the lake stores.
+    published = set(
+        physical_arrow_types(dbc.decompress_bytes(dbc_fixture(fixture_name).read_bytes()))
+    )
+    added = library_columns(REGISTRY[dataset_name])
+    assert set(written) == {name.lower() for name in published} | {c.name for c in added}
+    declared = {f["name"]: f for f in load_dicionario(dataset_name).fields}
+    stored = {"integer": {"USMALLINT", "UTINYINT"}, "string": {"VARCHAR"}}
+    for column in added:
+        assert column.name in declared, f"{dataset_name} does not declare {column.name}"
+        assert is_library_field(declared[column.name]), f"{dataset_name}.{column.name}"
+        assert declared[column.name]["type"] == column.type
+        assert written[column.name] in stored[column.type], (dataset_name, column.name)
 
 
 def test_available_and_browse_are_exported() -> None:

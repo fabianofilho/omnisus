@@ -2,7 +2,7 @@ name: sim_obitos_cid9
 title: SIM — Óbitos por residência, CID-9 (DOR), 1979 a 1995
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.1.1
+x-version: 1.2.0
 x-source-format: dbc
 x-evidence:
   physical_schema: sim_cid9_rr_1995_mini.dbc, 50 fields; observed 2026-09-22
@@ -232,3 +232,35 @@ schema:
     type: string
   - name: ufinform
     type: string
+  - name: ano
+    type: integer
+    label: Ano
+    constraints:
+      required: true
+      minimum: 1979
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: uf
+    type: string
+    label: UF
+    constraints:
+      required: true
+      pattern: ^[A-Z]{2}$
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: _source_release
+    type: string
+    label: Modalidade da fonte
+    constraints:
+      required: true
+    x-metadata:
+      derivation:
+        kind: publication
+        input: source_uri
+        rule: release_from_uri

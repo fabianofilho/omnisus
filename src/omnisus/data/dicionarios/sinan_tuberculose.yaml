@@ -1138,6 +1138,27 @@ schema:
     type: string
   - name: mun_transf
     type: string
+  - name: _source_ano
+    type: integer
+    label: Ano do arquivo de origem
+    constraints:
+      required: true
+      minimum: 2001
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: _source_release
+    type: string
+    label: Modalidade da fonte
+    constraints:
+      required: true
+    x-metadata:
+      derivation:
+        kind: publication
+        input: source_uri
+        rule: release_from_uri
 x-identity:
   year_column: nu_ano
   code_column: id_agravo

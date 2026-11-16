@@ -1093,11 +1093,35 @@ schema:
     - name: ano
       type: integer
       label: Ano
-      constraints: { required: true }
+      constraints:
+        required: true
+        minimum: 1996
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
     - name: uf
       type: string
       label: UF
-      constraints: { required: true, pattern: "^[A-Z]{2}$" }
+      constraints:
+        required: true
+        pattern: ^[A-Z]{2}$
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
+    - name: _source_release
+      type: string
+      label: Modalidade da fonte
+      constraints:
+        required: true
+      x-metadata:
+        derivation:
+          kind: publication
+          input: source_uri
+          rule: release_from_uri
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DN

@@ -12207,7 +12207,9 @@ schema:
     - name: ano
       type: integer
       label: Ano
-      constraints: { required: true }
+      constraints:
+        required: true
+        minimum: 2008
       x-metadata:
         derivation:
           kind: source_partition
@@ -12216,7 +12218,10 @@ schema:
     - name: mes
       type: integer
       label: Mês
-      constraints: { minimum: 1, maximum: 12 }
+      constraints:
+        required: true
+        minimum: 1
+        maximum: 12
       x-metadata:
         derivation:
           kind: source_partition

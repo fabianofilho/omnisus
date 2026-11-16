@@ -15,6 +15,7 @@ import yaml
 
 from omnisus.metadata import describe_dataset
 from omnisus.sources.datasus_ftp.dbc import decompress_bytes
+from omnisus.sources.datasus_ftp.library_columns import is_library_field
 
 ROOT = Path(__file__).resolve().parents[3]
 DICIONARIOS = ROOT / "src/omnisus/data/dicionarios"
@@ -75,7 +76,7 @@ def test_declared_types_follow_the_real_dbf_descriptor(dataset, fixture):
         name = dbf[offset : offset + 11].split(b"\0")[0].decode("latin-1").lower()
         physical[name] = TYPES[chr(dbf[offset + 11])]
     doc = yaml.load((DICIONARIOS / f"{dataset}.yaml").read_text("utf-8"), Loader=yaml.CSafeLoader)
-    declared = {f["name"]: f["type"] for f in doc["schema"]["fields"]}
+    declared = {f["name"]: f["type"] for f in doc["schema"]["fields"] if not is_library_field(f)}
     assert declared == physical
 
 

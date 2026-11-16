@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+### Dictionaries
+
+- Every DATASUS dictionary (43) declares the columns the import adds, each with an
+  `x-metadata.derivation`: `ano` and `uf` of a state file, `mes` of a monthly one,
+  `_source_ano` of a national one, `_source_release` of all. Before, 25 declared none of
+  them and `sus.check_columns` called them `not in dictionary` (#11). They come from
+  `library_columns(dataset)`, the function the runner and staging use, and are written by
+  `scripts/metadados/gerar_colunas_lib.py`; the inventory tests count only the fields
+  without a `derivation` of kind `source_partition` or `publication`. Each dictionary has
+  a new minor `x-version`.
+- **Breaking:** the `x-decode` `{final: Final, prelim: Preliminar}` of `_source_release`
+  (`sih_aih_reduzida`, `sim_obitos`) is gone: the values name the directory the file
+  came from, not a DATASUS code, so `sus.label` no longer labels the column. The
+  `derivation:` key beside `x-metadata`, which nothing read, goes with it.
+- `sih_aih_rejeitada_erro` declares `ano` and `mes` as `integer`, the type the lake
+  stores, with `physical_type` `string` 4 and 2: the ER publishes ANO C(4) and MES C(2)
+  and staging replaces them with the scope.
+
+
 ### omnisus-dbf 0.2.2
 
 - The native reader reads D (date) fields with the semantics of dbfread's `parseD`, so

@@ -24,6 +24,7 @@ from omnisus.sources.datasus_ftp.dbf_batches import (
     physical_arrow_schema,
     physical_arrow_types,
 )
+from omnisus.sources.datasus_ftp.library_columns import ARROW_TYPES
 from omnisus.transforms.dictionaries import load_dicionario
 
 
@@ -31,6 +32,24 @@ from omnisus.transforms.dictionaries import load_dicionario
 class StagingResult:
     rows: int
     bytes: int
+
+
+def _library_values(
+    ano: int | None,
+    uf: str | None,
+    mes: int | None,
+    source_ano: int | None,
+    release: str | None,
+) -> list[tuple[str, int | str | None, pa.DataType]]:
+    """The library columns of one file with their values and lake types (library_columns.py)."""
+    values = {
+        "ano": ano,
+        "uf": uf,
+        "mes": mes,
+        "_source_ano": source_ano,
+        "_source_release": release,
+    }
+    return [(name, value, ARROW_TYPES[name]) for name, value in values.items()]
 
 
 def _merge_schema(existing: pa.Schema, incoming: pa.Schema) -> pa.Schema:
@@ -159,13 +178,7 @@ def dbc_bytes_to_parquet(
                 raise ValueError("DBF uses reserved source column _source_ano")
             if "_source_release" in lowered:
                 raise ValueError("DBF uses reserved source column _source_release")
-            for name, value, dtype in [
-                ("ano", ano, pa.uint16()),
-                ("uf", uf, pa.string()),
-                ("mes", mes, pa.uint8()),
-                ("_source_ano", source_ano, pa.uint16()),
-                ("_source_release", release, pa.string()),
-            ]:
+            for name, value, dtype in _library_values(ano, uf, mes, source_ano, release):
                 if value is not None:
                     column = pa.array([value] * len(table), type=dtype, safe=True)
                     index = table.schema.get_field_index(name)
@@ -205,13 +218,7 @@ def dbc_bytes_to_parquet(
         assert physical is not None, "payloads is not empty"
         if not batches:
             schema = empty_schema
-            for name, value, dtype in [
-                ("ano", ano, pa.uint16()),
-                ("uf", uf, pa.string()),
-                ("mes", mes, pa.uint8()),
-                ("_source_ano", source_ano, pa.uint16()),
-                ("_source_release", release, pa.string()),
-            ]:
+            for name, value, dtype in _library_values(ano, uf, mes, source_ano, release):
                 if value is not None:
                     index = schema.get_field_index(name)
                     field = pa.field(name, dtype)

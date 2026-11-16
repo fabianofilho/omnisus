@@ -8,6 +8,7 @@ biblioteca, `sus.describe_dataset` devolve os mesmos metadados.
 | `scripts/metadados/` | Consultar, validar e gerar os dicionários |
 | `scripts/metadados/validar_fonte.py` | Audita um lote de fontes (UFs × período) para as regras analíticas de um dataset, pela regra de aceite do ADR 0003; com `--accept`, registra as aceitas |
 | `scripts/metadados/gerar_decode_cnv.py` | Escreve o `x-decode` dos campos que uma tabela CNV do TabWin decodifica |
+| `scripts/metadados/gerar_colunas_lib.py` | Declara em cada dicionário DATASUS as colunas que o import acrescenta (`ano`, `uf`, `mes`, `_source_ano`, `_source_release`), com `derivation`, a partir de `library_columns` |
 | `scripts/metadados/gerar_sinan.py` | Copia os campos de `sinan_bloco_comum.yaml` para os dicionários SINAN |
 | `scripts/metadados/gerar_subconjuntos_sim.py` | Escreve em DOINF, DOMAT e DOEXT a definição de `sim_obitos` de cada campo comum |
 | `scripts/metadados/gerar_mapeamento.py` | Escreve as tabelas do painel de mapeamento (bases, campos e issues com o status de cada afirmação), a partir de `sus.describe_dataset` |

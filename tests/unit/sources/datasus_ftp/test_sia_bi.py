@@ -16,6 +16,7 @@ import polars as pl
 from omnisus.sources._base import ScopeKey
 from omnisus.sources.datasus_ftp.datasets import resolve
 from omnisus.sources.datasus_ftp.filenames import decode_for
+from omnisus.sources.datasus_ftp.library_columns import is_library_field
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.dictionaries import load_dicionario
 from tests.support.datasus_names import filename_for
@@ -28,8 +29,8 @@ def test_dicionario_loads_with_latin1_encoding() -> None:
 
 def test_dicionario_has_measured_field_count_and_keys() -> None:
     dic = load_dicionario("sia_bpa_individualizado")
-    names = [f["name"] for f in dic.fields]
-    assert len(names) == 36
+    names = [f["name"] for f in dic.fields if not is_library_field(f)]
+    assert len(names) == 36  # the fields the DBF publishes, not the columns the import adds
     # linkage-critical fields
     for key in ("cns_pac", "dtnasc", "sexopac", "munpac", "cidpri", "proc_id"):
         assert key in names, f"missing {key}"

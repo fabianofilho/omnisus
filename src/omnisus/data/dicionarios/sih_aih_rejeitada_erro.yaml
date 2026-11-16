@@ -2,7 +2,7 @@ name: sih_aih_rejeitada_erro
 title: SIHSUS — AIH rejeitada com código de erro (ER)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.1
+x-version: 1.1.0
 x-source-format: dbc
 x-evidence:
   physical_schema: sih_er_rr_2024_01_mini.dbc, 13 fields; observed 2026-09-22
@@ -21,9 +21,36 @@ schema:
   - name: aih
     type: string
   - name: ano
-    type: string
+    type: integer
+    label: Ano
+    constraints:
+      required: true
+      minimum: 2011
+    x-metadata:
+      physical_name: ANO
+      physical_type:
+        type: string
+        length: 4
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
   - name: mes
-    type: string
+    type: integer
+    label: Mês
+    constraints:
+      required: true
+      minimum: 1
+      maximum: 12
+    x-metadata:
+      physical_name: MES
+      physical_type:
+        type: string
+        length: 2
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
   - name: dt_inter
     type: string
   - name: dt_saida
@@ -655,3 +682,24 @@ schema:
           ''050206'' (19), ''030017'' (8), ''050216'' (8), ''050212'' (6), ''030018'' (5), ''050217'' (4),
           ''030025'' (2), ''030029'' (1). Os 60 códigos de 4 caracteres da tabela (texto em CP850) ficam
           fora do mapa: nenhum arquivo ER os publica.'
+  - name: uf
+    type: string
+    label: UF
+    constraints:
+      required: true
+      pattern: ^[A-Z]{2}$
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: _source_release
+    type: string
+    label: Modalidade da fonte
+    constraints:
+      required: true
+    x-metadata:
+      derivation:
+        kind: publication
+        input: source_uri
+        rule: release_from_uri
