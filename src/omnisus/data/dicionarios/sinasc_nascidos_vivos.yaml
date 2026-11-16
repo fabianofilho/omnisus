@@ -819,6 +819,19 @@ schema:
     # ========================================================================
     # Recém-Nascido
     # ========================================================================
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: e8c023815d59f63261fa958d4b225263c71fb3ef4bd17ef5beee78aec9a4479a
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: 'Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente; sem revisor humano'
+          reviewer: null
+          evidence:
+          - source_id: sinasc-9ac143d5eae6
+            pages: [6]
+            locator: 'PARIDADE, Caracter 1: 0 nulípara; 1 multípara; 9 ignorado (variável calculada pelo sistema)'
+          note: 'Os códigos 0 e 1 e os rótulos batem. O PDF lista também o 9 (ignorado), que o x-decode não rotula.'
     - name: dtnasc
       type: date
       label: Data de nascimento
@@ -1034,12 +1047,42 @@ schema:
       type: string
       label: Status DN epidemiológica
       x-decode: { "0": "Não", "1": "Sim" }
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 46544b8609bf9423688dea275b19781ac716ede9102e3fe953299269e93fd2d2
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: 'Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente; sem revisor humano'
+          reviewer: null
+          evidence:
+          - source_id: sinasc-9ac143d5eae6
+            pages: [5]
+            locator: 'STDNEPIDEM, Caracter 1: 1 SIM; 0 NÃO (status de DN Epidemiológica)'
+          note: 'Códigos e rótulos batem com o PDF. O NASCIDO.def (linha 19) liga o campo a DNNOVA.CNV, que escreve o código na coluna 60, fora do layout (ver o sem_cnv de vinculos.json).'
     - name: stdnnova
       type: string
       label: Status DN nova
       x-decode:
         "0": "Formulário antigo"
         "1": "Formulário novo (pós-2011)"
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 102c005aa0bcc3fc070871886f610aedb1d3d2c7fd10c5195d816cc33bda760a
+          status: conflicting
+          checked_at: '2026-11-15'
+          method: 'Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente; sem revisor humano'
+          reviewer: null
+          evidence:
+          - source_id: sinasc-9ac143d5eae6
+            pages: [5]
+            locator: 'STDNNOVA, Caracter 1: 1 SIM; 0 NÃO (status de DN Nova)'
+          note: 'Os códigos batem, mas o x-decode diz ''Formulário antigo'' e ''Formulário novo (pós-2011)'', e o PDF diz só SIM e NÃO para o status de DN Nova. O ''pós-2011'' não está no PDF.'
+        issues:
+        - id: stdnnova-rotulo-sem-fonte
+          status: open
+          description: 'O Estrutura_SINASC_para_CD.pdf (p. 5) dá STDNNOVA como ''1 SIM; 0 NÃO'', status de DN Nova. Os rótulos ''Formulário antigo'' e ''Formulário novo (pós-2011)'' do x-decode e o ano 2011 não estão no PDF nem em DEF algum (NASCIDO.def não cita o campo). O mapa fica como estava até o mantenedor escolher entre o PDF (Não/Sim) e o rótulo atual.'
     - name: difdata
       type: integer
       label: Diferença de datas (dias)
@@ -1058,7 +1101,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DN
-x-version: "2.5.0"
+x-version: "2.6.0"
 
 x-analytics:
   version: 1.0.0

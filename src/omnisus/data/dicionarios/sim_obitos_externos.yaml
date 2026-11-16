@@ -2,7 +2,7 @@ name: sim_obitos_externos
 title: SIM — Óbitos por causas externas (DOEXT), nacional
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.2.0
+x-version: 1.3.0
 x-source-format: dbc
 x-evidence:
   physical_schema: sim_doext_br_2023_excerpt.dbc, 87 fields; observed 2026-09-22
@@ -22,6 +22,22 @@ schema:
       '2': Banco estadual via FTP
       '3': Banco SEADE
       '9': Ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 2a575282e815c11490547293aba879fa7968b5349f64f344b4b00b3f93e6bea4
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 5
+          locator: 'ORIGEM, Caracter 1: 01 Oracle, 02 Banco estadual disponibilizado via FTP, 03 Banco SEADE,
+            9 Ignorado'
+        note: Códigos do PDF iguais aos do x-decode; os rótulos são abreviações do texto do PDF.
   - name: tipobito
     type: integer
     label: Tipo do óbito
@@ -355,6 +371,32 @@ schema:
       '4': Superior incompleto
       '5': Superior completo
       '9': Ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: f49de8bbb4eee151246f695325877c0fb0157e71251d22421ac11016b0def0a3
+        status: conflicting
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 2
+          locator: 'ESC2010, Caracter 1: 0 sem escolaridade; 1 Fundamental I (1ª a 4ª série); 2 Fundamental
+            II (5ª a 8ª série); 3 Médio; 4 Superior incompleto; 5 Superior completo; 9 Ignorado'
+        note: 'Os códigos batem, mas os rótulos de ''1'' e ''2'' não: o x-decode diz ''1-5 ano'' e ''6-9
+          ano'', o PDF diz ''1ª a 4ª série'' e ''5ª a 8ª série''. O Obito_1996_CID10.def liga o campo a
+          ESCSERIE.CNV e ESCCICLO.CNV, que o OBITOS_CID10_TAB.zip não traz.'
+      issues:
+      - id: esc2010-rotulo-diverge-do-pdf
+        status: open
+        description: 'Os rótulos de ''1'' (''Fundamental I (1-5 ano)'') e ''2'' (''Fundamental II (6-9 ano)'')
+          não são os do Estrutura_do_SIM_2025.pdf (p. 2: ''1ª a 4ª série'' e ''5ª a 8ª série''). Nenhum
+          CNV registrado traz os rótulos do x-decode: o Obito_1996_CID10.def liga ESC2010 a ESCSERIE.CNV
+          e ESCCICLO.CNV, ausentes do OBITOS_CID10_TAB.zip. O mapa fica como estava até o mantenedor escolher
+          entre o PDF e o rótulo atual.'
   - name: seriescfal
     type: string
     label: Escolaridade (série)
@@ -483,6 +525,32 @@ schema:
       '4': Superior incompleto
       '5': Superior completo
       '9': Ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: f49de8bbb4eee151246f695325877c0fb0157e71251d22421ac11016b0def0a3
+        status: conflicting
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 3
+          locator: 'ESCMAE2010, Caracter 1: mesmos códigos e rótulos de ESC2010, para a escolaridade da
+            mãe'
+        note: 'Os códigos batem, mas os rótulos de ''1'' e ''2'' não: o x-decode diz ''1-5 ano'' e ''6-9
+          ano'', o PDF diz ''1ª a 4ª série'' e ''5ª a 8ª série''. O Obito_1996_CID10.def liga o campo a
+          ESCSERIE.CNV e ESCCICLO.CNV, que o OBITOS_CID10_TAB.zip não traz.'
+      issues:
+      - id: escmae2010-rotulo-diverge-do-pdf
+        status: open
+        description: 'Os rótulos de ''1'' (''Fundamental I (1-5 ano)'') e ''2'' (''Fundamental II (6-9 ano)'')
+          não são os do Estrutura_do_SIM_2025.pdf (p. 3: ''1ª a 4ª série'' e ''5ª a 8ª série''). Nenhum
+          CNV registrado traz os rótulos do x-decode: o Obito_1996_CID10.def liga ESCMAE2010 a ESCSERIE.CNV
+          e ESCCICLO.CNV, ausentes do OBITOS_CID10_TAB.zip. O mapa fica como estava até o mantenedor escolher
+          entre o PDF e o rótulo atual.'
   - name: seriescmae
     type: string
     label: Escolaridade da mãe (série)
@@ -712,6 +780,21 @@ schema:
       '1': Sim
       '2': Não
       '9': Ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: ba4c4540ade0bc08b200748ac04aceb58cfa915241b368ef9341cd637bad18be
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 4
+          locator: 'ASSISTMED, Caracter 1: 1 sim; 2 não; 9 ignorado'
+        note: Códigos do PDF iguais aos do x-decode; os rótulos são abreviações do texto do PDF.
   - name: exame
     type: string
     label: Exame
@@ -1168,6 +1251,21 @@ schema:
     x-decode:
       S: Codificado
       N: Não codificado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 9ba2685b831819fd5247b6b228dc10f83f5fc3671c83581db0e377741f553661
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 6
+          locator: 'CODIFICADO, Caracter 1: S se estiver codificado; N se não'
+        note: Códigos do PDF iguais aos do x-decode; os rótulos são abreviações do texto do PDF.
   - name: versaosist
     type: string
     label: Versão do sistema
@@ -1632,6 +1730,21 @@ schema:
       E: Estadual
       R: Regional
       M: Municipal
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 6f160ac6b49de2dd353f3d4f4192cd413fe99f399d0dd2724e3e8c75f3bc7c9c
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 8
+          locator: 'TPNIVELINV, Caracter 1: E estadual; R regional; M municipal'
+        note: Códigos do PDF iguais aos do x-decode; os rótulos são abreviações do texto do PDF.
   - name: nudiasinf
     type: integer
     label: Dias até informação
@@ -1691,6 +1804,21 @@ schema:
       '2': Durante
       '3': Após
       '9': Ignorado
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: a17f1a8e06a68a94fa326f0b10f14f65af03854772aa2d768bc0c081db04828f
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 8
+          locator: 'MORTEPARTO, Caracter 1: 1 antes; 2 durante; 3 após; 9 ignorado'
+        note: Códigos do PDF iguais aos do x-decode; os rótulos são abreviações do texto do PDF.
   - name: dtconcaso
     type: date
     label: Data conclusão do caso
@@ -1748,6 +1876,21 @@ schema:
     x-decode:
       '1': Sim
       '2': Não
+    x-metadata:
+      claims:
+      - target: /field/codes
+        value_sha256: 08d71f6a6e09d2e9b5edf81dadcecb4a0b1a74d447bda01930f553295475512c
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente;
+          sem revisor humano
+        reviewer: null
+        evidence:
+        - source_id: sim-b4195ac8e0f8
+          pages:
+          - 8
+          locator: 'ALTCAUSA, Caracter 1: 1 Sim; 2 Não'
+        note: Códigos do PDF iguais aos do x-decode; os rótulos são abreviações do texto do PDF.
   - name: contador
     type: integer
     label: Contador

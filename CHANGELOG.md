@@ -41,6 +41,26 @@
 
 ### Dictionaries
 
+- Every field with `x-decode` now has an authored `/field/codes` claim, or no map (#72). A test
+  (`tests/unit/test_codes_claims.py`) holds the rule.
+  - **Breaking:** `complex` of `sia_bpa_individualizado` (0.6.0) and `_source_release` of `sim_obitos` and
+  `sih_aih_reduzida` lose their `x-decode`: no DEF and no registered document lists their codes
+  (`complex-sem-def`; `final` and `prelim` are not DATASUS codes). The `<field>_rotulo` column goes
+  away and `sus.label(columns=[field])` raises where the map went.
+  - `ap_coidade` of the seven APAC datasets and `tpidadepac` of the BPA-I: `fixture-measure` claim,
+  `unreviewed`, on the open issue each field already had; the DEF lines are the evidence.
+  - `sexopac`, `catend` and `mn_ind` of the BPA-I: the same, with a new issue per field (`*-sem-def-bpai`,
+  TAB_SIA has no BPA-I DEF).
+  - The nine SIM fields the 2025 Estrutura PDF lists (and the three SIM subsets, generated from
+  `sim_obitos`), `paridade` and `stdnepidem` of SINASC, `racacor`, `ufdif` and `mndif` of the BPA-I:
+  `unreviewed` claim that cites the PDF page. Nothing here is marked verified: no human reviewed them.
+  - `esc2010`, `escmae2010` (SIM) and `stdnnova` (SINASC): claim `conflicting` and an open issue. The
+  codes match the PDF but the labels do not (`'1-5 ano'` against `'1ª a 4ª série'`; `'Formulário novo
+  (pós-2011)'` against a plain Sim). The maps stay as they were until the maintainer chooses.
+  - Versions: `sim_obitos` 2.8.0, `sih_aih_reduzida` 2.19.0, `sinasc_nascidos_vivos` 2.6.0,
+  `sia_bpa_individualizado` 0.6.0, and one minor each for the seven APAC datasets and the three SIM
+  subsets.
+
 - `derivation.output` of the age fields lists `idade_status` too, in the nine dictionaries
   with an age rule (`sim_obitos` 2.7.0, `sih_aih_reduzida` 2.18.0, `sinasc_nascidos_vivos`
   2.5.0, `sia_bpa_individualizado` 0.5.0, `sia_psicossocial` 0.4.0, `sia_atencao_domiciliar`
