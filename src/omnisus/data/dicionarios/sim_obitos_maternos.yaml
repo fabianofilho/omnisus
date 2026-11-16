@@ -37,7 +37,8 @@ schema:
           - 5
           locator: 'ORIGEM, Caracter 1: 01 Oracle, 02 Banco estadual disponibilizado via FTP, 03 Banco SEADE,
             9 Ignorado'
-        note: Códigos do PDF iguais aos do x-decode; os rótulos são abreviações do texto do PDF.
+        note: O PDF escreve 01, 02 e 03 (e 9) para um campo de 1 caractere; o x-decode usa '1', '2', '3'
+          e '9'. Os rótulos são abreviações do texto.
   - name: tipobito
     type: integer
     label: Tipo do óbito
@@ -394,9 +395,11 @@ schema:
         status: open
         description: 'Os rótulos de ''1'' (''Fundamental I (1-5 ano)'') e ''2'' (''Fundamental II (6-9 ano)'')
           não são os do Estrutura_do_SIM_2025.pdf (p. 2: ''1ª a 4ª série'' e ''5ª a 8ª série''). Nenhum
-          CNV registrado traz os rótulos do x-decode: o Obito_1996_CID10.def liga ESC2010 a ESCSERIE.CNV
-          e ESCCICLO.CNV, ausentes do OBITOS_CID10_TAB.zip. O mapa fica como estava até o mantenedor escolher
-          entre o PDF e o rótulo atual.'
+          CNV registrado traz os rótulos do x-decode; o ESC2010.CNV do SINASC (ligado a ESCMAE2010 pelo
+          NASCIDO.def, linha 79) traz ''1'' como ''Fundamental I (1 a 4 Serie)'' e ''2'' como ''Fundamental
+          II (5 a 8 Serie)'', como o PDF. O Obito_1996_CID10.def liga ESC2010 a ESCSERIE.CNV e ESCCICLO.CNV,
+          ausentes do OBITOS_CID10_TAB.zip. O mapa fica como estava até o mantenedor escolher entre o PDF
+          e o rótulo atual.'
   - name: seriescfal
     type: string
     label: Escolaridade (série)
@@ -548,9 +551,11 @@ schema:
         status: open
         description: 'Os rótulos de ''1'' (''Fundamental I (1-5 ano)'') e ''2'' (''Fundamental II (6-9 ano)'')
           não são os do Estrutura_do_SIM_2025.pdf (p. 3: ''1ª a 4ª série'' e ''5ª a 8ª série''). Nenhum
-          CNV registrado traz os rótulos do x-decode: o Obito_1996_CID10.def liga ESCMAE2010 a ESCSERIE.CNV
-          e ESCCICLO.CNV, ausentes do OBITOS_CID10_TAB.zip. O mapa fica como estava até o mantenedor escolher
-          entre o PDF e o rótulo atual.'
+          CNV registrado traz os rótulos do x-decode; o ESC2010.CNV do SINASC (ligado a ESCMAE2010 pelo
+          NASCIDO.def, linha 79) traz ''1'' como ''Fundamental I (1 a 4 Serie)'' e ''2'' como ''Fundamental
+          II (5 a 8 Serie)'', como o PDF. O Obito_1996_CID10.def liga ESCMAE2010 a ESCSERIE.CNV e ESCCICLO.CNV,
+          ausentes do OBITOS_CID10_TAB.zip. O mapa fica como estava até o mantenedor escolher entre o PDF
+          e o rótulo atual.'
   - name: seriescmae
     type: string
     label: Escolaridade da mãe (série)

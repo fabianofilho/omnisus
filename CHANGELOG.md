@@ -43,13 +43,12 @@
 
 - Every field with `x-decode` now has an authored `/field/codes` claim, or no map (#72). A test
   (`tests/unit/test_codes_claims.py`) holds the rule.
-  - **Breaking:** `complex` of `sia_bpa_individualizado` (0.6.0) and `_source_release` of `sim_obitos` and
-  `sih_aih_reduzida` lose their `x-decode`: no DEF and no registered document lists their codes
-  (`complex-sem-def`; `final` and `prelim` are not DATASUS codes). The `<field>_rotulo` column goes
-  away and `sus.label(columns=[field])` raises where the map went.
+  - **Breaking:** `_source_release` of `sim_obitos` and `sih_aih_reduzida` loses its `x-decode`:
+    `final` and `prelim` are not DATASUS codes. The `<field>_rotulo` column goes away and
+    `sus.label(columns=[field])` raises where the map went.
   - `ap_coidade` of the seven APAC datasets and `tpidadepac` of the BPA-I: `fixture-measure` claim,
   `unreviewed`, on the open issue each field already had; the DEF lines are the evidence.
-  - `sexopac`, `catend` and `mn_ind` of the BPA-I: the same, with a new issue per field (`*-sem-def-bpai`,
+  - `sexopac`, `catend`, `mn_ind` and `complex` of the BPA-I: the same, with a new issue per field (`*-sem-def-bpai`,
   TAB_SIA has no BPA-I DEF).
   - The nine SIM fields the 2025 Estrutura PDF lists (and the three SIM subsets, generated from
   `sim_obitos`), `paridade` and `stdnepidem` of SINASC, `racacor`, `ufdif` and `mndif` of the BPA-I:

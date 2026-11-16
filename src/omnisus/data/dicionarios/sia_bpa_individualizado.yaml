@@ -114,11 +114,31 @@ schema:
     - name: complex
       type: string
       label: Complexidade
+      x-decode:
+        '0': Não se aplica
+        '1': Atenção Básica
+        '2': Média complexidade
+        '3': Alta complexidade
       x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 7ff8f9378ca0ed0e581dee67c88fd4526773922463b68950c8199958aaafc6a2
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: 'fixture-measure'
+          reviewer: null
+          evidence:
+          - source_id: sia-tab-e5812b51d802
+            pages: []
+            locator: 'Producao_Ambulatorial.DEF, linhas 89-91: PA_NIVCPL, 1, CNV/COMPLEX.CNV'
+          - source_id: siasus-70fe69dbd4cf
+            pages: [17]
+            locator: 'COMPLEX CHAR (1) Complexidade do Procedimento (layout BIUFAAMM.DBF); PA_NIVCPL CHAR (1) tem a mesma descrição (p. 3)'
+          note: 'Medido, não lido (issue complex-sem-def-bpai). O mapa é o do COMPLEX.CNV que o DEF do PA liga a PA_NIVCPL; o CNV traz rótulos com o código na frente (''0-Não se Aplica''), o x-decode os traz sem ele.'
         issues:
-        - id: complex-sem-def
+        - id: complex-sem-def-bpai
           status: open
-          description: 'Nenhum DEF registrado liga COMPLEX a um CNV (o TAB_SIA não tem DEF do BPA-I, e o Producao_Ambulatorial.DEF e os de RAAS e APAC não citam COMPLEX), e o Informe Técnico SIASUS 2019-07 (p. 17) descreve COMPLEX CHAR (1) como ''Complexidade do Procedimento'', sem lista de códigos. O mapa 0 a 3 foi removido; existe um COMPLEX.CNV no TAB_SIH (ligado a PROC_REA do RD de 1998 a 2007), mas nenhum documento o liga a este campo.'
+          description: 'O TAB_SIA não tem DEF do BPA-I. O mapa é o do COMPLEX.CNV (sia/CNV) que o Producao_Ambulatorial.DEF liga a PA_NIVCPL, e o Informe Técnico SIASUS 2019-07 descreve COMPLEX do BPA-I (p. 17) com as mesmas palavras de PA_NIVCPL do PA (Complexidade do Procedimento), sem lista de códigos. Nenhum DEF cita COMPLEX por esse nome. Medido nas fixtures do BPA-I, não lido neste dicionário.'
     - name: autoriz
       type: string
       label: Número da autorização

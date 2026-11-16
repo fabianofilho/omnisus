@@ -41,27 +41,21 @@ def test_every_code_map_has_an_authored_codes_claim(dataset, field) -> None:
 
 
 def _field(dataset: str, name: str) -> dict:
-    raw = yaml.load((DICIONARIOS / f"{dataset}.yaml").read_text(), Loader=yaml.CSafeLoader)
+    raw = yaml.load(
+        (DICIONARIOS / f"{dataset}.yaml").read_text(encoding="utf-8"), Loader=yaml.CSafeLoader
+    )
     return next(f for f in raw["schema"]["fields"] if f["name"] == name)
 
 
 @pytest.mark.parametrize(
     ("dataset", "name"),
     [
-        ("sia_bpa_individualizado", "complex"),
         ("sim_obitos", "_source_release"),
         ("sih_aih_reduzida", "_source_release"),
     ],
 )
 def test_a_map_nothing_backs_is_gone(dataset, name) -> None:
     assert "x-decode" not in _field(dataset, name)
-
-
-def test_complex_says_what_was_consulted() -> None:
-    issues = _field("sia_bpa_individualizado", "complex")["x-metadata"]["issues"]
-    (issue,) = issues
-    assert issue["id"] == "complex-sem-def" and issue["status"] == "open"
-    assert "Informe Técnico" in issue["description"]
 
 
 @pytest.mark.parametrize(
