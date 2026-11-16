@@ -2,7 +2,7 @@ name: sinan_tuberculose
 title: SINAN — Tuberculose, notificações nacionais
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.0.1
+x-version: 1.1.0
 x-source-format: dbc
 x-evidence:
   physical_schema: TUBEBR20.dbc, 94 fields (layout of 2019-2025); observed 2026-09-22.
@@ -1137,6 +1137,27 @@ schema:
     type: string
   - name: mun_transf
     type: string
+  - name: _source_ano
+    type: integer
+    label: Ano do arquivo de origem
+    constraints:
+      required: true
+      minimum: 2001
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: _source_release
+    type: string
+    label: Modalidade da fonte
+    constraints:
+      required: true
+    x-metadata:
+      derivation:
+        kind: publication
+        input: source_uri
+        rule: release_from_uri
 x-identity:
   year_column: nu_ano
   code_column: id_agravo

@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # latin-1 e OBRIGATORIO: o CNS cifrado usa bytes 0x7B-0x84 e 0x81 e
 # indefinido em cp1252 (UnicodeDecodeError). Medido em BIAC2401/BIRR2401.
 encoding: latin-1
-x-version: "0.4.0"
+x-version: "0.5.0"
 schema:
   fields:
     # ========================================================================
@@ -239,6 +239,50 @@ schema:
     - name: nat_jur
       type: string
       label: Natureza jurídica do estabelecimento
+    - name: ano
+      type: integer
+      label: Ano
+      constraints:
+        required: true
+        minimum: 2008
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
+    - name: uf
+      type: string
+      label: UF
+      constraints:
+        required: true
+        pattern: ^[A-Z]{2}$
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
+    - name: mes
+      type: integer
+      label: Mês
+      constraints:
+        required: true
+        minimum: 1
+        maximum: 12
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
+    - name: _source_release
+      type: string
+      label: Modalidade da fonte
+      constraints:
+        required: true
+      x-metadata:
+        derivation:
+          kind: publication
+          input: source_uri
+          rule: release_from_uri
 # Identidade do arquivo: dt_process é a competência de processamento (Informe SIASUS
 # 2019-07, p. 17) e vale o mês do arquivo em todos os registros de BIRR2401 (12.099) e
 # do recorte de BIMG2412_1 (200); ufmun começa pelo código IBGE da UF (p. 17).

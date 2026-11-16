@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # Gerado do header DBF REAL (ATDRR2401.dbf), nao do informe tecnico.
 # latin-1 obrigatorio: cifra do CNS usa 0x7B-0x84 (0x81 quebra cp1252).
 encoding: latin-1
-x-version: "0.3.0"
+x-version: "0.4.0"
 schema:
   fields:
     - name: ap_mvm
@@ -470,6 +470,50 @@ schema:
     - name: ap_natjur
       type: string
       label: Ap natjur
+    - name: ano
+      type: integer
+      label: Ano
+      constraints:
+        required: true
+        minimum: 2014
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
+    - name: uf
+      type: string
+      label: UF
+      constraints:
+        required: true
+        pattern: ^[A-Z]{2}$
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
+    - name: mes
+      type: integer
+      label: Mês
+      constraints:
+        required: true
+        minimum: 1
+        maximum: 12
+      x-metadata:
+        derivation:
+          kind: source_partition
+          input: source_uri
+          rule: DATASUS filename scope
+    - name: _source_release
+      type: string
+      label: Modalidade da fonte
+      constraints:
+        required: true
+      x-metadata:
+        derivation:
+          kind: publication
+          input: source_uri
+          rule: release_from_uri
 # Identidade do arquivo: ap_mvm (competência de processamento) vale o mês do arquivo em
 # todos os registros dos arquivos inteiros de 2024-01 (tests/fixtures/FIXTURES.md); ap_cmp
 # não serve (AQRR2401 grava 202310). ap_ufmun começa pelo código IBGE da UF.

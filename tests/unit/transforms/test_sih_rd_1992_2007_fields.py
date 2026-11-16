@@ -24,6 +24,7 @@ from scripts.gen_dicionario import fields_of
 
 from omnisus.sources.datasus_ftp import dbc
 from omnisus.sources.datasus_ftp.inventory import _parse_msdos_line
+from omnisus.sources.datasus_ftp.library_columns import is_library_field
 from omnisus.sources.datasus_ftp.parse import dbc_bytes_to_lazyframe
 from omnisus.transforms.cnv import parse_def
 from omnisus.transforms.dictionaries import load_dicionario
@@ -61,7 +62,9 @@ def census() -> dict[str, set[tuple[str, int]]]:
 
 
 def declared() -> dict[str, str]:
-    return {f["name"]: f["type"] for f in load_dicionario(DATASET).fields}
+    return {
+        f["name"]: f["type"] for f in load_dicionario(DATASET).fields if not is_library_field(f)
+    }
 
 
 def fixture_fields(dbc_fixture, fixture: str) -> dict[str, str]:

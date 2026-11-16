@@ -96,7 +96,9 @@ rótulos estão em `x-decode`, e cada afirmação tem uma `claim` com status e e
 3. Se o rótulo vem de uma tabela CNV do TabWin, regenere com
    `uv run python scripts/metadados/gerar_decode_cnv.py` em vez de editar à mão. Os
    dicionários do SINAN e dos subconjuntos do SIM também são gerados
-   (`gerar_sinan.py`, `gerar_subconjuntos_sim.py`).
+   (`gerar_sinan.py`, `gerar_subconjuntos_sim.py`), e as colunas que o import acrescenta
+   (`ano`, `uf`, `mes`, `_source_ano`, `_source_release`) vêm de
+   `gerar_colunas_lib.py`: nunca à mão.
 
 O passo a passo, com os critérios de revisão, está em
 [Manutenção dos dicionários](https://github.com/raphaelfh/omnisus/blob/main/docs/dicionario/manutencao.md).

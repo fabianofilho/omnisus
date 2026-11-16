@@ -1856,8 +1856,8 @@ schema:
     - name: _source_release
       type: string
       label: Modalidade da fonte
-      x-decode: {final: Final, prelim: Preliminar}
-      derivation: {kind: publication, input: source_uri, rule: release_from_uri}
+      constraints:
+        required: true
       x-metadata:
         derivation:
           kind: publication
@@ -1867,7 +1867,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DO
-x-version: "2.6.1"
+x-version: "2.7.0"
 
 x-analytics:
   version: 1.2.0

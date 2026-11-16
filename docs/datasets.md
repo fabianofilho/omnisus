@@ -97,7 +97,7 @@ Perfil: [SIH · AIH reduzida (`sih_aih_reduzida`)](sources/sih_aih_reduzida.md)
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sih_aih_reduzida` | SIHSUS — AIH Reduzida (RD) | por UF, mensal | 2008-01 em diante | [35](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida.yaml) | idade, sexo e datas em 27 UFs, 2020-01 a 2025-02 |
+| `sih_aih_reduzida` | SIHSUS — AIH Reduzida (RD) | por UF, mensal | 2008-01 em diante | [34](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida.yaml) | idade, sexo e datas em 27 UFs, 2020-01 a 2025-02 |
 | `sih_aih_reduzida_1992_2007` | SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12 | por UF, mensal | 1992-01 a 2007-12 | [8](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida_1992_2007.yaml) | — |
 | `sih_aih_rejeitada` | SIHSUS — AIH rejeitada (RJ) | por UF, mensal | 2008-01 em diante | [26](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_rejeitada.yaml) | — |
 | `sih_aih_rejeitada_erro` | SIHSUS — AIH rejeitada com código de erro (ER) | por UF, mensal | 2011-01 em diante | [1](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_rejeitada_erro.yaml) | — |
@@ -109,7 +109,7 @@ Perfil: [SIM · óbitos (`sim_obitos`)](sources/sim_obitos.md)
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sim_obitos` | SIM — Declarações de Óbito | por UF, anual | 1996 em diante + preliminar | [40](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos.yaml) | idade, sexo e datas em 27 UFs, 2020 a 2024 |
+| `sim_obitos` | SIM — Declarações de Óbito | por UF, anual | 1996 em diante + preliminar | [39](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos.yaml) | idade, sexo e datas em 27 UFs, 2020 a 2024 |
 | `sim_obitos_cid9` | SIM — Óbitos por residência, CID-9 (DOR), 1979 a 1995 | por UF, anual | 1979 a 1995 | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_cid9.yaml) | — |
 | `sim_obitos_externos` | SIM — Óbitos por causas externas (DOEXT), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_externos.yaml) | — |
 | `sim_obitos_fetais` | SIM — Óbitos fetais (DOFET), nacional | Brasil, anual | 1996 em diante | [18](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_fetais.yaml) | — |

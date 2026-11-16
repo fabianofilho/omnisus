@@ -2,7 +2,7 @@ name: sia_producao_ambulatorial
 title: SIASUS — Produção ambulatorial (PA)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: "1.3.1"
+x-version: "1.4.0"
 x-source-format: dbc
 x-evidence:
   physical_schema: sia_pa_rr_2024_01_mini.dbc, 60 fields; observed 2026-09-22
@@ -548,6 +548,50 @@ schema:
     type: string
   - name: pa_nat_jur
     type: string
+  - name: ano
+    type: integer
+    label: Ano
+    constraints:
+      required: true
+      minimum: 2008
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: uf
+    type: string
+    label: UF
+    constraints:
+      required: true
+      pattern: ^[A-Z]{2}$
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: mes
+    type: integer
+    label: Mês
+    constraints:
+      required: true
+      minimum: 1
+      maximum: 12
+    x-metadata:
+      derivation:
+        kind: source_partition
+        input: source_uri
+        rule: DATASUS filename scope
+  - name: _source_release
+    type: string
+    label: Modalidade da fonte
+    constraints:
+      required: true
+    x-metadata:
+      derivation:
+        kind: publication
+        input: source_uri
+        rule: release_from_uri
 # Identidade do arquivo: pa_mvm vale 202401 nos 21.341 registros de PARR2401 e pa_ufmun
 # começa por 14 (RR) em todos; pa_cmp não serve (4 competências no mesmo arquivo).
 x-identity:

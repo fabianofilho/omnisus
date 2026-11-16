@@ -175,7 +175,8 @@ def _(BASE, sus, pl):
                 "mapa de códigos": bool(f.get("x-decode")),
             }
             for f in sus.describe_dataset(BASE)["schema"]["fields"]
-        ]
+        ],
+        infer_schema_length=None,  # `descrição` pode começar nula e só aparecer nas colunas da lib
     ).select(pl.exclude(pl.Null))  # sem `descrição` quando o dicionário não tem nenhuma
     return
 

@@ -19,7 +19,9 @@ def test_a_field_name_padded_with_spaces_stages_trimmed(tmp_path: Path) -> None:
     raw = (DBC / "sia_ps_rr_2024_01_mini.dbc").read_bytes()
     assert b"TIPPRE  \x00\x00\x00" in decompress_bytes(raw)[:1024]
     out = tmp_path / "ps.parquet"
-    dbc_bytes_to_parquet(raw, out, dataset="sia_psicossocial", uf="RR", ano=2024, mes=1)
+    dbc_bytes_to_parquet(
+        raw, out, dataset="sia_psicossocial", uf="RR", ano=2024, mes=1, release="final"
+    )
     columns = pl.read_parquet_schema(out)
     assert "tippre" in columns
     assert [name for name in columns if name != name.strip()] == []
