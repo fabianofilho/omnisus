@@ -9,7 +9,10 @@ x-evidence:
     80 fields: the union of the 12 DBF layouts of the files read on 2026-10-01 from 1998-01 to
     2007-12 (164 files: one RR file a month, AP where RR is missing, and SP and MG in the
     months a layout changes; evidence/2026-10-01-rd-1992-2007-layouts/). Each is in
-    sih_rd_rr_2004_07_excerpt.dbc or sih_rd_rr_2007_12_mini.dbc. insc_pn and seq_aih5 are C
+    sih_rd_rr_2004_07_excerpt.dbc or sih_rd_rr_2007_12_mini.dbc, except uti_total: it is
+    published only until 1999-12, no fixture of the era carries it, and its type is the
+    generator's for N2.0, the spec it has in every layout and in sih_rd_rr_1994_12_mini.dbc.
+    insc_pn and seq_aih5 are C
     in the files of 2001-01 to 2007-12 and N from 2004-07 to 2006-03; they keep the type of
     sih_rd_rr_2007_12_mini.dbc (string) until #40 decides. The era is split from 1998-01
     (issue #12, decision 1): the dictionary of 1992-01 to 1997-12 is

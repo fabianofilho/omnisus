@@ -46,9 +46,13 @@
   `sih_aih_reduzida_1998_2007` (80 fields, 12 layouts, `diag_princ` in CID-10), as decided
   in #12 (decision 1, ADR 0002 amendment of 2026-11-16). They share the directory
   `SIHSUS/199201_200712/Dados` and the prefix `RD`; `coverage` cuts the months. The old
-  name no longer exists: `load`, `import_dataset` and `read` with it raise `ValueError`,
-  and a lake that imported it keeps an orphan table `sih_aih_reduzida_1992_2007`, which
-  nothing writes to any more. Each new table has only the columns of its era. Both
+  name no longer exists. Against a lake that imported it (RDRR0712, checked with the
+  code of this change): `load`, `import_dataset`, `outdated` and `read(..., years=...)`
+  raise `ValueError: unknown dataset`; `describe_dataset` and `label` raise
+  `FileNotFoundError` (no dictionary); `read(table)` without `years` and `cite` still
+  work, `cite` printing the table name as the title. The table `sih_aih_reduzida_1992_2007`
+  stays in the lake and nothing writes to it any more; to move on, import the months again
+  under the new names. Each new table has only the columns of its era. Both
   dictionaries start at 1.0.0 with the maps and claims the old one had (the generator
   output is unchanged); the issue `diag-princ-cid9-ate-1997` becomes `diag-princ-cid9` in
   the first, and the second declares no issue on `diag_princ`. `travar_versoes.py` gets
