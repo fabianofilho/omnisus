@@ -43,8 +43,11 @@
 
 - Every DATASUS dictionary (43) declares the columns the import adds, each with an
   `x-metadata.derivation`: `ano` and `uf` of a state file, `mes` of a monthly one,
-  `_source_ano` of a national one, `_source_release` of all. Before, 25 declared none of
-  them and `sus.check_columns` called them `not in dictionary` (#11). They come from
+  `_source_ano` of a national one, `_source_release` of all. Before, 38 declared none of
+  them, 3 declared some without a `derivation` (`cnes_estabelecimentos`,
+  `sinasc_nascidos_vivos`, `sih_aih_rejeitada_erro`) and only `sih_aih_reduzida` and
+  `sim_obitos` declared all; `sus.check_columns` called the missing ones `not in
+  dictionary`, and now gives them their label (#11). They come from
   `library_columns(dataset)`, the function the runner and staging use, and are written by
   `scripts/metadados/gerar_colunas_lib.py`; the inventory tests count only the fields
   without a `derivation` of kind `source_partition` or `publication`. Each dictionary has
