@@ -14,7 +14,7 @@ hash of, that hash and its source. A member held under both older editions has t
 
 - 885 members: 797 `CNV/`, 81 `DBF/`, 3 `Docs/` and 4 at the root (`RD2008.DEF`,
   `RJ2008.DEF`, `SP2008.DEF`, `Motivo_de_Erro.DEF`).
-- 884 of the 885 carry the date 2026-10-15 inside the zip, so the whole archive was
+- 882 of the 885 carry the date 2026-10-15 inside the zip, so the whole archive was
   rewritten that day; two are dated 2026-06-16 and one 2026-02-19.
 - **35 recorded hashes compared, 35 equal.** 31 are the members `vinculos.json` packages
   from `sih-tab-f05b32f32908` (the four DEF files, 26 CNV and 1 DBF); 4 are the members listed in
