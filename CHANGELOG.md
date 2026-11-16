@@ -21,6 +21,38 @@
   before the first import returns `[]`. `None` keeps the SQL and the rows of 0.2.3. The
   data table is pinned by the caller's `FROM` (#101).
 
+- `sus.import_cnes_master_ftp(competencia, zip_path=..., download_dir=...)`
+  fills `cnes_master` from
+  `tbEstabelecimentoAAAAMM.csv` of the full CNES base on the FTP
+  (`BASE_DE_DADOS_CNES_AAAAMM.ZIP`, about 576 MB for 202312) in one pass, instead of one
+  request per code to the open-data API. Each row records `fonte`, `arquivo`, `sha256`,
+  `competencia_nome` and, for a file the importer downloaded, the server `url` and
+  `modificado_em` (MDTM); tables created by `import_cnes_master` gain those columns on the
+  next write. `aux_cnes` exposes `nome_fantasia`, `razao_social`, `competencia_nome` and
+  `fonte_nome` next to `nome`. The name is the one of the loaded competência, not of the
+  code's last month in ST (#150). Only a pessoa jurídica (`TP_PFPJ=3`) keeps a name: a
+  pessoa física (`TP_PFPJ=1`, whose names are the professional's) or any other value gets
+  none, and neither does a row whose name holds a valid CPF, written plain or with dots,
+  dash, slash or spaces in the CPF positions (600 of 202312, mostly empresário individual;
+  `evidence/2026-11-09-cnes-cpf-em-nome-pj.md`). A row with no name
+  is skipped, a `CO_CNES` repeated with another name is an error, and the counts go to the
+  `cnes_master_ftp.rows_skipped` log. A name `cnes_master` already holds for a code whose
+  row is not `TP_PFPJ=3`, or that the lake's ST marks anything but `'3'` in some month, is
+  removed in the same transaction as the upsert, and so is every stored name that holds a
+  valid CPF, of any code, on both paths. The removal is logical: after the next import a
+  lake filled before these rules no longer returns those names, but they stay in earlier
+  snapshots, in the old Parquet files and possibly in the catalog's column statistics, so
+  recreate such a lake from scratch before sharing it. A clean stored name stays when the
+  file now writes a CPF for the code. The razão social of an empresário individual
+  (natureza jurídica 2135) is the person's civil name and is kept, as public CNPJ data;
+  names with a CPF are not.
+- `import_cnes_master` (API) fetches a name only for a code `cnes_estabelecimentos` marks
+  `pf_pj = '3'` in every imported month, discovered or listed by hand: a pessoa física, a
+  code outside the ST, or a lake whose ST has no `pf_pj` gets none (breaking: explicit
+  codes not in the ST are no longer fetched). It writes no name holding a valid CPF, removes
+  every stored one and the names of the codes the ST marks otherwise, and logs
+  `pessoa_fisica`, `pf_pj_desconhecido` and, in `cnes_master.names_removed`, `cpf_no_nome`. Only imported months count: a code marked `'3'` in all of them
+  and `'1'` in a month not imported is still taken as pessoa jurídica.
 - `cite()` and `citation_from_publications()` with `accessed=None` print as the access
   date the UTC day of each row's `published_at` (when the publication was written to the
   lake) or, for IBGE, of `collected_at` (when the HTTP request was made), instead of the

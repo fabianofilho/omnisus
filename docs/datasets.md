@@ -196,7 +196,8 @@ Estas fontes não passam por `sus.load`:
   do pacote ([vocabulários](sources/vocabularios.md)).
 - Procedimentos do SIGTAP por competência: `sus.import_sigtap`
   ([SIGTAP](sources/vocabularios.md#sigtap-por-competencia)).
-- Nomes dos estabelecimentos, pela API pública do CNES: `sus.import_cnes_master`
+- Nomes dos estabelecimentos, pela API pública do CNES (`sus.import_cnes_master`) ou pela base
+  completa do CNES no FTP (`sus.import_cnes_master_ftp`)
   ([nomes do CNES](sources/cnes_estabelecimentos.md#establishment-names)).
 - Posição de estoque BNAFAR/Hórus, uma página por consulta de `fetch_stock_page`, sem
   gravar no lake ([medicamentos](sources/medicamentos.md#cliente-de-estoque-bnafarhorus)).
