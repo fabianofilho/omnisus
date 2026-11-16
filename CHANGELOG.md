@@ -41,6 +41,20 @@
 
 ### Dictionaries
 
+- `sih_aih_rejeitada` 1.5.0 and `sih_servicos_profissionais` 1.3.0: `nasc`, `dt_inter` and
+  `dt_saida` of the RJ and `sp_dtinter` and `sp_dtsaida` of the SP are `type: date` with
+  `x-format: yyyyMMdd`, so `check_columns` reports their invalid dates and range. No document
+  gives the format: the claim is `fixture-measure`, `unreviewed`, with the open issue
+  `formato-sem-documento` and an `observations` entry (server file, SHA-256, `observed`).
+  `gestor_dt` of the RJ stays a string (no fixture fills it; issue `formato-sem-valor`) and the
+  ER dates wait for a census of widths and patterns. The observation schema gains `observed`
+  (#9).
+- `check_columns` counts a date as invalid unless it has exactly eight digits, the guard
+  `analytical_projection` already used: `'1012023'` no longer parses (#9).
+- A test validates the resolved metadata of every field of every packaged dictionary against
+  `docs/dicionario/schemas/column-metadata.schema.json`, and another reads every `x-format`
+  against the committed fixtures (#9).
+
 - `docs/dicionario/contrato.md` documents `method: fixture-measure`, the method of the
   `cod_idade` claims of the RD and the RJ (`sih_aih_reduzida` 2.17.1, `sih_aih_rejeitada`
   1.4.1), whose `reviewer` is now null: nobody reviewed them. Their `sem_cnv` reasons cite

@@ -2,7 +2,7 @@ name: sih_servicos_profissionais
 title: SIHSUS — Serviços profissionais (SP)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.2.1
+x-version: 1.3.0
 x-source-format: dbc
 x-evidence:
   physical_schema: sih_sp_rr_2024_01_mini.dbc, 36 fields; observed 2026-09-22
@@ -28,9 +28,71 @@ schema:
   - name: sp_procrea
     type: string
   - name: sp_dtinter
-    type: string
+    type: date
+    x-format: yyyyMMdd
+    x-metadata:
+      claims:
+      - target: /field/format
+        value_sha256: 22b7645fd60de2bfe0dc4203b75a4a01b1c8ff1a856491178e3c3bf01d6230d6
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: fixture-measure
+        reviewer: null
+        evidence: []
+        note: Medido, não lido (issue formato-sem-documento). Nenhuma fonte registrada dá o formato deste campo.
+      observations:
+      - file: SPRR2401.dbc
+        url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Dados/SPRR2401.dbc
+        sha256: f8107486b08850860ea78a0d4517974cec92315b7268a690441031b7b6fd06ee
+        data_period: '2024-01'
+        uf: RR
+        field_name: sp_dtinter
+        checked_at: '2026-11-15'
+        scope: Fixture sih_sp_rr_2024_01_mini, os 35.669 registros de SPRR2401 (SP_PF_DOC em branco).
+        observed:
+          pattern: yyyyMMdd
+          filled: 35669
+          valid: 35669
+          valid_min: '2023-07-02'
+          valid_max: '2024-01-30'
+          also_valid_as_ddMMyyyy: 0
+      issues:
+      - id: formato-sem-documento
+        status: open
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41), p. 4-5, dá SP_DTINTER como char(8), "Data da internação", sem formato. O formato yyyyMMdd foi medido nas 35.669 linhas do SPRR2401, todas com 8 dígitos e data válida; não vale como documento.'
   - name: sp_dtsaida
-    type: string
+    type: date
+    x-format: yyyyMMdd
+    x-metadata:
+      claims:
+      - target: /field/format
+        value_sha256: 22b7645fd60de2bfe0dc4203b75a4a01b1c8ff1a856491178e3c3bf01d6230d6
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: fixture-measure
+        reviewer: null
+        evidence: []
+        note: Medido, não lido (issue formato-sem-documento). Nenhuma fonte registrada dá o formato deste campo.
+      observations:
+      - file: SPRR2401.dbc
+        url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Dados/SPRR2401.dbc
+        sha256: f8107486b08850860ea78a0d4517974cec92315b7268a690441031b7b6fd06ee
+        data_period: '2024-01'
+        uf: RR
+        field_name: sp_dtsaida
+        checked_at: '2026-11-15'
+        scope: Fixture sih_sp_rr_2024_01_mini, os 35.669 registros de SPRR2401 (SP_PF_DOC em branco).
+        observed:
+          pattern: yyyyMMdd
+          filled: 35669
+          valid: 35669
+          valid_min: '2023-10-01'
+          valid_max: '2024-01-31'
+          also_valid_as_ddMMyyyy: 0
+      issues:
+      - id: formato-sem-documento
+        status: open
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41), p. 4-5, dá SP_DTSAIDA como char(8), "Data da saída", sem formato. O formato yyyyMMdd foi medido nas 35.669 linhas do SPRR2401, todas com 8 dígitos e data válida; não vale como documento.'
   - name: sp_num_pr
     type: string
   - name: sp_tipo
