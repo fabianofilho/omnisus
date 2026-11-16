@@ -443,10 +443,22 @@ def test_a_mesmo_que_member_whose_sha256_differs_from_the_copy_is_refused(monkey
         gerar.read_member("sih_199201_199712/MORTES.CNV", membros)
 
 
-RD_ERAS = ["ident", "sexo", "morte", "natureza", "gestao", "instru", "vincprev"]
+RD_ERAS = {
+    "sih_aih_reduzida_1992_1997": ["ident", "sexo", "morte", "natureza"],
+    "sih_aih_reduzida_1998_2007": [
+        "ident",
+        "sexo",
+        "morte",
+        "natureza",
+        "gestao",
+        "instru",
+        "vincprev",
+    ],
+}
 
 
-def test_the_rd_era_claims_are_the_generator_output(monkeypatch, tmp_path):
+@pytest.mark.parametrize("dataset", sorted(RD_ERAS))
+def test_the_rd_era_claims_are_the_generator_output(monkeypatch, tmp_path, dataset):
     """Each of the three era packages (TAB_SIH_199201-199712, 199801-200307, 200308-200712)
     binds these fields in its own RD.DEF to the same CNV bytes. Dropping the committed
     claim and map and generating again gives the committed field: one evidence entry per
@@ -455,12 +467,12 @@ def test_the_rd_era_claims_are_the_generator_output(monkeypatch, tmp_path):
     dicionarios = ROOT / "src/omnisus/data/dicionarios"
     for path in dicionarios.glob("*.yaml"):
         (tmp_path / path.name).write_text(path.read_text("utf-8"), encoding="utf-8")
-    target = tmp_path / "sih_aih_reduzida_1992_2007.yaml"
+    target = tmp_path / f"{dataset}.yaml"
     text = target.read_text("utf-8")
     committed = {
         f["name"]: f for f in yaml.load(text, Loader=yaml.CSafeLoader)["schema"]["fields"]
     }
-    for name in RD_ERAS:
+    for name in RD_ERAS[dataset]:
         field = dict(committed[name])
         del field["x-decode"]
         meta = field["x-metadata"]
@@ -471,7 +483,7 @@ def test_the_rd_era_claims_are_the_generator_output(monkeypatch, tmp_path):
     monkeypatch.setattr(gerar, "DICIONARIOS", tmp_path)
     generated = yaml.load(gerar.generate()[target], Loader=yaml.CSafeLoader)["schema"]["fields"]
     for field in generated:
-        if field["name"] in RD_ERAS:
+        if field["name"] in RD_ERAS[dataset]:
             assert field == committed[field["name"]], field["name"]
             (claim,) = field["x-metadata"]["claims"]
             assert [e["source_id"] for e in claim["evidence"]] == [
@@ -509,7 +521,7 @@ def test_a_def_in_the_list_without_the_member_is_refused(monkeypatch):
     gerar = _load(monkeypatch)
     vinculos = json.loads((CNV / "vinculos.json").read_text(encoding="utf-8"))
     del vinculos["membros"]["sih_199801_200307/MORTES.CNV"]
-    defs = vinculos["datasets"]["sih_aih_reduzida_1992_2007"]["def"]
+    defs = vinculos["datasets"]["sih_aih_reduzida_1998_2007"]["def"]
     with pytest.raises(ValueError, match=r"sih_199801_200307/MORTES\.CNV is not a member"):
         gerar.evidence_for(defs, "morte", "sih_199201_199712/MORTES.CNV", vinculos)
 
@@ -533,7 +545,7 @@ def test_a_def_in_the_list_whose_member_has_other_bytes_is_refused(monkeypatch):
     other = membros["sih/CNV/MORTES.CNV"]["sha256"]
     assert other != membros["sih_199201_199712/MORTES.CNV"]["sha256"]
     membros["sih_199801_200307/MORTES.CNV"]["sha256"] = other
-    defs = vinculos["datasets"]["sih_aih_reduzida_1992_2007"]["def"]
+    defs = vinculos["datasets"]["sih_aih_reduzida_1998_2007"]["def"]
     with pytest.raises(ValueError, match=r"sih_199801_200307/MORTES\.CNV is not a member"):
         gerar.evidence_for(defs, "morte", "sih_199201_199712/MORTES.CNV", vinculos)
 

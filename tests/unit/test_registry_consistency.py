@@ -6,6 +6,7 @@ no public door) impossible.
 from __future__ import annotations
 
 from importlib.resources import files
+from itertools import pairwise
 
 import pytest
 
@@ -41,9 +42,16 @@ def test_b_python_api_accepts_every_row() -> None:
 
 
 def test_d_prefixes_are_unique() -> None:
-    """Per directory: RD and PA each have a row in two directories (one per era)."""
-    keys = [(d.prefix, d.ftp_dir) for d in REGISTRY.values()]
-    assert len(keys) == len(set(keys)), sorted(keys)
+    """Per directory: RD and PA each have a row in two directories (one per era). Rows of
+    one directory share a prefix only when their `coverage` windows do not overlap (RD
+    1992-1997 and 1998-2007, ADR 0002 amendment of 2026-11-16)."""
+    by_key: dict[tuple[str, str], list[tuple[tuple[int, int], tuple[int, int]]]] = {}
+    for d in REGISTRY.values():
+        first, last = d.coverage
+        by_key.setdefault((d.prefix, d.ftp_dir), []).append((first, last or (9999, 12)))
+    for key, windows in by_key.items():
+        windows.sort()
+        assert all(a[1] < b[0] for a, b in pairwise(windows)), key
 
 
 def test_e_cadence_agrees_with_partition_layout() -> None:

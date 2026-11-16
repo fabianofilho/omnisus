@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass
 
 from omnisus.sources._base import ALL_UFS, ScopeKey
-from omnisus.sources.datasus_ftp.datasets import Dataset
+from omnisus.sources.datasus_ftp.datasets import Dataset, in_coverage
 
 
 def _yy_to_year(d: Dataset, yy: int) -> int:
@@ -45,7 +45,16 @@ def parse_name(d: Dataset, name: str) -> SourceName | None:
     read as a state. Monthly rows accept the two part shapes DATASUS uses when
     it splits a month: ``BIMG2412_1.dbc`` and ``PASP2401a.dbc``. A shorter
     prefix never swallows a longer family's file: the groups are fixed width.
+
+    A name whose scope falls outside the row's ``coverage`` is not a file of the row: two
+    rows of one directory and prefix (RD 1992-1997 and 1998-2007, ADR 0002) each read
+    only their own months, and neither claims the other's.
     """
+    parsed = _parse_name(d, name)
+    return parsed if parsed is not None and in_coverage(d, parsed.scope) else None
+
+
+def _parse_name(d: Dataset, name: str) -> SourceName | None:
     prefix = re.escape(d.prefix)
     if d.geography == "national":
         m = re.fullmatch(

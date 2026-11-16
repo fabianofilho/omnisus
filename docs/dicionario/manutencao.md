@@ -114,7 +114,7 @@ seu `sha256`, e o gerador lê os bytes do membro nomeado e confere o hash contra
 
 `def` é sempre uma lista de DEF. Quando vários pacotes publicam os mesmos vínculos, a
 lista tem um DEF por pacote, o primeiro sendo o que já servia de base (é o caso de
-`sih_aih_reduzida_1992_2007`, com os três `RD.DEF` das eras); um campo ligado a DBF aceita
+`sih_aih_reduzida_1992_1997` e `sih_aih_reduzida_1998_2007`, cada um com os três `RD.DEF` das eras); um campo ligado a DBF aceita
 um DEF só, porque a coluna de descrição é lida de um DEF. Para cada DEF da lista o
 gerador procura o membro na mesma posição relativa à pasta do DEF, exige o mesmo
 `sha256` do membro de `campos`, confere que aquele DEF liga o campo a ele na posição 1

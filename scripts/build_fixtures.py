@@ -73,7 +73,12 @@ TARGETS: list[tuple[str, ScopeKey, str]] = [
     ),
     ("sih_aih_rejeitada_erro", ScopeKey(uf="RR", ano=2024, mes=1), "sih_er_rr_2024_01_mini.dbc"),
     (
-        "sih_aih_reduzida_1992_2007",
+        "sih_aih_reduzida_1992_1997",
+        ScopeKey(uf="RR", ano=1997, mes=9),
+        "sih_rd_rr_1997_09_mini.dbc",
+    ),
+    (
+        "sih_aih_reduzida_1998_2007",
         ScopeKey(uf="RR", ano=2007, mes=12),
         "sih_rd_rr_2007_12_mini.dbc",
     ),

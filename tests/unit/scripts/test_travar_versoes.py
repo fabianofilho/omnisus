@@ -143,3 +143,37 @@ def test_lock_entry_for_an_unknown_dictionary_is_refused(monkeypatch, tmp_path):
     lock.write_text(json.dumps(entries), encoding="utf-8")
     with pytest.raises(ValueError, match="nao_existe"):
         module.generate(dicionarios, lock)
+
+
+RETIRED = "sih_aih_reduzida_1992_2007"
+
+
+def test_a_retired_dictionary_keeps_its_locked_history_without_a_yaml(monkeypatch):
+    """Issue #12: the RD dictionary was split at 1998-01. Its entry stays in the lock for
+    good (the file only grows) and the script lists it as retired instead of refusing it."""
+    module = _load(monkeypatch)
+    assert RETIRED in module.RETIRED
+    assert not (DICIONARIOS / f"{RETIRED}.yaml").exists()
+    locked = module.load_lock(LOCK.read_text(encoding="utf-8"))
+    assert (
+        max(locked[RETIRED], key=lambda v: tuple(map(int, v.split("."))))
+        == (module.RETIRED[RETIRED])
+    )
+
+
+def test_a_retired_dictionary_with_a_yaml_again_is_refused(monkeypatch, tmp_path):
+    module = _load(monkeypatch)
+    dicionarios, lock = _copy(tmp_path)
+    shutil.copy(dicionarios / "sih_aih_reduzida_1998_2007.yaml", dicionarios / f"{RETIRED}.yaml")
+    with pytest.raises(ValueError, match=RETIRED):
+        module.generate(dicionarios, lock)
+
+
+def test_a_retired_dictionary_dropped_from_the_lock_is_refused(monkeypatch, tmp_path):
+    module = _load(monkeypatch)
+    dicionarios, lock = _copy(tmp_path)
+    entries = json.loads(lock.read_text(encoding="utf-8"))
+    del entries[RETIRED]
+    lock.write_text(json.dumps(entries), encoding="utf-8")
+    with pytest.raises(ValueError, match=RETIRED):
+        module.generate(dicionarios, lock)

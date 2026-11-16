@@ -186,10 +186,10 @@ REMAINING = {
         ("tpresginfo", "", 115),
     ],
     ("sim_obitos_cid9", "sim_cid9_rr_1995_mini"): [],
-    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1994_12_mini"): [],
-    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini"): [],
-    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2004_07_excerpt"): [],
-    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2007_12_mini"): [],
+    ("sih_aih_reduzida_1992_1997", "sih_rd_rr_1994_12_mini"): [],
+    ("sih_aih_reduzida_1992_1997", "sih_rd_rr_1997_09_mini"): [],
+    ("sih_aih_reduzida_1998_2007", "sih_rd_rr_2004_07_excerpt"): [],
+    ("sih_aih_reduzida_1998_2007", "sih_rd_rr_2007_12_mini"): [],
     # SIA families of Informe Técnico SIASUS 2019-07, same rule; AMP has no DEF.
     ("sia_apac_acompanhamento_bariatrica", "sia_ab_se_2025_07_mini"): [],
     ("sia_apac_fistula_arteriovenosa", "sia_acf_rr_2024_01_mini"): [],
@@ -242,8 +242,8 @@ RANGE_ONLY = {
     ],
     # RD 1992-2007: INSTRU.CNV 0-9 "Ignorado/não se aplica", VINCPREV.CNV 0-9 "Não
     # classificado". RDRR9412 and RDRR9709 hold only codes a CNV line names.
-    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2004_07_excerpt"): [("instru", "0", 90)],
-    ("sih_aih_reduzida_1992_2007", "sih_rd_rr_2007_12_mini"): [
+    ("sih_aih_reduzida_1998_2007", "sih_rd_rr_2004_07_excerpt"): [("instru", "0", 90)],
+    ("sih_aih_reduzida_1998_2007", "sih_rd_rr_2007_12_mini"): [
         ("instru", "0", 1488),
         ("vincprev", "0", 1496),
     ],
@@ -458,34 +458,34 @@ def test_the_comparison_report_gaps_are_closed(dbc_fixture, dataset, fixture, fi
         # asserted on RDRR0712 (TAB_SIH_200308-200712.zip); instru 0 and vincprev 0 are
         # labelled by the reserve range 0-9, and RANGE_ONLY records them.
         (
-            "sih_aih_reduzida_1992_2007",
+            "sih_aih_reduzida_1992_1997",
             "sih_rd_rr_1997_09_mini",
             "sexo",
             {"1": "Masculino", "3": "Feminino"},
         ),
-        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "natureza", {"40": "Estadual"}),
-        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "ident", {"1": "Normal"}),
+        ("sih_aih_reduzida_1992_1997", "sih_rd_rr_1997_09_mini", "natureza", {"40": "Estadual"}),
+        ("sih_aih_reduzida_1992_1997", "sih_rd_rr_1997_09_mini", "ident", {"1": "Normal"}),
         (
-            "sih_aih_reduzida_1992_2007",
+            "sih_aih_reduzida_1998_2007",
             "sih_rd_rr_2007_12_mini",
             "gestao",
             {"1": "Municipal plena assist", "2": "Estadual plena"},
         ),
         (
-            "sih_aih_reduzida_1992_2007",
+            "sih_aih_reduzida_1998_2007",
             "sih_rd_rr_2007_12_mini",
             "instru",
             {"0": "Ignorado/não se aplica", "3": "2º grau"},
         ),
         (
-            "sih_aih_reduzida_1992_2007",
+            "sih_aih_reduzida_1998_2007",
             "sih_rd_rr_2007_12_mini",
             "vincprev",
             {"0": "Não classificado"},
         ),
         # The three RD.DEF bind SEMIPLEN ("Gestão (95-97)") to GESTAO.CNV at position 1.
         # It exists from 1995-01 to 1997-12; RDRR9709 holds only 0.
-        ("sih_aih_reduzida_1992_2007", "sih_rd_rr_1997_09_mini", "semiplen", {"0": "Estadual"}),
+        ("sih_aih_reduzida_1992_1997", "sih_rd_rr_1997_09_mini", "semiplen", {"0": "Estadual"}),
         # RD2008.DEF and RJ2008.DEF bind NACIONAL to NACION3D.CNV and CONTRACEP1-2 to
         # CONTRAC.CNV; RJ2008.DEF binds ST_MOT_BLO to MOTBLOQUEIO.CNV. CONTRAC and
         # MOTBLOQUEIO open with a fallback range (00-99).

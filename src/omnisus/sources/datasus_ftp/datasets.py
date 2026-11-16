@@ -158,7 +158,8 @@ _ROWS: tuple[Dataset, ...] = (
     Dataset(name="sim_obitos_infantis", prefix="DOINF", ftp_dir=_SIM_SUBSETS, cadence="yearly", partition_by=("_source_ano",), coverage=((1996, 1), None), geography="national", national_code=""),
     Dataset(name="sim_obitos_maternos", prefix="DOMAT", ftp_dir=_SIM_SUBSETS, cadence="yearly", partition_by=("_source_ano",), coverage=((1996, 1), None), geography="national", national_code=""),
     Dataset(name="sim_obitos_cid9", prefix="DOR", ftp_dir=_SIM_CID9, cadence="yearly", partition_by=_YEARLY, coverage=((1979, 1), (1995, 12)), year_digits=2),
-    Dataset(name="sih_aih_reduzida_1992_2007", prefix="RD", ftp_dir=_SIH_1992, cadence="monthly", partition_by=_MONTHLY, coverage=((1992, 1), (2007, 12))),
+    Dataset(name="sih_aih_reduzida_1992_1997", prefix="RD", ftp_dir=_SIH_1992, cadence="monthly", partition_by=_MONTHLY, coverage=((1992, 1), (1997, 12))),
+    Dataset(name="sih_aih_reduzida_1998_2007", prefix="RD", ftp_dir=_SIH_1992, cadence="monthly", partition_by=_MONTHLY, coverage=((1998, 1), (2007, 12))),
     Dataset(name="sia_producao_ambulatorial_1994_2007", prefix="PA", ftp_dir=_SIA_1994, cadence="monthly", partition_by=_MONTHLY, coverage=((1994, 7), (2007, 12))),
     Dataset(name="sinasc_1994_1995", prefix="DNR", ftp_dir=_SINASC_1994, cadence="yearly", partition_by=_YEARLY, coverage=((1994, 1), (1995, 12))),
     # SIA families of Informe Técnico SIASUS 2019-07, coverage from the listing of

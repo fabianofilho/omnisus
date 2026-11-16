@@ -75,3 +75,24 @@ def test_release_of_names_the_directory_of_the_row() -> None:
     assert release_of(SIM, SIM.ftp_dir) == "final"
     assert release_of(SIM, SIM.prelim_dir + "/") == "prelim"
     assert release_of(SIM, "/dissemin/publicos/SIM/CID9/DORES") is None
+
+
+RD_DIR = "/dissemin/publicos/SIHSUS/199201_200712/Dados"
+
+
+@pytest.mark.parametrize(
+    ("dataset", "months"),
+    [
+        ("sih_aih_reduzida_1992_1997", {(y, m) for y in range(1992, 1998) for m in range(1, 13)}),
+        ("sih_aih_reduzida_1998_2007", {(y, m) for y in range(1998, 2008) for m in range(1, 13)}),
+    ],
+)
+def test_the_rd_eras_share_a_directory_and_each_resolves_only_its_months(
+    monkeypatch, dataset, months
+) -> None:
+    """Issue #12, decision 1: one directory, two rows cut by `coverage` at 1998-01."""
+    assert REGISTRY[dataset].ftp_dir == RD_DIR
+    serve_listings(monkeypatch, {RD_DIR: "sihsus_199201_200712_dados_rd"})
+    scopes = available(REGISTRY[dataset], ufs=["RR"])
+    assert {(s.ano, s.mes) for s in scopes} <= months
+    assert {(s.ano, s.mes) for s in scopes} >= {min(months), max(months)}

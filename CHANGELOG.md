@@ -41,6 +41,25 @@
 
 ### Dictionaries
 
+- **Breaking:** the dataset `sih_aih_reduzida_1992_2007` is split at 1998-01 into
+  `sih_aih_reduzida_1992_1997` (43 fields, 7 DBF layouts, `diag_princ` in CID-9) and
+  `sih_aih_reduzida_1998_2007` (80 fields, 12 layouts, `diag_princ` in CID-10), as decided
+  in #12 (decision 1, ADR 0002 amendment of 2026-11-16). They share the directory
+  `SIHSUS/199201_200712/Dados` and the prefix `RD`; `coverage` cuts the months. The old
+  name no longer exists: `load`, `import_dataset` and `read` with it raise `ValueError`,
+  and a lake that imported it keeps an orphan table `sih_aih_reduzida_1992_2007`, which
+  nothing writes to any more. Each new table has only the columns of its era. Both
+  dictionaries start at 1.0.0 with the maps and claims the old one had (the generator
+  output is unchanged); the issue `diag-princ-cid9-ate-1997` becomes `diag-princ-cid9` in
+  the first, and the second declares no issue on `diag_princ`. `travar_versoes.py` gets
+  `RETIRED`, so the old entry stays in `versoes.json`. Dates, foreign keys and the CNVs of
+  the era stay for the next changes of #12; refs #40 (`num_proc`, `insc_pn` and `seq_aih5`
+  keep `string`, and no cast is added to the staging).
+- A file name whose scope is outside a dataset's declared `coverage` is no longer read as
+  a file of that dataset: `scopes_for`, `available` and `outdated` stop listing a name
+  beyond the declared end (or before the start) of a bounded row, such as
+  `sim_obitos_cid9` (1979-01 to 1995-12), which the importer already skipped with
+  `outside_coverage`. It is what lets the two RD rows share one directory.
 - `docs/dicionario/contrato.md` documents `method: fixture-measure`, the method of the
   `cod_idade` claims of the RD and the RJ (`sih_aih_reduzida` 2.17.1, `sih_aih_rejeitada`
   1.4.1), whose `reviewer` is now null: nobody reviewed them. Their `sem_cnv` reasons cite
