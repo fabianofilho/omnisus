@@ -134,7 +134,7 @@ A `aux_cid10` só serve aos meses gravados em CID-10. Um código da CID-9 tem s�
 | Sistema | CID-9 | CID-10 | Como aparece nos arquivos |
 | --- | --- | --- | --- |
 | SIM | `sim_obitos_cid9`, 1979–1995 | `sim_obitos`, 1996 em diante | Diretórios separados, `SIM/CID9/DORES` e `SIM/CID10/DORES`. Na CID-9, `causabas` tem 4 caracteres só de algarismos, com `X` no lugar do quarto quando o código é uma categoria (`436X`) |
-| SIH, `RD` | `sih_aih_reduzida_1992_2007`, 1992-01 a 1997-12 | a mesma linha de 1998-01 a 2007-12; `sih_aih_reduzida` de 2008-01 em diante | Mesmo diretório, `SIHSUS/199201_200712`. `DIAG_PRINC` tem 6 caracteres até 1997-12 e 4 a partir de 1998-01; `DIAG_SEC` (6, só em 1997) dá lugar a `DIAG_SECUN` (4) |
+| SIH, `RD` | `sih_aih_reduzida_1992_1997`, 1992-01 a 1997-12 | `sih_aih_reduzida_1998_2007`, 1998-01 a 2007-12; `sih_aih_reduzida` de 2008-01 em diante | Mesmo diretório, `SIHSUS/199201_200712`. `DIAG_PRINC` tem 6 caracteres até 1997-12 e 4 a partir de 1998-01; `DIAG_SEC` (6, só em 1997) dá lugar a `DIAG_SECUN` (4) |
 | SIH, `RJ` e `SP` | — | `sih_aih_rejeitada` e `sih_servicos_profissionais`, 2008-01 em diante | Só há essas linhas a partir de 2008-01; nos exemplos de 2024-01, `diag_princ` e `sp_cidpri` têm letra |
 | SIA, `PA` | nenhum código no exemplo de 2007-12 | `sia_producao_ambulatorial_1994_2007` (exemplo de 2007-12) e `sia_producao_ambulatorial` | `pa_cidpri` grava `0` (um caractere) no exemplo de 2007-12 e `0000` no de 2024-01 |
 | SINASC | — | `sinasc_nascidos_vivos` (`codanomal`, exemplo de 2022) | `sinasc_1994_1995` não tem campo de CID |
@@ -170,11 +170,11 @@ As evidências:
 
 O que isso muda na análise:
 
-- **`diag_princ` de `sih_aih_reduzida_1992_2007` mistura as duas classificações.** De
-  1992 a 1997 é CID-9 e de 1998 a 2007, CID-10, na mesma coluna. Filtre por `ano` ou
-  pelo comprimento do código antes de juntar à `aux_cid10`; o repositório não traz
-  tabela da CID-9 nem correspondência entre as duas. O dicionário diz o mesmo no issue
-  aberto `diag-princ-cid9-ate-1997` do campo.
+- **`diag_princ` do RD de 1992 a 1997 é CID-9.** `sih_aih_reduzida_1992_1997` grava
+  CID-9 e `sih_aih_reduzida_1998_2007`, CID-10; a separação em 1998-01 (issue #12) põe
+  cada classificação numa tabela, e só a segunda junta à `aux_cid10`. O repositório não
+  traz tabela da CID-9 nem correspondência entre as duas. O dicionário de 1992-1997 diz
+  o mesmo no issue aberto `diag-princ-cid9` do campo.
 - **Categoria com zero à esquerda.** No exemplo do SIH de 2007-12, `cid_morte` grava
   `0I64`, `0I10`, `0B24` e `0D77`, e `cid_asso`, `0I10`: a categoria de 3 caracteres
   com um `0` antes, que não junta à `aux_cid10` (issue `cid-zero-a-esquerda` dos dois

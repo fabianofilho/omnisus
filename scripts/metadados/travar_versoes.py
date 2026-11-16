@@ -12,6 +12,11 @@ conflito nele se resolve trocando de novo a versão e rodando o script, nunca ed
 apagando entradas à mão. Uma chave repetida, um dicionário sem YAML ou um YAML sem
 `x-version` também param o script.
 
+Um dicionário aposentado (`RETIRED`) perde o YAML mas não o histórico: a entrada fica no
+arquivo, na última versão travada, e o script o aceita sem YAML. Aposentar é a única forma
+de apagar um dicionário; o nome aposentado nunca volta a ter YAML, e sai de `RETIRED` só
+com a entrada do lock, o que o arquivo não permite (ele só cresce).
+
 Rodar de novo não muda nada; `--check` falha se o arquivo mudaria.
 """
 
@@ -32,6 +37,10 @@ ROOT = Path(__file__).resolve().parents[2]
 DICIONARIOS = ROOT / "src/omnisus/data/dicionarios"
 LOCK = DICIONARIOS / "versoes.json"
 RUN = "uv run python scripts/metadados/travar_versoes.py"
+# Dictionary -> its last locked x-version. sih_aih_reduzida_1992_2007 was split at 1998-01
+# into sih_aih_reduzida_1992_1997 and sih_aih_reduzida_1998_2007 (issue #12, decision 1;
+# ADR 0002 amendment).
+RETIRED = {"sih_aih_reduzida_1992_2007": "1.3.1"}
 
 
 def digest(raw: dict[str, Any]) -> str:
@@ -62,7 +71,12 @@ def generate(dicionarios: Path = DICIONARIOS, lock_path: Path = LOCK) -> str:
     """New lock text: the current version of every dictionary added, old entries kept."""
     lock = load_lock(lock_path.read_text(encoding="utf-8"))
     paths = {p.stem: p for p in dicionarios.glob("*.yaml")}
-    unknown = sorted(set(lock) - set(paths))
+    for name, last in RETIRED.items():
+        if name in paths:
+            raise ValueError(f"{name} is retired and must not have a YAML again")
+        if name not in lock or max(lock[name], key=_version_key) != last:
+            raise ValueError(f"{name} is retired at {last}, but versoes.json lost that version")
+    unknown = sorted(set(lock) - set(paths) - set(RETIRED))
     if unknown:
         raise ValueError(f"versoes.json names dictionaries without a YAML: {unknown}")
     for name, path in paths.items():

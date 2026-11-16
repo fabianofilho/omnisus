@@ -1769,7 +1769,21 @@
         "co_erro": 6
       }
     },
-    "sih_aih_reduzida_1992_2007": {
+    "sih_aih_reduzida_1992_1997": {
+      "def": [
+        "sih_199201_199712/RD.DEF",
+        "sih_199801_200307/RD.DEF",
+        "sih_200308_200712/RD.DEF"
+      ],
+      "campos": {
+        "ident": "sih_199201_199712/IDENT.CNV",
+        "morte": "sih_199201_199712/MORTES.CNV",
+        "natureza": "sih_199201_199712/NATUREZA.CNV",
+        "semiplen": "sih_199201_199712/GESTAO.CNV",
+        "sexo": "sih_199201_199712/SEXO.CNV"
+      }
+    },
+    "sih_aih_reduzida_1998_2007": {
       "def": [
         "sih_199201_199712/RD.DEF",
         "sih_199801_200307/RD.DEF",
@@ -1781,7 +1795,6 @@
         "instru": "sih_199201_199712/INSTRU.CNV",
         "morte": "sih_199201_199712/MORTES.CNV",
         "natureza": "sih_199201_199712/NATUREZA.CNV",
-        "semiplen": "sih_199201_199712/GESTAO.CNV",
         "sexo": "sih_199201_199712/SEXO.CNV",
         "vincprev": "sih_199201_199712/VINCPREV.CNV"
       }

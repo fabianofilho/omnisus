@@ -79,3 +79,27 @@ there is no compatibility surface.
 `outdated()` now compares each active publication's recorded files with what
 the server lists today (path, and size/mtime when recorded), not only the
 release, so a moved directory or a same-name republish is reported too.
+
+## Amendment 2026-11-16: an era inside one directory splits by `coverage`
+
+Decision 2 splits rows on schema, and its first examples sit in different directories.
+`SIHSUS/199201_200712/Dados` holds 19 DBF layouts of the RD, and the layout changes in
+one month: `DIAG_PRINC` goes from CID-9 (C6) to CID-10 (C4), the dates from C6 to C8 and
+`ANO_CMPT` from C2 to C4 at 1998-01 (issue #12, decision 1, from the census in
+`evidence/2026-10-01-rd-1992-2007-layouts/`). The same rule applies to a directory: two
+rows with the same `ftp_dir` and `prefix` and different `coverage`, each with its own
+dictionary. The row `sih_aih_reduzida_1992_2007` became `sih_aih_reduzida_1992_1997` and
+`sih_aih_reduzida_1998_2007`. The files are the same, and each table only has the columns
+of its era (the single table was widened by 44 empty columns in 1992-1997).
+
+Discovery did not cut the listing by `coverage`: `parse_name` read any name of the prefix,
+and only the importer refused a scope outside the window. With two rows on one directory
+that would list every month under both. `parse_name` now returns `None` for a scope outside
+the row's `coverage`, so a name is a file of a row only inside its window, for every row
+(`scopes_for`, `available`, `outdated` and the importer see the same months).
+
+The old name is retired, not renamed in place: a dictionary's history stays in
+`versoes.json` for good, so `scripts/metadados/travar_versoes.py` lists it in `RETIRED`
+with its last locked version and refuses a YAML with that name again. A lake that
+imported the old name keeps its `sih_aih_reduzida_1992_2007` table, which no row
+writes to any more.

@@ -1,13 +1,14 @@
-"""RD 1992-2007: the dictionary declares every field the era's DBF layouts publish (#30).
+"""RD 1992-2007: each era's dictionary declares every field its DBF layouts publish (#30, #12).
 
 The files of `SIHSUS/199201_200712/Dados` the census read (one RR file a month, AP where
 RR is missing, and SP and MG in the months a layout changes) have 19 layouts
-(evidence/2026-10-01-rd-1992-2007-layouts/census.csv). Three whole RR files and an excerpt
-of a fourth carry every field of them; each field is declared with the type
+(evidence/2026-10-01-rd-1992-2007-layouts/census.csv): 7 until 1997-12 and 12 from 1998-01.
+The dataset is split at 1998-01 (issue #12, decision 1), one dictionary per era. Two whole RR
+files and an excerpt carry every field of each era; each field is declared with the type
 scripts/gen_dicionario.py gives it.
 
-`diag_princ` holds CID-9 until 1997-12 and CID-10 from 1998-01, and the dictionary says so
-(docs/sources/vocabularios.md, "CID-9 e CID-10 nos sistemas do SUS").
+`diag_princ` holds CID-9 until 1997-12 and CID-10 from 1998-01 (docs/sources/vocabularios.md,
+"CID-9 e CID-10 nos sistemas do SUS"): the split puts each in its own dictionary.
 """
 
 from __future__ import annotations
@@ -31,37 +32,44 @@ from tests.support.listings import listing_lines
 
 ROOT = Path(__file__).resolve().parents[3]
 CENSUS = ROOT / "evidence/2026-10-01-rd-1992-2007-layouts/census.csv"
-DATASET = "sih_aih_reduzida_1992_2007"
+ERA1 = "sih_aih_reduzida_1992_1997"
+ERA2 = "sih_aih_reduzida_1998_2007"
 DIRECTORY = "/dissemin/publicos/SIHSUS/199201_200712/Dados"
 LISTING = "sihsus_199201_200712_dados_rd"
-FIXTURES = [
-    "sih_rd_rr_1994_12_mini",
-    "sih_rd_rr_1997_09_mini",
-    "sih_rd_rr_2004_07_excerpt",
-    "sih_rd_rr_2007_12_mini",
-]
-# C in some layouts, N in others (census.csv): no one type is the DBF's. The dictionary
-# keeps the type it had from RDRR0712 until that is decided (#40).
-CHANGES_TYPE = {"num_proc", "insc_pn", "seq_aih5"}
+# dataset -> (first month, last month, fixtures; the last one is the era's reference).
+ERAS = {
+    ERA1: ("1992-01", "1997-12", ["sih_rd_rr_1994_12_mini", "sih_rd_rr_1997_09_mini"]),
+    ERA2: ("1998-01", "2007-12", ["sih_rd_rr_2004_07_excerpt", "sih_rd_rr_2007_12_mini"]),
+}
+# C in some layouts, N in others (census.csv): no one type is the DBF's. Each dictionary
+# keeps the type of the era's last fixture until that is decided (#40).
+CHANGES_TYPE = {ERA1: {"num_proc"}, ERA2: {"insc_pn", "seq_aih5"}}
+# Fields of an era that none of its fixtures holds (see the test that checks them).
+NO_FIXTURE = {ERA1: set[str](), ERA2: {"uti_total"}}
 
 
-def census_rows() -> list[dict[str, str]]:
+def census_rows(dataset: str | None = None) -> list[dict[str, str]]:
+    """The census rows of one era, or of both."""
     with CENSUS.open(encoding="utf-8", newline="") as f:
-        return list(csv.DictReader(f))
+        rows = list(csv.DictReader(f))
+    if dataset is None:
+        return rows
+    first, last = ERAS[dataset][:2]
+    return [r for r in rows if first <= r["month"] <= last]
 
 
-def census() -> dict[str, set[tuple[str, int]]]:
-    """Every field of the census, lowercased, with each (DBF type, decimals) it has."""
+def census(dataset: str) -> dict[str, set[tuple[str, int]]]:
+    """Every field of an era's census, lowercased, with each (DBF type, decimals) it has."""
     out: dict[str, set[tuple[str, int]]] = {}
-    for row in census_rows():
+    for row in census_rows(dataset):
         words = row["fields"].split(" ")
         for name, spec in zip(words[::2], words[1::2], strict=True):
             out.setdefault(name.lower(), set()).add((spec[0], int(spec.split(".")[1])))
     return out
 
 
-def declared() -> dict[str, str]:
-    return {f["name"]: f["type"] for f in load_dicionario(DATASET).fields}
+def declared(dataset: str) -> dict[str, str]:
+    return {f["name"]: f["type"] for f in load_dicionario(dataset).fields}
 
 
 def fixture_fields(dbc_fixture, fixture: str) -> dict[str, str]:
@@ -69,30 +77,60 @@ def fixture_fields(dbc_fixture, fixture: str) -> dict[str, str]:
     return {f["name"]: f["type"] for f in fields_of(dbc.decompress_bytes(raw))}
 
 
-@pytest.mark.parametrize("fixture", FIXTURES)
-def test_every_fixture_field_is_declared_with_the_generator_type(dbc_fixture, fixture):
+FIXTURE_CASES = [(d, f) for d, (_, _, fixtures) in ERAS.items() for f in fixtures]
+
+
+@pytest.mark.parametrize(("dataset", "fixture"), FIXTURE_CASES)
+def test_every_fixture_field_is_declared_with_the_generator_type(dbc_fixture, dataset, fixture):
     published = fixture_fields(dbc_fixture, fixture)
-    types = declared()
+    types = declared(dataset)
+    skip = CHANGES_TYPE[dataset]
     assert set(published) <= set(types)
-    assert {n: types[n] for n in published if n not in CHANGES_TYPE} == {
-        n: t for n, t in published.items() if n not in CHANGES_TYPE
+    assert {n: types[n] for n in published if n not in skip} == {
+        n: t for n, t in published.items() if n not in skip
     }
 
 
-def test_the_dictionary_declares_the_fields_of_every_layout(dbc_fixture):
-    """The four fixtures hold every field of the 19 layouts, and the dictionary no other."""
-    in_fixtures = {n for fixture in FIXTURES for n in fixture_fields(dbc_fixture, fixture)}
-    assert set(declared()) == set(census()) == in_fixtures
+@pytest.mark.parametrize("dataset", sorted(ERAS))
+def test_the_dictionary_declares_the_fields_of_every_layout_of_its_era(dbc_fixture, dataset):
+    """The era's fixtures hold every field of its layouts, and the dictionary no other."""
+    in_fixtures = {n for f in ERAS[dataset][2] for n in fixture_fields(dbc_fixture, f)}
+    assert set(declared(dataset)) == set(census(dataset)) == in_fixtures | NO_FIXTURE[dataset]
 
 
-def test_only_these_fields_change_dbf_type_between_layouts():
-    assert {name for name, types in census().items() if len(types) > 1} == CHANGES_TYPE
+def test_the_field_without_a_fixture_has_the_spec_and_type_of_an_era_1_fixture(dbc_fixture):
+    """uti_total is published from 1992-01 to 1999-12 only, so no fixture of 1998-2007 holds
+    it (they are 2004-07 and 2007-12). Its DBF spec is N2.0 in every layout of both eras, and
+    sih_rd_rr_1994_12_mini carries it, so the type is the generator's."""
+    (name,) = NO_FIXTURE[ERA2]
+    specs = {s for d in (ERA1, ERA2) for s in census(d)[name]}
+    assert specs == {("N", 0)}
+    published = fixture_fields(dbc_fixture, "sih_rd_rr_1994_12_mini")
+    assert declared(ERA2)[name] == declared(ERA1)[name] == published[name]
 
 
-def test_the_fields_that_change_type_keep_their_rdrr0712_type(dbc_fixture):
-    published = fixture_fields(dbc_fixture, "sih_rd_rr_2007_12_mini")
-    types = declared()
-    assert {n: types[n] for n in CHANGES_TYPE} == {n: published[n] for n in CHANGES_TYPE}
+def test_the_eras_are_the_layouts_of_the_census_cut_at_1998_01():
+    """7 layouts until 1997-12 and 12 from 1998-01, none in both: the split loses no field."""
+    layouts = {d: {r["layout"] for r in census_rows(d)} for d in ERAS}
+    assert [len(layouts[d]) for d in (ERA1, ERA2)] == [7, 12]
+    assert not layouts[ERA1] & layouts[ERA2]
+    published = {n.lower() for r in census_rows() for n in r["fields"].split(" ")[::2]}
+    assert set(declared(ERA1)) | set(declared(ERA2)) == published
+
+
+@pytest.mark.parametrize("dataset", sorted(ERAS))
+def test_only_these_fields_change_dbf_type_between_layouts(dataset):
+    changing = {name for name, types in census(dataset).items() if len(types) > 1}
+    assert changing == CHANGES_TYPE[dataset]
+
+
+@pytest.mark.parametrize("dataset", sorted(ERAS))
+def test_the_fields_that_change_type_keep_the_type_of_the_last_fixture(dbc_fixture, dataset):
+    published = fixture_fields(dbc_fixture, ERAS[dataset][2][-1])
+    types = declared(dataset)
+    assert {n: types[n] for n in CHANGES_TYPE[dataset]} == {
+        n: published[n] for n in CHANGES_TYPE[dataset]
+    }
 
 
 def test_the_census_reads_ap_exactly_where_the_listing_has_no_rr():
@@ -121,9 +159,9 @@ LEADING_ZERO = {
 }
 
 
-def _frame(dbc_fixture, fixture: str) -> pl.DataFrame:
+def _frame(dbc_fixture, fixture: str, dataset: str) -> pl.DataFrame:
     raw = dbc_fixture(fixture).read_bytes()
-    return dbc_bytes_to_lazyframe(raw, dataset=DATASET).collect()
+    return dbc_bytes_to_lazyframe(raw, dataset=dataset).collect()
 
 
 def _spec(row: dict[str, str], field: str) -> str | None:
@@ -132,8 +170,8 @@ def _spec(row: dict[str, str], field: str) -> str | None:
     return dict(zip(words[::2], words[1::2], strict=True)).get(field)
 
 
-def _open_issue(field: str, issue: str) -> str:
-    issues = load_dicionario(DATASET).field_def(field)["x-metadata"]["issues"]
+def _open_issue(dataset: str, field: str, issue: str) -> str:
+    issues = load_dicionario(dataset).field_def(field)["x-metadata"]["issues"]
     (entry,) = [i for i in issues if i["id"] == issue]
     assert entry["status"] == "open"
     return entry["description"]
@@ -152,15 +190,15 @@ def test_diag_princ_is_c6_until_1997_12_and_c4_from_1998_01_in_every_uf_read():
     assert all(_spec(r, "DIAG_SECUN") == "C4.0" for r in rows if r["month"] >= "1998-01")
 
 
-@pytest.mark.parametrize("fixture", ["sih_rd_rr_1994_12_mini", "sih_rd_rr_1997_09_mini"])
+@pytest.mark.parametrize("fixture", ERAS[ERA1][2])
 def test_diag_princ_holds_six_digits_until_1997(dbc_fixture, fixture):
-    values = _frame(dbc_fixture, fixture)["diag_princ"].to_list()
+    values = _frame(dbc_fixture, fixture, ERA1)["diag_princ"].to_list()
     assert values and all(len(v) == 6 and v.isdecimal() for v in values)
 
 
-@pytest.mark.parametrize("fixture", ["sih_rd_rr_2004_07_excerpt", "sih_rd_rr_2007_12_mini"])
+@pytest.mark.parametrize("fixture", ERAS[ERA2][2])
 def test_diag_princ_starts_with_a_letter_from_1998(dbc_fixture, fixture):
-    values = [v for v in _frame(dbc_fixture, fixture)["diag_princ"].to_list() if v]
+    values = [v for v in _frame(dbc_fixture, fixture, ERA2)["diag_princ"].to_list() if v]
     assert values and all(v[0].isalpha() and len(v) in (3, 4) for v in values)
 
 
@@ -183,32 +221,32 @@ def test_rd_def_binds_diag_princ_to_both_cid_tables(package):
     assert _binds(tables["DIAG_SECUN"], "CID10") and not _binds(tables["DIAG_SECUN"], "CID9")
 
 
-def test_diag_princ_has_an_open_issue_on_the_two_classifications():
-    description = _open_issue("diag_princ", "diag-princ-cid9-ate-1997")
+def test_diag_princ_has_an_open_issue_on_cid9_in_the_first_era_only():
+    description = _open_issue(ERA1, "diag_princ", "diag-princ-cid9")
     for fact in (
+        "CID-9",
+        "C6",
         "1992-01",
         "1997-12",
         "1998-01",
-        "C6",
-        "C4",
+        "sih_aih_reduzida_1998_2007",
         "evidence/2026-10-01-rd-1992-2007-layouts/census.csv",
         "sih_rd_rr_1994_12_mini",
         "sih_rd_rr_1997_09_mini",
-        "sih_rd_rr_2004_07_excerpt",
-        "sih_rd_rr_2007_12_mini",
         "'065099'",
-        "'O800'",
         "RD.DEF",
         "LIKE 'I21%'",
     ):
         assert fact in description, fact
+    # No dictionary keeps the old issue about one column holding two classifications.
+    assert "issues" not in load_dicionario(ERA2).field_def("diag_princ").get("x-metadata", {})
 
 
 @pytest.mark.parametrize("field", sorted(LEADING_ZERO))
 def test_cid_morte_and_cid_asso_write_a_category_after_a_zero(dbc_fixture, field):
     """RDRR0712: a 3-character CID-10 category after a '0'. aux_cid10.codigo starts with a
     letter, so no such value joins; without the '0' each is a valid code."""
-    values = Counter(_frame(dbc_fixture, "sih_rd_rr_2007_12_mini")[field].to_list())
+    values = Counter(_frame(dbc_fixture, "sih_rd_rr_2007_12_mini", ERA2)[field].to_list())
     zero_letter = {v: n for v, n in values.items() if v[:1] == "0" and v[1:2].isalpha()}
     assert zero_letter == LEADING_ZERO[field]
     pattern = load_dicionario("aux_cid10").field_def("codigo")["constraints"]["pattern"]
@@ -218,7 +256,7 @@ def test_cid_morte_and_cid_asso_write_a_category_after_a_zero(dbc_fixture, field
 
 @pytest.mark.parametrize("field", sorted(LEADING_ZERO))
 def test_cid_morte_and_cid_asso_have_an_open_issue_on_the_leading_zero(field):
-    description = _open_issue(field, "cid-zero-a-esquerda")
+    description = _open_issue(ERA2, field, "cid-zero-a-esquerda")
     assert all(f"'{v}'" in description for v in LEADING_ZERO[field])
     assert "sih_rd_rr_2007_12_mini" in description and "aux_cid10" in description
     # "O campo existe de 2006-04 a 2007-12", as the census reads it.

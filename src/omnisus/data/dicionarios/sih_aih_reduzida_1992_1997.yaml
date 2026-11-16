@@ -1,24 +1,24 @@
-name: sih_aih_reduzida_1992_2007
-title: SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12
+name: sih_aih_reduzida_1992_1997
+title: "SIHSUS: AIH reduzida (RD), 1992-01 a 1997-12"
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.3.1
+x-version: 1.0.0
 x-source-format: dbc
 x-evidence:
   physical_schema: >-
-    89 fields: the union of the 19 DBF layouts of the files read on 2026-10-01, one RR file
-    a month from 1992-01 to 2007-12 (AP where RR is missing) and SP and MG in the months a
-    layout changes (evidence/2026-10-01-rd-1992-2007-layouts/). Each is in
-    sih_rd_rr_1994_12_mini.dbc, sih_rd_rr_1997_09_mini.dbc, sih_rd_rr_2004_07_excerpt.dbc or
-    sih_rd_rr_2007_12_mini.dbc. num_proc, insc_pn and seq_aih5 are C in some layouts and N
-    in others; they keep the type of sih_rd_rr_2007_12_mini.dbc until #40 decides.
+    43 fields: the union of the 7 DBF layouts of the files read on 2026-10-01 from 1992-01 to
+    1997-12 (96 files: one RR file a month, AP where RR is missing, and SP and MG in the
+    months a layout changes; evidence/2026-10-01-rd-1992-2007-layouts/). Each is in
+    sih_rd_rr_1994_12_mini.dbc or sih_rd_rr_1997_09_mini.dbc. num_proc is C4 from 1995-01 and
+    N4 from 1996-01 to 1996-07; it keeps the type of sih_rd_rr_2007_12_mini.dbc (string) until
+    #40 decides. The era is split from 1998-01 (issue #12, decision 1): the dictionary of
+    1998-01 to 2007-12 is sih_aih_reduzida_1998_2007.
   semantic_status: >-
     Physical inventory; individual semantic fields not audited. The code maps of ident,
-    sexo, morte, natureza, gestao, semiplen, instru and vincprev come from the CNV that
-    RD.DEF binds in the three era packages, byte-identical
-    (evidence/2026-09-29-tab-sih-rd-eras/).
+    sexo, morte, natureza and semiplen come from the CNV that RD.DEF binds in the three era
+    packages, byte-identical (evidence/2026-09-29-tab-sih-rd-eras/).
   dictionary_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Doc/
-  source_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Dados/RDRR0712.dbc
+  source_url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/199201_200712/Dados/RDRR9709.dbc
 schema:
   fields:
   - name: uf_zi
@@ -103,28 +103,6 @@ schema:
           pages: []
           locator: 'RD.DEF: XSexo, SEXO, 1, SEXO.CNV; SEXO.CNV'
         note: Mapa do CNV.
-  - name: uti_mes_in
-    type: integer
-  - name: uti_mes_an
-    type: integer
-  - name: uti_mes_al
-    type: integer
-  - name: uti_mes_to
-    type: integer
-  - name: marca_uti
-    type: string
-  - name: uti_int_in
-    type: integer
-  - name: uti_int_an
-    type: integer
-  - name: uti_int_al
-    type: integer
-  - name: uti_int_to
-    type: integer
-  - name: diar_acom
-    type: integer
-  - name: proc_solic
-    type: string
   - name: proc_rea
     type: string
   - name: val_sh
@@ -135,23 +113,11 @@ schema:
     type: number
   - name: val_rn
     type: number
-  - name: val_acomp
-    type: number
   - name: val_ortp
     type: number
   - name: val_sangue
     type: number
-  - name: val_sadtsr
-    type: number
-  - name: val_transp
-    type: number
-  - name: val_obsang
-    type: number
-  - name: val_ped1ac
-    type: number
   - name: val_tot
-    type: number
-  - name: val_uti
     type: number
   - name: us_tot
     type: number
@@ -163,23 +129,17 @@ schema:
     type: string
     x-metadata:
       issues:
-      - id: diag-princ-cid9-ate-1997
+      - id: diag-princ-cid9
         status: open
         description: >-
-          A mesma coluna grava CID-9 de 1992-01 a 1997-12 e CID-10 de 1998-01 a 2007-12.
-          O censo (evidence/2026-10-01-rd-1992-2007-layouts/census.csv) dá DIAG_PRINC C6
-          em todos os arquivos até 1997-12 e C4 de 1998-01 em diante, com a troca no mesmo
-          mês em RR, SP e MG (RDRR9712 e RDRR9801, por exemplo). Nas fixtures, todo valor
-          de sih_rd_rr_1994_12_mini e sih_rd_rr_1997_09_mini tem 6 algarismos ('065099'),
-          e todo valor de sih_rd_rr_2004_07_excerpt e sih_rd_rr_2007_12_mini começa com
-          letra ('O800', 'J188', 'A09'). O RD.DEF dos três pacotes da era liga DIAG_PRINC
-          às tabelas das duas classificações (sih_199201_199712/RD.DEF: CID-10 nas linhas
-          280-341, CID-9 nas 348-393) e não separa as eras. Um filtro como LIKE 'I21%' em
-          1992-2007 perde 1992-1997, e só os códigos de 1998 em diante juntam à aux_cid10.
-          O pacote não traz tabela da CID-9 nem correspondência entre as duas: separe por
-          ano ou pelo comprimento do código.
-  - name: diag_secun
-    type: string
+          A coluna grava CID-9 (6 algarismos, '065099'): o censo
+          (evidence/2026-10-01-rd-1992-2007-layouts/census.csv) dá DIAG_PRINC C6 em todos
+          os arquivos de 1992-01 a 1997-12, e todo valor de sih_rd_rr_1994_12_mini e
+          sih_rd_rr_1997_09_mini tem 6 algarismos. O RD.DEF dos três pacotes da era liga
+          DIAG_PRINC às tabelas das duas classificações (sih_199201_199712/RD.DEF: CID-10
+          nas linhas 280-341, CID-9 nas 348-393), e o pacote não traz tabela da CID-9. O
+          código não junta à aux_cid10, nem um filtro como LIKE 'I21%' o acha; de
+          1998-01 em diante, a coluna grava CID-10 em sih_aih_reduzida_1998_2007.
   - name: cobranca
     type: string
   - name: natureza
@@ -304,44 +264,6 @@ schema:
           pages: []
           locator: 'RD.DEF: LNatureza, NATUREZA, 1, NATUREZA.CNV; NATUREZA.CNV'
         note: Mapa do CNV.
-  - name: gestao
-    type: string
-    x-decode:
-      '0': Estadual
-      '1': Municipal plena assist
-      '2': Estadual plena
-      '3': Não definida
-      '4': Não definida
-      '5': Não definida
-      '6': Não definida
-      '7': Não definida
-      '8': Não definida
-      '9': Não definida
-      E: Estadual plena
-      M: Municipal plena assist
-    x-metadata:
-      claims:
-      - target: /field/codes
-        value_sha256: 1f7afbd8ec687eb01947ff6759a9a6d7af201a75af70f9a19f7a41d576aca7d7
-        status: verified_in_source
-        checked_at: '2026-09-29'
-        method: cnv-parse
-        reviewer: scripts/metadados/gerar_decode_cnv.py
-        evidence:
-        - source_id: sih-tab-b433310785e0
-          pages: []
-          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
-        - source_id: sih-tab-171271844c06
-          pages: []
-          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
-        - source_id: sih-tab-80582969071f
-          pages: []
-          locator: 'RD.DEF: XGestão, GESTAO, 1, GESTAO.CNV; GESTAO.CNV'
-        note: Mapa do CNV.
-  - name: rubrica
-    type: integer
-  - name: ind_vdrl
-    type: string
   - name: munic_mov
     type: string
   - name: cod_idade
@@ -374,133 +296,8 @@ schema:
           pages: []
           locator: 'RD.DEF: XÓbitos, MORTE, 1, MORTES.CNV; MORTES.CNV'
         note: Mapa do CNV.
-  - name: nacional
-    type: string
   - name: num_proc
     type: string
-  - name: car_int
-    type: string
-  - name: tot_pt_sp
-    type: integer
-  - name: cpf_aut
-    type: string
-  - name: homonimo
-    type: string
-  - name: num_filhos
-    type: integer
-  - name: instru
-    type: string
-    x-decode:
-      '0': Ignorado/não se aplica
-      '1': Analfabeto
-      '2': 1º grau
-      '3': 2º grau
-      '4': 3º grau
-      '5': Ignorado/não se aplica
-      '6': Ignorado/não se aplica
-      '7': Ignorado/não se aplica
-      '8': Ignorado/não se aplica
-      '9': Ignorado/não se aplica
-    x-metadata:
-      claims:
-      - target: /field/codes
-        value_sha256: 595254be2c676a5195ea0ca54a893ffbd5afeac487ded164340700af37e75d95
-        status: verified_in_source
-        checked_at: '2026-09-29'
-        method: cnv-parse
-        reviewer: scripts/metadados/gerar_decode_cnv.py
-        evidence:
-        - source_id: sih-tab-b433310785e0
-          pages: []
-          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
-        - source_id: sih-tab-171271844c06
-          pages: []
-          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
-        - source_id: sih-tab-80582969071f
-          pages: []
-          locator: 'RD.DEF: XGrau de instrução, INSTRU, 1, INSTRU.CNV; INSTRU.CNV'
-        note: Mapa do CNV.
-  - name: cid_notif
-    type: string
-  - name: contracep1
-    type: string
-  - name: contracep2
-    type: string
-  - name: gestrisco
-    type: string
-  - name: insc_pn
-    type: string
-  - name: seq_aih5
-    type: string
-  - name: cbor
-    type: string
-  - name: cnaer
-    type: string
-  - name: vincprev
-    type: string
-    x-decode:
-      '0': Não classificado
-      '1': Autônomo
-      '2': Desempregado
-      '3': Aposentado
-      '4': Não segurado
-      '5': Empregado
-      '6': Empregador
-      '7': Não classificado
-      '8': Não classificado
-      '9': Não classificado
-    x-metadata:
-      claims:
-      - target: /field/codes
-        value_sha256: 52f021de88a24ff76075cbea8171064f8430de036ac18981ef4980504033719c
-        status: verified_in_source
-        checked_at: '2026-09-29'
-        method: cnv-parse
-        reviewer: scripts/metadados/gerar_decode_cnv.py
-        evidence:
-        - source_id: sih-tab-b433310785e0
-          pages: []
-          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
-        - source_id: sih-tab-171271844c06
-          pages: []
-          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
-        - source_id: sih-tab-80582969071f
-          pages: []
-          locator: 'RD.DEF: XVínculo previdenc, VINCPREV, 1, VINCPREV.CNV; VINCPREV.CNV'
-        note: Mapa do CNV.
-  - name: gestor_cod
-    type: string
-  - name: gestor_cpf
-    type: string
-  - name: gestor_dt
-    type: string
-  - name: cnes
-    type: string
-  - name: infehosp
-    type: string
-  - name: cid_asso
-    type: string
-    x-metadata:
-      issues:
-      - id: cid-zero-a-esquerda
-        status: open
-        description: >-
-          Em sih_rd_rr_2007_12_mini (RDRR0712), cid_asso grava '0I10' (1 linha): a
-          categoria da CID-10, de 3 caracteres, com um '0' antes. O valor não junta à
-          aux_cid10, cujos códigos começam com letra; o código fica como publicado. O campo
-          existe de 2006-04 a 2007-12 (evidence/2026-10-01-rd-1992-2007-layouts/census.csv).
-  - name: cid_morte
-    type: string
-    x-metadata:
-      issues:
-      - id: cid-zero-a-esquerda
-        status: open
-        description: >-
-          Em sih_rd_rr_2007_12_mini (RDRR0712), cid_morte grava '0I64' (6 linhas), '0I10'
-          (3), '0B24' (2) e '0D77' (1): a categoria da CID-10, de 3 caracteres, com um '0'
-          antes. Esses valores não juntam à aux_cid10, cujos códigos começam com letra; os
-          códigos ficam como publicados. O campo existe de 2006-04 a 2007-12
-          (evidence/2026-10-01-rd-1992-2007-layouts/census.csv).
   - name: uti_total
     type: integer
   - name: us_sh
@@ -556,8 +353,4 @@ schema:
           locator: 'RD.DEF: XGestão (95-97), SEMIPLEN, 1, GESTAO.CNV; GESTAO.CNV'
         note: Mapa do CNV.
   - name: diag_sec
-    type: string
-  - name: cgc_mant
-    type: string
-  - name: cod_seg
     type: string
