@@ -31,11 +31,12 @@ _RELEASE = {"kind": "publication", "input": "source_uri", "rule": "release_from_
 
 
 def is_library_field(field: dict[str, Any]) -> bool:
-    """Whether a dictionary field is a column the import adds, not one the DBF publishes.
+    """Whether a dictionary field is a column the import writes, whatever the DBF holds.
 
     Such a field is declared with a ``derivation`` of kind ``source_partition`` or
-    ``publication``. Other kinds (``coded_age``...) derive a harmonised column from a
-    published one and leave the published field physical.
+    ``publication``. The ER's ``ano`` and ``mes`` are one: the DBF publishes them as text
+    and staging replaces them with the scope. Other kinds (``coded_age``...) derive a
+    harmonised column from a published one and leave the published field physical.
     """
     derivation = field.get("x-metadata", {}).get("derivation") or {}
     return derivation.get("kind") in {_SCOPE["kind"], _RELEASE["kind"]}

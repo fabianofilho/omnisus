@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from omnisus.sources.datasus_ftp.library_columns import ARROW_TYPES
 from omnisus.transforms.dictionaries import Dicionario, load_dicionario
 
 # ---------------------------------------------------------------------------
@@ -66,7 +67,7 @@ def test_load_sim_obitos_has_expected_extensions() -> None:
 _DICIONARIOS = Path(__file__).resolve().parents[3] / "src/omnisus/data/dicionarios"
 
 # The library columns staging adds to every imported file (staging.py, dbc_bytes_to_parquet).
-_LIBRARY_COLUMNS = {"_source_ano", "_source_release"}
+_LIBRARY_COLUMNS = {name for name in ARROW_TYPES if name.startswith("_")}
 
 
 def _packaged() -> dict[str, dict]:

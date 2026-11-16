@@ -65,7 +65,8 @@ LazyFrame parser remains available but materializes its result for compatibility
 Staging lowercases column names and trims the spaces some descriptors pad them
 with (`PSRR2401` spells `TIPPRE` plus two spaces). It then adds the scope's
 columns (`ano` and `uf` for state files, `mes` for monthly ones, `_source_ano` for
-national ones) and `_source_release` to every file. A file column with a
+national ones) and `_source_release` to every file; `library_columns(dataset)` lists
+them and their types, and each dictionary declares them with a `derivation`. A file column with a
 partition's name (ER's own `ANO` and `MES`) is replaced only if it holds the
 scope's value in every row, compared as trimmed text or, for `ano` and `mes`, as a
 number; otherwise the file is refused. A file
