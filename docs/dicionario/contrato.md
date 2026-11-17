@@ -15,14 +15,14 @@ origem em outro YAML para compreender a evidência do campo.
 | `field.id`, `name`, `physical_name` | Identidade estável, nome exposto e nome físico |
 | `field.label`, `description` | Nome de apresentação e significado; `null` se desconhecidos |
 | `field.physical_type`, `logical_type` | Tipo declarado pela origem e tipo adotado pela lib, sem confundi-los |
-| `field.unit`, `format` | Unidade e formato, se documentados |
+| `field.unit`, `format` | Unidade e formato, se documentados; um formato só medido em arquivo tem claim `fixture-measure` não revisada e a issue `formato-sem-documento` |
 | `field.codes` | Lista de códigos **strings**, rótulos e classificação de ausência |
 | `field.domain` | Natureza do domínio: enum, referência, texto, número, data ou desconhecido; completude |
 | `field.constraints`, `relationships`, `derivation` | Restrições, relações e transformações, se conhecidas |
 | `claims` | Evidência por afirmação, separada de informações ainda sem revisão |
 | `sources` | Fonte resolvida com URL, hash, edição e datas |
 | `applicability` | Vigência/condições e estado da confirmação para um recorte de dados |
-| `observations` | Referências a arquivos efetivamente examinados, sem generalização estatística |
+| `observations` | Referências a arquivos efetivamente examinados, sem generalização estatística; `observed` guarda o resultado de uma medida de formato de data (padrão, preenchidos, válidos, menor e maior data, quantos o outro padrão também lê) |
 | `issues` | Divergências e limitações que o consumidor deve poder inspecionar |
 
 Um campo desconhecido continua no inventário com `description: null`,

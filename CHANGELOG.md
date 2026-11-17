@@ -21,6 +21,38 @@
   before the first import returns `[]`. `None` keeps the SQL and the rows of 0.2.3. The
   data table is pinned by the caller's `FROM` (#101).
 
+- `sus.import_cnes_master_ftp(competencia, zip_path=..., download_dir=...)`
+  fills `cnes_master` from
+  `tbEstabelecimentoAAAAMM.csv` of the full CNES base on the FTP
+  (`BASE_DE_DADOS_CNES_AAAAMM.ZIP`, about 576 MB for 202312) in one pass, instead of one
+  request per code to the open-data API. Each row records `fonte`, `arquivo`, `sha256`,
+  `competencia_nome` and, for a file the importer downloaded, the server `url` and
+  `modificado_em` (MDTM); tables created by `import_cnes_master` gain those columns on the
+  next write. `aux_cnes` exposes `nome_fantasia`, `razao_social`, `competencia_nome` and
+  `fonte_nome` next to `nome`. The name is the one of the loaded competência, not of the
+  code's last month in ST (#150). Only a pessoa jurídica (`TP_PFPJ=3`) keeps a name: a
+  pessoa física (`TP_PFPJ=1`, whose names are the professional's) or any other value gets
+  none, and neither does a row whose name holds a valid CPF, written plain or with dots,
+  dash, slash or spaces in the CPF positions (600 of 202312, mostly empresário individual;
+  `evidence/2026-11-09-cnes-cpf-em-nome-pj.md`). A row with no name
+  is skipped, a `CO_CNES` repeated with another name is an error, and the counts go to the
+  `cnes_master_ftp.rows_skipped` log. A name `cnes_master` already holds for a code whose
+  row is not `TP_PFPJ=3`, or that the lake's ST marks anything but `'3'` in some month, is
+  removed in the same transaction as the upsert, and so is every stored name that holds a
+  valid CPF, of any code, on both paths. The removal is logical: after the next import a
+  lake filled before these rules no longer returns those names, but they stay in earlier
+  snapshots, in the old Parquet files and possibly in the catalog's column statistics, so
+  recreate such a lake from scratch before sharing it. A clean stored name stays when the
+  file now writes a CPF for the code. The razão social of an empresário individual
+  (natureza jurídica 2135) is the person's civil name and is kept, as public CNPJ data;
+  names with a CPF are not.
+- `import_cnes_master` (API) fetches a name only for a code `cnes_estabelecimentos` marks
+  `pf_pj = '3'` in every imported month, discovered or listed by hand: a pessoa física, a
+  code outside the ST, or a lake whose ST has no `pf_pj` gets none (breaking: explicit
+  codes not in the ST are no longer fetched). It writes no name holding a valid CPF, removes
+  every stored one and the names of the codes the ST marks otherwise, and logs
+  `pessoa_fisica`, `pf_pj_desconhecido` and, in `cnes_master.names_removed`, `cpf_no_nome`. Only imported months count: a code marked `'3'` in all of them
+  and `'1'` in a month not imported is still taken as pessoa jurídica.
 - `cite()` and `citation_from_publications()` with `accessed=None` print as the access
   date the UTC day of each row's `published_at` (when the publication was written to the
   lake) or, for IBGE, of `collected_at` (when the HTTP request was made), instead of the
@@ -78,6 +110,24 @@
   SIM subsets, which copy `sim_obitos` (1.2.0). It had three of the four columns that
   `analytical_projection` creates, and `describe_dataset` exports that list. A test compares each
   dictionary's list with `harmonised_inputs`, the list `check_columns` uses (#164).
+
+- `sih_aih_rejeitada` 1.5.0 and `sih_servicos_profissionais` 1.3.0: `nasc`, `dt_inter` and
+  `dt_saida` of the RJ and `sp_dtinter` and `sp_dtsaida` of the SP are `type: date` with
+  `x-format: yyyyMMdd`, so `check_columns` reports their invalid dates and range. No document
+  read gives the whole format: the claim is `fixture-measure`, `unreviewed`, with the open issue
+  `formato-sem-documento` and an `observations` entry (server file, SHA-256, `observed`).
+  `RJ2008.DEF` and `SP2008.DEF` place the year (position 1) and the month (position 5) of
+  `dt_inter`, `dt_saida` and `sp_dtinter`, and the claims cite those lines; nothing places the
+  day. `IT_SIHSUS_1603.pdf` lays out only the RD and the SP (contents, p. 1), not the RJ, and
+  the issues say so.
+  `gestor_dt` of the RJ stays a string (no fixture fills it; issue `formato-sem-valor`) and the
+  ER dates wait for a census of widths and patterns. The observation schema gains `observed`
+  (#9).
+- `check_columns` counts a date as invalid unless it has exactly eight digits, the guard
+  `analytical_projection` already used: `'1012023'` no longer parses (#9).
+- A test validates the resolved metadata of every field of every packaged dictionary against
+  `docs/dicionario/schemas/column-metadata.schema.json`, and another reads every `x-format`
+  against the committed fixtures (#9).
 
 - `docs/dicionario/contrato.md` documents `method: fixture-measure`, the method of the
   `cod_idade` claims of the RD and the RJ (`sih_aih_reduzida` 2.17.1, `sih_aih_rejeitada`
@@ -227,6 +277,27 @@
   no group and have no block. `evidence/2026-10-11-blocos-cid10/` compares the groups
   with the WHO ICD-10 2019 and CBCD 2008 lists. Run `omnisus lake update-auxiliares` (or
   `Lake.bootstrap_auxiliares()`) to load the new columns (#103).
+- `aux_municipios` (2.2.2) gains the six municipalities that the 2011
+  `CADMUN.DBF` lacks and SIM, SINASC and SIH write: `150475`, `220672`, `421265`, `422000`,
+  `431454` and `500627`, from `tb_municip.dbf` of the DATASUS territorial base
+  (`territorio/tabelas/2026/06-base_territorial_jun26.zip`, registered with its SHA-256).
+  Names are written as the base writes them, unaccented; `regiao_saude` and
+  `macrorregiao_saude` are NULL in those rows, since the base codes regions in another
+  scheme. `codmunnatu` `150475` of the SIM RR 2023 excerpt now resolves. Nazária
+  (`220672`) was installed in 2009, before CADMUN, which does not list it. The build stops
+  on a `CO_STATUS` outside the dictionary's enum (`REG ADM` and `IGNR`, which the base
+  writes, included) and on an altitude that is not whole. `area` is NULL in Nazária,
+  Pescaria Brava and Balneário Rincão, which the base writes empty. `aux_municipios`
+  2.1.0, 2.2.0 and 2.2.1 and `aux_cid10` 2.2.0 were locked in `versoes.json` during the review
+  of this change and never published.
+- `aux_cid10` (2.3.0) gains the 25 codes of `tb_cid.txt` of the SIGTAP 202610 that
+  `CID10.DBF` (2020) lacks: `A925`, `A97`, `C823`-`C826`, `N182`-`N185`, `P354`, `U09`,
+  `U099`, `U10`, `U109` and `W460`-`W469` (`evidence/2026-10-31-cid10-sigtap-e-s-cid/`).
+  The SIGTAP zip is registered with its SHA-256 and listed in the manifest as a second
+  source. `N181` and `O987` appear in the data but are in neither file and stay out. The
+  SIH `S_CID.DBF` labels `N182` and `N185` "CID NÃO IDENTIFICADO"; the table keeps the
+  SIGTAP name (`docs/sources/vocabularios.md`). Run `omnisus lake update-auxiliares` (or
+  `Lake.bootstrap_auxiliares()`) to load the new rows.
 
 ### Performance
 
