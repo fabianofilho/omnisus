@@ -48,16 +48,27 @@
     `sus.label(columns=[field])` raises where the map went.
   - `ap_coidade` of the seven APAC datasets and `tpidadepac` of the BPA-I: `fixture-measure` claim,
   `unreviewed`, on the open issue each field already had; the DEF lines are the evidence.
-  - `sexopac`, `catend`, `mn_ind` and `complex` of the BPA-I: the same, with a new issue per field (`*-sem-def-bpai`,
-  TAB_SIA has no BPA-I DEF).
-  - The nine SIM fields the 2025 Estrutura PDF lists (and the three SIM subsets, generated from
-  `sim_obitos`), `paridade` and `stdnepidem` of SINASC, `racacor`, `ufdif` and `mndif` of the BPA-I:
-  `unreviewed` claim that cites the PDF page. Nothing here is marked verified: no human reviewed them.
-  - `esc2010`, `escmae2010` (SIM) and `stdnnova` (SINASC): claim `conflicting` and an open issue. The
-  codes match the PDF but the labels do not (`'1-5 ano'` against `'1ª a 4ª série'`; `'Formulário novo
-  (pós-2011)'` against a plain Sim). The maps stay as they were until the maintainer chooses.
+  - **Breaking:** `sexopac`, `catend`, `mn_ind` and `complex` of the BPA-I lose their `x-decode`, as
+  `ap_coidade` and `ap_sexo` of the AMP did: none of the 12 packaged TAB_SIA DEF reads `BI*.DBC`, so no
+  DEF binds a BPA-I field to a table, and the DEF of another product does not say the BPA-I follows
+  it. The hand maps also differed from those tables (`'Mantido'` against `'Mantida'` in
+  `MANT_IND.CNV`), and `catend` `'06'` is in no BPA-I fixture. Each field has the open issue
+  `bpai-sem-def` with what was read and the codes of BIRR2401. `<field>_rotulo` goes away for the
+  four; `notebooks/linkage.py` leaves the sex of the BPA-I null, as it does for a base without a
+  sex map.
+  - Nine SIM fields the 2025 Estrutura PDF lists (and the three SIM subsets, generated from
+  `sim_obitos`), `paridade`, `stdnepidem` and `stdnnova` of SINASC, `racacor`, `ufdif` and `mndif` of
+  the BPA-I: a claim that cites the PDF page, with no reviewer. Nothing here is marked verified: no
+  human reviewed them.
+    - `unreviewed`: `origem`, `assistmed`, `tpnivelinv`, `morteparto`, `altcausa`, `codificado` and
+    `tp_altera` of the SIM (seven of the nine; `tp_altera` is not in the subsets), and the five
+    SINASC and BPA-I fields other than `stdnnova`.
+    - `conflicting`, with an open issue: `esc2010` and `escmae2010` of the SIM (the other two of the
+    nine) and `stdnnova` of SINASC. The codes match the PDF but the labels do not (`'1-5 ano'`
+    against `'1ª a 4ª série'`; `'Formulário novo (pós-2011)'` against a plain Sim). The maps stay
+    as they were until the maintainer chooses.
   - Versions: `sim_obitos` 2.8.0, `sih_aih_reduzida` 2.19.0, `sinasc_nascidos_vivos` 2.6.0,
-  `sia_bpa_individualizado` 0.6.0, and one minor each for the seven APAC datasets and the three SIM
+  `sia_bpa_individualizado` 0.7.0, and one minor each for the seven APAC datasets and the three SIM
   subsets.
 
 - `derivation.output` of the age fields lists `idade_status` too, in the nine dictionaries

@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # latin-1 e OBRIGATORIO: o CNS cifrado usa bytes 0x7B-0x84 e 0x81 e
 # indefinido em cp1252 (UnicodeDecodeError). Medido em BIAC2401/BIRR2401.
 encoding: latin-1
-x-version: "0.6.0"
+x-version: "0.7.0"
 schema:
   fields:
     # ========================================================================
@@ -31,29 +31,11 @@ schema:
     - name: mn_ind
       type: string
       label: Estabelecimento mantido / individual
-      x-decode:
-        "M": "Mantido"
-        "I": "Individual"
       x-metadata:
-        claims:
-        - target: /field/codes
-          value_sha256: bec38a1b5c57261df0793277491f8cc6f6294d7a3119bcd9572c9ab15958cee4
-          status: unreviewed
-          checked_at: '2026-11-15'
-          method: 'fixture-measure'
-          reviewer: null
-          evidence:
-          - source_id: sia-tab-e5812b51d802
-            pages: []
-            locator: 'Atencao_Domiciliar.def, linhas 236-238: MN_IND, 1, CNV/MANT_IND.CNV'
-          - source_id: siasus-70fe69dbd4cf
-            pages: [17]
-            locator: 'MN_IND CHAR (1) Estabelecimento Mantido / Individual (layout BIUFAAMM.DBF)'
-          note: 'Medido, não lido (issue mn_ind-sem-def-bpai). O MANT_IND.CNV rotula M como ''Mantida''; o x-decode diz ''Mantido''.'
         issues:
-        - id: mn_ind-sem-def-bpai
+        - id: bpai-sem-def
           status: open
-          description: 'O TAB_SIA não tem DEF do BPA-I. O mapa é o do CNV que o DEF de Atencao_Domiciliar liga a este campo, e o Informe Técnico SIASUS 2019-07 descreve MN_IND com as mesmas palavras; nenhuma tabela registrada é do BPA-I. Medido nas fixtures do BPA-I, não lido neste dicionário.'
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. Atencao_Domiciliar.def (linhas 236-238, sad*.dbc) liga MN_IND a CNV/MANT_IND.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "MN_IND CHAR (1) Estabelecimento Mantido / Individual". O mapa anterior, ''M'' Mantido e ''I'' Individual, foi escrito à mão (o MANT_IND.CNV diz ''Mantida''). BIRR2401: MN_IND ''I'' em 5.126 linhas e ''M'' em 6.973.'
     - name: cnpjcpf
       type: string
       label: CNPJ/CPF do executante
@@ -114,31 +96,11 @@ schema:
     - name: complex
       type: string
       label: Complexidade
-      x-decode:
-        '0': Não se aplica
-        '1': Atenção Básica
-        '2': Média complexidade
-        '3': Alta complexidade
       x-metadata:
-        claims:
-        - target: /field/codes
-          value_sha256: 7ff8f9378ca0ed0e581dee67c88fd4526773922463b68950c8199958aaafc6a2
-          status: unreviewed
-          checked_at: '2026-11-15'
-          method: 'fixture-measure'
-          reviewer: null
-          evidence:
-          - source_id: sia-tab-e5812b51d802
-            pages: []
-            locator: 'Producao_Ambulatorial.DEF, linhas 89-91: PA_NIVCPL, 1, CNV/COMPLEX.CNV'
-          - source_id: siasus-70fe69dbd4cf
-            pages: [17]
-            locator: 'COMPLEX CHAR (1) Complexidade do Procedimento (layout BIUFAAMM.DBF); PA_NIVCPL CHAR (1) tem a mesma descrição (p. 3)'
-          note: 'Medido, não lido (issue complex-sem-def-bpai). O mapa é o do COMPLEX.CNV que o DEF do PA liga a PA_NIVCPL; o CNV traz rótulos com o código na frente (''0-Não se Aplica''), o x-decode os traz sem ele.'
         issues:
-        - id: complex-sem-def-bpai
+        - id: bpai-sem-def
           status: open
-          description: 'O TAB_SIA não tem DEF do BPA-I. O mapa é o do COMPLEX.CNV (sia/CNV) que o Producao_Ambulatorial.DEF liga a PA_NIVCPL, e o Informe Técnico SIASUS 2019-07 descreve COMPLEX do BPA-I (p. 17) com as mesmas palavras de PA_NIVCPL do PA (Complexidade do Procedimento), sem lista de códigos. Nenhum DEF cita COMPLEX por esse nome. Medido nas fixtures do BPA-I, não lido neste dicionário.'
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. Nenhum deles cita COMPLEX como campo: Producao_Ambulatorial.DEF (linhas 89-91, PA*.DBC) liga PA_NIVCPL a CNV/COMPLEX.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "COMPLEX CHAR (1) Complexidade do Procedimento". O mapa anterior, ''0'' Não se aplica, ''1'' Atenção Básica, ''2'' Média complexidade e ''3'' Alta complexidade, foi escrito à mão (o COMPLEX.CNV traz ''0-Não se Aplica''). BIRR2401: COMPLEX ''0'' em 699 linhas, ''1'' em 468, ''2'' em 8.721 e ''3'' em 2.211.'
     - name: autoriz
       type: string
       label: Número da autorização
@@ -155,36 +117,14 @@ schema:
     - name: catend
       type: string
       label: Caráter do atendimento
-      x-decode:
-        "01": "Eletivo"
-        "02": "Urgência"
-        "03": "Acidente no local de trabalho"
-        "04": "Acidente no trajeto"
-        "05": "Outros acidentes de trânsito"
-        "06": "Outras lesões por agentes químicos/físicos"
+      x-metadata:
+        issues:
+        - id: bpai-sem-def
+          status: open
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. RAAS_Psicossocial.def e Atencao_Domiciliar.def (linhas 40-42 de cada um, PS*.dbc e sad*.dbc) ligam CATEND a CNV/CARAT_AT.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "CATEND CHAR (2) Caráter de Atendimento". O mapa anterior, ''01'' a ''06'', foi escrito à mão, com rótulos que não são os do CARAT_AT.CNV (''Acidente no trajeto'' onde o CNV diz ''ACIDENTE NO TRAJETO PARA O TRABALHO''), e ''06'' não aparece em nenhuma das quatro fixtures do BPA-I. BIRR2401: CATEND ''01'' em 10.311 linhas, ''02'' em 1.369, ''03'' em 417, ''04'' em 1 e ''05'' em 1.'
     # ========================================================================
     # Paciente — chave de linkage
     # ========================================================================
-      x-metadata:
-        claims:
-        - target: /field/codes
-          value_sha256: 468ac3fdc80394cf085030decf77c1ec8a8b733db8d9221cefecdf52a89522a3
-          status: unreviewed
-          checked_at: '2026-11-15'
-          method: 'fixture-measure'
-          reviewer: null
-          evidence:
-          - source_id: sia-tab-e5812b51d802
-            pages: []
-            locator: 'RAAS_Psicossocial.def, linhas 40-42: CATEND, 1, CNV/CARAT_AT.CNV'
-          - source_id: siasus-70fe69dbd4cf
-            pages: [17]
-            locator: 'CATEND CHAR (2) Caráter de Atendimento (layout BIUFAAMM.DBF)'
-          note: 'Medido, não lido (issue catend-sem-def-bpai). O CARAT_AT.CNV rotula também 99, 00 e códigos inválidos; o x-decode traz só 01 a 06, com rótulos abreviados.'
-        issues:
-        - id: catend-sem-def-bpai
-          status: open
-          description: 'O TAB_SIA não tem DEF do BPA-I. O mapa é o do CNV que o DEF de RAAS_Psicossocial liga a este campo, e o Informe Técnico SIASUS 2019-07 descreve CATEND com as mesmas palavras; nenhuma tabela registrada é do BPA-I. Medido nas fixtures do BPA-I, não lido neste dicionário.'
     - name: cns_pac
       type: string
       label: CNS do paciente (criptografado; chave de linkage intra-SIA)
@@ -260,29 +200,11 @@ schema:
     - name: sexopac
       type: string
       label: Sexo do paciente
-      x-decode:
-        "M": "Masculino"
-        "F": "Feminino"
       x-metadata:
-        claims:
-        - target: /field/codes
-          value_sha256: 1ff78f07dc2f20252de6da09349a5e4a0d8a82203c0dc6208f27e6aa4d65277f
-          status: unreviewed
-          checked_at: '2026-11-15'
-          method: 'fixture-measure'
-          reviewer: null
-          evidence:
-          - source_id: sia-tab-e5812b51d802
-            pages: []
-            locator: 'RAAS_Psicossocial.def, linhas 55-57: SEXOPAC, 1, CNV/SEXO.CNV'
-          - source_id: siasus-70fe69dbd4cf
-            pages: [17]
-            locator: 'SEXOPAC CHAR (1) Sexo do paciente (layout BIUFAAMM.DBF)'
-          note: 'Medido, não lido (issue sexopac-sem-def-bpai). O SEXO.CNV rotula também ''0'' e o vazio como ''Não exigido''; o x-decode traz só M e F.'
         issues:
-        - id: sexopac-sem-def-bpai
+        - id: bpai-sem-def
           status: open
-          description: 'O TAB_SIA não tem DEF do BPA-I. O mapa é o do CNV que o DEF de RAAS_Psicossocial e Atencao_Domiciliar liga a este campo, e o Informe Técnico SIASUS 2019-07 descreve SEXOPAC com as mesmas palavras; nenhuma tabela registrada é do BPA-I. Medido nas fixtures do BPA-I, não lido neste dicionário.'
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. RAAS_Psicossocial.def (linhas 55-57, PS*.dbc) e Atencao_Domiciliar.def (linhas 58-60, sad*.dbc) ligam SEXOPAC a CNV/SEXO.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "SEXOPAC CHAR (1) Sexo do paciente". O mapa anterior, ''M'' Masculino e ''F'' Feminino, foi escrito à mão (o SEXO.CNV rotula também ''0'' e o vazio, ''Não exigido''). BIRR2401: SEXOPAC ''F'' em 7.373 linhas e ''M'' em 4.726.'
     - name: racacor
       type: string
       label: Raça/cor
