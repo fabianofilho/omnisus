@@ -102,6 +102,7 @@ def test_public_import_functions_are_the_readable_ones() -> None:
     importers = sorted(name for name in sus.__all__ if name.startswith("import_"))
     assert importers == [
         "import_cnes_master",
+        "import_cnes_master_ftp",
         "import_dataset",
         "import_ibge_populacao",
         "import_research",

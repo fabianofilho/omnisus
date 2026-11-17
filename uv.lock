@@ -1406,7 +1406,7 @@ wheels = [
 
 [[package]]
 name = "mkdocs-material"
-version = "9.7.7"
+version = "9.8.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "babel" },
@@ -1421,9 +1421,9 @@ dependencies = [
     { name = "pymdown-extensions" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f1/cd/c05d3a530ba7934f144fb45f7203cd236adc25c7bdcc34673d202f4b0278/mkdocs_material-9.7.7.tar.gz", hash = "sha256:c0649c065b1b0512d60aad8c10f947f8e455284475239b364b610f2deb4d0855", size = 4097923, upload-time = "2026-07-17T16:21:33.156Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e2/b2/dee93bf227b481e28ba4d800c322dffc41b16d524ae84ca8d85aa7ec3a81/mkdocs_material-9.8.1.tar.gz", hash = "sha256:cddae7d77bb98d1d347aa68ee252ab40926171a1b34ba8777c44e16de9629f00", size = 4160481, upload-time = "2026-11-07T13:05:04.482Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ad/21/17c1bc9e6f47c972ad66fb2ac2568f99f90f1207eeb6fc3b34d094dba7b5/mkdocs_material-9.7.7-py3-none-any.whl", hash = "sha256:8ea9bb1737a5b524a5f9dcf2e1b4ebda8274ae3008aa7845720a97083bef708f", size = 9305438, upload-time = "2026-07-17T16:21:30.017Z" },
+    { url = "https://files.pythonhosted.org/packages/70/05/a4011d6a6af86cd03059a5b165cd69a3695ef4bd7bd477c66befe399640a/mkdocs_material-9.8.1-py3-none-any.whl", hash = "sha256:2115af67ee680e1398bdd0ea02e517721e4bba88b342503a93f97ea8eb3de51c", size = 9302217, upload-time = "2026-11-07T13:05:00.747Z" },
 ]
 
 [[package]]
@@ -1725,17 +1725,17 @@ provides-extras = ["colab", "dev", "docs", "notebooks", "postgres"]
 
 [[package]]
 name = "omnisus-dbf"
-version = "0.2.0"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyarrow" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/04/08/c3a84fbcf94ab08ff821e265c5353476928b9a48e10dbd490bac8e09dc8d/omnisus_dbf-0.2.0.tar.gz", hash = "sha256:007b98de13a3fa7162d15f4dbfd6438c6170d9d855837db81285457b642168eb", size = 26473, upload-time = "2026-10-02T02:09:10.646Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/12/50/8c31174ad9fc916ab2d268ac5e0a13d38f3abe5c32ef689b61877137b711/omnisus_dbf-0.2.1.tar.gz", hash = "sha256:c41b9b1e29f8d94c535ea65d1a206e93d441d0b6d247f58b894e02c59a39b556", size = 26605, upload-time = "2026-10-02T19:49:45.151Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/67/3a/394ae0b1621a2ee5a47073f0bc4990c8c82bed6875ca8409f628d27ec76a/omnisus_dbf-0.2.0-cp312-abi3-macosx_10_12_x86_64.whl", hash = "sha256:087c69290c595c6adbbed934db98faf0347ed20855090dc3685de5af5d907633", size = 369445, upload-time = "2026-10-02T02:09:04.871Z" },
-    { url = "https://files.pythonhosted.org/packages/7c/6c/1337bd085f152f1011ed8d6bc2c832b05915781cf5cf5316d1d23f739330/omnisus_dbf-0.2.0-cp312-abi3-macosx_11_0_arm64.whl", hash = "sha256:75fa1b71d58e04014b67aa16e0d7a554bc25f8dbbc5c84b19d3b800436e0c81e", size = 357920, upload-time = "2026-10-02T02:09:06.533Z" },
-    { url = "https://files.pythonhosted.org/packages/f2/4b/a9e4e0af31738207191913bb661c0348a653f22f89159508cf610ee2b895/omnisus_dbf-0.2.0-cp312-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:ab2f409c0321097788c54796569684bddf5423b08a3497f9b21dada809bb6c10", size = 403112, upload-time = "2026-10-02T02:09:08.049Z" },
-    { url = "https://files.pythonhosted.org/packages/41/68/d8b9467b516aa90207426c1872ed4f8cf286dca1e783350153abb670c34e/omnisus_dbf-0.2.0-cp312-abi3-win_amd64.whl", hash = "sha256:f0993a33f9029197f5b28cbc421a593b141985164ff2f30eea6f1843b33f4521", size = 267842, upload-time = "2026-10-02T02:09:09.456Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/95/1b4df88a736eaf5297b67fe0e79795b03b8c6db2e159c2d36480cfd1ae9c/omnisus_dbf-0.2.1-cp312-abi3-macosx_10_12_x86_64.whl", hash = "sha256:a580b6711f15788fffa7b41bde68ffba6e7d424b95332e62a3aa7440ec5aea26", size = 369526, upload-time = "2026-10-02T19:49:39.05Z" },
+    { url = "https://files.pythonhosted.org/packages/df/2d/13fbc367e0a29ad3ccd2820e2d34066430c03032d2c3d814bc136b38d0d3/omnisus_dbf-0.2.1-cp312-abi3-macosx_11_0_arm64.whl", hash = "sha256:399ed515b00b0ae99a398242cdbda27afb9c1ca971e576011d7383ddd477f7f3", size = 358041, upload-time = "2026-10-02T19:49:40.552Z" },
+    { url = "https://files.pythonhosted.org/packages/99/fb/409892a99f81b96bf6893ba73bd28117b1271081ef771c50aea4dd310077/omnisus_dbf-0.2.1-cp312-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:562b9bd379fd574d27b077a3014d0b5de41008b83cf580ec4526b478e34630bb", size = 403238, upload-time = "2026-10-02T19:49:42.183Z" },
+    { url = "https://files.pythonhosted.org/packages/29/cd/670efb85d186e534996f4e13801b6c3f9559bbbba1ef3e1d3b1274694e8b/omnisus_dbf-0.2.1-cp312-abi3-win_amd64.whl", hash = "sha256:4f220efc896b4bd1a662eeb3e05b3067d66214bd15680f762e499734e12abe23", size = 267976, upload-time = "2026-10-02T19:49:43.642Z" },
 ]
 
 [[package]]
@@ -2171,15 +2171,15 @@ wheels = [
 
 [[package]]
 name = "pytest-asyncio"
-version = "1.4.0"
+version = "1.4.1.post1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
     { name = "typing-extensions", marker = "python_full_version < '3.13'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/43/7c/d36d04db312ecf4298932ef77e6e4a9e8ad017906e24e34f0b0c361a2473/pytest_asyncio-1.4.0.tar.gz", hash = "sha256:c6c0d2259945122819f171a32ecea2c349ead889ee28176caaf492143424be42", size = 58514, upload-time = "2026-05-26T09:56:04.083Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/73/7f/c60a4338420b33453d4f814ac0c930abd399f162b9bdd21af4b9e363037f/pytest_asyncio-1.4.1.post1.tar.gz", hash = "sha256:f582d9ea4a1c082195abe8bd29a1fe106aeb1cd435e3dad2d3bc2749935c36a2", size = 145360, upload-time = "2026-11-01T18:26:03.732Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/03/e2/08a497ef684b88559c9cc5f4ad53a37e7b99e727094a86d6ea32536d5d3c/pytest_asyncio-1.4.0-py3-none-any.whl", hash = "sha256:933ca923a23075a87fb7070c0ec272a6848489824d887c85c812670932835aa1", size = 16930, upload-time = "2026-05-26T09:56:02.576Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/de/adbc7578959cfab07e5e7c05cf6d54224a51e7667ea2c07458b6bc571e75/pytest_asyncio-1.4.1.post1-py3-none-any.whl", hash = "sha256:0755e488cc0a2b9bd2eab7292cc6390d4cbb8390f1020745647bae5a708e0165", size = 17140, upload-time = "2026-11-01T18:26:02.168Z" },
 ]
 
 [[package]]
@@ -2708,11 +2708,11 @@ wheels = [
 
 [[package]]
 name = "types-pyyaml"
-version = "6.0.12.20260906"
+version = "6.0.12.20261103"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/90/6e/abec85b9013db5b934b0280a6dd104904d84f7bcbaab2e2f3def87ac7463/types_pyyaml-6.0.12.20260906.tar.gz", hash = "sha256:f59c1cc05010b833d2d72287bbaa72610106b28d42d89a907313117faba85212", size = 18649, upload-time = "2026-09-06T06:35:35.362Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d9/82/2ed4d215a2840b467a9a864f03b0d21904250e28f5e1f006ad36fba0311a/types_pyyaml-6.0.12.20261103.tar.gz", hash = "sha256:7a1b5f837881dd35d5448b5f18275164f89f206185e31e8eae6e0b42607bc001", size = 18911, upload-time = "2026-11-03T08:45:23.714Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/15/c0/fc0644b7ddcfb969e95845837143cb5173ddd6e06ee4ba5fc493cd9329b7/types_pyyaml-6.0.12.20260906-py3-none-any.whl", hash = "sha256:bca893ff0d51df5c9053137d5d0e6ccd36e939a196356f1d5c16372422f5137b", size = 21282, upload-time = "2026-09-06T06:35:34.372Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/10/4353eb86278f6a59aeb9fe2be4d979c20b110b4009fa455a3ea6467cf5cb/types_pyyaml-6.0.12.20261103-py3-none-any.whl", hash = "sha256:444654c61f635dab82c092a511aa96a0ce31164810784b9a37314e3e56532ac8", size = 21299, upload-time = "2026-11-03T08:45:22.749Z" },
 ]
 
 [[package]]

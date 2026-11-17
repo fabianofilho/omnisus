@@ -9,7 +9,7 @@ profile: tabular-data-resource
 # NOTA: o header real tem 86 campos; 8 sem nome sao
 # descartados pelo dbfread2 e ficam fora do dicionario.
 encoding: latin-1
-x-version: "0.3.0"
+x-version: "0.4.0"
 schema:
   fields:
     - name: ap_mvm
@@ -145,6 +145,18 @@ schema:
         '4': Anos
         '5': Anos (somar 100)
       x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 83616371dedaa6efde39e6aa288ca9c043d7a29fcef25633a2fa65a3d37952e0
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: fixture-measure
+          reviewer: null
+          evidence:
+          - source_id: sia-tab-e5812b51d802
+            pages: []
+            locator: 'APAC_Pos_Cirurgia_Bariatica.def, linhas 335-336: AP_COIDADE, 1, CNV/IDADEDET.CNV e CNV/IDADE18.CNV'
+          note: 'Medido, não lido (issue ap_coidade-sem-tabela). Os CNV leem 3 caracteres, AP_COIDADE seguido de AP_NUIDADE; nenhuma tabela rotula o código de 1 caractere.'
         issues:
         - id: ap_coidade-sem-tabela
           status: open

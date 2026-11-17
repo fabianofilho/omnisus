@@ -74,7 +74,7 @@ to `import_dataset`. There is no planner flag on the Python API.
 
 The FTP importers return `ImportReport`; inspect `report.failed`, `report.skipped`
 and `report.ok`. `import_ibge_populacao` returns `list[ImportResult]`, while
-`import_cnes_master` returns the number of records written.
+`import_cnes_master` and `import_cnes_master_ftp` return the number of records written.
 
 `import_research` is the researcher door: it requires `run_id` and defaults to
 `policy="skip_same"`. It refuses `append`. `import_dataset` remains the operator
@@ -96,6 +96,7 @@ is already running. Importing `cnes_estabelecimentos` by any function refreshes 
 ::: omnisus.import_research
 ::: omnisus.import_ibge_populacao
 ::: omnisus.import_cnes_master
+::: omnisus.import_cnes_master_ftp
 ::: omnisus.import_sigtap
 ::: omnisus.available_sigtap
 

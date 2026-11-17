@@ -1,3 +1,4 @@
 # Official DATASUS bytes: SHA-256 is checked; never convert line endings.
 src/omnisus/data/dicionarios/sources/cnv/*/** -text
 tests/fixtures/cnv/* -text
+tests/fixtures/sigtap/*.txt -text

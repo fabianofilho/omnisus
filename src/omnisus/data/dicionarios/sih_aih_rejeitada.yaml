@@ -2,7 +2,7 @@ name: sih_aih_rejeitada
 title: SIHSUS — AIH rejeitada (RJ)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.4.1
+x-version: 1.5.0
 x-source-format: dbc
 x-evidence:
   physical_schema: sih_rj_rr_2024_01_mini.dbc, 90 fields; observed 2026-09-22
@@ -117,7 +117,38 @@ schema:
   - name: munic_res
     type: string
   - name: nasc
-    type: string
+    type: date
+    x-format: yyyyMMdd
+    x-metadata:
+      claims:
+      - target: /field/format
+        value_sha256: 22b7645fd60de2bfe0dc4203b75a4a01b1c8ff1a856491178e3c3bf01d6230d6
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: fixture-measure
+        reviewer: null
+        evidence: []
+        note: Medido, não lido (issue formato-sem-documento). O RJ2008.DEF não tem linha para NASC, e o IT_SIHSUS_1603.pdf (p. 1) lista só os arquivos RD e SP, sem o RJ.
+      observations:
+      - file: RJRR2401.dbc
+        url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Dados/RJRR2401.dbc
+        sha256: bae9610e625241a9ee83edc9fb0f6948fd47f3658c2e5be90d6019097535891a
+        data_period: '2024-01'
+        uf: RR
+        field_name: nasc
+        checked_at: '2026-11-15'
+        scope: Fixture sih_rj_rr_2024_01_mini, os 30 registros de RJRR2401 (GESTOR_CPF em branco).
+        observed:
+          pattern: yyyyMMdd
+          filled: 30
+          valid: 30
+          valid_min: '1947-01-17'
+          valid_max: '2023-10-19'
+          also_valid_as_ddMMyyyy: 4
+      issues:
+      - id: formato-sem-documento
+        status: open
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41) não traz o layout do RJ: o sumário (p. 1) lista só os arquivos RD*.dbf (Tabela 1, p. 1-4) e SP*.dbf (Tabela 2, p. 4-5). O formato yyyyMMdd foi medido nas 30 linhas do RJRR2401, todas com 8 dígitos e data válida; não vale como documento. Em 4 das 30 linhas a leitura ddMMyyyy também dá uma data, então o padrão não sai só do parse; o RD tem 553 de 3.714 nessa situação.'
   - name: sexo
     type: string
     x-decode:
@@ -230,9 +261,77 @@ schema:
   - name: us_tot
     type: number
   - name: dt_inter
-    type: string
+    type: date
+    x-format: yyyyMMdd
+    x-metadata:
+      claims:
+      - target: /field/format
+        value_sha256: 22b7645fd60de2bfe0dc4203b75a4a01b1c8ff1a856491178e3c3bf01d6230d6
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: fixture-measure
+        reviewer: null
+        evidence:
+        - source_id: sih-tab-f05b32f32908
+          pages: []
+          locator: 'RJ2008.DEF, linhas 242-243: XAno de internação, DT_INTER, 1, CNV\ANO.CNV; XMês de internação, DT_INTER, 5, CNV\MESES.CNV'
+        note: Medido, não lido (issue formato-sem-documento). O RJ2008.DEF dá a posição do ano (1) e do mês (5) em DT_INTER; nenhuma fonte lida dá a posição do dia.
+      observations:
+      - file: RJRR2401.dbc
+        url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Dados/RJRR2401.dbc
+        sha256: bae9610e625241a9ee83edc9fb0f6948fd47f3658c2e5be90d6019097535891a
+        data_period: '2024-01'
+        uf: RR
+        field_name: dt_inter
+        checked_at: '2026-11-15'
+        scope: Fixture sih_rj_rr_2024_01_mini, os 30 registros de RJRR2401 (GESTOR_CPF em branco).
+        observed:
+          pattern: yyyyMMdd
+          filled: 30
+          valid: 30
+          valid_min: '2023-08-07'
+          valid_max: '2024-01-17'
+          also_valid_as_ddMMyyyy: 0
+      issues:
+      - id: formato-sem-documento
+        status: open
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41) não traz o layout do RJ: o sumário (p. 1) lista só os arquivos RD*.dbf (Tabela 1, p. 1-4) e SP*.dbf (Tabela 2, p. 4-5). O formato yyyyMMdd foi medido nas 30 linhas do RJRR2401, todas com 8 dígitos e data válida; não vale como documento. O RJ2008.DEF (TAB_SIH.zip, sih-tab-f05b32f32908), linhas 242-243, liga o ano à posição 1 e o mês à posição 5 de DT_INTER; não tem linha para o dia, e ANO.CNV e MESES.CNV não estão empacotados, então a largura de cada parte não foi lida.'
   - name: dt_saida
-    type: string
+    type: date
+    x-format: yyyyMMdd
+    x-metadata:
+      claims:
+      - target: /field/format
+        value_sha256: 22b7645fd60de2bfe0dc4203b75a4a01b1c8ff1a856491178e3c3bf01d6230d6
+        status: unreviewed
+        checked_at: '2026-11-15'
+        method: fixture-measure
+        reviewer: null
+        evidence:
+        - source_id: sih-tab-f05b32f32908
+          pages: []
+          locator: 'RJ2008.DEF, linhas 247-248: XAno de saída, DT_SAIDA, 1, CNV\ANO.CNV; XMês de saída, DT_SAIDA, 5, CNV\MESES.CNV'
+        note: Medido, não lido (issue formato-sem-documento). O RJ2008.DEF dá a posição do ano (1) e do mês (5) em DT_SAIDA; nenhuma fonte lida dá a posição do dia.
+      observations:
+      - file: RJRR2401.dbc
+        url: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Dados/RJRR2401.dbc
+        sha256: bae9610e625241a9ee83edc9fb0f6948fd47f3658c2e5be90d6019097535891a
+        data_period: '2024-01'
+        uf: RR
+        field_name: dt_saida
+        checked_at: '2026-11-15'
+        scope: Fixture sih_rj_rr_2024_01_mini, os 30 registros de RJRR2401 (GESTOR_CPF em branco).
+        observed:
+          pattern: yyyyMMdd
+          filled: 30
+          valid: 30
+          valid_min: '2023-09-20'
+          valid_max: '2024-01-18'
+          also_valid_as_ddMMyyyy: 0
+      issues:
+      - id: formato-sem-documento
+        status: open
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41) não traz o layout do RJ: o sumário (p. 1) lista só os arquivos RD*.dbf (Tabela 1, p. 1-4) e SP*.dbf (Tabela 2, p. 4-5). O formato yyyyMMdd foi medido nas 30 linhas do RJRR2401, todas com 8 dígitos e data válida; não vale como documento. O RJ2008.DEF (TAB_SIH.zip, sih-tab-f05b32f32908), linhas 247-248, liga o ano à posição 1 e o mês à posição 5 de DT_SAIDA; não tem linha para o dia, e ANO.CNV e MESES.CNV não estão empacotados, então a largura de cada parte não foi lida.'
   - name: diag_princ
     type: string
   - name: diag_secun
@@ -1215,6 +1314,11 @@ schema:
     type: string
   - name: gestor_dt
     type: string
+    x-metadata:
+      issues:
+      - id: formato-sem-valor
+        status: open
+        description: 'O IT_SIHSUS_1603.pdf (sihsus-1e89d5f2cc41), p. 3, dá GESTOR_DT como char(8), "Data da autorização dada pelo Gestor (aaaammdd)", no layout do RD (Tabela 1). O documento não traz o layout do RJ: o sumário (p. 1) lista só os arquivos RD*.dbf e SP*.dbf. Nenhuma fixture do RJ tem o campo preenchido (RJRR2401: 0 de 30), então não há valor para medir e o campo continua string sem x-format.'
   - name: cnes
     type: string
   - name: cnpj_mant

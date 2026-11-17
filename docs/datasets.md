@@ -86,7 +86,7 @@ Perfis: [Medicamentos · APAC, estoque e o que falta (`sia_apac_medicamentos`)](
 | `sia_apac_radioterapia` | SIASUS — APAC de Radioterapia (AR) | por UF, mensal | 2008-01 em diante | [19](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_radioterapia.yaml) | — |
 | `sia_apac_tratamento_dialitico` | SIASUS — APAC de Tratamento Dialítico (ATD) | por UF, mensal | 2014-08 em diante | [11](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_tratamento_dialitico.yaml) | — |
 | `sia_atencao_domiciliar` | SIASUS — RAAS Atenção Domiciliar (SAD) | por UF, mensal | 2012-04 a 2018-10 | [9](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_atencao_domiciliar.yaml) | idade em MA, 2018-10 |
-| `sia_bpa_individualizado` | SIASUS — BPA Individualizado (BI) | por UF, mensal | 2008-01 em diante | [9](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_bpa_individualizado.yaml) | idade em RR, 2022-01, 2024-01 |
+| `sia_bpa_individualizado` | SIASUS — BPA Individualizado (BI) | por UF, mensal | 2008-01 em diante | [5](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_bpa_individualizado.yaml) | idade em RR, 2022-01, 2024-01 |
 | `sia_producao_ambulatorial` | SIASUS — Produção ambulatorial (PA) | por UF, mensal | 2008-01 em diante | [17](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_producao_ambulatorial.yaml) | — |
 | `sia_producao_ambulatorial_1994_2007` | SIASUS — Produção ambulatorial (PA), 1994-07 a 2007-12 | por UF, mensal | 1994-07 a 2007-12 | [0](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_producao_ambulatorial_1994_2007.yaml) | — |
 | `sia_psicossocial` | SIASUS — RAAS Psicossocial (PS) | por UF, mensal | 2012-11 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_psicossocial.yaml) | idade em RR, 2024-01 |
@@ -97,7 +97,7 @@ Perfil: [SIH · AIH reduzida (`sih_aih_reduzida`)](sources/sih_aih_reduzida.md)
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sih_aih_reduzida` | SIHSUS — AIH Reduzida (RD) | por UF, mensal | 2008-01 em diante | [35](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida.yaml) | idade, sexo e datas em 27 UFs, 2020-01 a 2025-02 |
+| `sih_aih_reduzida` | SIHSUS — AIH Reduzida (RD) | por UF, mensal | 2008-01 em diante | [34](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida.yaml) | idade, sexo e datas em 27 UFs, 2020-01 a 2025-02 |
 | `sih_aih_reduzida_1992_2007` | SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12 | por UF, mensal | 1992-01 a 2007-12 | [8](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida_1992_2007.yaml) | — |
 | `sih_aih_rejeitada` | SIHSUS — AIH rejeitada (RJ) | por UF, mensal | 2008-01 em diante | [26](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_rejeitada.yaml) | — |
 | `sih_aih_rejeitada_erro` | SIHSUS — AIH rejeitada com código de erro (ER) | por UF, mensal | 2011-01 em diante | [1](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_rejeitada_erro.yaml) | — |
@@ -109,7 +109,7 @@ Perfil: [SIM · óbitos (`sim_obitos`)](sources/sim_obitos.md)
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sim_obitos` | SIM — Declarações de Óbito | por UF, anual | 1996 em diante + preliminar | [40](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos.yaml) | idade, sexo e datas em 27 UFs, 2020 a 2024 |
+| `sim_obitos` | SIM — Declarações de Óbito | por UF, anual | 1996 em diante + preliminar | [39](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos.yaml) | idade, sexo e datas em 27 UFs, 2020 a 2024 |
 | `sim_obitos_cid9` | SIM — Óbitos por residência, CID-9 (DOR), 1979 a 1995 | por UF, anual | 1979 a 1995 | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_cid9.yaml) | — |
 | `sim_obitos_externos` | SIM — Óbitos por causas externas (DOEXT), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_externos.yaml) | — |
 | `sim_obitos_fetais` | SIM — Óbitos fetais (DOFET), nacional | Brasil, anual | 1996 em diante | [18](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_fetais.yaml) | — |
@@ -196,7 +196,8 @@ Estas fontes não passam por `sus.load`:
   do pacote ([vocabulários](sources/vocabularios.md)).
 - Procedimentos do SIGTAP por competência: `sus.import_sigtap`
   ([SIGTAP](sources/vocabularios.md#sigtap-por-competencia)).
-- Nomes dos estabelecimentos, pela API pública do CNES: `sus.import_cnes_master`
+- Nomes dos estabelecimentos, pela API pública do CNES (`sus.import_cnes_master`) ou pela base
+  completa do CNES no FTP (`sus.import_cnes_master_ftp`)
   ([nomes do CNES](sources/cnes_estabelecimentos.md#establishment-names)).
 - Posição de estoque BNAFAR/Hórus, uma página por consulta de `fetch_stock_page`, sem
   gravar no lake ([medicamentos](sources/medicamentos.md#cliente-de-estoque-bnafarhorus)).

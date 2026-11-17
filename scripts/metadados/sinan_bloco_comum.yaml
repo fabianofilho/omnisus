@@ -62,6 +62,7 @@ comum:
       rule_version: 1.0.0
       output:
       - idade_anos_completos
+      - idade_status
       - idade_quantidade
       - idade_unidade
     applicability:

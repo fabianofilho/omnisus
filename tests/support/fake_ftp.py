@@ -19,10 +19,10 @@ CWD_OK = "250 CWD command successful."
 
 
 def serve(monkeypatch: pytest.MonkeyPatch, **replies: list[object]) -> list[str]:
-    """Answer each command (`CWD`, `LIST`, `RETR`, `SIZE`) with its replies in turn.
+    """Answer each command (`CWD`, `LIST`, `RETR`, `SIZE`, `MDTM`) with its replies in turn.
 
     A reply is an exception to raise or the value to return (`LIST`: the lines; `RETR`:
-    the bytes; `SIZE`: the size); the last one repeats. Returns the commands sent.
+    the bytes; `SIZE`: the size; `MDTM`: the `213 ...` reply); the last one repeats. Returns the commands sent.
     """
     sent: list[str] = []
 
@@ -58,6 +58,9 @@ def serve(monkeypatch: pytest.MonkeyPatch, **replies: list[object]) -> list[str]
 
         def retrbinary(self, _command: str, callback: Callable[[bytes], object]) -> None:
             callback(self._answer("RETR"))  # type: ignore[arg-type]
+
+        def sendcmd(self, command: str) -> object:
+            return self._answer(command.split()[0])
 
         def size(self, _filename: str) -> object:
             return self._answer("SIZE")
