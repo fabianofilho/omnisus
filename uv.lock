@@ -1725,17 +1725,17 @@ provides-extras = ["colab", "dev", "docs", "notebooks", "postgres"]
 
 [[package]]
 name = "omnisus-dbf"
-version = "0.2.0"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyarrow" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/04/08/c3a84fbcf94ab08ff821e265c5353476928b9a48e10dbd490bac8e09dc8d/omnisus_dbf-0.2.0.tar.gz", hash = "sha256:007b98de13a3fa7162d15f4dbfd6438c6170d9d855837db81285457b642168eb", size = 26473, upload-time = "2026-10-02T02:09:10.646Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/12/50/8c31174ad9fc916ab2d268ac5e0a13d38f3abe5c32ef689b61877137b711/omnisus_dbf-0.2.1.tar.gz", hash = "sha256:c41b9b1e29f8d94c535ea65d1a206e93d441d0b6d247f58b894e02c59a39b556", size = 26605, upload-time = "2026-10-02T19:49:45.151Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/67/3a/394ae0b1621a2ee5a47073f0bc4990c8c82bed6875ca8409f628d27ec76a/omnisus_dbf-0.2.0-cp312-abi3-macosx_10_12_x86_64.whl", hash = "sha256:087c69290c595c6adbbed934db98faf0347ed20855090dc3685de5af5d907633", size = 369445, upload-time = "2026-10-02T02:09:04.871Z" },
-    { url = "https://files.pythonhosted.org/packages/7c/6c/1337bd085f152f1011ed8d6bc2c832b05915781cf5cf5316d1d23f739330/omnisus_dbf-0.2.0-cp312-abi3-macosx_11_0_arm64.whl", hash = "sha256:75fa1b71d58e04014b67aa16e0d7a554bc25f8dbbc5c84b19d3b800436e0c81e", size = 357920, upload-time = "2026-10-02T02:09:06.533Z" },
-    { url = "https://files.pythonhosted.org/packages/f2/4b/a9e4e0af31738207191913bb661c0348a653f22f89159508cf610ee2b895/omnisus_dbf-0.2.0-cp312-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:ab2f409c0321097788c54796569684bddf5423b08a3497f9b21dada809bb6c10", size = 403112, upload-time = "2026-10-02T02:09:08.049Z" },
-    { url = "https://files.pythonhosted.org/packages/41/68/d8b9467b516aa90207426c1872ed4f8cf286dca1e783350153abb670c34e/omnisus_dbf-0.2.0-cp312-abi3-win_amd64.whl", hash = "sha256:f0993a33f9029197f5b28cbc421a593b141985164ff2f30eea6f1843b33f4521", size = 267842, upload-time = "2026-10-02T02:09:09.456Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/95/1b4df88a736eaf5297b67fe0e79795b03b8c6db2e159c2d36480cfd1ae9c/omnisus_dbf-0.2.1-cp312-abi3-macosx_10_12_x86_64.whl", hash = "sha256:a580b6711f15788fffa7b41bde68ffba6e7d424b95332e62a3aa7440ec5aea26", size = 369526, upload-time = "2026-10-02T19:49:39.05Z" },
+    { url = "https://files.pythonhosted.org/packages/df/2d/13fbc367e0a29ad3ccd2820e2d34066430c03032d2c3d814bc136b38d0d3/omnisus_dbf-0.2.1-cp312-abi3-macosx_11_0_arm64.whl", hash = "sha256:399ed515b00b0ae99a398242cdbda27afb9c1ca971e576011d7383ddd477f7f3", size = 358041, upload-time = "2026-10-02T19:49:40.552Z" },
+    { url = "https://files.pythonhosted.org/packages/99/fb/409892a99f81b96bf6893ba73bd28117b1271081ef771c50aea4dd310077/omnisus_dbf-0.2.1-cp312-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:562b9bd379fd574d27b077a3014d0b5de41008b83cf580ec4526b478e34630bb", size = 403238, upload-time = "2026-10-02T19:49:42.183Z" },
+    { url = "https://files.pythonhosted.org/packages/29/cd/670efb85d186e534996f4e13801b6c3f9559bbbba1ef3e1d3b1274694e8b/omnisus_dbf-0.2.1-cp312-abi3-win_amd64.whl", hash = "sha256:4f220efc896b4bd1a662eeb3e05b3067d66214bd15680f762e499734e12abe23", size = 267976, upload-time = "2026-10-02T19:49:43.642Z" },
 ]
 
 [[package]]
