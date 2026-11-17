@@ -5,7 +5,7 @@
 Cada linha é uma base do FTP do DATASUS que o omnisus importa: o que é, como é
 publicada, desde quando e quantas colunas têm rótulo. O servidor publica outras, que o
 pacote não importa. A página é gerada de `sus.describe_datasets()` na versão
-0.2.3; a mesma chamada devolve a tabela da versão instalada. O notebook
+0.3.0; a mesma chamada devolve a tabela da versão instalada. O notebook
 [bases.py](https://github.com/raphaelfh/omnisus/blob/main/notebooks/bases.py)
 ([molab](https://molab.marimo.io/github/raphaelfh/omnisus/blob/main/notebooks/bases.py))
 mostra essa tabela e leva qualquer base até a citação.
@@ -56,18 +56,18 @@ Perfil: [CNES · estabelecimentos (`cnes_estabelecimentos`)](sources/cnes_estabe
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `cnes_dados_complementares` | CNES — Dados complementares (DC) | por UF, mensal | 2005-08 em diante | [7](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_dados_complementares.yaml) | — |
-| `cnes_equipamentos` | CNES — Equipamentos (EQ) | por UF, mensal | 2005-08 em diante | [5](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_equipamentos.yaml) | — |
-| `cnes_equipes` | CNES — Equipes (EP) | por UF, mensal | 2007-04 em diante | [9](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_equipes.yaml) | — |
-| `cnes_estabelecimentos` | CNES — Estabelecimentos (ST) | por UF, mensal | 2005-08 em diante | [2](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_estabelecimentos.yaml) | — |
-| `cnes_estabelecimentos_ensino` | CNES — Estabelecimentos de ensino (EE) | por UF, mensal | 2007-03 a 2021-07 | [7](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_estabelecimentos_ensino.yaml) | — |
-| `cnes_estabelecimentos_filantropicos` | CNES — Estabelecimentos filantrópicos (EF) | por UF, mensal | 2007-03 em diante | [7](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_estabelecimentos_filantropicos.yaml) | — |
-| `cnes_gestao_metas` | CNES — Gestão e metas (GM) | por UF, mensal | 2007-03 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_gestao_metas.yaml) | — |
-| `cnes_habilitacoes` | CNES — Habilitações (HB) | por UF, mensal | 2007-03 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_habilitacoes.yaml) | — |
-| `cnes_incentivos` | CNES — Incentivos (IN) | por UF, mensal | 2007-10 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_incentivos.yaml) | — |
-| `cnes_leitos` | CNES — Leitos (LT) | por UF, mensal | 2005-10 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_leitos.yaml) | — |
-| `cnes_regras_contratuais` | CNES — Regras contratuais (RC) | por UF, mensal | 2007-03 em diante | [4](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_regras_contratuais.yaml) | — |
-| `cnes_servicos_especializados` | CNES — Serviços especializados (SR) | por UF, mensal | 2005-08 em diante | [5](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/cnes_servicos_especializados.yaml) | — |
+| `cnes_dados_complementares` | CNES — Dados complementares (DC) | por UF, mensal | 2005-08 em diante | [7](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_dados_complementares.yaml) | — |
+| `cnes_equipamentos` | CNES — Equipamentos (EQ) | por UF, mensal | 2005-08 em diante | [5](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_equipamentos.yaml) | — |
+| `cnes_equipes` | CNES — Equipes (EP) | por UF, mensal | 2007-04 em diante | [9](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_equipes.yaml) | — |
+| `cnes_estabelecimentos` | CNES — Estabelecimentos (ST) | por UF, mensal | 2005-08 em diante | [2](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_estabelecimentos.yaml) | — |
+| `cnes_estabelecimentos_ensino` | CNES — Estabelecimentos de ensino (EE) | por UF, mensal | 2007-03 a 2021-07 | [7](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_estabelecimentos_ensino.yaml) | — |
+| `cnes_estabelecimentos_filantropicos` | CNES — Estabelecimentos filantrópicos (EF) | por UF, mensal | 2007-03 em diante | [7](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_estabelecimentos_filantropicos.yaml) | — |
+| `cnes_gestao_metas` | CNES — Gestão e metas (GM) | por UF, mensal | 2007-03 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_gestao_metas.yaml) | — |
+| `cnes_habilitacoes` | CNES — Habilitações (HB) | por UF, mensal | 2007-03 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_habilitacoes.yaml) | — |
+| `cnes_incentivos` | CNES — Incentivos (IN) | por UF, mensal | 2007-10 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_incentivos.yaml) | — |
+| `cnes_leitos` | CNES — Leitos (LT) | por UF, mensal | 2005-10 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_leitos.yaml) | — |
+| `cnes_regras_contratuais` | CNES — Regras contratuais (RC) | por UF, mensal | 2007-03 em diante | [4](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_regras_contratuais.yaml) | — |
+| `cnes_servicos_especializados` | CNES — Serviços especializados (SR) | por UF, mensal | 2005-08 em diante | [5](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/cnes_servicos_especializados.yaml) | — |
 
 ## SIA
 
@@ -75,21 +75,21 @@ Perfis: [Medicamentos · APAC, estoque e o que falta (`sia_apac_medicamentos`)](
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sia_apac_acompanhamento_bariatrica` | SIASUS — APAC de Acompanhamento à Cirurgia Bariátrica (AB) | por UF, mensal | 2008-01 a 2025-07 | [15](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_acompanhamento_bariatrica.yaml) | — |
-| `sia_apac_acompanhamento_multiprofissional` | SIASUS — APAC de Acompanhamento Multiprofissional (AMP) | por UF, mensal | 2016-03 em diante | [0](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_acompanhamento_multiprofissional.yaml) | — |
-| `sia_apac_cirurgia_bariatrica` | SIASUS — APAC de Acompanhamento Pós-Cirurgia Bariátrica (ABO) | por UF, mensal | 2014-01 em diante | [15](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_cirurgia_bariatrica.yaml) | — |
-| `sia_apac_fistula_arteriovenosa` | SIASUS — APAC de Confecção de Fístula Arteriovenosa (ACF) | por UF, mensal | 2014-08 em diante | [16](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_fistula_arteriovenosa.yaml) | — |
-| `sia_apac_laudos_diversos` | SIASUS — APAC de Laudos Diversos (AD) | por UF, mensal | 2008-01 em diante | [11](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_laudos_diversos.yaml) | — |
-| `sia_apac_medicamentos` | SIASUS — APAC de Medicamentos (AM) | por UF, mensal | 2008-01 em diante | [13](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_medicamentos.yaml) | — |
-| `sia_apac_nefrologia` | SIASUS — APAC de Nefrologia (AN) | por UF, mensal | 2008-01 a 2014-10 | [22](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_nefrologia.yaml) | — |
-| `sia_apac_quimioterapia` | SIASUS — APAC de Quimioterapia (AQ) | por UF, mensal | 2008-01 em diante | [11](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_quimioterapia.yaml) | — |
-| `sia_apac_radioterapia` | SIASUS — APAC de Radioterapia (AR) | por UF, mensal | 2008-01 em diante | [19](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_radioterapia.yaml) | — |
-| `sia_apac_tratamento_dialitico` | SIASUS — APAC de Tratamento Dialítico (ATD) | por UF, mensal | 2014-08 em diante | [11](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_apac_tratamento_dialitico.yaml) | — |
-| `sia_atencao_domiciliar` | SIASUS — RAAS Atenção Domiciliar (SAD) | por UF, mensal | 2012-04 a 2018-10 | [9](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_atencao_domiciliar.yaml) | idade em MA, 2018-10 |
-| `sia_bpa_individualizado` | SIASUS — BPA Individualizado (BI) | por UF, mensal | 2008-01 em diante | [5](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_bpa_individualizado.yaml) | idade em RR, 2022-01, 2024-01 |
-| `sia_producao_ambulatorial` | SIASUS — Produção ambulatorial (PA) | por UF, mensal | 2008-01 em diante | [17](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_producao_ambulatorial.yaml) | — |
-| `sia_producao_ambulatorial_1994_2007` | SIASUS — Produção ambulatorial (PA), 1994-07 a 2007-12 | por UF, mensal | 1994-07 a 2007-12 | [0](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_producao_ambulatorial_1994_2007.yaml) | — |
-| `sia_psicossocial` | SIASUS — RAAS Psicossocial (PS) | por UF, mensal | 2012-11 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sia_psicossocial.yaml) | idade em RR, 2024-01 |
+| `sia_apac_acompanhamento_bariatrica` | SIASUS — APAC de Acompanhamento à Cirurgia Bariátrica (AB) | por UF, mensal | 2008-01 a 2025-07 | [15](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_acompanhamento_bariatrica.yaml) | — |
+| `sia_apac_acompanhamento_multiprofissional` | SIASUS — APAC de Acompanhamento Multiprofissional (AMP) | por UF, mensal | 2016-03 em diante | [0](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_acompanhamento_multiprofissional.yaml) | — |
+| `sia_apac_cirurgia_bariatrica` | SIASUS — APAC de Acompanhamento Pós-Cirurgia Bariátrica (ABO) | por UF, mensal | 2014-01 em diante | [15](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_cirurgia_bariatrica.yaml) | — |
+| `sia_apac_fistula_arteriovenosa` | SIASUS — APAC de Confecção de Fístula Arteriovenosa (ACF) | por UF, mensal | 2014-08 em diante | [16](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_fistula_arteriovenosa.yaml) | — |
+| `sia_apac_laudos_diversos` | SIASUS — APAC de Laudos Diversos (AD) | por UF, mensal | 2008-01 em diante | [11](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_laudos_diversos.yaml) | — |
+| `sia_apac_medicamentos` | SIASUS — APAC de Medicamentos (AM) | por UF, mensal | 2008-01 em diante | [13](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_medicamentos.yaml) | — |
+| `sia_apac_nefrologia` | SIASUS — APAC de Nefrologia (AN) | por UF, mensal | 2008-01 a 2014-10 | [22](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_nefrologia.yaml) | — |
+| `sia_apac_quimioterapia` | SIASUS — APAC de Quimioterapia (AQ) | por UF, mensal | 2008-01 em diante | [11](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_quimioterapia.yaml) | — |
+| `sia_apac_radioterapia` | SIASUS — APAC de Radioterapia (AR) | por UF, mensal | 2008-01 em diante | [19](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_radioterapia.yaml) | — |
+| `sia_apac_tratamento_dialitico` | SIASUS — APAC de Tratamento Dialítico (ATD) | por UF, mensal | 2014-08 em diante | [11](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_apac_tratamento_dialitico.yaml) | — |
+| `sia_atencao_domiciliar` | SIASUS — RAAS Atenção Domiciliar (SAD) | por UF, mensal | 2012-04 a 2018-10 | [9](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_atencao_domiciliar.yaml) | idade em MA, 2018-10 |
+| `sia_bpa_individualizado` | SIASUS — BPA Individualizado (BI) | por UF, mensal | 2008-01 em diante | [5](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_bpa_individualizado.yaml) | idade em RR, 2022-01, 2024-01 |
+| `sia_producao_ambulatorial` | SIASUS — Produção ambulatorial (PA) | por UF, mensal | 2008-01 em diante | [17](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_producao_ambulatorial.yaml) | — |
+| `sia_producao_ambulatorial_1994_2007` | SIASUS — Produção ambulatorial (PA), 1994-07 a 2007-12 | por UF, mensal | 1994-07 a 2007-12 | [0](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_producao_ambulatorial_1994_2007.yaml) | — |
+| `sia_psicossocial` | SIASUS — RAAS Psicossocial (PS) | por UF, mensal | 2012-11 em diante | [6](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sia_psicossocial.yaml) | idade em RR, 2024-01 |
 
 ## SIH
 
@@ -97,11 +97,11 @@ Perfil: [SIH · AIH reduzida (`sih_aih_reduzida`)](sources/sih_aih_reduzida.md)
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sih_aih_reduzida` | SIHSUS — AIH Reduzida (RD) | por UF, mensal | 2008-01 em diante | [34](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida.yaml) | idade, sexo e datas em 27 UFs, 2020-01 a 2025-02 |
-| `sih_aih_reduzida_1992_2007` | SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12 | por UF, mensal | 1992-01 a 2007-12 | [8](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_reduzida_1992_2007.yaml) | — |
-| `sih_aih_rejeitada` | SIHSUS — AIH rejeitada (RJ) | por UF, mensal | 2008-01 em diante | [26](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_rejeitada.yaml) | — |
-| `sih_aih_rejeitada_erro` | SIHSUS — AIH rejeitada com código de erro (ER) | por UF, mensal | 2011-01 em diante | [1](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_aih_rejeitada_erro.yaml) | — |
-| `sih_servicos_profissionais` | SIHSUS — Serviços profissionais (SP) | por UF, mensal | 2008-01 em diante | [1](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sih_servicos_profissionais.yaml) | — |
+| `sih_aih_reduzida` | SIHSUS — AIH Reduzida (RD) | por UF, mensal | 2008-01 em diante | [34](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sih_aih_reduzida.yaml) | idade, sexo e datas em 27 UFs, 2020-01 a 2025-02 |
+| `sih_aih_reduzida_1992_2007` | SIHSUS — AIH reduzida (RD), 1992-01 a 2007-12 | por UF, mensal | 1992-01 a 2007-12 | [8](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sih_aih_reduzida_1992_2007.yaml) | — |
+| `sih_aih_rejeitada` | SIHSUS — AIH rejeitada (RJ) | por UF, mensal | 2008-01 em diante | [26](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sih_aih_rejeitada.yaml) | — |
+| `sih_aih_rejeitada_erro` | SIHSUS — AIH rejeitada com código de erro (ER) | por UF, mensal | 2011-01 em diante | [1](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sih_aih_rejeitada_erro.yaml) | — |
+| `sih_servicos_profissionais` | SIHSUS — Serviços profissionais (SP) | por UF, mensal | 2008-01 em diante | [1](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sih_servicos_profissionais.yaml) | — |
 
 ## SIM
 
@@ -109,12 +109,12 @@ Perfil: [SIM · óbitos (`sim_obitos`)](sources/sim_obitos.md)
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sim_obitos` | SIM — Declarações de Óbito | por UF, anual | 1996 em diante + preliminar | [39](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos.yaml) | idade, sexo e datas em 27 UFs, 2020 a 2024 |
-| `sim_obitos_cid9` | SIM — Óbitos por residência, CID-9 (DOR), 1979 a 1995 | por UF, anual | 1979 a 1995 | [6](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_cid9.yaml) | — |
-| `sim_obitos_externos` | SIM — Óbitos por causas externas (DOEXT), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_externos.yaml) | — |
-| `sim_obitos_fetais` | SIM — Óbitos fetais (DOFET), nacional | Brasil, anual | 1996 em diante | [18](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_fetais.yaml) | — |
-| `sim_obitos_infantis` | SIM — Óbitos infantis (DOINF), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_infantis.yaml) | — |
-| `sim_obitos_maternos` | SIM — Óbitos maternos (DOMAT), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sim_obitos_maternos.yaml) | — |
+| `sim_obitos` | SIM — Declarações de Óbito | por UF, anual | 1996 em diante + preliminar | [39](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sim_obitos.yaml) | idade, sexo e datas em 27 UFs, 2020 a 2024 |
+| `sim_obitos_cid9` | SIM — Óbitos por residência, CID-9 (DOR), 1979 a 1995 | por UF, anual | 1979 a 1995 | [6](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sim_obitos_cid9.yaml) | — |
+| `sim_obitos_externos` | SIM — Óbitos por causas externas (DOEXT), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sim_obitos_externos.yaml) | — |
+| `sim_obitos_fetais` | SIM — Óbitos fetais (DOFET), nacional | Brasil, anual | 1996 em diante | [18](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sim_obitos_fetais.yaml) | — |
+| `sim_obitos_infantis` | SIM — Óbitos infantis (DOINF), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sim_obitos_infantis.yaml) | — |
+| `sim_obitos_maternos` | SIM — Óbitos maternos (DOMAT), nacional | Brasil, anual | 1996 em diante | [38](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sim_obitos_maternos.yaml) | — |
 
 ## SINAN
 
@@ -122,9 +122,9 @@ Perfis: [SINAN · doença de Chagas aguda (`sinan_chagas`)](sources/sinan_chagas
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sinan_chagas` | SINAN — Doença de Chagas aguda, notificações preliminares nacionais | Brasil, anual | 2000 em diante + preliminar | [11](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_chagas.yaml) | idade em Brasil, 2023 |
-| `sinan_hanseniase` | SINAN — Hanseníase, notificações nacionais | Brasil, anual | 2001 em diante + preliminar | [13](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_hanseniase.yaml) | idade em Brasil, 2026 |
-| `sinan_tuberculose` | SINAN — Tuberculose, notificações nacionais | Brasil, anual | 2001 em diante + preliminar | [42](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinan_tuberculose.yaml) | idade em Brasil, 2020 |
+| `sinan_chagas` | SINAN — Doença de Chagas aguda, notificações preliminares nacionais | Brasil, anual | 2000 em diante + preliminar | [11](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sinan_chagas.yaml) | idade em Brasil, 2023 |
+| `sinan_hanseniase` | SINAN — Hanseníase, notificações nacionais | Brasil, anual | 2001 em diante + preliminar | [13](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sinan_hanseniase.yaml) | idade em Brasil, 2026 |
+| `sinan_tuberculose` | SINAN — Tuberculose, notificações nacionais | Brasil, anual | 2001 em diante + preliminar | [42](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sinan_tuberculose.yaml) | idade em Brasil, 2020 |
 
 ## SINASC
 
@@ -132,8 +132,8 @@ Perfil: [SINASC · nascidos vivos (`sinasc_nascidos_vivos`)](sources/sinasc_nasc
 
 | Base | O que é | Publicação | Cobertura | Colunas com rótulo | Categorias harmonizadas |
 | --- | --- | --- | --- | ---: | --- |
-| `sinasc_1994_1995` | SINASC — Nascidos vivos por residência (DNR), 1994 e 1995 | por UF, anual | 1994 a 1995 | [0](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinasc_1994_1995.yaml) | — |
-| `sinasc_nascidos_vivos` | SINASC — Declarações de Nascidos Vivos | por UF, anual | 1996 em diante + preliminar | [26](https://github.com/raphaelfh/omnisus/blob/v0.2.3/src/omnisus/data/dicionarios/sinasc_nascidos_vivos.yaml) | idade em RR, 2023 |
+| `sinasc_1994_1995` | SINASC — Nascidos vivos por residência (DNR), 1994 e 1995 | por UF, anual | 1994 a 1995 | [0](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sinasc_1994_1995.yaml) | — |
+| `sinasc_nascidos_vivos` | SINASC — Declarações de Nascidos Vivos | por UF, anual | 1996 em diante + preliminar | [26](https://github.com/raphaelfh/omnisus/blob/v0.3.0/src/omnisus/data/dicionarios/sinasc_nascidos_vivos.yaml) | idade em RR, 2023 |
 
 ## Onde fica no servidor
 

@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### omnisus-dbf 0.2.2
+
+- The native reader reads D (date) fields with the semantics of dbfread's `parseD`, so
+  SINAN national files no longer fall back to the Python reader. `API_VERSION` stays 2
+  (#149).
+
+## v0.3.0 — 2026-11-17
+
+**Upgrading from 0.2.3:** no parser version changed (the import still reads the same
+`encoding` and `x-identity` of every dictionary), so a 0.2.3 lake keeps every scope;
+`load` downloads nothing again. Some code maps were removed: the `<field>_rotulo` column
+goes away and `sus.label(columns=[field])` raises for those fields (the entries marked
+**Breaking** below). `import_cnes_master` changes which names it keeps (below, under API).
+
 ### API
 
 - `read(dataset, years=..., ufs=..., months=...)` returns the rows `load` returns for
@@ -323,12 +337,6 @@
   with it, as its wheels are, and with the pure-Python loader otherwise. The first load
   of `sih_aih_reduzida` in a process drops from about 0.7 s to 0.1 s, and a cold
   `describe_datasets()` from about 2.5 s to 0.4 s. The parsed dictionaries are the same.
-
-### omnisus-dbf 0.2.2
-
-- The native reader reads D (date) fields with the semantics of dbfread's `parseD`, so
-  SINAN national files no longer fall back to the Python reader. `API_VERSION` stays 2
-  (#149).
 
 ## v0.2.3 — 2026-10-08
 
