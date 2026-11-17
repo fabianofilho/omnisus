@@ -160,6 +160,10 @@ DEF no `TAB_SIA.zip`, por isso não tem rótulos. Todas declaram identidade de a
   DBF reais de 2024, não do informe técnico, e muitos rótulos só repetem o nome do campo
   (`src/omnisus/data/dicionarios/sia_apac_*.yaml` e `sia_psicossocial.yaml`,
   comentário inicial e `label`).
+- No BPA-I, `sexopac`, `catend`, `mn_ind` e `complex` ficam sem rótulos, com os códigos
+  como publicados: nenhum dos 12 DEF empacotados do `TAB_SIA.zip` lê `BI*.DBC`, e o DEF de
+  outro produto não diz que o BPA-I segue a mesma tabela (issue `bpai-sem-def` de cada
+  campo em `src/omnisus/data/dicionarios/sia_bpa_individualizado.yaml`).
 - Quantidade e valor aparecem apresentados e aprovados: `qt_apres` e `qt_aprov`,
   `vl_apres` e `vl_aprov` no BPA-I (Informe SIASUS 2019-07, p. 17–18).
 - No BPA-I, o número de autorização `autoriz` não é obrigatório e não é criticado
