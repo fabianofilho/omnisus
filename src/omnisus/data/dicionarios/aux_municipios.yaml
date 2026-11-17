@@ -1,5 +1,5 @@
 name: aux_municipios
-title: Municípios brasileiros, incluindo extintos e transferidos (DATASUS CADMUN)
+title: Municípios brasileiros, incluindo extintos e transferidos (DATASUS CADMUN e base territorial)
 profile: tabular-data-resource
 encoding: utf-8
 schema:
@@ -7,51 +7,53 @@ schema:
     - name: codigo_ibge
       type: string
       constraints: { required: true, pattern: "^\\d{7}$" }
-      description: "Código IBGE com dígito verificador; CADMUN.MUNCODDV"
+      description: "Código IBGE com dígito verificador; CADMUN.MUNCODDV, tb_municip.CO_MUNICDV nos seis municípios da base territorial"
     - name: codigo_6
       type: string
       constraints: { required: true, pattern: "^\\d{6}$" }
-      description: "Código de 6 dígitos, sem verificador, como SIM, SINASC e SIH gravam; CADMUN.MUNCOD"
+      description: "Código de 6 dígitos, sem verificador, como SIM, SINASC e SIH gravam; CADMUN.MUNCOD, tb_municip.CO_MUNICIP nos seis da base territorial"
     - name: nome
       type: string
       constraints: { required: true }
-      description: "CADMUN.MUNNOME"
+      description: "CADMUN.MUNNOME; tb_municip.DS_NOME nos seis municípios da base territorial, sem acento e com iniciais maiúsculas (Mojui Dos Campos)"
     - name: uf_codigo
       type: string
       constraints: { required: true }
-      description: "CADMUN.UFCOD (00 na linha de ignorado ou exterior)"
+      description: "CADMUN.UFCOD (00 na linha de ignorado ou exterior); tb_municip.CO_UF nos seis da base territorial"
     - name: situacao
       type: string
       constraints: { enum: [ATIVO, EXTIN, IGNOR, TRANS] }
-      description: "CADMUN.SITUACAO como publicado"
+      description: "CADMUN.SITUACAO como publicado; tb_municip.CO_STATUS nos seis da base territorial, todos ATIVO. A base também grava REG ADM e IGNR, fora do enum: o build para diante de um CO_STATUS fora do enum do dicionário, esses dois inclusive"
     - name: ano_instalacao
       type: integer
-      description: "CADMUN.ANOINST"
+      description: "CADMUN.ANOINST; tb_municip.DT_INSTAL nos seis da base territorial (Nazária: 2009, anterior ao CADMUN, que mesmo assim não a traz)"
     - name: ano_extincao
       type: integer
-      description: "CADMUN.ANOEXT"
+      description: "CADMUN.ANOEXT; tb_municip.DT_EXTIN nos seis da base territorial (vazio nos seis)"
     - name: sucessor
       type: string
-      description: "Código IBGE (7 dígitos) do município sucessor; CADMUN.SUCESSOR"
+      description: "Código IBGE (7 dígitos) do município sucessor; CADMUN.SUCESSOR, tb_municip.CO_SUCESS nos seis da base territorial (vazio nos seis)"
     - name: latitude
       type: number
-      description: "CADMUN.LATITUDE; nulo onde o CADMUN grava 0 e 0 (91 linhas: IGNOR, TRANS e 4 ATIVO)"
+      description: "CADMUN.LATITUDE, tb_municip.NU_LATITUD nos seis da base territorial; nulo onde o CADMUN grava 0 e 0 (91 linhas: IGNOR, TRANS e 4 ATIVO)"
     - name: longitude
       type: number
-      description: "CADMUN.LONGITUDE; nulo nas mesmas linhas da latitude"
+      description: "CADMUN.LONGITUDE, tb_municip.NU_LONGIT nos seis da base territorial; nulo nas mesmas linhas da latitude"
     - name: altitude
       type: integer
-      description: "CADMUN.ALTITUDE, como publicado"
+      description: "CADMUN.ALTITUDE, tb_municip.NU_ALTITUD nos seis da base territorial, como publicado"
     - name: area
       type: number
-      description: "CADMUN.AREA, como publicado"
+      description: "CADMUN.AREA, tb_municip.NU_AREA nos seis da base territorial, como publicado; nulo onde a fonte grava vazio: Nazária, Pescaria Brava e Balneário Rincão, da base territorial, e 220095, 500390, 510452 e 510454, do CADMUN"
     - name: regiao_saude
       type: string
-      description: "CADMUN.RSAUDCOD"
+      description: "CADMUN.RSAUDCOD; nulo nos seis municípios da base territorial, que usa outro código de região"
     - name: macrorregiao_saude
       type: string
-      description: "CADMUN.MSAUDCOD"
+      description: "CADMUN.MSAUDCOD; nulo nos seis municípios da base territorial"
   primaryKey: [codigo_ibge]
-x-version: "2.0.0"
+x-version: "2.2.2"
 x-source: DATASUS
-x-source-url: "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CADMUN.DBF"
+x-source-url:
+  - "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CADMUN.DBF"
+  - "ftp://ftp.datasus.gov.br/territorio/tabelas/2026/06-base_territorial_jun26.zip"
