@@ -73,6 +73,12 @@
 
 ### Dictionaries
 
+- `registry.json` registers the `TAB_SIH.zip` republished on 2026-10-15
+  (`sih-tab-21e42384645a`). The 33 members whose hash the repository holds are identical to
+  those of the two editions already registered, so `vinculos.json` stays on
+  `sih-tab-f05b32f32908`; `evidence/2026-11-15-tab-sih-republicado/` has the member census and
+  what was not compared (#154).
+
 - Every field with `x-decode` now has an authored `/field/codes` claim, or no map (#72). A test
   (`tests/unit/test_codes_claims.py`) holds the rule.
   - **Breaking:** `_source_release` of `sim_obitos` and `sih_aih_reduzida` loses its `x-decode`:

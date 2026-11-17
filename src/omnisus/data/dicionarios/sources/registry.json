@@ -285,6 +285,20 @@
       "last_checked_on": "2026-09-21"
     },
     {
+      "id": "sih-tab-21e42384645a",
+      "category": "SIHSUS",
+      "title": "TAB_SIH.zip",
+      "publisher": "Ministério da Saúde / DATASUS",
+      "authority": "official",
+      "url": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Auxiliar/TAB_SIH.zip",
+      "sha256": "21e42384645a9386add9f3644264145f39fc00bbb602f305d87bd0793b7e476b",
+      "bytes": 6083658,
+      "edition": null,
+      "published_on": null,
+      "retrieved_on": "2026-11-15",
+      "last_checked_on": "2026-11-15"
+    },
+    {
       "id": "sih-tab-b433310785e0",
       "category": "SIHSUS",
       "title": "TAB_SIH_199201-199712.zip",
