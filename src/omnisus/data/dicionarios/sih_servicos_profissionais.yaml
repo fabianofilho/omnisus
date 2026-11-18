@@ -2,7 +2,7 @@ name: sih_servicos_profissionais
 title: SIHSUS — Serviços profissionais (SP)
 profile: tabular-data-resource
 encoding: latin-1
-x-version: 1.3.0
+x-version: 1.4.0
 x-source-format: dbc
 x-evidence:
   physical_schema: sih_sp_rr_2024_01_mini.dbc, 36 fields; observed 2026-09-22

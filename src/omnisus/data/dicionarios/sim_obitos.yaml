@@ -1981,7 +1981,8 @@ schema:
     - name: _source_release
       type: string
       label: Modalidade da fonte
-      derivation: {kind: publication, input: source_uri, rule: release_from_uri}
+      constraints:
+        required: true
       x-metadata:
         derivation:
           kind: publication
@@ -1991,8 +1992,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DO
-x-version: "2.8.0"
-
+x-version: "2.9.0"
 x-analytics:
   version: 1.2.0
   applicability_policy: exact_audited_source_identity

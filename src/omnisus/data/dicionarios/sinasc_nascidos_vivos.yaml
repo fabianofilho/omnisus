@@ -1125,8 +1125,7 @@ schema:
 x-source-format: dbc
 x-source-family: datasus_ftp
 x-source-prefix: DN
-x-version: "2.6.0"
-
+x-version: "2.7.0"
 x-analytics:
   version: 1.0.0
   applicability_policy: exact_audited_source_identity

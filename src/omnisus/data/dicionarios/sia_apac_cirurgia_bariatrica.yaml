@@ -9,7 +9,7 @@ profile: tabular-data-resource
 # NOTA: o header real tem 86 campos; 8 sem nome sao
 # descartados pelo dbfread2 e ficam fora do dicionario.
 encoding: latin-1
-x-version: "0.4.0"
+x-version: "0.5.0"
 schema:
   fields:
     - name: ap_mvm
