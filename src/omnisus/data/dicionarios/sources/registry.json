@@ -285,6 +285,20 @@
       "last_checked_on": "2026-09-21"
     },
     {
+      "id": "sih-tab-21e42384645a",
+      "category": "SIHSUS",
+      "title": "TAB_SIH.zip",
+      "publisher": "Ministério da Saúde / DATASUS",
+      "authority": "official",
+      "url": "ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/Auxiliar/TAB_SIH.zip",
+      "sha256": "21e42384645a9386add9f3644264145f39fc00bbb602f305d87bd0793b7e476b",
+      "bytes": 6083658,
+      "edition": null,
+      "published_on": null,
+      "retrieved_on": "2026-11-15",
+      "last_checked_on": "2026-11-15"
+    },
+    {
       "id": "sih-tab-b433310785e0",
       "category": "SIHSUS",
       "title": "TAB_SIH_199201-199712.zip",
@@ -549,6 +563,34 @@
       "published_on": null,
       "retrieved_on": "2026-09-23",
       "last_checked_on": "2026-09-23"
+    },
+    {
+      "id": "base-territorial-f6e06a674cf7",
+      "category": "Base Territorial",
+      "title": "06-base_territorial_jun26.zip",
+      "publisher": "Ministério da Saúde / DATASUS",
+      "authority": "official",
+      "url": "ftp://ftp.datasus.gov.br/territorio/tabelas/2026/06-base_territorial_jun26.zip",
+      "sha256": "f6e06a674cf7c83693df6a230b2068ea2e257c27970050ca320353e42688316a",
+      "bytes": 1766516,
+      "edition": "2026-06",
+      "published_on": "2026-06-24",
+      "retrieved_on": "2026-10-25",
+      "last_checked_on": "2026-10-25"
+    },
+    {
+      "id": "sigtap-525e5ef197da",
+      "category": "SIGTAP",
+      "title": "TabelaUnificada_202610_v2610271043.zip",
+      "publisher": "Ministério da Saúde / DATASUS",
+      "authority": "official",
+      "url": "ftp://ftp2.datasus.gov.br/public/sistemas/tup/downloads/TabelaUnificada_202610_v2610271043.zip",
+      "sha256": "525e5ef197da5133ed3177f42b56cb341057668af8da2fdc7f6674bcc25af5cd",
+      "bytes": 2163764,
+      "edition": "2026-10",
+      "published_on": "2026-10-27",
+      "retrieved_on": "2026-10-31",
+      "last_checked_on": "2026-10-31"
     }
   ]
 }

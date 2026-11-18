@@ -4,9 +4,12 @@
 
 Every source is a file of ``SIM/CID10/TABELAS`` registered in
 ``sources/registry.json``, plus the packaged ``sources/cnv/sim/CBO2002.CNV`` and
-``sources/cnv/sim/CID10-grup_d.cnv``. Each download, and each packaged member, must
-match its registered SHA-256, else the build stops. The zip carries one
-Parquet file per table and ``manifest.json`` (table -> rows and sources).
+``sources/cnv/sim/CID10-grup_d.cnv``. Two newer registered files fill what the
+TABELAS (CADMUN of 2011, CID10 of 2020) lack: the six municipalities CADMUN does not
+have, from ``tb_municip.dbf`` of the DATASUS territorial base, and every CID-10 code of
+``tb_cid.txt`` of the SIGTAP that ``CID10.DBF`` does not have. Each download, and each
+packaged member, must match its registered SHA-256, else the build stops. The zip carries
+one Parquet file per table and ``manifest.json`` (table -> rows and sources).
 """
 
 from __future__ import annotations
@@ -17,11 +20,13 @@ import io
 import json
 import tempfile
 import zipfile
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
 import polars as pl
+import yaml
 from dbfread2 import DBF
 
 from omnisus.metadata import sources_registry
@@ -31,6 +36,13 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = ROOT / "src" / "omnisus" / "data" / "auxiliares-bootstrap.zip"
 CNV = ROOT / "src" / "omnisus" / "data" / "dicionarios" / "sources" / "cnv"
 TABELAS = "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/"
+TERRITORIAL = "ftp://ftp.datasus.gov.br/territorio/tabelas/2026/06-base_territorial_jun26.zip"
+SIGTAP = (
+    "ftp://ftp2.datasus.gov.br/public/sistemas/tup/downloads/"
+    "TabelaUnificada_202610_v2610271043.zip"
+)
+NEW_MUNICIPALITIES = ("150475", "220672", "421265", "422000", "431454", "500627")
+"""Municipalities that CADMUN.DBF (2011) lacks and the SIM, SINASC and SIH code."""
 # The DBF headers do not state these reliably (CID10 declares none); read from the text.
 ENCODING = {
     "TABUF.DBF": "ascii",
@@ -42,9 +54,8 @@ ENCODING = {
 }
 
 
-def download(name: str, into: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
-    """Records of one TABELAS file, after checking its bytes against the registry."""
-    url = TABELAS + name
+def fetch(url: str) -> tuple[bytes, dict[str, str]]:
+    """The bytes of one registered file, after checking them against the registry."""
     entry = next(s for s in sources_registry()["sources"] if s["url"] == url)
     parsed = urlparse(url)
     raw = bytearray()
@@ -54,9 +65,50 @@ def download(name: str, into: Path) -> tuple[list[dict[str, Any]], dict[str, str
     digest = hashlib.sha256(raw).hexdigest()
     if digest != entry["sha256"]:
         raise SystemExit(f"{url}: SHA-256 {digest} differs from the registry's {entry['sha256']}")
+    return bytes(raw), {"url": url, "sha256": digest}
+
+
+def download(name: str, into: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Records of one TABELAS file, after checking its bytes against the registry."""
+    raw, source = fetch(TABELAS + name)
     path = into / name
     path.write_bytes(raw)
-    return [dict(r) for r in DBF(path, encoding=ENCODING[name])], {"url": url, "sha256": digest}
+    return [dict(r) for r in DBF(path, encoding=ENCODING[name])], source
+
+
+def territorial_municipalities(into: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """Records of ``NEW_MUNICIPALITIES`` in tb_municip.dbf of the territorial base."""
+    raw, source = fetch(TERRITORIAL)
+    path = into / "tb_municip.dbf"
+    with zipfile.ZipFile(io.BytesIO(raw)) as zf:
+        path.write_bytes(zf.read("tb_municip.dbf"))
+    rows = [dict(r) for r in DBF(path, encoding="cp1252") if r["CO_MUNICIP"] in NEW_MUNICIPALITIES]
+    if sorted(r["CO_MUNICIP"] for r in rows) != sorted(NEW_MUNICIPALITIES):
+        raise SystemExit(f"tb_municip.dbf lacks some of {NEW_MUNICIPALITIES}")
+    return rows, source
+
+
+def parse_tb_cid(layout: list[str], lines: list[str]) -> dict[str, str]:
+    """code -> description of each line of tb_cid.txt, read with its layout file
+    (CO_CID in columns 1-4, NO_CID in 5-104)."""
+    if layout[1:3] != ["CO_CID,4,1,4,VARCHAR2", "NO_CID,100,5,104,VARCHAR2"]:
+        raise SystemExit(f"tb_cid_layout.txt changed: {layout[:3]}")
+    return {line[:4].strip(): line[4:104].strip() for line in lines}
+
+
+def sigtap_cid10(layout: list[str], lines: list[str], have: set[str]) -> list[tuple[str, str]]:
+    """(code, description) of every tb_cid code that ``have`` (CID10.DBF) lacks."""
+    codes = parse_tb_cid(layout, lines)
+    return [(c, d) for c, d in codes.items() if c not in have]
+
+
+def sigtap_tb_cid() -> tuple[list[str], list[str], dict[str, str]]:
+    """The layout and the lines of tb_cid.txt in the registered SIGTAP zip."""
+    raw, source = fetch(SIGTAP)
+    with zipfile.ZipFile(io.BytesIO(raw)) as zf:
+        layout = zf.read("tb_cid_layout.txt").decode("latin-1").splitlines()
+        lines = zf.read("tb_cid.txt").decode("latin-1").splitlines()
+    return layout, lines, source
 
 
 def aux_uf(rows: list[dict[str, Any]]) -> pl.DataFrame:
@@ -73,7 +125,59 @@ def _year(value: str) -> int | None:
     return int(value) if value.strip() else None
 
 
-def aux_municipios(rows: list[dict[str, Any]]) -> pl.DataFrame:
+def _decimal(value: str) -> float | None:
+    """A tb_municip number: comma as decimal separator, empty when unknown."""
+    return float(value.replace(",", ".")) if value.strip() else None
+
+
+def _situacao() -> tuple[str, ...]:
+    """The ``situacao`` values aux_municipios.yaml accepts (CADMUN's ATIVO, EXTIN, IGNOR and
+    TRANS). tb_municip.dbf also writes REG ADM and IGNR
+    (evidence/2026-10-31-tb-municip-co-status/); the build takes none outside the enum."""
+    doc = yaml.safe_load(
+        (files("omnisus.data") / "dicionarios" / "aux_municipios.yaml").read_text("utf-8")
+    )
+    (field,) = [f for f in doc["schema"]["fields"] if f["name"] == "situacao"]
+    return tuple(field["constraints"]["enum"])
+
+
+def _from_territorial(r: dict[str, Any]) -> dict[str, Any]:
+    """A tb_municip record in CADMUN's columns. The base codes health regions in another
+    scheme than CADMUN's RSAUDCOD and MSAUDCOD, so those stay empty."""
+    if r["CO_STATUS"] not in _situacao():
+        raise SystemExit(
+            f"tb_municip {r['CO_MUNICIP']}: CO_STATUS {r['CO_STATUS']!r} is not in the "
+            f"situacao enum of aux_municipios.yaml {_situacao()}"
+        )
+    altitude = _decimal(r["NU_ALTITUD"])
+    if altitude is not None and not altitude.is_integer():
+        raise SystemExit(
+            f"tb_municip {r['CO_MUNICIP']}: NU_ALTITUD {r['NU_ALTITUD']!r} is not whole; "
+            "the column is an integer"
+        )
+    return {
+        "MUNCODDV": r["CO_MUNICDV"],
+        "MUNCOD": r["CO_MUNICIP"],
+        "MUNNOME": r["DS_NOME"],
+        "UFCOD": r["CO_UF"],
+        "SITUACAO": r["CO_STATUS"],
+        "ANOINST": r["DT_INSTAL"],
+        "ANOEXT": r["DT_EXTIN"],
+        "SUCESSOR": r["CO_SUCESS"],
+        "LATITUDE": _decimal(r["NU_LATITUD"]),
+        "LONGITUDE": _decimal(r["NU_LONGIT"]),
+        "ALTITUDE": None if altitude is None else int(altitude),
+        "AREA": _decimal(r["NU_AREA"]),
+        "RSAUDCOD": None,
+        "MSAUDCOD": None,
+    }
+
+
+def aux_municipios(rows: list[dict[str, Any]], territorial: list[dict[str, Any]]) -> pl.DataFrame:
+    if clash := {r["CO_MUNICIP"] for r in territorial} & {r["MUNCOD"] for r in rows}:
+        raise SystemExit(f"CADMUN already has {sorted(clash)}")
+    rows = rows + [_from_territorial(r) for r in territorial]
+
     def coordinate(r: dict[str, Any], key: str) -> float | None:
         # CADMUN writes 0/0 where it has no position; 0°, 0° is in the Atlantic.
         return None if r["LATITUDE"] == 0 and r["LONGITUDE"] == 0 else r[key]
@@ -146,9 +250,20 @@ def aux_cid10(
     rows: list[dict[str, Any]],
     chapters: list[dict[str, Any]],
     blocks: list[tuple[str, str]],
+    sigtap: list[tuple[str, str]],
 ) -> pl.DataFrame:
     def display(code: str) -> str:
         return code if len(code) == 3 else f"{code[:3]}.{code[3:]}"
+
+    for r in rows:
+        if not r["DESCR"].startswith(display(r["CID10"])):
+            raise SystemExit(f"CID-10 {r['CID10']}: DESCR does not start with its code")
+    # The SIGTAP writes NO_CID without the code in front, unlike CID10.DESCR.
+    rows = [
+        {"CID10": r["CID10"], "DESCR": r["DESCR"][len(display(r["CID10"])) :].strip()}
+        for r in rows
+    ]
+    rows += [{"CID10": c, "DESCR": d} for c, d in sigtap]
 
     def chapter(code: str) -> int:
         found = [n for n, c in enumerate(chapters, start=1) if _in_range(code, c["CAUSAS"])]
@@ -171,13 +286,10 @@ def aux_cid10(
     if spanning := {b: c for b, c in in_chapters.items() if len(c) > 1}:
         raise SystemExit(f"CID-10 groups span chapters: {spanning}")
 
-    for r in rows:
-        if not r["DESCR"].startswith(display(r["CID10"])):
-            raise SystemExit(f"CID-10 {r['CID10']}: DESCR does not start with its code")
     return pl.DataFrame(
         {
             "codigo": [r["CID10"] for r in rows],
-            "descricao": [r["DESCR"][len(display(r["CID10"])) :].strip() for r in rows],
+            "descricao": [r["DESCR"] for r in rows],
             "capitulo": [chapter(r["CID10"]) for r in rows],
             "capitulo_descricao": [chapters[chapter(r["CID10"]) - 1]["DESCRICAO"] for r in rows],
             "bloco": [block(r["CID10"])[0] for r in rows],
@@ -211,13 +323,16 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         into = Path(tmp)
         read = {name: download(name, into) for name in ENCODING}
+        territorial, territorial_source = territorial_municipalities(into)
+    layout, lines, sigtap_source = sigtap_tb_cid()
+    sigtap = sigtap_cid10(layout, lines, {r["CID10"] for r in read["CID10.DBF"][0]})
     ocupacoes, cbo_source = aux_ocupacoes(read["TABOCUP.DBF"][0])
     blocks, blocks_source = cid10_blocks()
     tables = {
         "aux_uf": (aux_uf(read["TABUF.DBF"][0]), ["TABUF.DBF"]),
-        "aux_municipios": (aux_municipios(read["CADMUN.DBF"][0]), ["CADMUN.DBF"]),
+        "aux_municipios": (aux_municipios(read["CADMUN.DBF"][0], territorial), ["CADMUN.DBF"]),
         "aux_cid10": (
-            aux_cid10(read["CID10.DBF"][0], read["CIDCAP10.DBF"][0], blocks),
+            aux_cid10(read["CID10.DBF"][0], read["CIDCAP10.DBF"][0], blocks, sigtap),
             ["CID10.DBF", "CIDCAP10.DBF"],
         ),
         "aux_ocupacoes": (ocupacoes, ["TABOCUP.DBF"]),
@@ -241,8 +356,10 @@ def main() -> None:
             sources = [read[n][1] for n in names]
             if table == "aux_ocupacoes":
                 sources.append(cbo_source)
+            if table == "aux_municipios":
+                sources.append(territorial_source)
             if table == "aux_cid10":
-                sources.append(blocks_source)
+                sources.extend([blocks_source, sigtap_source])
             manifest[table] = {"rows": frame.height, "sources": sources}
             print(f"  {table}: {frame.height} rows")
         zf.writestr(

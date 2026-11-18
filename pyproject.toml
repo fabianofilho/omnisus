@@ -18,7 +18,7 @@ classifiers = [
 ]
 dependencies = [
     "duckdb>=1.5.5,<2.0",
-    "polars>=1.44.2,<2.0",
+    "polars>=1.44.2,<3.0",
     "pyarrow>=25.0.1",
     "dbfread2>=0.1.0,<2.0",
     "typer>=0.27.2",

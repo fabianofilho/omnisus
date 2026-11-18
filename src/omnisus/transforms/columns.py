@@ -94,7 +94,11 @@ def check_columns(dataset: str, df: pl.DataFrame) -> pl.DataFrame:
         invalid = date_min = date_max = None
         pattern = DATE_FORMATS.get(field.get("x-format", "")) if field else None
         if field and field.get("type") == "date" and pattern:
-            dates = filled.str.strptime(pl.Date, pattern, strict=False)
+            # The same guard as analytical_projection: a non-strict pattern reads '1012023'.
+            raw = filled.str.strip_chars()
+            dates = raw.str.strptime(pl.Date, pattern, strict=False).set(
+                ~raw.str.contains(r"^[0-9]{8}$"), None
+            )
             invalid = _percent(dates.null_count(), filled.len())
             date_min, date_max = dates.min(), dates.max()
         rows.append(

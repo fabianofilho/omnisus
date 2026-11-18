@@ -1,5 +1,5 @@
 name: aux_cid10
-title: CID-10 completa com capítulos e blocos (DATASUS CID10, CIDCAP10 e CID10-grup_d)
+title: CID-10 completa com capítulos e blocos (DATASUS CID10, CIDCAP10, CID10-grup_d e SIGTAP)
 profile: tabular-data-resource
 encoding: utf-8
 schema:
@@ -11,7 +11,7 @@ schema:
     - name: descricao
       type: string
       constraints: { required: true }
-      description: "CID10.DESCR sem o código impresso no início (abreviada como publicada)"
+      description: "CID10.DESCR sem o código impresso no início (abreviada como publicada); tb_cid.NO_CID do SIGTAP 202610, por extenso, nos 25 códigos que o CID10.DBF não tem (A925, A97, C823 a C826, N182 a N185, P354, U09, U099, U10, U109 e W460 a W469)"
     - name: capitulo
       type: integer
       constraints: { minimum: 1, maximum: 22 }
@@ -27,6 +27,8 @@ schema:
       type: string
       description: "Descrição do grupo em CID10-grup_d.cnv, sem a faixa impressa no início (abreviada como publicada)"
   primaryKey: [codigo]
-x-version: "2.1.0"
+x-version: "2.3.0"
 x-source: DATASUS
-x-source-url: "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CID10.DBF"
+x-source-url:
+  - "ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/TABELAS/CID10.DBF"
+  - "ftp://ftp2.datasus.gov.br/public/sistemas/tup/downloads/TabelaUnificada_202610_v2610271043.zip"

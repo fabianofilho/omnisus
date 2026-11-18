@@ -69,9 +69,9 @@ SUS (SIH/SUS), nos arquivos RD que o DATASUS publica um por UF e mês de process
 
 Arquivos mensais por UF, de janeiro de 2008 em diante, no diretório
 `/dissemin/publicos/SIHSUS/200801_/Dados`, sem diretório preliminar; veja
-[Bases e argumentos](../datasets.md#onde-fica-no-servidor). Os arquivos `RJ`, `SP` e `ER`,
-que o mesmo documento descreve (Informe SIH 2016-03, p. 4–5), são linhas próprias; veja
-abaixo.
+[Bases e argumentos](../datasets.md#onde-fica-no-servidor). O arquivo `SP`, que o mesmo
+documento descreve (Informe SIH 2016-03, p. 4–5), e os arquivos `RJ` e `ER`, que ele não
+descreve (o sumário, p. 1, lista só `RD` e `SP`), são linhas próprias; veja abaixo.
 
 ### Outras linhas do SIH
 

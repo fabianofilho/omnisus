@@ -646,6 +646,38 @@ def test_amp_age_unit_and_sex_stay_undecoded_without_a_def(dbc_fixture):
 
 
 @pytest.mark.parametrize(
+    ("field", "published"),
+    [
+        ("sexopac", {"F", "M"}),
+        ("catend", {"01", "02", "03", "04", "05"}),
+        ("mn_ind", {"I", "M"}),
+        ("complex", {"0", "1", "2", "3"}),
+    ],
+)
+def test_bpai_fields_stay_undecoded_without_a_def(dbc_fixture, field, published):
+    """As with AMP: none of the 12 packaged TAB_SIA DEF reads BI*.DBC, so no DEF binds a
+    BPA-I field to a table. The DEF of another product (PS, SAD, PA) binding a field of
+    the same or another name does not say BPA-I follows that table: BIRR2401 holds the
+    codes, and the four fields get no map."""
+    masks = [
+        line.upper()
+        for path in Path(str(CNV / "sia")).iterdir()
+        if path.suffix.lower() == ".def"
+        for line in path.read_text(encoding="latin-1").splitlines()
+        if line.upper().startswith("ADADOS")
+    ]
+    assert len(masks) == 12 and not [m for m in masks if m.startswith("ADADOS\\BI")]
+    assert "sia_bpa_individualizado" not in VINCULOS["datasets"]
+    frame = _read("sia_bpa_individualizado", dbc_fixture("sia_bi_rr_2024_01_mini"))
+    assert set(frame[field]) == published
+    definition = load_dicionario("sia_bpa_individualizado").field_def(field)
+    assert "x-decode" not in definition
+    assert "claims" not in definition["x-metadata"]
+    (entry,) = [i for i in definition["x-metadata"]["issues"] if i["id"] == "bpai-sem-def"]
+    assert entry["status"] == "open" and "DEF" in entry["description"]
+
+
+@pytest.mark.parametrize(
     ("field", "published", "issue"),
     [
         ("homonimo", {"0", "2"}, "homonimo-sem-fonte"),

@@ -126,7 +126,45 @@ Os dicionários dessas linhas partem do inventário físico do descritor DBF de 
   ([Bases e argumentos](../datasets.md#cnes)).
 - O nome do estabelecimento não está no ST (Informe CNES 2017-06, p. 3–11):
   `sus.import_cnes_master` busca os nomes na API pública e os junta a `aux_cnes`
-  (`src/omnisus/__init__.py`, docstring de `import_cnes_master`).
+  (`src/omnisus/__init__.py`, docstring de `import_cnes_master`). São uma requisição por
+  código, e a API recusava conexões em 25/10/2026. Para o lake inteiro,
+  `sus.import_cnes_master_ftp` lê o
+  `tbEstabelecimentoAAAAMM.csv` da base completa do CNES
+  (`ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_AAAAMM.ZIP`), com razão social e nome
+  fantasia, e grava em `cnes_master` o arquivo, o SHA-256 e a competência. Quando ela mesma
+  baixa o arquivo (`download_dir`), grava também a URL do servidor (`url`) e o `MDTM` do
+  arquivo (`modificado_em`); um ZIP passado em `zip_path` tem origem desconhecida e fica sem
+  esses dois campos. `aux_cnes` expõe
+  `nome` (fantasia ou razão), `nome_fantasia`, `razao_social`, `competencia_nome` e
+  `fonte_nome`. O nome é o da competência do arquivo, não o do último mês do código no ST.
+  Carregar um mês recente primeiro e meses antigos depois só preenche os códigos sem nome.
+  Só estabelecimento de pessoa jurídica (`TP_PFPJ=3`) fica com nome. O de pessoa física
+  (`TP_PFPJ=1`, cerca de 30% das linhas de 202312) traz o nome do profissional na razão
+  social e no nome fantasia, e a importação ignora essas linhas, como ignora qualquer outro
+  valor de `TP_PFPJ`. Também fica sem nome a linha cujo nome traz um CPF válido, só com
+  dígitos ou com pontos, traço, barra ou espaços nas posições do CPF: 600 de 202312, quase
+  todas de empresário individual
+  ([medição](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-11-09-cnes-cpf-em-nome-pj.md)).
+  Na mesma transação do upsert sai o nome que o `cnes_master` já tiver para um código sem
+  nome público (pessoa física ou outro valor de `TP_PFPJ`), e sai também todo nome gravado
+  que traga um CPF válido, de qualquer código, pelos dois caminhos (API e FTP). Um nome
+  limpo já gravado fica quando a fonte passa a trazer CPF no nome do código.
+  Essa remoção é lógica: o nome some das consultas, mas continua nos snapshots anteriores
+  (`sus.LakeReader(snapshot_id=N)` ainda o lê), nos arquivos Parquet antigos e pode
+  continuar nas estatísticas de coluna do catálogo. Um lake que já guardou nome de pessoa
+  física ou nome com CPF deve ser recriado do zero antes de ser compartilhado.
+  A razão social de empresário individual (natureza jurídica 2135) é o nome civil da
+  pessoa. O lake a guarda, por ser dado público do CNPJ que identifica o estabelecimento;
+  nomes que trazem CPF não são guardados.
+  O `import_cnes_master` (API) só busca nome de código que o `cnes_estabelecimentos` marca
+  com `pf_pj = '3'` em todos os meses importados, mesmo listado à mão; código fora do ST, ou
+  lake sem `pf_pj`, fica sem nome. Um código `'3'` nos meses importados e `'1'` num mês não
+  importado ainda passa.
+  Uma linha sem razão social e sem nome fantasia também é ignorada; as contagens saem no
+  log `cnes_master_ftp.rows_skipped`.
+  O arquivo é lido como `latin-1`: o de 202312 não tem nenhum byte entre `0x80` e `0x9F`, a
+  faixa em que `latin-1` e `cp1252` diferem, então as duas leituras coincidem
+  ([medição](https://github.com/raphaelfh/omnisus/blob/main/evidence/2026-10-31-cnes-tbestabelecimento-encoding.md)).
 - `aux_cnes` mostra `tp_unid` e `codufmun` da competência mais recente de cada CNES,
   não os da competência que você analisa
   (`src/omnisus/lake/operations.py`, `ensure_aux_cnes_view`).

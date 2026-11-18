@@ -24,6 +24,16 @@
 6. **Revisar valores e estrutura.** Comparar nomes, tipos e valores observados
    com a definição, guardando o arquivo/hash/recorte. Frequências observadas
    não completam um domínio documental nem provam vigência histórica.
+   Onde nenhum documento dá o **formato** de um campo de data, a leitura do arquivo
+   pode fixá-lo, nunca como verificado: o campo declara `type: date` e `x-format`; a
+   claim `/field/format` usa `method: fixture-measure`, `status: unreviewed` e
+   `reviewer: null`; a issue `formato-sem-documento` fica aberta; e `observations`
+   guarda o arquivo do servidor (URL e SHA-256), o recorte e o resultado em `observed`
+   (padrão, preenchidos, válidos, menor e maior data, quantos o outro padrão também
+   lê). Um campo que nenhuma fixture preenche continua `string`, com a issue
+   `formato-sem-valor`. O teste `tests/unit/transforms/test_x_format_fixtures.py`
+   confere cada `x-format` contra as fixtures e cada observação contra o
+   `FIXTURES.md`.
 7. **Validar e publicar uma edição.** Validar contratos, referências, hashes,
    intervalos e cobertura; gerar docs/JSON; revisar o diff. Distribuir os
    metadados com a lib somente após passar pelos critérios abaixo.

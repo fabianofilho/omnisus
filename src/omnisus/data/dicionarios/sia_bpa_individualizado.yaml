@@ -4,7 +4,7 @@ profile: tabular-data-resource
 # latin-1 e OBRIGATORIO: o CNS cifrado usa bytes 0x7B-0x84 e 0x81 e
 # indefinido em cp1252 (UnicodeDecodeError). Medido em BIAC2401/BIRR2401.
 encoding: latin-1
-x-version: "0.4.0"
+x-version: "0.7.0"
 schema:
   fields:
     # ========================================================================
@@ -31,9 +31,11 @@ schema:
     - name: mn_ind
       type: string
       label: Estabelecimento mantido / individual
-      x-decode:
-        "M": "Mantido"
-        "I": "Individual"
+      x-metadata:
+        issues:
+        - id: bpai-sem-def
+          status: open
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. Atencao_Domiciliar.def (linhas 236-238, sad*.dbc) liga MN_IND a CNV/MANT_IND.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "MN_IND CHAR (1) Estabelecimento Mantido / Individual". O mapa anterior, ''M'' Mantido e ''I'' Individual, foi escrito à mão (o MANT_IND.CNV diz ''Mantida''). BIRR2401: MN_IND ''I'' em 5.126 linhas e ''M'' em 6.973.'
     - name: cnpjcpf
       type: string
       label: CNPJ/CPF do executante
@@ -94,11 +96,11 @@ schema:
     - name: complex
       type: string
       label: Complexidade
-      x-decode:
-        "0": "Não se aplica"
-        "1": "Atenção Básica"
-        "2": "Média complexidade"
-        "3": "Alta complexidade"
+      x-metadata:
+        issues:
+        - id: bpai-sem-def
+          status: open
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. Nenhum deles cita COMPLEX como campo: Producao_Ambulatorial.DEF (linhas 89-91, PA*.DBC) liga PA_NIVCPL a CNV/COMPLEX.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "COMPLEX CHAR (1) Complexidade do Procedimento". O mapa anterior, ''0'' Não se aplica, ''1'' Atenção Básica, ''2'' Média complexidade e ''3'' Alta complexidade, foi escrito à mão (o COMPLEX.CNV traz ''0-Não se Aplica''). BIRR2401: COMPLEX ''0'' em 699 linhas, ''1'' em 468, ''2'' em 8.721 e ''3'' em 2.211.'
     - name: autoriz
       type: string
       label: Número da autorização
@@ -115,13 +117,11 @@ schema:
     - name: catend
       type: string
       label: Caráter do atendimento
-      x-decode:
-        "01": "Eletivo"
-        "02": "Urgência"
-        "03": "Acidente no local de trabalho"
-        "04": "Acidente no trajeto"
-        "05": "Outros acidentes de trânsito"
-        "06": "Outras lesões por agentes químicos/físicos"
+      x-metadata:
+        issues:
+        - id: bpai-sem-def
+          status: open
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. RAAS_Psicossocial.def e Atencao_Domiciliar.def (linhas 40-42 de cada um, PS*.dbc e sad*.dbc) ligam CATEND a CNV/CARAT_AT.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "CATEND CHAR (2) Caráter de Atendimento". O mapa anterior, ''01'' a ''06'', foi escrito à mão, com rótulos que não são os do CARAT_AT.CNV (''Acidente no trajeto'' onde o CNV diz ''ACIDENTE NO TRAJETO PARA O TRABALHO''), e ''06'' não aparece em nenhuma das quatro fixtures do BPA-I. BIRR2401: CATEND ''01'' em 10.311 linhas, ''02'' em 1.369, ''03'' em 417, ''04'' em 1 e ''05'' em 1.'
     # ========================================================================
     # Paciente — chave de linkage
     # ========================================================================
@@ -142,6 +142,18 @@ schema:
         "4": "Anos"
         "5": "Anos (somar 100)"
       x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 83616371dedaa6efde39e6aa288ca9c043d7a29fcef25633a2fa65a3d37952e0
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: fixture-measure
+          reviewer: null
+          evidence:
+          - source_id: sia-tab-e5812b51d802
+            pages: []
+            locator: 'RAAS_Psicossocial.def, linhas 50-51, e Atencao_Domiciliar.def, linhas 53-54: TPIDADEPAC, 1, CNV/IDADEDET.CNV e CNV/IDADE18.CNV (o TAB_SIA não traz DEF do BPA-I)'
+          note: 'Medido, não lido (issue tpidadepac-sem-tabela). Os CNV leem 3 caracteres, TPIDADEPAC seguido de IDADEPAC; nenhuma tabela rotula o código de 1 caractere.'
         issues:
         - id: tpidadepac-sem-tabela
           status: open
@@ -166,6 +178,7 @@ schema:
           rule_version: 1.0.0
           output:
           - idade_anos_completos
+          - idade_status
           - idade_quantidade
           - idade_unidade
         applicability:
@@ -187,9 +200,11 @@ schema:
     - name: sexopac
       type: string
       label: Sexo do paciente
-      x-decode:
-        "M": "Masculino"
-        "F": "Feminino"
+      x-metadata:
+        issues:
+        - id: bpai-sem-def
+          status: open
+          description: 'Sem mapa: o TAB_SIA (e5812b51d802) não tem DEF do BPA-I; nenhum dos 12 DEF empacotados lê BI*.DBC. RAAS_Psicossocial.def (linhas 55-57, PS*.dbc) e Atencao_Domiciliar.def (linhas 58-60, sad*.dbc) ligam SEXOPAC a CNV/SEXO.CNV, o que não diz que o BPA-I segue essa tabela. O Informe Técnico SIASUS 2019-07 (p. 17, leiaute BIUFAAMM.DBF) traz "SEXOPAC CHAR (1) Sexo do paciente". O mapa anterior, ''M'' Masculino e ''F'' Feminino, foi escrito à mão (o SEXO.CNV rotula também ''0'' e o vazio, ''Não exigido''). BIRR2401: SEXOPAC ''F'' em 7.373 linhas e ''M'' em 4.726.'
     - name: racacor
       type: string
       label: Raça/cor
@@ -200,6 +215,19 @@ schema:
         "04": "Amarela"
         "05": "Indígena"
         "99": "Sem informação"
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: e89319e6371dfcfe5730f6615e5ef3eaa4c525b7884cb1cbf04b6dbfe299c08e
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: 'Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente; sem revisor humano'
+          reviewer: null
+          evidence:
+          - source_id: siasus-70fe69dbd4cf
+            pages: [17]
+            locator: 'RACACOR CHAR (2): 01 Branca, 02 Preta, 03 Parda, 04 Amarela, 05 Indígena, 99 Sem informação'
+          note: 'Códigos e rótulos iguais aos do Informe Técnico. O RACA_COR.CNV (RAAS_Psicossocial.def, linha 58) rotula também 00, o vazio e códigos indevidos; o x-decode não.'
     - name: munpac
       type: string
       label: Município de residência (UF+IBGE 6 dígitos)
@@ -227,12 +255,38 @@ schema:
       x-decode:
         "0": "Mesma UF"
         "1": "UF diferente"
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: 6595e1a1ef93a41f4135f28965b68a882d698823f67cdbc4d1249405687c5c86
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: 'Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente; sem revisor humano'
+          reviewer: null
+          evidence:
+          - source_id: siasus-70fe69dbd4cf
+            pages: [18]
+            locator: 'UFDIF CHAR (1): 0 = mesma UF; 1 = UF diferente'
+          note: 'Códigos e rótulos iguais aos do Informe Técnico.'
     - name: mndif
       type: string
       label: Residência em município diferente do atendimento
       x-decode:
         "0": "Mesmo município"
         "1": "Município diferente"
+      x-metadata:
+        claims:
+        - target: /field/codes
+          value_sha256: e28c725342512c1e78734b2177e36bab5f1d19522772d00d4db8f441ecd5ed90
+          status: unreviewed
+          checked_at: '2026-11-15'
+          method: 'Leitura do PDF oficial e comparação dos códigos e rótulos com o x-decode, feita por agente; sem revisor humano'
+          reviewer: null
+          evidence:
+          - source_id: siasus-70fe69dbd4cf
+            pages: [18]
+            locator: 'MNDIF CHAR (1): 0 = mesmo município; 1 = município diferente'
+          note: 'Códigos e rótulos iguais aos do Informe Técnico.'
     - name: etnia
       type: string
       label: Etnia indígena (preenchida quando racacor=05)

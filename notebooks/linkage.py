@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #     "marimo>=0.25.1,<0.26",
-#     "omnisus==0.2.3",
+#     "omnisus==0.3.0",
 #     "polars>=1.44.2,<2.0",
 # ]
 # ///
@@ -509,7 +509,7 @@ def _(mo):
     código; a primeira letra do rótulo (`M`/`F`) vira a variável comum. O que o
     dicionário rotula como ignorado (ou "Não exigido") vira nulo e não entra no
     linkage. Bases cujo dicionário não rotula o sexo (AIH rejeitada,
-    subconjuntos do SIM) ficam fora desta tabela: nelas o sexo não é usado.
+    subconjuntos do SIM, BPA-I) ficam fora desta tabela: nelas o sexo não é usado.
     """)
     return
 
@@ -581,7 +581,7 @@ def _(mo):
 
 
 @app.cell
-def _(bases, pl, rotulo, sexo):
+def _(bases, pl, rotulo, sexo, tem_rotulos):
     def data(coluna, formato):
         return pl.col(coluna).str.strip_chars().str.strptime(pl.Date, formato, strict=False)
 
@@ -669,7 +669,9 @@ def _(bases, pl, rotulo, sexo):
         procedimentos = bases[base].select(
             texto("cns_pac").alias("cns"),
             data("dtnasc", "%Y%m%d").alias("nasc"),
-            sexo(base, "sexopac"),
+            sexo(base, "sexopac")
+            if tem_rotulos(base, "sexopac")
+            else pl.lit(None, pl.String).alias("sexo"),
             texto("munpac").alias("mun"),
             texto(coluna_estab).alias("estab"),
             texto("ufmun").alias("mun_evento"),
