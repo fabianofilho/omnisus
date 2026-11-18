@@ -64,7 +64,9 @@ Layout 19 is the 75 fields `sih_aih_reduzida_1992_2007` was first written from
 | `COD_SEG` | C8.0 | 2004-07 to 2006-03 |
 
 Each has the same type in every layout that has it. Of the 89 fields, only `NUM_PROC`,
-`INSC_PN` and `SEQ_AIH5` change type (C or N) between layouts.
+`INSC_PN` and `SEQ_AIH5` change type (C or N) between layouts. The library stages the N
+months of these three as text, without zero padding, so `0` is `"0"` there and
+`"0000000000"` (`INSC_PN`) in a C month (#40).
 
 The `RD.DEF` of the three era packages (`evidence/2026-09-29-tab-sih-rd-eras/`) binds
 `SEMIPLEN` ("Gestão (95-97)") to `GESTAO.CNV` at position 1 and `DIAG_SEC` to CID-9

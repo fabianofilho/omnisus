@@ -64,7 +64,8 @@
   integer DBF column cast to string, without zero padding (`0` becomes `"0"`, not
   `"0000000000"`). Before, importing an N month after a C month, or the reverse, failed
   with `UnsafeSchemaError`. Each field has the issue `sem-zeros-a-esquerda` with its N
-  months (#40). Both dictionaries are 1.1.0.
+  months (#40). Both dictionaries are 1.1.0. A whole `RDRR9602` (`NUM_PROC` N4.0) joins
+  the fixtures as `sih_rd_rr_1996_02_mini`.
 - A file name whose scope is outside a dataset's declared `coverage` is no longer read as
   a file of that dataset: `scopes_for`, `available` and `outdated` stop listing a name
   beyond the declared end (or before the start) of a bounded row, such as

@@ -42,7 +42,8 @@ ERAS = {
     ERA2: ("1998-01", "2007-12", ["sih_rd_rr_2004_07_excerpt", "sih_rd_rr_2007_12_mini"]),
 }
 # C in some layouts, N in others (census.csv): no one type is the DBF's. Each dictionary
-# keeps the type of the era's last fixture until that is decided (#40).
+# keeps the type of the era's last fixture (string), and staging writes the N months as
+# text without zero padding (x-stage-as, #40).
 CHANGES_TYPE = {ERA1: {"num_proc"}, ERA2: {"insc_pn", "seq_aih5"}}
 # Fields of an era that none of its fixtures holds (see the test that checks them).
 NO_FIXTURE = {ERA1: set[str](), ERA2: {"uti_total"}}
